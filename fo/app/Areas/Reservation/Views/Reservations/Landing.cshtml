@@ -1,0 +1,513 @@
+﻿
+@{
+    ViewBag.Title = "Guest Reservation";
+}
+
+<style>
+    .formWizardNumbers {
+        border-radius: 300px;
+        padding: 8px;
+        margin: 0 auto !important;
+        color: white;
+        width: 35px;
+        text-align: center;
+    }
+
+    .formWizardText {
+        margin-top: 15px;
+        color: #808080;
+        text-align: center;
+        font-size: 13px;
+        text-decoration: none;
+        text-transform: uppercase;
+        margin-left: 5px;
+    }
+
+    .step {
+        background-color: #f2f2f2;
+    }
+
+    .selectedStep {
+        background-color: #f2f2f2;
+    }
+
+    .stepSmallText {
+        font-size: 9px;
+        display: block;
+    }
+
+    #contentLoadingArea {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+
+    .reservation-detail-table {
+        height: 100px;
+        overflow-y: scroll;
+    }
+
+    .disabled {
+        cursor: not-allowed;
+    }
+
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 ">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <a class="btn btn-sm  btn-theme-color-2 showGrid" href="~/reservation/reservations/list">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+            <br />
+            <div class="row">
+
+                <input type="hidden" name="From" id="FromDateId" class="FromDate" /> <input type="hidden" id="ToDateId" name="To" class="ToDate" />
+                <input type="hidden" name="noOfNights" class="noOfNights" />
+                <input type="hidden" name="reservation-details" class="hidden-stringify-json-reservation" />
+                <input type="hidden" name="guest-details" class="hidden-stringify-json-guest" />
+                <input type="hidden" name="guest-details" class="hidden-stringify-json-SelectedStay" />
+                <input type="hidden" name="guest-OtherDetails" class="hidden-stringify-json-SelectedStay" />
+
+                <div class="col-md-3 redda col-sm-3 col-xs-3 text-center hidden-print" id="step01">
+                    <a href="javacript:preventDefault();">
+                        <div class="formWizardNumbers theme-bg-color-2"> 1 </div>
+
+                        <div class="formWizardText">
+                            Select Stay <span class="glyphicon"></span>
+                            <i class="stepSmallText"></i>
+                        </div>
+
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-3 text-center hidden-print" id="step02">
+                    <a href="javacript:preventDefault();">
+                        <div class="formWizardNumbers theme-bg-color-2"> 2 </div>
+
+                        <div class="formWizardText">
+                            Guest Details <span class="glyphicon"></span>
+                            <i class="stepSmallText"></i>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-3 text-center hidden-print" id="step03">
+                    <a href="javacript:preventDefault();">
+                        <div class="formWizardNumbers theme-bg-color-2"> 3 </div>
+
+                        <div class="formWizardText">
+                            Other Details <span class="glyphicon"></span>
+                            <i class="stepSmallText"></i>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-3 col-xs-3 text-center hidden-print" id="step04">
+                    <a href="javacript:preventDefault();">
+                        <div class="formWizardNumbers theme-bg-color-2"> 4 </div>
+
+                        <div class="formWizardText">
+                            Confirmation  <span class="glyphicon"></span>
+                            <i class="stepSmallText"></i>
+                        </div>
+                    </a>
+                </div>
+
+            </div><hr style="margin-bottom:0px;" />
+            <div class="card-content div-scroll reservation-form-height" id="contentLoadingArea">  
+                            
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        //ScorelToTop60px();
+        $('.showForm').click();
+        $('#step01').find($("span")).addClass("glyphicon-record");
+       
+    });
+
+    // SELECT ROOM AVAILABILITY --------------------------------
+
+    $('body').on('click', '#btnCheckRoomAvailability', function (e) {
+        SelectRoomAvailability();
+    });
+
+    $('body').on('click', '.applyBtn', function (e) {
+        SelectRoomAvailability();
+    });
+
+    function SelectRoomAvailability() {
+
+        $('#step01').find($("span")).removeClass("glyphicon-ok");
+
+        if ($('#From').val() == "undefined" || $('#To').val() == "undefined" || $('#From').val().length == 0 || $('#To').val().length == 0) {
+            ShowErrorMessage("Please select the stay to continue.");
+            $('#reservationDateRange').focus();
+        }
+        else {
+           
+            CountryId = $('#CountryCombo').val(),
+            From = $('#From').val(),
+            To = $('#To').val()
+            $('#ArrivalDate').val(From);
+            $('#DepartureDate').val(To);
+        }
+
+        $.ajax({
+            url: '/reservation/reservations/GetAvailability',
+            dataType: 'html',
+            method: 'POST',
+            data: { CountryId: CountryId, fromDate: From, toDate: To },
+            success: function (response) {
+              
+                $('#roomAvailabilityContainer').html('').fadeOut();
+                $('#roomAvailabilityContainer').html(response).fadeIn();
+            },
+            error: function (error) {            
+            }
+        });
+    }
+
+   //--- coppied form here
+
+    // Step 01 Click --------------------------------
+    $('body').on('click', '#step01', function (e) {
+        LoadStep01();
+    });
+
+    // Step 02 Click --------------------------------
+    $('body').on('click', '#step02', function (e) {
+        LoadStep02();
+    });
+
+    // Step 03 Click --------------------------------
+    $('body').on('click', '#step03', function (e) {
+        LoadStep03();
+    });
+
+    // Step 04 Click --------------------------------
+    $('body').on('click', '#step04', function (e) {
+        LoadStep04();
+    });
+
+    //Room Count-------------------------------------
+
+    $('body').on('change', '.room-count', function (e) {
+
+        if ($(this).length == 0) {
+            $(this).val(0);
+        }
+
+        var sum = 0;        
+        $(".room-count").each(function () {
+            sum += +$(this).val();
+        });
+        if (parseInt($('#NoOfChildrens').val()) > 0) {
+            $("#NoOfAdults").val(sum - parseInt($('#NoOfChildrens').val()));
+        }
+        else
+        {
+            $("#NoOfAdults").val(sum);
+        }
+
+    });
+
+    //$('body').on('change', '#NoOfAdults', function (e) {
+    //    var sum = 0;
+    //    $(".room-count").each(function () {
+    //        sum = sum + Number($(this).val());
+    //    });
+    
+    //    $("#NoOfChildrens").val(sum - Number($(this).val()));
+
+    //    if (!this.value) {
+    //        var sum = 0;
+
+    //        $(".room-count").each(function () {
+    //            sum += +$(this).val();
+    //        });
+    //        $("#NoOfChildrens").val(sum);
+    //    }
+
+    //     });
+
+
+    //$('body').on('change', '#NoOfChildrens', function (e) {
+
+    //    var sum = 0;
+    //    $(".room-count").each(function () {
+    //        sum = sum + Number($(this).val());
+    //    });
+
+    //    $("#NoOfAdults").val(sum - Number($(this).val()));
+
+    //    if (!this.value) {
+    //        var sum = 0;
+
+    //        $(".room-count").each(function () {
+    //            sum += +$(this).val();
+    //        });
+    //        $("#NoOfAdults").val(sum);
+    //    }
+
+    //});
+
+    //Date range date load and date diffrence-------------------------------------------------------------
+    $('body').on('change', '.dateRangePicker', function (e) {
+       
+        var r = $(this).val().split('-')[0].trim();
+        $('.FromDate').val($(this).val().split('-')[0].trim());
+        $('.ToDate').val($(this).val().split('-')[1].trim());
+
+        var FromDate = $('.FromDate').val();
+        var ToDate = $('.ToDate').val();
+
+        FromDate_obj = new Date(Date.parse(FromDate, "dd/mm/yyyy"));
+        ToDate_obj = new Date(Date.parse(ToDate, "dd/mm/yyyy"));
+    
+        console.log(FromDate_obj);
+        console.log(ToDate_obj);
+
+        var utc1 = Date.UTC(FromDate_obj.getFullYear(), FromDate_obj.getMonth(), FromDate_obj.getDate());
+        var utc2 = Date.UTC(ToDate_obj.getFullYear(), ToDate_obj.getMonth(), ToDate_obj.getDate());
+        var noOfNights = 1; // Math.floor((utc2 - utc1) / (1000 * 60 * 60 * 24))
+
+        $('.noOfNights').val(noOfNights);
+
+    });
+
+    //Room info load------------------------------------------------------------------
+
+    function FillTable() {
+        var reservationTrDetails = JSON.parse($('.hidden-stringify-json-reservation').val());
+        $.each(reservationTrDetails, function (index, eachTrDetail) {
+            $.each(eachTrDetail.roomTypeArrineachTr, function (index, eachRoomDetail) {
+                
+                $('<tr><td>' + eachTrDetail.RoomCategoryName + '</td><td>' + eachRoomDetail.roomType + '</td><td>' + eachRoomDetail.count + '</td></tr>').appendTo($('.roomCategoryWise-roomTypeWise-details'));
+            })
+        })
+    }
+
+    //Guest Search and Create ------------------------------------------------------
+    $('body').on('click', '#btnCreateGuest', function () {
+       
+        $('.guest-checkBox').each(function (index, element) {
+            $(element).prop('checked', false);
+        });
+       
+        FillGuestDetail();
+    });
+
+    function FillGuestDetail() {
+        if (ValidateGuest()) {
+            ShowSuccessMessage('Guest added successfully, click NEXT to continue.');
+        } else {
+            ShowWarningMessage('All fields are mandatory!');
+        }
+    }
+
+    function ValidateGuest() {
+        var isValid = true;
+        if ($('#SalutationId').val() == '') {
+            $('#SalutationId').focus();
+            isValid = false;
+        }
+        if ($('#FirstName').val() == '') {
+            $('#FirstName').focus();
+            isValid = false;
+        }
+        if ($('#LastName').val() == '') {
+            $('#LastName').focus();
+            isValid = false;
+        }
+        if ($('#NICPassport').val() == '') {
+            $('#NICPassport').focus();
+            isValid = false;
+        }
+
+        if ($('#CountryId').val() == '') {
+            $('#CountryId').focus();
+            isValid = false;
+        }
+        if ($('#NationalityId').val() == '') {
+            $('#NationalityId').focus();
+            isValid = false;
+        }
+
+        //if ($('#Email').val() == '') {
+        //    $('#Email').focus();
+        //    isValid = false;
+        //}
+        //if ($('#ContactNo').val() == '') {
+        //    $('#ContactNo').focus();
+        //    isValid = false;
+        //}
+
+        if (isValid) {
+            var guestId = -1;
+            $('.guest-checkBox').each(function (index,element) {
+                if ($(element).prop('checked')) {
+                    guestId = $(element).val();
+                    return false;
+                }
+            });
+           
+            var SelectedGuest = {
+                Id: guestId,
+                SalutationId: $('#SalutationId').val(),
+                FirstName: $('#FirstName').val(),
+                LastName: $('#LastName').val(),
+                NICPassport: $('#NICPassport').val(),
+                CountryId: $('#CountryId').val(),
+                NationalityId: $('#NationalityId').val(),
+                Email: $('#Email').val(),
+                ContactNo: $('#ContactNo').val()
+            }
+
+
+            $('.hidden-stringify-json-guest').val(JSON.stringify(SelectedGuest));
+           
+
+        }
+        else {
+            ShowWarningMessage('You have missed some mandatory fields.');
+        }
+        return isValid;
+    }
+
+
+    function LoadStep04() {
+        $.ajax({
+            url: '/reservation/reservations/bookingconfirmation',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#step03').find($("span")).removeClass("glyphicon-record");
+                $('#step03').find($("span")).addClass("glyphicon-ok");
+                $('#step03').find($(".formWizardNumbers")).removeClass("theme-bg-color-2");
+                $('#step03').find($(".formWizardNumbers")).addClass("theme-bg-color-3");
+
+                $('#step04').find($("span")).addClass("glyphicon-record");
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(response).fadeIn();
+            },
+            error: function (error) {
+            }
+        });
+    }
+
+     //function LoadStep01() {
+
+    //    $.ajax({
+    //        url: 'reservation/reservations/makereservation',
+    //        dataType: 'html',
+    //        method: 'POST',
+    //        success: function (response) {
+
+    //            $('#contentLoadingArea #content').html('').fadeOut();
+    //            $('#contentLoadingArea #content').html(response).fadeIn();
+    //            SelectRoomAvailability();
+    //        },
+    //        error: function (error) {         
+    //        }
+    //    });
+    //}
+    function LoadStep01() {
+
+        $.ajax({
+            url: '/reservation/reservations/managestay',
+            dataType: 'html',
+            method: 'POST',
+            beforeSend: function () {
+                $("#btnStep01Next").prop('disabled', true).addClass("disabled");
+            },
+            success: function (response) {
+
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(response).fadeIn();
+                SelectRoomAvailability();
+
+               
+                // fill back
+                setTimeout(function () {
+                    if ($('#FromDateId').val() != undefined && $('#FromDateId').val().length > 0) {
+
+                        var stayObj = JSON.parse($('.hidden-stringify-json-SelectedStay').val());
+                        $('#CountryCombo').val(stayObj.CountryId);
+                        $('#NoOfAdults').val(stayObj.Adults);
+                        $('#NoOfChildrens').val(stayObj.Kids);
+
+                       
+                        var dateRange = $('#selectedStayRange').html().replace(" ", "");
+                        var startDate = dateRange.split('-')[0];
+                        var endDate = dateRange.split('-')[1];
+
+                        //var utc1 = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+                        //var utc2 = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+                        //var noOfNights = Math.floor((utc2 - utc1) / (1000 * 60 * 60 * 24))
+                        //$('.noOfNights').val(noOfNights);
+                        //$('#NoOfNights').val(
+
+                        $('#reservationDateRange').data('daterangepicker').setStartDate(startDate);
+                        $('#reservationDateRange').data('daterangepicker').setEndDate(endDate);
+
+                        var reservationTrDetails = JSON.parse($('.hidden-stringify-json-reservation').val());
+
+                        $('.roomDetail tr td').each(function () {
+                            var currentTd = $(this);
+                           
+                            $.each(reservationTrDetails, function (index, eachTrDetail) {
+
+                                $.each(eachTrDetail.roomTypeArrineachTr, function (index, eachRoomDetail) {
+
+                                    if (currentTd.attr('data-cat-id') == eachTrDetail.roomCategoryId) {
+
+                                        if (currentTd.attr('data-type-id') == eachRoomDetail.roomTypeId) {
+                                            
+                                            currentTd.find('.room-count').val(eachRoomDetail.count);
+                                        }
+                                    }
+                                })
+                            });
+                        });
+
+
+                        //$('#reservationDateRange').daterangepicker({ startDate: '03/05/2019', endDate: '03/06/2019' });
+                    }
+                }, 1000);
+            },
+            complete: function () {
+                $("#btnStep01Next").prop("disabled", false).removeClass("disabled");
+            },
+            error: function (error) {
+            }
+        });
+    }
+
+
+
+
+  
+
+</script>
+

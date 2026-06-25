@@ -1,0 +1,92 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.TransportAttribute>
+
+<div class="col-md-12">
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4">  
+                @if (item.ValueType == "S")
+                {
+                <div class="well attribute well-bottom">
+                    <div class="form-group label-floating form-group-styel-override">
+                        <label class="control-label">@item.Name.Replace("Number", "#")</label>
+                        <input type="hidden" class="attribute-id" data-attribute-id="@item.Id" />
+                        <input class="form-control input-type-for-string" @item.RequiredString type="text" data-value-type="S" data-attribute-id="@item.Id" />
+                    </div>
+                </div>
+                }
+                else if (item.ValueType == "B")
+                {
+                <div class="well attribute well-height well-bottom checkbox">
+                    <label>
+                        <input type="hidden" class="attribute-id" data-attribute-id="@item.Id" />
+                        <input type="checkbox" class="attribute-check-box" value="@item.Id" data-attribute-id="@item.Id" data-value-type="B" /> 
+                        <label class="control-label" style="font-size:14px;">@item.Name</label>
+                    </label>
+                </div>
+                }
+                else if (item.ValueType == "D")
+                {
+                <div class="well attribute well-bottom">
+                    <div class="input-group date form-group label-floating form-group-styel-override" id="datetimepicker1">
+                        <div class='input-group date'>
+                            <label class="control-label">@item.Name</label>
+                            <input type="hidden" class="attribute-id" data-attribute-id="@item.Id" />
+                            <input type="text" class="form-control date-picker" @item.RequiredString data-attribute-id="@item.Id" data-value-type="D" id="@item.Name" />
+                            <span class="input-group-addon">
+                                <span style="color:black" class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                }
+                else if (item.ValueType == "T")
+                {
+                <div class="well attribute well-bottom">
+                    <div class="form-group label-floating form-group-styel-override">
+                        <label class="control-label">@item.Name</label>
+                        <input type="hidden" class="attribute-id" data-attribute-id="@item.Id" />
+                        @{Html.RenderPartial("_TimeRange");}
+                    </div>
+                </div>
+                }
+                else if (item.ValueType == "I")
+                {
+                <div class="well attribute well-bottom">
+                    <div class="form-group label-floating form-group-styel-override">
+                        <label class="control-label">@item.Name</label>
+                        <input type="hidden" class="attribute-id" data-attribute-id="@item.Id" />
+                        <input class="form-control is-date-control input-type-for-int" @item.RequiredString data-attribute-id="@item.Id" data-value-type="@item.ValueType" type="number" />
+                    </div>
+                </div>
+                }
+                else if (item.ValueType == "M")
+                {
+                <div class="well attribute well-bottom">
+                    <div class="form-group label-floating form-group-styel-override">
+                        <label class="control-label">@item.Name</label>
+                        <input type="hidden" class="attribute-id" data-attribute-id="@item.Id" />
+                        <input class="form-control is-date-control input-type-for-money" @item.RequiredString data-attribute-id="@item.Id" data-value-type="@item.ValueType" type="number" />
+                    </div>
+                </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+<script>
+    $(function () {
+        $('.date-picker').daterangepicker({
+            locale: {
+                format: 'DD/MM/YYYY'
+            },
+            "showDropdowns": true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "singleDatePicker": true,
+            "opens": "right",
+            "applyClass": "btn-primary",
+        });
+    })
+</script>
+

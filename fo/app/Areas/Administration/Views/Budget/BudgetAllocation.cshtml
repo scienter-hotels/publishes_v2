@@ -1,0 +1,154 @@
+﻿@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.FrontOffice.Service
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            Budget Allocation
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+                    <div class="row">
+                        @{
+                            List<Month> options = new BudgetService().SelectMonth();
+                            List<Year>
+                                optionyear = new BudgetService().Selectyear();
+                        }
+                        <div class="col-md-2">
+                            <label>Month *</label>
+                            <select id="Month" name="Month" class="month-combo form-control" style="margin-top: -33px;" value="">
+                                <option value="NA">Select month</option>
+                                @foreach (var item in options)
+                                {
+                                    <option value="@item.Name">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-1">
+                            <label>Year *</label>
+                            <select id="Year" name="Year" class="year-combo form-control" style="margin-top: -33px;" value="">
+                                <option value="NA">Select year</option>
+                                @foreach (var item in optionyear)
+                                {
+                                    <option value="@item.Years">@item.Years</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-1">
+                            <button id="btnSearch" value="Search" class="btn btn-primary">Search<div class="ripple-container"></div></button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="table-responsive">
+                                <div id="BudgetAllocationList">
+                                    <table id="BudgetAllocationGrid" style="width:100%" class="table table-striped">
+                                        <tr>
+                                            <th width="200px">
+                                                Description
+                                            </th>
+                                            <th>
+                                                Value
+                                            </th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <input type="button" id="btnSave-AllocatedBudget" value="SAVE" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var year = "NA";
+    var month = "NA";
+
+    $(document).ready(function () {
+        LoadAllocatedBudgets(year, month);
+    });
+
+    $('body').off('click', '#btnSearch').on('click', '#btnSearch', function () {
+        year = $('.year-combo').val();
+        month = $('.month-combo').val();
+
+        LoadAllocatedBudgets(year, month);
+    });
+
+    function LoadAllocatedBudgets(year, month) {
+
+        $.ajax({
+            url: '/Administration/Budget/SelectAllocatedBudgets',
+            dataType: 'json',
+            method: 'get',
+            data: { year: year, month: month },
+            beforeSend: function () {
+                $('#BudgetAllocationGrid tr').not(':first-child').remove();
+            },
+            success: function (data) {
+                $.each(data, function (index, item) {
+                    $('<tr class="data-single-row">' +
+                        '<td>' +
+                        item.Description +
+                        '</td>' +
+                        '<td >' +
+                        '<input autocomplete="off" class="text-box single-line budgetAmount" data-allocationCategory-id="' + item.BudgetAllocationCategoryId + '" maxlength="10" id="BudgetAmount" name="BudgetAmount" type="number" style="border: 1px solid #ccc;text-align: right;" value="' + item.Amount + '" >' +
+                        '</td>' +
+                        '</tr>'
+                    ).appendTo("#BudgetAllocationGrid");
+                });
+            }
+        });
+    }
+
+    $('body').off('click', '#btnSave-AllocatedBudget').on('click', '#btnSave-AllocatedBudget', function (e) {
+        e.preventDefault();
+        var allocatedBudgets = [];
+
+        year = $('.year-combo').val();
+        month = $('.month-combo').val();
+
+        $('.data-single-row').each(function (index, item) {
+            var budget = {};
+            budget = {
+                BudgetAllocationCategoryId: $($(item).find('.budgetAmount')).attr('data-allocationCategory-id'),
+                Amount: $($(item).find('.budgetAmount')).val()
+            }
+
+            allocatedBudgets.push(budget);
+        });
+
+        var budget = JSON.stringify(allocatedBudgets);
+        console.log(budget);
+        $.ajax({
+            url: '/Administration/Budget/AllocateBudget',
+            dataType: 'JSON',
+            data: {allocatedBudget: budget, year: year, month: month},
+            method: 'POST',
+            success: function (data) {
+                if (data.startsWith('ERR-')) {
+                    ShowErrorMessage(data.replace("ERR-", ""));
+                } else {
+
+                }
+                ShowSuccessMessage('Saved successfully.');
+            }
+        });
+
+    });
+</script>

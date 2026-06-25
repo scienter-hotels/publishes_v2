@@ -1,0 +1,172 @@
+﻿@model Scienter.HotelERP.Common.Domain.Property
+
+@{
+    ViewBag.Title = "Create / Edit";
+}
+@Html.AntiForgeryToken()
+
+<div class="col-md-12">
+    <form id="properties">
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+            <div class="row">
+                <div class="col-md-3">
+
+                    <div class="form-group label-floating">
+                        <label class="control-label">Name *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Name" name="Name" type="text" value="@Model.Name" required>
+                    </div>
+
+                    <div class="form-group label-floating">
+                        <label class="control-label">Web Site Url *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="WebSiteURL" name="WebSiteURL" type="text" value="@Model.WebSiteURL" required>
+                    </div>
+
+                    <div class="form-group label-floating">
+                        <label class="control-label">Booking Engine Url *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="BookingEngineURL" name="BookingEngineURL" type="text" value="@Model.BookingEngineURL" required>
+                    </div>
+
+                    <div class="form-group label-floating">
+                        <label class="control-label">Address *</label>
+                        @*<textarea  class="form-control text-box single-line"  id="Address" name="Address" type="text" value="@Model.Address" required/>*@
+                        <textarea class="form-control"
+                                  cols="20"
+                                  id="Description"
+                                  name="Description"
+                                  rows="2">@Model.Address</textarea>
+                    </div>
+
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-3">
+                    <div class="form-group  label-floating">
+                        <label class="control-label">Emails *</label>
+                       @* <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Emails" name="Emails" type="text" value="@Model.Emails" required>*@
+                        <input class="form-control" autocomplete="off" maxlength="100" id="Emails" name="Emails" type="email" value="@Model.Emails" required>
+                    </div>
+                    <div class="form-group label-floating">
+                        <label class="control-label">Reservation CC Email *</label>
+                       @* <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="ReservationCCEmail" name="ReservationCCEmail" type="text" value="@Model.ReservationCCEmail" required>*@
+                         <input  class="form-control" autocomplete="off" maxlength="100" id="ReservationCCEmail" name="ReservationCCEmail" type="email" value="@Model.ReservationCCEmail" required>
+                        
+                      </div>
+
+                    <div class="form-group label-floating">
+                        <label class="control-label">Contact Nos *</label>
+                       @* <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="ContactNos" name="ContactNos" type="text" value="@Model.ContactNos" required>*@
+                        <input type="tel" class="form-control"  maxlength="100" id="ContactNos" name="ContactNos" value="@Model.ContactNos" required>
+                    </div>
+
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsActive)
+                            IsActive
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsBookingEngineActive)
+                            IsBookingEngineActive
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsBookingEngineActive, "", new { @class = "text-danger" })
+                    </div>
+
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        BookingEngineLogo *
+                        @{
+                            if (Model != null)
+                            {
+
+                                <img id="BookingEngineLogo" src="@Model.BookingEngineLogo" style="height:61px; width:201px;" name="BookingEngineLogo" />
+                                        <input type="hidden" name="BookingEngineLogoHdn" id="BookingEngineLogoHdn" value="@Model.BookingEngineLogo" />
+                            }
+
+                            else
+                            {
+                                <img id="blah" src="~/Images/no-image.png" style="height:61px; width:201px;" name="GuestProfileImage" />
+                                    <input type="hidden" name="BookingEngineLogoHdn" id="BookingEngineLogoHdn" />
+
+                            }
+
+                        }
+                        <input type="file" name="fileBookingEngineLogo" id="fileBookingEngineLogo" accept=".jpg, .png, .gif, .jpeg" />
+                    </div>
+
+                    <div class="form-group">
+                        Hotel Image *
+                        @{
+                            if (Model != null)
+                            {
+
+                                <img id="HotelImage" src="@Model.Image" style="height:61px; width:201px;" name="Image" />
+                                <input type="hidden" name="HotelImageHdn" id="HotelImageHdn" value="@Model.Image" />
+                            }
+
+                            else
+                            {
+                                <img id="blah" src="~/Images/no-image.png" style="height:61px; width:201px;" name="GuestProfileImage" />
+                                <input type="hidden" name="GuestImage" id="GuestImage" />
+
+                            }
+
+                        }
+                        <input type="file" name="fileHotelImage" id="fileHotelImage" accept=".jpg, .png, .gif, .jpeg" />
+                    </div>
+                   
+                    <div class="form-group">
+                        <div class="col-md-offset-2">
+                            <input type="submit" value="Create" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // to enable multipe emails
+        document.getElementById("Emails").multiple = true;  
+        
+       
+        $("#fileBookingEngineLogo").change(function () {
+            readURL(this);
+        });
+        $("#fileHotelImage").change(function () {
+            readURL(this);
+        });
+        
+
+        function readURL(input) {
+           
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {                   
+                    if (input.id == "fileBookingEngineLogo") {
+                        $('#BookingEngineLogo').attr('src', e.target.result);
+                        $('#BookingEngineLogoHdn').val(e.target.result);
+                        console.log(e.target.result);
+                    }
+                    else {
+                        $('#HotelImage').attr('src', e.target.result);
+                        $('#HotelImageHdn').val(e.target.result);
+                        console.log(e.target.result);
+                    }
+                   
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    });
+
+</script>

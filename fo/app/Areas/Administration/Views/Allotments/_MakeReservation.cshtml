@@ -1,0 +1,407 @@
+﻿@model Scienter.HotelERP.Common.Domain.AllotmentHeaders
+
+<style>
+    /*#allotmentReservation {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        margin-top: 20px;
+    }*/
+
+    /*#allotmentReservation .form-group {
+            margin-bottom: 15px;
+        }*/
+
+    #allotmentReservation label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #555;
+    }
+
+    /*#allotmentReservation input[disabled] {
+            background: #fff;
+            border: 1px solid #ddd;
+            color: #333;
+        }*/
+
+    .btn-check-availability {
+        margin-top: 25px;
+        width: 100%;
+    }
+
+    #allotmentReservation .table .checkbox {
+        margin-left: -10px;
+    }
+</style>
+
+<script src="~/Scripts/ui/common/scienter.common.datatimepicker.js"></script>
+
+<input type="hidden" name="name" id="hiddenAllotmentHeaderId" value="@Model.Id" />
+<input type="hidden" name="name" id="allotmentHiddenFromDate" value="@Convert.ToDateTime(Model.FromDate).ToShortDateString()" />
+<input type="hidden" name="name" id="allotmentHiddenToDate" value="@Convert.ToDateTime(Model.ToDate).ToShortDateString()" />
+
+<form action="" id="allotmentReservationForm" method="post">
+    <div class="" id="allotmentReservation">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Agent :</label>
+                    <div class="col-sm-9">
+                        <input type="hidden" id="allotmentAgentId" value="@Model.AgentId" />
+                        <input type="text" class="form-control" value="@Model.AgentName" autocomplete="off" disabled" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Market :</label>
+                    <div class="col-sm-9">
+                        <input type="hidden" id="allotmentMarketId" value="@Model.MarketId" />
+                        <input type="text" class="form-control" value="@Model.MarketName" disabled />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Allotment :</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" value="@Model.Name" disabled />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Arrival*</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="To" id="allotmentFromDate" class="form-control dateSelect start-date-picker DepartureDate" value="@Convert.ToDateTime(Model.FromDate).ToShortDateString()" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Departure*</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="To" id="allotmentToDate" class="form-control dateSelect end-date-picker DepartureDate" value="@Convert.ToDateTime(Model.ToDate).ToShortDateString()" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-8"></div>
+                    <div class="col-sm-4 offset-sm-3">
+                        <input type="button" id="btnAllotmentCheckAvailability" value="Check Availability" data-val="@Model.Id"
+                               class="form-control btn btn-primary btn-check-availability" />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-12">
+                        @*<table class="table table-bordered table-striped" id="availabilityTable" hidden>*@
+                        <div class="table-responsive grid-container">
+
+
+                            <table class="table table-bordered table-striped" id="availabilityTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width:60%">Room Category</th>
+                                        <th style="width:20%">Room Type</th>
+                                        <th style="width:10%">Availability</th>
+                                        <th style="width:10%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="availabilityTableBody" hidden>
+                                    @foreach (var allotmentDetails in Model.AllotmentDetails)
+                                    {
+                                        <tr>
+                                            <td data-cat-id="@allotmentDetails.RoomCategoryId">@allotmentDetails.RoomCategoryName</td>
+                                            <td data-type-id="1">DBL</td>
+                                            <td id="allotmentNoOfRooms" class="tdAllotmentNoOfRooms"><input type="number" class="AllotmentNoOfRooms form-control text-right" name="name" min="0" max="" value="" autocomplete="off" disabled style="color:#999999" /></td>
+                                            @*<td><input type="checkbox" name="name" min="0" max="" value="" autocomplete="off" class="form-control" /></td>*@
+                                            <td style="text-align:-webkit-center;">
+                                                <div class="form-group checkbox">
+                                                    <label>
+                                                        <input type="checkbox" />
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Group Name :</label>
+                    <div class="col-sm-9">
+                        <input type="hidden" value="" />
+                        <input type="text" class="form-control" id="groupName" value="" autocomplete="off" required />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="StatusId" class=" col-sm-3 control-label">
+                        Segment :
+                    </label>
+                    <div class="col-sm-9">
+                        <select name="AllotmentSegmentId" id="allotmentSegmentId" class="select2 form-control label-data AllotmentSegmentId" required>
+                            <option value="0" class="form-control label-data">N/A</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="StatusId" class=" col-sm-3 control-label">
+                        Rate Code :
+                    </label>
+                    <div class="col-sm-9">
+                        <select name="AllotmentRateCodeHeaderId" id="allotmentRateCodeHeaderId" class="select2 form-control label-data AllotmentRateCodeHeaderId" required>
+                            <option value="0" class="form-control label-data">N/A</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="StatusId" class=" col-sm-3 control-label">
+                        Meal Plan :
+                    </label>
+                    <div class="col-sm-9">
+                        <select name="AllotmentMealPlanId" id="allotmentMealPlanId" class="select2 form-control label-data AllotmentMealPlanId" required>
+                            <option value="0" class="form-control label-data">N/A</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="StatusId" class=" col-sm-3 control-label">
+                        Sales Person :
+                    </label>
+                    <div class="col-sm-9">
+                        <select name="AllotmentSalesPersonId" id="allotmentSalesPersonId" class="select2 form-control label-data AllotmentSalesPersonId" required>
+                            <option value="0" class="form-control label-data">N/A</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="StatusId" class=" col-sm-3 control-label">
+                        Visit Purpose :
+                    </label>
+                    <div class="col-sm-9">
+                        <select name="AllotmentVisitPurposeId" id="allotmentVisitPurposeId" class="select2 form-control label-data AllotmentVisitPurposeId" required>
+                            <option value="0" class="form-control label-data">N/A</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="StatusId" class=" col-sm-3 control-label">
+                        Country :
+                    </label>
+                    <div class="col-sm-9">
+                        <select name="AllotmentCountryId" id="allotmentCountryId" class="select2 form-control label-data AllotmentCountryId" required>
+                            <option value="0" class="form-control label-data">N/A</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="StatusId" class=" col-sm-3 control-label">
+                        No of Adults :
+                    </label>
+                    <div class="col-sm-9">
+                        <input type="number" id="allotmentNoOfAdults" class="form-control" value="" autocomplete="off" required />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="StatusId" class=" col-sm-3 control-label">
+                        No of Kids :
+                    </label>
+                    <div class="col-sm-9">
+                        <input type="number" id="allotmentNoOfKids" class="form-control" value="" autocomplete="off" required />
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-md-8"></div>
+                        <div class="col-sm-4">
+                            <input type="submit" id="btnSaveAllotmentReservation" value="Save"
+                                   class="form-control btn btn-primary btn-save-allotment-reservation" />
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</form>
+<script>
+    $(document).ready(function () {
+        LoadRateCodesInReservationEdit();
+        LoadSegmentsInReservationEdit();
+        LoadMealPlansInReservationEdit();
+        LoadSalesPersonsInReservationEdit();
+        LoadVisitPuposeInReservationEdit();
+        LoadCountryComboInGuestEdit();
+
+        var minDate = $("#allotmentHiddenFromDate").val();
+        var maxDate = $("#allotmentHiddenToDate").val();
+
+        $('.end-date-picker').daterangepicker({
+            linkedCalendars: true,
+            "showWeekNumbers": true,
+            "alwaysShowCalendars": true,
+            singleDatePicker: true,
+            "maxDate": $("#allotmentHiddenToDate").val(),
+            "minDate": $("#allotmentHiddenFromDate").val(),
+            // "endDate": moment().add(1, 'days'),
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        }, function (start, end, label) {
+            $('#checkout').val(end.format('DD/MM/YYYY'));
+        });
+
+
+        $('.start-date-picker').daterangepicker({
+            linkedCalendars: true,
+            "showWeekNumbers": true,
+            "alwaysShowCalendars": true,
+            singleDatePicker: true,
+            "maxDate": $("#allotmentHiddenToDate").val(),
+            "minDate": $("#allotmentHiddenFromDate").val(),
+            // "endDate": moment().add(1, 'days'),
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        }, function (start, end, label) {
+            $('#checkout').val(end.format('DD/MM/YYYY'));
+        });
+
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        $('#availabilityTable').DataTable({
+            paging: false,
+            searching: false,
+            info: false,
+            lengthChange: false
+        });
+
+        $('#availabilityTableBody').on('change', 'input[type="checkbox"]', function () {
+            var $row = $(this).closest('tr');
+            var $input = $row.find('.AllotmentNoOfRooms');
+
+            if ($(this).is(':checked')) {
+                $input.prop('disabled', false)
+                    .css({
+                        'color': '#000000',   
+                        'font-weight': '600'  
+                    });
+            } else {
+                $input.prop('disabled', true)
+                    //.val('') 
+                    .css({
+                        'color': '#999999',   
+                        'font-weight': 'normal'
+                    });
+            }
+        });
+    });
+
+    $('#availabilityTable tbody td').on('keydown', function (e) {
+        if (e.key === '-' || e.key === 'Minus') {
+            e.preventDefault();
+        }
+    });
+
+    $('#allotmentNoOfAdults').on('keydown', function (e) {
+        if (e.key === '-' || e.key === 'Minus') {
+            e.preventDefault();
+        }
+    });
+
+    $('#allotmentNoOfKids').on('keydown', function (e) {
+        if (e.key === '-' || e.key === 'Minus') {
+            e.preventDefault();
+        }
+    });
+
+
+    function LoadRateCodesInReservationEdit() {
+        var dataJson = localStorage.getItem("RateCodeHeaders");
+        var data = JSON.parse(dataJson);
+        $('#allotmentRateCodeHeaderId option').remove();
+        $(data).each(function (index, item) {
+            $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#allotmentRateCodeHeaderId'));
+        });
+    }
+
+
+    function LoadSegmentsInReservationEdit() {
+        var dataJson = localStorage.getItem("Segments");
+        var data = JSON.parse(dataJson);
+        $('#allotmentSegmentId option').remove();
+        $(data).each(function (index, item) {
+            $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#allotmentSegmentId'));
+        });
+    }
+
+
+    function LoadMealPlansInReservationEdit() {
+        var reservationForId = 0;
+        var IsDormitory = $('#isDormitory').val();
+        if (IsDormitory == 1) {
+            reservationForId = 2
+        }
+
+        var rowData = localStorage.getItem("MealPlans");
+        var data = JSON.parse(rowData);
+        $('#allotmentMealPlanId option').remove();
+        debugger;
+        $(data).each(function (index, item) {
+            $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#allotmentMealPlanId'));
+        });
+    }
+
+    function LoadSalesPersonsInReservationEdit() {
+        var dataJson = localStorage.getItem("SalesPersons");
+        var data = JSON.parse(dataJson);
+        $('#allotmentSalesPersonId option').remove();
+        $(data).each(function (index, item) {
+            $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#allotmentSalesPersonId'));
+        });
+    }
+
+    function LoadVisitPuposeInReservationEdit() {
+        var dataJson = localStorage.getItem("VisitPurposes");
+        var data = JSON.parse(dataJson);
+        $('#allotmentVisitPurposeId option').remove();
+        $(data).each(function (index, item) {
+            $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#allotmentVisitPurposeId'));
+        });
+    }
+
+    function LoadCountryComboInGuestEdit(/*CountryId*/) {
+        var dataJson = localStorage.getItem("Countries");
+        var data = JSON.parse(dataJson);
+        $('.AllotmentCountryId option').remove();
+        $(data).each(function (index, item) {
+            $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('.AllotmentCountryId'));
+        });
+    }
+</script>

@@ -1,0 +1,108 @@
+﻿
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm" title="Add New">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid" title="Show Grid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="row grid">
+                    <div class="table-responsive">
+                        <input type="text" id="searchby" onkeyup="SearchGrid()" placeholder="Search by any Column" title="Search by any Column">
+                        <div id="loadingProjects" class="well">
+                            <center>
+                                <img src="" style="width:50px; margin-top:20px; margin-bottom:0px;" />
+                            </center>
+                        </div>
+                        <table class="table table-striped" id="grid" style="display:none;">
+                            <tr>
+                                <th>Name</th>
+                                <th>Res Net Value</th>
+                                <th class="col-md-1">Active</th>
+                                <th class="col-md-2"></th>
+                            </tr>
+                            @*<tr class="no-record">
+                                    <td colspan="4">No Records Found.</td>
+                                </tr>*@
+                        </table>
+                    </div>
+                </div>
+
+
+
+                <form id="form" class="form" enctype="multipart/form-data">
+                    <input type="hidden" id="ChargeHeaderID" name="ChargeHeaderId" />
+
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Name *</label>
+                                <input type="text" class="form-control" id="Name" autocomplete="off" name="Name" required maxlength="50">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Res Net Value *</label>
+                                <input type="number" class="form-control" id="ResNetVal" pattern="" name="" title="" min="0" value="" step="0.0001" required autocomplete="off" />
+                                @* <input type="text" class="form-control" id="ResNetVal" autocomplete="off" name="ResNetVal" placeholder="Set Res Net Value">*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="checkbox">
+                                <label><input type="checkbox" id="IsActive" name="IsActive"> Active </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="taxTypeGrid col-md-6">
+                            <table class="table table-striped" id="taxTypeGrid">
+                                <tr>
+                                    <th class="col-md-1"></th>
+                                    <th>Tax type Name</th>
+                                    <th>Actual Percentage</th>
+                                    <th>Charge Type Sequence</th>
+                                    <th class="col-md-1">Active</th>
+                                </tr>
+                                @*<tr class="no-record">
+                                        <td colspan="4">No Records Found.</td>
+                                    </tr>*@
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <button type="submit" class="btn btn-success btn-width-100px" id="btnSubmit">
+                            Save
+                        </button>
+                        <button type="button" class="btn btn-default btn-width-100px btn-shadow clearbtn" onclick="ClearForm()">
+                            Clear
+                        </button>
+                    </div>                  
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" value="" id="hdnAction" />
+<script src="~/scripts/UI/scienter.Taxgroup.js"></script>

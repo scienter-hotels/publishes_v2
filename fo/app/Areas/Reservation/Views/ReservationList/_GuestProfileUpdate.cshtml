@@ -1,0 +1,315 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.GuestProfileView
+
+
+
+<form id="UpdateProfile">
+    <div>
+        <input type="hidden" id="gId" value="@Model.Id" />
+        <input type="hidden" id="mName" value="@Model.MiddleName" />
+        <input type="hidden" id="hAddress" value="@Model.HomeAddress" />
+        <input type="hidden" id="bAddress" value="@Model.BillingAddress" />
+        <input type="hidden" id="idNum" value="@Model.IdNum" />
+        <input type="hidden" value="@ViewBag.reservationNumber" id="reservationNumber" />
+        <input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+        <input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+        <input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+        <input type="hidden" id="roomNo" value="@ViewBag.roomNo" />
+        <input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+        <input type="hidden" class="hidden-SalutationId" value="@Model.SalutationId" />
+        <input type="hidden" class="hidden-CountryId" value="@Model.CountryId" />
+        <input type="hidden" class="hidden-NationalityId" value="@Model.NationalityId" />
+        <input type="hidden" class="hidden-VIPLevelId" value="@Model.VipLevelId" />
+        <input type="hidden" class="hidden-GuestProfileTypeId" value="@Model.GuestProfileTypeId" />
+
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="form-group label-floating">
+                        <label class="control-label">First Name *</label>
+                        <input type="text" name="FirstName" id="fName" required class="form-control" value="@Model.FirstName" />
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Last Name *</label>
+                        <input type="text" name="LastName" id="lName" required class="form-control" value="@Model.LastName"/>
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row ">
+                <div class="col-md-10">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Title * </label>
+                        <select id="salId" name="salId" class="form-control">
+                            <option value="ALL">ALL</option>
+                        </select>
+                        @*@{Html.RenderAction("SalutationCombo", "Salutations", new { area = "Administration", name = "salId", required = true, value = Model?.SalutationId });}*@
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Telephone </label>
+                        <input type="text" name="ContactNo" id="conNo" class="form-control " value="@Model.ContactNo" />
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row ">
+                <div class="col-md-10">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Email </label>
+                        <input type="email" name="Email" id="email" class="form-control" value="@Model.Email" />
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row ">
+                <div class="col-md-10">
+                    <div class="form-group label-floating">
+                        <label class="control-label">NIC / Passport *</label>
+                        @{
+                            string nICPassport = Model.PassportNo.Length == 0 ? Model.IdNum : Model.PassportNo;
+                        }
+                        <input type="text" name="NICPassport" id="nicPassport" class="form-control" value="@nICPassport" />
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Country *</label>
+                        <select id="counId" name="counId" class="form-control">
+                            <option value="ALL">ALL</option>
+                        </select>
+                        @*@{Html.RenderAction("CountriesCombo", "Countries", new { area = "Administration", name = "counId", required = true, value = Model?.CountryId });}*@
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Nationality *</label>
+                        <select id="natId" name="natId" class="form-control">
+                            <option value="ALL">ALL</option>
+                        </select>
+                        @*@{Html.RenderAction("NationalityCombo", "Nationalities", new { area = "Administration", name = "natId", required = true, value = Model?.NationalityId });}*@
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="form-group label-floating">
+                        <label class="control-label">VIP Status</label>
+                        <select id="vipId" name="vipId" class="form-control">
+                            <option value="ALL">ALL</option>
+                        </select>
+                        @*@{Html.RenderAction("VIPLevelCombo", "VIPLevels", new { area = "Administration", name = "vipId", required = false, value = Model?.VipLevelId });}*@
+                        @*@{Html.RenderAction("VIPLevelCombo", "VIPLevels", new { name = "VipLevelId", requiered = true, value = Model?.VipLevelId });}*@
+                    </div>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="form-group label-floating">
+                        <label class="control-label">DOB *</label>
+                        <input type="text" name="DOB" id="DOB" required class='form-control' value="@Model.DOB" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Guest Profile Type *</label>
+                        <select id="GPTypeID" name="GPTypeID" class="form-control">
+                            <option value="ALL">ALL</option>
+                        </select>
+                        @*@{Html.RenderAction("GuestProfileTypesCombo", "GuestProfileType", new { area = "Administration", name = "GPTypeID", required = true });}*@
+                    </div>
+                </div>
+            </div>
+        </div>       
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Address *</label>
+                        <textarea class="form-control" name="HomeAddress" id="HomeAddress">@Model.HomeAddress</textarea>                       
+                    </div>
+                </div>
+            </div>
+        </div>       
+
+        <div class="col-md-3" style="padding: 30px 0 0 0;">
+            @*<div class="row">
+                <div class="col-md-10">*@
+                    <button type="submit" id="btnUpdateProfile" class="btn theme-bg-color-2 text-right btn-width-100">
+                        Update
+                    </button>
+                @*</div>
+            </div>*@
+        </div>
+    </div>
+
+
+</form>
+
+<script src="~/Scripts/ui/reservation-list/side-buttons/manage-guests.js"></script>
+
+@*<script>
+
+    $(document).ready(function () {
+        //var today = moment();
+        //var mindate = today.add('Year', -80)
+        //$('.DOB').daterangepicker({
+        //    "showDropdowns": true,
+        //    "showWeekNumbers": true,
+        //    "showISOWeekNumbers": true,
+        //    "singleDatePicker": true,
+        //    "minDate": mindate,
+        //    "opens": "right",
+        //    "applyClass": "btn-primary",
+        //    }, function (start, end, label) {
+        //        $('.DOB').val(start.format("DD/MM/YYYY"));
+        //});
+
+        ////$('.DOB').val("30/01/2018");
+        $('#DOB').daterangepicker({
+            "showDropdowns": true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "singleDatePicker": true,
+            "minDate": new Date('1900-01-01'),
+            //'Custom Range': 'custom',
+            //"yearRange": '1980:2018',
+            "changeYear": true,
+            "changeMonth": true,
+            "opens": "right",
+            "applyClass": "btn-primary",
+            "dateLimit": {
+                "days": false
+            },
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        });
+
+
+
+    });
+
+
+   // .off('submit', '#UpdateProfile')
+    $('body').off('submit', '#UpdateProfile').on('submit', '#UpdateProfile', function (e) {
+        e.preventDefault();
+        var guestProfile = {
+            Id: $('#gId').val(),
+            DOB: $('#DOB').val(),
+            MiddleName: $('#mName').val(),               
+            IdNum: $('#idNum').val(),
+            FirstName: $('#fName').val(),
+            LastName: $('#lName').val(),
+            SalutationId: $('#salId').val(),
+            ContactNo: $('#conNo').val(),
+            Email: $('#email').val(),
+            IdNum: $('#nicPassport').val(),
+            PassportNo: $('#nicPassport').val(),
+            VipLevelId: $('#vipId').val(),
+            BillingAddress: $('#BillingAddress').val(),
+            HomeAddress: $('#HomeAddress').val(),
+            NationalityId: $('#natId').val(),
+            CountryId: $('#counId').val(),
+            GuestProfileTypeId: $('#GPTypeID').val(),
+            ReservationHeaderId: $('#reservationNo').val()
+        }
+
+        $.ajax({
+            url: '/reservation/ReservationList/UpdateProfileSave',
+            dataType: 'json',
+            data: guestProfile,
+            method: 'POST',
+            success: function (data) {
+                var Type = $('#resType').val();
+                if (data.startsWith('300-')) {
+                    ShowErrorMessage(data.replace("300-", ""));
+                } else {
+                    $('#editGuestDiv').collapse("hide");
+                    FillGrid();
+                    ShowSuccessMessage(data);
+                    var EventCode = "GC";
+                    var ReservationNo = $('#ReservationNumber').val();
+                    var propertyId = $('#PropertyId').val();
+                    var userId = $('#UserId').val();
+                    var printURL = $('#DirectPrintURL').val();
+                    var FromRoom = $('#roomNo').val();//roomNo
+                    var ToRoom = "-1";
+                    var GuestName = $('#fName').val() + ' ' + $('#lName').val();
+                    var ajaxUrl = printURL + 'PABX/' + EventCode + '/' + ReservationNo + '/' + propertyId + '/' + userId + '/' + FromRoom + '/' + ToRoom + '/' + GuestName + '/'
+                    console.log(ajaxUrl);
+                    PABXAjaxRequest(ajaxUrl);
+                    setTimeout(function () {
+                        if (Type == "reservation") {
+                            closeFullContent();
+                            LoadReservationGrid();
+                        } else {
+                            location.reload()
+                        }
+                    }, 2500);
+                   
+                } 
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in saving this record.');
+            }
+        });
+    })
+
+</script>*@
+
+

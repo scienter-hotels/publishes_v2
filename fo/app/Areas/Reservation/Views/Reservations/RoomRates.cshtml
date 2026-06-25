@@ -1,0 +1,475 @@
+﻿@using Scienter.HotelERP.FrontOffice.WebUIMvc.Models
+@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.Common.Utility
+
+@model ComboBoxViewModel<RateCodeHeader>
+@{
+    ViewBag.Title = "Room Rates";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        overflow-x: hidden;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+    /*-------------------------------------------------------------------------------*/
+
+    table {
+        border-collapse: collapse;
+    }
+
+    td {
+        border: 1px solid #000;
+        padding: 8px;
+    }
+
+    .highlight {
+        background-color: yellow;
+    }
+
+    .highlight-header {
+        background-color: #99CCFF;
+    }
+
+    .highlight-subheader {
+        background-color: #99CCFF;
+    }
+
+    .highlight-row {
+        background-color: #99CCFF !important; /* Yellow color for horizontal highlight */
+    }
+
+    .highlight-column {
+        background-color: #99CCFF; /* Blue color for vertical highlight */
+    }
+
+    .table-hover > tbody > tr > td:hover {
+        background-color: #ffe826 !important;
+        font-weight: bold;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+
+                <div id="content">
+                    <div>
+                        <div class="row" style="padding-bottom: 20px">
+                            <div class="col-md-3 padding-left-form">
+                                <div class="form-group form-group-margin-override label-floating" required style="padding:0 20px">
+                                    <label class="required control-label">From Date *</label>
+                                    <input autocomplete="off" class="form-control text-box single-line datePicker" id="fromDate" name="Date" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 padding-left-form">
+                                <div class="form-group form-group-margin-override label-floating" required style="padding:0 20px">
+                                    <label class="required control-label">To Date *</label>
+                                    <input autocomplete="off" class="form-control text-box single-line datePicker" id="toDate" name="Date" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Rate Code *</label>
+                                    @*@{Html.RenderAction("RateCodeHeadersCombo", "RateCodeHeaders", new { name = "RateCodeId", requiered = false, value = Model?.RateCodeId });}*@
+                                    <select id="rateCodeHeaderId">
+                                        <option>Select</option>
+                                        @foreach (var rateCodeHeader in Model.Options)
+                                        {
+                                            <option value="@rateCodeHeader.Id">@rateCodeHeader.Name</option>
+                                        }
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group form-group-margin-override label-floating" required style="padding:0 20px">
+                                    <div class="form-group">
+                                        <input type="button" id="btnRoomRateByDateSearch" value="Search" class="btn btn-primary" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group form-group-margin-override label-floating" required style="padding:0 20px">
+                                    <div class="form-group">
+                                        <p id="roomRateCurrencyCode"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="beforeSearchMessage">
+                        <p style="margin-left: 20px; color:#6a6a6a;">To view room rates, please ensure you have selected both a date range and a rate code, then click the search button</p>
+                    </div>
+
+                    <div style="padding-right: 10px; padding-bottom: 15px; overflow:scroll" id="roomRatesTable"></div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+
+        //buildTable(data);
+
+        $('#rateCodeHeaderId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+    });
+
+    $('body').on('click', '#btnRoomRateByDateSearch', function () {
+        var fromDate = $('#fromDate').val();
+        var toDate = $('#toDate').val();
+        var rateCode = $('#rateCodeHeaderId').val();
+        $.ajax({
+            url: '/Reservation/Reservations/SelectRoomRatesByDate', // The URL to your API endpoint
+            type: 'POST',
+            data: { fromDate: fromDate, toDate: toDate, rateCode: rateCode },
+            dataType: 'json',
+            success: function (data) {
+                $('#roomRatesTable').empty();
+                if (data.Name != null && data.Name !== '') {
+                    $('#beforeSearchMessage').hide();
+                    $('#roomRateCurrencyCode').text('Please note: All rates are displayed in ' + data.CurrencyCode + '');
+                    buildTable(JSON.parse(data.Name));
+                } else {
+                    ShowWarningMessage("No rates found for the selected rate code. Please try again");
+                    $('#roomRatesTable').empty();
+                    $('#roomRateCurrencyCode').text('');
+                    $('#beforeSearchMessage').show();
+                    //ShowSuccessMessage('Saved successfully.');
+                }
+
+            },
+            error: function () {
+                ShowErrorMessage("An error occurred while loading the data.");
+            }
+        });
+    });
+
+    function buildTable(data) {
+        if (!Array.isArray(data) || data.length === 0) {
+            console.log('Data is not an array or is empty.');
+        }
+
+        var table = $('<table id="roomRatesTable" class="table table-bordered table-hover"></table>');
+        var thead = $('<thead></thead>');
+        var tbody = $('<tbody></tbody>');
+
+        // Building the header
+        var headerRow = $('<tr></tr>');
+        headerRow.append('<th></th>'); // Static header for date
+        headerRow.append('<th style="text-align:center;width:150px"></th>'); // Static header for meal plan
+
+        var subHeaderRow = $('<tr></tr>');
+        subHeaderRow.append('<th></th><th></th>'); // Empty headers to align with the two static headers
+
+        // Process each room category and room type
+        data[0].RoomCategories.forEach(function (category) {
+            if (category && Array.isArray(category.RoomTypes)) {
+                headerRow.append('<th class="header-row" data-roomcat="' + category.RoomCategory + '" colspan="' + category.RoomTypes.length + '" style="text-align:center; font-weight:bold;">' + category.RoomCategory + '</th>');
+                category.RoomTypes.forEach(function (type) {
+                    subHeaderRow.append('<th class="subheader-row" data-roomtype="' + category.RoomCategory + type.RoomType + '" style="text-align:center; width:65px; font-weight:bold;">' + type.RoomType + '</th>');
+                });
+            }
+        });
+
+        thead.append(headerRow);
+        thead.append(subHeaderRow);
+
+        table.append(thead);
+
+        // Process each entry
+        data.forEach(function (entry) {
+            if (entry && Array.isArray(entry.RoomCategories)) {
+                // Collect all meal plans
+                var mealPlans = [];
+
+                entry.RoomCategories.forEach(function (category) {
+                    category.RoomTypes.forEach(function (type) {
+                        if (type && Array.isArray(type.MealPlans)) {
+
+                            type.MealPlans.forEach(function (mealPlan) {
+                                if (mealPlan && mealPlans.indexOf(mealPlan.MealPlan) === -1) {
+                                    var melaPlanwiseRate = {
+                                        mealPlanName: mealPlan.MealPlan,
+                                        ratemealPlanName: category.RoomCategory + mealPlan.MealPlan
+                                    };
+
+                                    //console.log(melaPlanwiseRate);
+                                    mealPlans.push(mealPlan.MealPlan);
+                                }
+                            });
+                        }
+                    });
+                });
+
+
+                // For each meal plan, generate a row
+                mealPlans.forEach(function (mealPlanName) {
+                    console.log(entry.RoomCategories.RoomCategory);
+                    var row = $('<tr></tr>');
+                    row.append('<td style="padding:4px; width:75px; display: block; font-weight:bold;">' + entry.Date + '</td>');
+                    row.append('<td data-mealplan="' + mealPlanName + '" style="text-align:center; padding:4px 10px; font-weight:bold;">' + mealPlanName + '</td>');
+
+                    // For each room category and type, add the rate cell
+                    entry.RoomCategories.forEach(function (category) {
+                        category.RoomTypes.forEach(function (type) {
+                            var rateCell = $('<td class="rateCell" data-roomcat="' + category.RoomCategory + '" data-roomtype="' + category.RoomCategory + type.RoomType + '" data-mealplan="' + mealPlanName + '" style="text-align:center">-</td>');
+                            if (type && Array.isArray(type.MealPlans)) {
+                                var mealPlan = type.MealPlans.find(function (mp) {
+                                    return mp && mp.MealPlan === mealPlanName;
+
+                                });
+                                if (mealPlan) {
+                                    rateCell.text(mealPlan.Rate ? mealPlan.Rate.toFixed(2) : '-').css('text-align', 'right').css('padding', '4px');
+                                }
+                            }
+                            row.append(rateCell);
+                        });
+                    });
+
+                    tbody.append(row);
+                });
+            }
+        });
+
+        // rowspan date column
+        ////////data.forEach(function (entry, index) {
+        ////////    if (entry && Array.isArray(entry.RoomCategories)) {
+        ////////        // Collect all meal plans
+        ////////        var mealPlans = [];
+        ////////        entry.RoomCategories.forEach(function (category) {
+        ////////            category.RoomTypes.forEach(function (type) {
+        ////////                if (type && Array.isArray(type.MealPlans)) {
+        ////////                    type.MealPlans.forEach(function (mealPlan) {
+        ////////                        if (mealPlan && mealPlans.indexOf(mealPlan.MealPlan) === -1) {
+        ////////                            mealPlans.push(mealPlan.MealPlan);
+        ////////                        }
+        ////////                    });
+        ////////                }
+        ////////            });
+        ////////        });
+
+        ////////        // Calculate rowspan for date cell
+        ////////        var dateRowSpan = mealPlans.length;
+
+        ////////        // For each meal plan, generate a row
+        ////////        mealPlans.forEach(function (mealPlanName, mealPlanIndex) {
+        ////////            var row = $('<tr></tr>');
+
+        ////////            // Append date cell only for the first row of each date group
+        ////////            if (mealPlanIndex === 0) {
+        ////////                row.append('<td rowspan="' + dateRowSpan + '" style="padding:4px; width:75px; vertical-align:middle;">' + entry.Date + '</td>');
+        ////////            }
+
+        ////////            row.append('<td style="text-align:center; padding:4px 10px">' + mealPlanName + '</td>');
+
+        ////////            // For each room category and type, add the rate cell
+        ////////            entry.RoomCategories.forEach(function (category) {
+        ////////                category.RoomTypes.forEach(function (type) {
+        ////////                    var rateCell = $('<td style="text-align:center">-</td>');
+        ////////                    if (type && Array.isArray(type.MealPlans)) {
+        ////////                        var mealPlan = type.MealPlans.find(function (mp) {
+        ////////                            return mp && mp.MealPlan === mealPlanName;
+        ////////                        });
+        ////////                        if (mealPlan) {
+        ////////                            rateCell.text(mealPlan.Rate ? mealPlan.Rate.toFixed(2) : '-').css('text-align', 'right').css('padding', '4px');
+        ////////                        }
+        ////////                    }
+        ////////                    row.append(rateCell);
+        ////////                });
+        ////////            });
+
+        ////////            tbody.append(row);
+        ////////        });
+        ////////    }
+        ////////});
+
+        table.append(tbody);
+
+        // Add class for each cell with its row and column index
+        tbody.find('tr').each(function (rowIndex) {
+            $(this).find('td').each(function (colIndex) {
+                $(this).addClass('row-' + rowIndex).addClass('col-' + colIndex).attr('data-col', 'col-' + colIndex);
+            });
+        });
+
+
+        ////Highlight all cells
+        //////tbody.on('mouseenter', 'td', function () {
+        //////    var $cell = $(this);
+
+        //////    var cellIndex = $(this).index();
+        //////    var colIndex = $cell.index();
+        //////    var rowIndex = $cell.closest('tr').index();
+
+        //////     Remove existing highlights
+        //////    tbody.find('.highlight-row').removeClass('highlight-row');
+        //////    tbody.find('.highlight-column').removeClass('highlight-column');
+
+        //////     Highlight row and column
+        //////    tbody.find('.row-' + rowIndex).addClass('highlight-row');
+        //////    tbody.find('.col-' + colIndex).addClass('highlight-column');
+        //////});
+
+        // Highlight selected cells
+        $(tbody).on('mouseenter', 'td', function () {
+            var $cell = $(this);
+            var cellIndex = $(this).index();
+            var rowIndex = $(this).parent().index();
+            var colIndex = $cell.index();
+            var dataRoomCatValue = $cell.attr('data-roomcat');
+            var dataRoomTypeValue = $cell.attr('data-roomtype');
+            var dataMealPlanValue = $cell.attr('data-mealplan');
+
+            // Reset all background colors
+            $("#roomRatesTable th, #roomRatesTable td").css("background-color", "");
+
+            // Highlight the matching header row based on data-cat value
+            $("#roomRatesTable th").filter(function () {
+                return $(this).data('roomcat') === dataRoomCatValue;
+            }).css("background-color", "#FFCC99"); 
+
+            // Highlight the matching sub header row based on data-cat value
+            $("#roomRatesTable .subheader-row").filter(function () {
+                return $(this).data('roomtype') === dataRoomTypeValue;
+            }).css("background-color", "#B3AFA8"); 
+
+            // Highlight the matching column cell based on data-mealplan value
+            //$("#roomRatesTable td").filter(function () {
+            //    return $(this).data('mealplan') === dataMealPlanValue;
+            //}).css("background-color", "#0C4359"); 
+
+            //$("#roomRatesTable tr td:nth-child(1)").css("background-color", "#B3AFA8");
+
+            //$("#roomRatesTable tr td:nth-child(1)").filter(function () {
+            //    return $(this).data('col') === 'col-1';
+            //}).css("background-color", "#B3AFA8"); 
+
+          
+            // Highlight row and column
+            $("#roomRatesTable tr").eq(rowIndex + 2).find("td").css("background-color", function (index) {
+                return index < cellIndex ? "#99CCFF" : "";
+            });
+
+            $("#roomRatesTable tr td:nth-child(" + (cellIndex + 1) + ")").css("background-color", function (index) {
+                return index <= rowIndex ? "#99CCFF" : "";
+                //return index -1 <= rowIndex ? "#99CCFF" : "";
+            });
+
+            //$(this).css("background-color", "#99CCFF");
+
+        }).on('mouseleave', 'td', function () {
+            //$("#roomRatesTable td").css("background-color", "");
+            $("#roomRatesTable td, #roomRatesTable th").css("background-color", "");
+        });
+
+        $('#roomRatesTable').empty().append(table);
+    }
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

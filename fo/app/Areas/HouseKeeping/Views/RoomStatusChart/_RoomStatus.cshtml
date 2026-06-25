@@ -1,0 +1,167 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.RoomWiseStatusDetailsView>
+@using Scienter.HotelERP.Common.Domain;
+
+<style>
+    h3 {
+        font-weight: bold;
+    }
+
+    .custom-top-padding {
+        padding-top: 5px;
+    }
+
+    .well {
+        font-size: 12px;
+    }
+
+    .override-from-group-margin {
+        margin-top: 0px;
+    }
+
+    .colorBox {
+        height: 12px;
+        width: 12px;
+    }
+
+    .box1 {
+        background-color: #FE0101;
+    }
+
+    .box2 {
+        background-color: #038959;
+    }
+
+    .box3 {
+        background-color: #ff9800;
+    }
+
+    .row-height {
+        padding-top: 5px;
+        height: 25px;
+    }
+
+    .well-height {
+        height: 150px;
+    }
+
+    .col-padding-overide {
+        padding: 1px !important;
+    }
+
+    .room-number-height {
+        height: 50px;
+        margin-top: 20px;
+    }
+
+    .content-align-center {
+        text-align: center;
+        margin-left: 10px;
+    }
+
+    .room-detail-area-height {
+        max-height: 430px !important;
+    }
+</style>
+
+<div class="row div-scroll room-detail-area-height room-wise-status-area">
+    @foreach (var item in Model.OrderBy(x => x.Name))
+    {
+        string backgrounColor = item.HouseKeepingStatusUpdateTXNViews.Where(x => x.RoomStatusCategoryId == ViewBag.RoomStatusCategory).FirstOrDefault().ColorCode;
+        string foreGroundColor = item.HouseKeepingStatusUpdateTXNViews.Where(x => x.RoomStatusCategoryId == ViewBag.RoomStatusCategory).FirstOrDefault().SecondColor;
+        string fontColor = item.HouseKeepingStatusUpdateTXNViews.Where(x => x.RoomStatusCategoryId == ViewBag.RoomStatusCategory).FirstOrDefault().Fontcolor;
+
+        string[] clsArr;
+        string cls = "";
+
+        clsArr = item.FloorName.ToLower().Split(' ');
+
+        for (int i = 0; i < clsArr.Length; i++)
+        {
+            if (i != (clsArr.Length - 1))
+            {
+                cls = cls + clsArr[i] + "-";
+            }
+            else
+            {
+                cls = cls + clsArr[i] + " ";
+            }
+        }
+
+        foreach (var RoomStatusItem in item.HouseKeepingStatusUpdateTXNViews)
+        {
+            clsArr = RoomStatusItem.RoomStatusName.ToLower().Split(' ');
+
+            for (int i = 0; i < clsArr.Length; i++)
+            {
+                if (i != (clsArr.Length - 1))
+                {
+                    cls = cls + clsArr[i] + "-";
+                }
+                else
+                {
+                    cls = cls + clsArr[i] + " ";
+                }
+            }
+        }
+
+        <div class="col-md-4 @cls">
+            <div style="background-color:@backgrounColor !important; color:@fontColor !important" class="well well-height override-well">
+                <div class="row">
+                    <div class="col-md-4 room-number-height">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12 content-align-center" style="margin-left:0px !important">
+                                    <h4 class="room-number"><strong>@item.Name</strong></h4>
+                                    @*<h2 class="room-number"><strong>@item.RoomStatusName</strong></h2>*@
+                                </div>
+                            </div>
+                            <input type="hidden" class="hidden-roomId" id="hidden-roomId" value="@item.Id" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script src="~/Scripts/jquery.flip.min.js"></script>
+<script>
+
+    $('.flip-card').flip({
+        trigger: 'manual'
+    });
+
+    $('body').on('click', '.flip-icon', function () {
+        var backCardTableHeight = 0;
+        var frontCard = $(this).closest('.well').find('.front-card');
+        var backCard = $(this).closest('.well').find('.back-card');
+
+        //Change the flipped card idintical css
+        if ($(frontCard).hasClass('front-card-flipped')) {
+            $(frontCard).removeClass('front-card-flipped');
+            $(backCard).addClass('back-card-flipped');
+        } else if ($(backCard).hasClass('back-card-flipped')) {
+            $(backCard).removeClass('back-card-flipped');
+            $(frontCard).addClass('front-card-flipped');
+        }
+
+        //flip the card sides
+        $(this).closest('.well').find('.flip-card').flip('toggle');
+
+        if ($(frontCard).hasClass('front-card-flipped')) {
+            changeWellHeight($(this).closest('.well'));
+        } else if ($(backCard).hasClass('back-card-flipped')) {
+            changeWellHeight($(this).closest('.well'));
+        }
+    });
+
+    $('body').on('click', '.pop-right-side-area', function () {
+        var clonedHistoryDiv = $(this).closest('.well').find('.room-status-history').clone();
+        $('body').find('#rightMenu .right-menu-content-area').html(clonedHistoryDiv.removeClass('hide'))
+        openRightMenu();
+    })
+
+    $('body').on('click', '.close-right', function () {
+        $(this).siblings('.right-menu-content-area').html('');
+    })
+</script>

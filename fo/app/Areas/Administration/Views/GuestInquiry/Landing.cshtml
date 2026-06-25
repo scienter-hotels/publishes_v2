@@ -1,0 +1,284 @@
+﻿
+@{
+    ViewBag.Title = "Guest Inquiry";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+
+                        <h4 class="title">
+                            @ViewBag.Title For @ViewBag.ResNo
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12" id="reservationGrid">
+                <div class="card-content" id="contentLoadingArea"  style="padding-left:20px">
+                    <div id="content">
+                        <div class="override-card-padding override-card-two-height">
+                            @*<div class="panel panel-default">*@
+                            <div>
+                                <input type="hidden" id="reservationno" value="@ViewBag.ResNo" />
+                                @*<div class="row col-md-12">*@
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Title</label>
+                                                <input type="text" class="form-control" id="txtTitle" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Name</label>
+                                                <input type="text" class="form-control" id="txtname" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <fieldset class="the-fieldset">
+                                                <legend class="the-legend">Room Rates Change Details</legend>
+                                                <div class="roomratechangedetails">
+                                                    <table class="table" id="roomratechangetable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Room No</th>
+                                                                <th>Currency</th>
+                                                                <th>Room Rate</th>
+                                                                <th>New Room Rate</th>
+                                                                <th>Date</th>
+                                                                @*<th>User</th>*@
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <fieldset class="the-fieldset">
+                                                <legend class="the-legend">Room Change Details</legend>
+                                                <div id="generaldetails" class="generaldetails">
+                                                    <table class="table" id="roomchangetable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>From Room</th>
+                                                                <th>To Room</th>
+                                                                <th>Date</th>
+                                                                <th>Remark</th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="col-md-6">
+                                            <fieldset class="the-fieldset">
+                                                <legend class="the-legend">Invoice Details</legend>
+                                                <div class="roomratechangedetails">
+                                                    <table class="table" id="invoicedetailtable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Invoice No</th>
+                                                                <th>Description</th>
+                                                                <th>Settled Date</th>
+                                                                <th>User</th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <fieldset class="the-fieldset">
+                                                <legend class="the-legend">Trace Details</legend>
+                                                <div id="generaldetails" class="generaldetails">
+                                                    <table class="table" id="tracetable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Room No</th>
+                                                                <th>Description</th>
+                                                                <th>Date</th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="col-md-6">
+                                            <fieldset class="the-fieldset">
+                                                <legend class="the-legend">Restaurant and Folio Details</legend>
+                                                <div class="roomratechangedetails">
+                                                    <table class="table" id="restaurantdetailstable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Room No</th>
+                                                                <th>Description</th>
+                                                                <th>Date</th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                    </div>
+                                </div>
+                            @*</div>*@
+                        </div>
+                    </div>
+                    @Html.Partial("_Loading")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        
+        loadtable();
+    });
+    //var GeneralDetails = [];
+    var RoomRateChangeDetails = [];
+    var RoomChangeDetails = [];
+    var GeneralDetails = [];
+    var InvoiceDetails = [];
+    var TraceDetails = [];
+    var GuestName = [];
+
+    function loadtable() {
+       
+        var reservationNo = $('#reservationno').val();
+       // var reservationNo = $('input[class="data-reservation-no"]:checked').parents().eq(3).find('.res-no').html();
+            $.ajax({
+                url: '/Administration/GuestInquiry/SelectGuestInquiry',
+                dataType: 'json',
+                method: 'GET',
+                data: { reservationNo: reservationNo },
+                success: function (data) {
+                    GuestName = JSON.parse(data.GuestNameJson);
+                    $('#txtTitle').val(GuestName[0].Salutation);
+                    $('#txtname').val(GuestName[0].GuestName);
+
+                    GeneralDetails = JSON.parse(data.GeneralDetailsJson);
+                  
+                   
+                    //----------Load General Details
+                    $('#resdate').val(GeneralDetails[0].ReservationDate);
+                    $('#resuser').val(GeneralDetails[0].CreatedUser);
+                    $('#mealplan').val(GeneralDetails[0].MealPlanId);
+                    $('#arrival').val(GeneralDetails[0].Arrival);
+                    $('#departure').val(GeneralDetails[0].Departure);
+                    $('#pax').val(GeneralDetails[0].Pax);
+                    $('#luserid').val(GeneralDetails[0].LastEditedUser);
+                    $('#remarks').val(GeneralDetails[0].BookingRemark);
+             
+                    // Room Change Details 
+                    RoomChangeDetails = JSON.parse(data.RoomChangeDetailsJson);
+                  
+                    if (data.length == 0) {
+                        $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#roomchangetable'));
+                    }
+                    $('#roomchangetable tr:not(:first)').empty();
+                    $.each(RoomChangeDetails, function (index, item) {
+                       
+                            item = RoomChangeDetails == null ? "" : RoomChangeDetails[0];
+                            $('<tr>' +
+                                '<td>' + item.FromRoomName + '</td>' +
+                                '<td>' + item.ToRoomName + '</td>' +
+                                '<td>' + item.ChangeDate + '</td>' +
+                                '<td>' + item.Remark + '</td>' +
+                                '</tr>').appendTo($('#roomchangetable'));
+                    });
+
+                    //-----------load Room Rate change table
+                    RoomRateChangeDetails = JSON.parse(data.RoomRatesChangeDetailsJson);
+                    if (data.length == 0) {
+                        $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#roomratechangetable'));
+                    }
+                    $('#roomratechangetable tr:not(:first)').empty();
+                    $.each(RoomRateChangeDetails, function (index, item) {
+
+                        item = RoomRateChangeDetails == null ? "" : RoomRateChangeDetails[0];
+                        $('<tr>' +
+                            '<td>' + item.RoomName + '</td>' +
+                            '<td>' + item.CurrencyCode + '</td>' +
+                            '<td>' + item.RoomRate + '</td>' +
+                            '<td>' + item.OriginalRoomRate + '</td>' +
+                            '<td>' + item.ReservationDate + '</td>' +
+                            '</tr>').appendTo($('#roomratechangetable'));
+                    });
+
+                    //-----------load invoice details--------
+                    InvoiceDetails = JSON.parse(data.InvoiceDetailsJson);
+                    if (data.length == 0) {
+                        $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#invoicedetailtable'));
+                    }
+                    $('#invoicedetailtable tr:not(:first)').empty();
+                    $.each(InvoiceDetails, function (index, item) {
+
+                        item = InvoiceDetails == null ? "" : InvoiceDetails[0];
+                        $('<tr>' +
+                            '<td>' + item.InvoiceNo + '</td>' +
+                            '<td>' + item.Remarks + '</td>' +
+                            '<td>' + item.ChargeAmount + '</td>' +
+                            '<td>' + item.UserId + '</td>' +
+                            '</tr>').appendTo($('#invoicedetailtable'));
+                    });
+
+                    //-----------load trace details--------
+                    TraceDetails = JSON.parse(data.TraceDetailsJson);
+                    if (data.length == 0) {
+                        $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#tracetable'));
+                    }
+                    $('#tracetable tr:not(:first)').empty();
+                    $.each(TraceDetails, function (index, item) {
+
+                        item = TraceDetails == null ? "" : TraceDetails[0];
+                        $('<tr>' +
+                            '<td>' + item.RoomName + '</td>' +
+                            '<td>' + item.Remark + '</td>' +
+                            '<td>' + item.CreatedDate + '</td>' +
+                   '</tr>').appendTo($('#tracetable'));
+                    });
+                }
+                });
+            };
+     
+
+
+    function LoadReservationCombo() {
+
+        $.ajax({
+            url: '/GuestInquiry/SelectReservation',
+            dataType: 'json',
+            method: 'POST',
+            success: function (data) {
+                $('#reservationnocombo').find('option:gt(0)').remove();
+                $.each(data, function (index, item) {
+                    $('<option value="' + item.ReservationNo + '">' + item.ReservationNo + '</option>').appendTo($('#reservationnocombo'));
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
+   
+
+</script>

@@ -1,0 +1,204 @@
+﻿
+
+@model Scienter.HotelERP.Common.Domain.MealPlan
+
+@{
+    ViewBag.Title = "Create / Edit";
+}
+
+<div class="col-md-12">
+
+    <form id="mealPlans">
+        @Html.AntiForgeryToken()
+        <div class="">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-4 form-group label-floating">
+                            <label class="control-label">Code *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="3" id="Prefix" name="Prefix" type="text" value="@Model.Prefix" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8 form-group label-floating">
+                            <label class="control-label">Name *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="50" id="Name" name="Name" type="text" value="@Model.Name" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8 form-group label-floating">
+                            <label class="control-label">Food Allocation *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" min="0" id="FoodAllocation" name="FoodAllocation" step="0.01" type="number" value="@Model.FoodAllocation" readonly required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8 form-group label-floating">
+                            <label class="control-label">Beverage Allocation *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" min="0" id="BevAllocation" name="BevAllocation" step="0.01" type="number" value="@Model.BevAllocation" readonly required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 form-group label-floating">
+                            <label class="control-label">DisplayOrder *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="DisplayOrder" name="DisplayOrder" type="text" value="@Model.DisplayOrder" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group checkbox">
+                            <label>
+                                @Html.CheckBoxFor(model => model.IsApplicableForIBE)
+                                Apply for booking engine
+                            </label>
+                            @Html.ValidationMessageFor(model => model.IsApplicableForIBE, "", new { @class = "text-danger" })
+                        </div>
+                        @if (Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.IsDormitory)
+	                        {
+                        <div class="form-group checkbox">
+                            <label>
+                                @Html.CheckBoxFor(model => model.IsDormitory)
+                                IsDormitory
+                            </label>
+                            @Html.ValidationMessageFor(model => model.IsDormitory, "", new { @class = "text-danger" })
+                        </div>
+	                        }   
+                        
+                        <div class="form-group checkbox">
+                            <label>
+                                @Html.CheckBoxFor(model => model.IsActive)
+                                Active
+                            </label>
+                            @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                            &nbsp;
+                            <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>
+                @*<div class="col-md-2"></div>*@
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="data-meals">
+
+                                    <tr>
+                                        <th>Meal</th>
+                                        <th>Type</th>
+                                        <th class="number">Amount (@ViewBag.MealAllocationCurrency)</th>
+                                    </tr>
+
+
+                                    <tbody class="all-meals">
+                                        <tr>
+                                            <td class="" colspan="5">No records available.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        LoadMeals();
+    });
+
+    function LoadMeals() {
+        $.ajax({
+            url: '/Administration/MealPlans/SelectMeals',
+            dataType: 'json',
+            data: {},
+            method: 'POST',
+            beforeSend: function () {
+                $('.all-meals tr').remove();
+            },
+            success: function (data) {
+
+                $.each(data, function (index, meal) {
+                    $('.all-meals').append(
+                        '<tr class="meal-data-rows">' +
+                        '<td class="meal-name">' + meal.Name + '</td>' +
+                        '<td class="meal-mealtype">' + meal.MealType + '</td>' +
+                        '<td style="text-align:right;" class="meal-amount"><input style="text-align:right; width:100%; border: none;" class="meal-rate" type="number" min="0" step="0.01"  data-mealType="'+meal.MealType+'" data-mealId="' + meal.Id+'" value="' + meal.Amount + '" /></td>' +
+                        '</tr>'
+                    );
+                });
+                
+                //calculateTotals();
+
+                $('.meal-rate').on('input', function () {
+                    calculateTotals();
+                });
+            }, complete: function () {
+                var mealPlanId = $('#Id').val();
+                if (mealPlanId > 0) {
+                    LoadMealsWithRate(mealPlanId);
+                }
+            }
+        });
+    }
+
+    function calculateTotals() {
+        var foodallocation = 0;
+        var beverageallocation = 0;
+
+        $('.meal-data-rows').each(function () {
+            var amount = parseFloat($(this).find('.meal-rate').val()) || 0; 
+            var mealType = $(this).find('.meal-mealtype').text(); 
+
+            if (mealType === 'F') {
+                foodallocation += amount;
+            }
+
+            if (mealType === 'B') {
+                beverageallocation += amount;
+            }
+        });
+
+        $('#FoodAllocation').val(foodallocation.toFixed(2)); 
+        $('#BevAllocation').val(beverageallocation.toFixed(2)); 
+    }
+
+    function LoadMealsWithRate(mealPlanId) {
+        $.ajax({
+            url: '/Administration/MealPlans/SelectMealsWithRate',
+            dataType: 'json',
+            data: { mealPlanId: mealPlanId},
+            method: 'POST',
+            beforeSend: function () {
+            },
+            success: function (data) {
+                $.each(data, function (index, mealData) {
+
+                    var mealId = mealData.MealId;
+                    var amount = mealData.Amount;
+
+                    $('.meal-rate[data-mealId="' + mealId + '"]').val('');
+
+                    var formattedAmount = parseFloat(amount).toFixed(2);
+                    
+                    $('.meal-rate[data-mealId="' + mealId + '"]').val(formattedAmount);
+                });
+            }, complete: function () {
+
+            }
+        });
+    }
+</script>
+
+
+

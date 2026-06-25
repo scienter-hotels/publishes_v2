@@ -1,0 +1,496 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.RoomsAndFloorsView
+
+<style>
+    h3 {
+        font-weight: bold;
+    }
+
+    /*.custom-top-padding {
+        padding-top: 5px;
+    }*/
+
+    .well {
+        font-size: 16px;
+    }
+
+    .override-from-group-margin {
+        margin-top: 0px;
+        margin-bottom: -4px;
+    }
+
+    .colorBox {
+        height: 12px;
+        width: 12px;
+    }
+
+    .box1 {
+        background-color: #FE0101;
+    }
+
+    .box2 {
+        background-color: #038959;
+    }
+
+    .box3 {
+        background-color: #ff9800;
+    }
+
+    .row-height {
+        padding-top: 5px;
+        height: 25px;
+    }
+
+    .well-height {
+        /*padding: 9px 0px 0px 0px;
+        height: 5em;*/
+    }
+
+    .col-padding-overide {
+        padding: 1px !important;
+    }
+
+    .room-number-height {
+        height: 50px;
+    }
+
+    .content-align-center {
+        text-align: center;
+    }
+
+    .allocatedWellColor {
+        border: 1px solid #094f70;
+        background-color: #094f70;
+        color: #fff;
+    }
+
+    .font-style {
+        font-size: 16px;
+        font-weight: 500;
+        text-align: center;
+        padding: 0.6em 0em 0em 0em;
+    }
+
+    a .check-square-icon {
+        font-size: 3em;
+        color: #e17b21;
+    }
+
+    .well {
+        border: 1px solid #ccc;
+        border-radius: 3px !important;
+        min-height: 17px;
+        padding: 0px 0px 0px 0px;
+        margin-bottom: 5px;
+        border-radius: 0px !important;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    }
+    /*------------------------------------*/
+    .btn-outoforder {
+        width: 2em;
+        height: 2em;
+        background-color: #c21b1b !important;
+    }
+
+        .btn-outoforder:hover {
+            cursor: pointer;
+        }
+
+    .btn-deallocate {
+        width: 2em;
+        height: 2em;
+        background-color: darkblue !important;
+    }
+
+        .btn-deallocate:hover {
+            cursor: pointer;
+        }
+
+    .btn-otherreservation {
+        width: 2em;
+        height: 2em;
+        background-color: darkgreen !important;
+    }
+
+        .btn-otherreservation:hover {
+            cursor: pointer;
+        }
+
+    .btn-allocate {
+        width: 2em;
+        height: 2em;
+        background-color: #094f70 !important;
+        padding: 1.3em 1.3em 1.3em 1.3em;
+        border-color: #094f70 !important;
+        margin-top: 0.3em;
+    }
+
+        .btn-allocate:before {
+            content: "\f14a";
+            font-family: FontAwesome;
+            position: absolute;
+            top: -0.12em;
+            color: #ffffff;
+            font-size: 2.2em;
+            left: 0.16em;
+        }
+
+
+    .btn-deallocate {
+        width: 2em;
+        height: 2em;
+        background-color: #f44336 !important;
+        padding: 1.3em 1.3em 1.3em 1.3em;
+        border-color: #4caf50 !important;
+        margin-top: 0.3em;
+    }
+
+        .btn-deallocate:before {
+            content: "\f00d";
+            font-family: FontAwesome;
+            position: absolute;
+            top: -0.21em;
+            color: #ffffff;
+            font-size: 2.5em;
+            left: 0.12em;
+        }
+
+    .btn-outoforder {
+        width: 2em;
+        height: 2em;
+        background-color: #f44336 !important;
+        padding: 1.3em 1.3em 1.3em 1.3em;
+        border-color: #f44336 !important;
+        margin-top: 0.3em;
+    }
+
+        .btn-outoforder:before {
+            content: "\f071";
+            font-family: FontAwesome;
+            position: absolute;
+            top: -0.01em;
+            color: #ffffff;
+            font-size: 1.8em;
+            left: 0.21em;
+        }
+
+    .btn-otherreservation {
+        width: 2em;
+        height: 2em;
+        background-color: #094f70 !important;
+        padding: 1.3em 1.3em 1.3em 1.3em;
+        border-color: #094f70 !important;
+        margin-top: 0.3em;
+    }
+
+        .btn-otherreservation:before {
+            content: "\f0c8";
+            font-family: FontAwesome;
+            position: absolute;
+            top: -0.07em;
+            color: #ff9800;
+            font-size: 2.1em;
+            left: 0.19em;
+        }
+
+    .room-number {
+        width: 2.9em;
+        overflow: hidden;
+        display: inline-block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding-top: 0.1em;
+        border-right: 1px solid #ccc;
+        font-size: 16px;
+        margin-bottom: 0px;
+    }
+
+    .room-number-section {
+        font-size: 1.4em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 2.8em;
+        background-color: #8880;
+        text-align: left;
+        padding-left: 0.3em;
+    }
+
+    .room-prefix-section {
+        font-size: 1.4em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 2.5em;
+        background-color: #8880;
+        text-align: left;
+        padding-left: 0.3em;
+    }
+
+    .room-allocation-section {
+        font-size: 1.4em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 2.6em;
+        background-color: #8880;
+        text-align: left;
+        padding-left: 0.3em;
+    }
+</style>
+
+<style>
+    .searchBox .form-group {
+        margin: 0px !important;
+    }
+</style>
+<div class="row searchBox">
+    <div class="col-md-10">
+        <input type="text" id="roomSearchBy" placeholder="Search by room code, name or housekeeping status" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <button type="button" class="btn-primary btn btn-block searchByBtn" style="width: 100%;float: right;">Search<div class="ripple-container"></div></button>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="row panel panel-default">
+                    <div class="col-md-12 list-group list-group-style panel-body div-scroll">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <ul id="datesUL">
+                                    <li>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" class="floor-name-check-all" value="" />All
+                                            </label>
+                                        </div>
+                                    </li>
+                                    <hr />
+
+                                    <label class="control-label"> Filteration </label>
+                                    @foreach (var item in Model.Floors)
+                                    {
+                                        <li>
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" class="floor-name-check" value="@item.RoomNameFormattedforClass" />@item.Name
+                                                </label>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-10" style="padding-left: 1.3em;">
+                <div class="row rooms-container">
+                    @foreach (var item in Model.RoomDetails.OrderBy(x => x.Id))
+                    {
+                        if (item.Remark == "Same")
+                        {
+                            string wellColor = "",
+                                buttonText = "",
+                                buttonClass = "",
+                                disabled = "",
+                                btnType = "";
+
+                            if (item.IsOutOfOrder)
+                            {
+                                wellColor = "outOfOrderWellColor";
+                                buttonText = "OUT-OF-ORDER";
+                                buttonClass = "outOfOrderButton";
+                                disabled = "disabled";
+                                btnType = "btn-outoforder";
+                            }
+                            else if (item.IsAllocatedForReservation)
+                            {
+                                wellColor = "allocatedWellColor";
+                                buttonText = "DE-ALLOCATE";
+                                buttonClass = "deallocate-button";
+                                btnType = "btn-deallocate";
+                                disabled = "";
+                            }
+                            else if (item.IsAllocatedForOtherReservation)
+                            {
+                                wellColor = "reservedWellColor";
+                                buttonText = "RESERVED";
+                                buttonClass = "reservedButton";
+                                disabled = "disabled";
+                                btnType = "btn-otherreservation";
+                            }
+                            else
+                            {
+                                buttonText = "ALLOCATE";
+                                buttonClass = "allocate-button";
+                                //btnType = "btn-allocate";
+                                buttonText = "ALLOCATE";
+                                // disabled = "disabled";
+                                btnType = "btn-allocate";
+
+                            }
+
+
+
+                            <div class="col-sm-2 col-md-2 @item.RoomFloorNameFormatted room-block"  data-room-text="@item.Name @item.Prefix" style="padding-right:0px;padding-left:5px;">
+                                <div class="well well-height override-well @wellColor">
+                                    <div class="row pad0-mar0">
+                                        <div class="col-md-4 pad0-mar0 room-number-section">
+                                            <h5 class="room-number"><strong>@item.Name</strong></h5>
+                                        </div>
+                                        <div class="col-md-4 pad0-mar0 room-prefix-section">
+                                            <p class="font-style"> @item.Prefix</p>
+                                            <input type="hidden" class="hidden-roomId" id="hidden-roomId" value="@item.Id" />
+                                            <input type="hidden" class="isAllocatedforReservation" id="isAllocatedforThisReservation" value="@item.IsAllocatedForReservation.ToString()" />
+                                            <input type="hidden" class="isAllocatedforOtherReservation" id="isAllocatedforOtherReservation" value="@item.IsAllocatedForOtherReservation.ToString()" />
+                                        </div>
+                                        <div class="col-md-4 pad0-mar0 room-allocation-section">
+                                            <div class="checkbox override-from-group-margin custom-top-padding text-align-center">
+                                                <button class="btn @btnType @disabled same-cat @buttonClass"
+                                                        id="popup-for-room-allocation-@item.Id"
+                                                        name="popup-for-room-allocation-@item.Id"></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        }
+                    }
+                </div>
+                @*<hr />
+                    <label style="margin-left: -0.81em;">Other Categories</label>
+                    <div class="row rooms-container">
+
+
+                        @foreach (var item in Model.RoomDetails.OrderBy(x => x.RoomCode))
+                        {
+                            if (item.Remark == "Other")
+                            {
+
+                                string wellColor = "",
+                                    buttonText = "ALLOCATE",
+                                    buttonClass = "allocate-button",
+                                    disabled = "disabled",
+                                    btnType = "";
+
+                                if (item.IsOutOfOrder)
+                                {
+                                    wellColor = "outOfOrderWellColor";
+                                    buttonText = "OUT-OF-ORDER";
+                                    buttonClass = "outOfOrderButton";
+                                    disabled = "disabled";
+                                    btnType = "btn-outoforder";
+                                }
+                                else if (item.IsAllocatedForOtherReservation)
+                                {
+                                    wellColor = "reservedWellColor";
+                                    buttonText = "RESERVED";
+                                    buttonClass = "reservedButton";
+                                    disabled = "disabled";
+                                    btnType = "btn-otherreservation";
+                                }
+                                else
+                                {
+                                    btnType = "btn-allocate";
+                                }
+
+                        <div class="col-sm-2 col-md-2 @item.RoomFloorNameFormatted" style="padding-right:0px;padding-left:5px;">
+                            <div class="well well-height override-well @wellColor">
+                                <div class="row pad0-mar0">
+                                    <div class="col-md-4 pad0-mar0 room-number-section">
+                                        <h5 class="room-number"><strong>@item.Name</strong></h5>
+                                    </div>
+                                    <div class="col-md-4 pad0-mar0 room-prefix-section">
+                                        <p class="font-style"> @item.Prefix</p>
+                                        <input type="hidden" class="hidden-roomId" id="hidden-roomId" value="@item.Id" />
+                                        <input type="hidden" class="isAllocatedforReservation" id="isAllocatedforThisReservation" value="@item.IsAllocatedForReservation.ToString()" />
+                                        <input type="hidden" class="isAllocatedforOtherReservation" id="isAllocatedforOtherReservation" value="@item.IsAllocatedForOtherReservation.ToString()" />
+                                    </div>
+                                    <div class="col-md-4 pad0-mar0 room-allocation-section">
+                                        <div class="checkbox override-from-group-margin custom-top-padding text-align-center">
+                                            <button class="btn @btnType @disabled same-cat @buttonClass"
+                                                    id="popup-for-room-allocation-@item.Id"
+                                                    name="popup-for-room-allocation-@item.Id"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                            }
+                        }
+                    </div>*@
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+
+    $('body').off('keyup', '#roomSearchBy').on('keyup', '#roomSearchBy', function () {
+        FilterRooms();
+    });
+
+    $('body').off('click', '.searchByBtn').on('click', '.searchByBtn', function () {
+        FilterRooms();
+    });
+
+    function FilterRooms() {
+        debugger;
+        $('.room-block').hide();
+        $('.room-block').each(function (index, item) {
+            if ($(item).attr('data-room-text').toLowerCase().includes($('#roomSearchBy').val().toLowerCase())) {
+                $(item).fadeIn();
+            }
+        });
+    }
+
+    $('body').on('click', '.deallocate-button, .allocate-button', function () {
+        if ($(this).hasClass('deallocate-button')) {
+            $.ajax({
+                method: 'post',
+                url: '/Reservation/Reservations/RoomWisePopUp?RoomId=' + $(this).closest('.well').find('.hidden-roomId').val() + '&IsAllocatedForReservation=true',
+                datatype: 'html',
+                success: function (data) {
+                    $('#contentLoadingAreaRooms').addClass('hide').fadeOut();
+                    $('#contentLoadingAreaForRoomWisePopUp').html(data).removeClass('hide').fadeIn();
+                },
+            })
+        } else if ($(this).hasClass('allocate-button')) {
+            $.ajax({
+                method: 'post',
+                url: '/Reservation/Reservations/RoomWisePopUp?RoomId=' + $(this).closest('.well').find('.hidden-roomId').val() + '&IsAllocatedForReservation=false',
+                datatype: 'html',
+                success: function (data) {
+                    $('#contentLoadingAreaRooms').addClass('hide').fadeOut();
+                    $('#contentLoadingAreaForRoomWisePopUp').html(data).removeClass('hide').fadeIn();
+                },
+            })
+        }
+    })
+
+    $(function () {
+        if ($('input[value=True].isAllocatedforReservation').length > 0) {
+            $('.allocate-button.same-cat').addClass('disabled');
+        } else if ($('input[value=True].isAllocatedforReservation').length = 0) {
+            $('.allocate-button.same-cat').removeClass('disabled');
+        }
+
+        $('.floor-name-check-all').prop('checked', true);
+    });
+
+    $('.floor-name-check-all').change(function () {
+        if ($(this).is(':checked')) {
+            $('.floor-name-check').prop('checked', true);
+        } else {
+            $('.floor-name-check').prop('checked', false);
+        }
+    });
+</script>

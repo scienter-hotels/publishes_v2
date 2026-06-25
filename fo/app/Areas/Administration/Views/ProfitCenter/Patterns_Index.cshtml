@@ -1,0 +1,132 @@
+﻿@*@model  IEnumerable<Scienter.HotelERP.Common.Domain.ProfitCenter>*@
+@{
+                /**/
+
+                ViewBag.Title = "Profit Center Patterns";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        debugger;
+        FillGrid();
+    });
+
+
+    // show form --------------------------------
+    $('body').on('click', '.showForm', function (e) {
+        debugger;
+        $.ajax({
+            url: '/administration/ProfitCenter/Patterns_Form',//----
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+
+        });
+    });
+
+    // show grid --------------------------------
+
+    $('body').on('click', '.showGrid', function (e) {
+        debugger;
+        FillGrid();
+    });
+
+
+    //// save --------------------------------------
+    $('body').on('submit', '#profitCenterPattern', function (e) {
+        //alert('Do you want to save ProfitCenterPattern');
+        debugger;
+        e.preventDefault();
+        var profitCenterPattern = {
+            __RequestVerificationToken: $('__RequestVerificationToken').val(),
+            Id: $('#Id').val(),
+            ProfitCenterId: $('#ProfitCenterId').val(),
+            Name: $('#Name').val(),
+            NumberOfDays: $('#NumberOfDays').val(),
+            IsActive: $('#IsActive').prop("checked"),
+        };
+        console.log(profitCenterPattern);
+        $.ajax({
+            url: '/administration/ProfitCenter/Save_ProfitCenterPattern',
+            dataType: 'html',
+            data: profitCenterPattern,
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+                FillGrid();
+            }
+        });
+    });
+
+
+     //fill grid -----------------------------------
+    function FillGrid() {
+        debugger;
+        var gridId = "#existingProfitCenterPatternGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        debugger;
+        $.ajax({
+            url: '/administration/ProfitCenter/Patterns_Select_ForGrid',//----
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+            }
+
+        });
+    }
+
+</script>
+

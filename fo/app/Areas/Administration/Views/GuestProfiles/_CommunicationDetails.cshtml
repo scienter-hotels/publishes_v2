@@ -1,0 +1,173 @@
+﻿<div class="communicationdetailDiv">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group label-floating">
+                    <label class="control-label">Communication Type*</label>
+                    <select class="form-control" id="CommunicationTypeCombo" required>
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group label-floating">
+                    <label class="control-label">Value *</label>
+                    <input type="text" class="form-control" id="inputText" value="" required autocomplete="off" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+                <div class="form-group">
+                    <div class="form-group checkbox">
+                        <label><input type="checkbox" class="IsPrefered" name="IsPrefered" />IsPrefered</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <button id="btnAdd" name="" class="btn btn-success">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12" style="height:200px; overflow-y:scroll;">
+            <table class="table table-striped" id="CommunicationGrid">
+                <tr>
+                    <th></th>
+                    <th class="">Type</th>
+                    <th class="">Name</th>
+                    <th class="">IsPrefered</th>
+                </tr>
+                <tr class="no-record">
+                    <td colspan="4">No Records Found.</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+
+<input type="hidden" value="@ViewBag.guestID" id="hdnGuestId" />
+
+<script>
+    $(document).ready(function () {
+        LoadCommunicationType();
+        LoadSavedCommunicationdetails();
+    });
+
+    function LoadSavedCommunicationdetails() {
+        $.ajax({
+            method: 'get',
+            url: '/GuestProfiles/SelectGuestCommunicationDetails',
+            datatype: 'json',
+            data: { guestId: $('#hdnGuestId').val() },
+            success: function (data) {
+                
+                $('#CommunicationGrid tr').not(':first-child').remove();
+                if (data != "") {
+                    $.each(data, function (index, item) {
+
+                        if (item.IsPrefered) {
+                            checked = "checked";
+                        }
+                        else {
+                            checked = "";
+                        }
+                        $('<tr>'
+                            + '<td><button type="button" class="btn btn-danger btn-sm rowitemDelbtn"  guestId=' + item.GuestProfileId + ' communicationtypeId=' + item.CommunicationTypeId + '> <span class="glyphicon glyphicon-remove"></span>  </button></td>'
+                            + '<td>' + item.CommunicationTypeName + '</td>'
+                            + '<td>' + item.Value + '</td>'
+                            + '<td><div class="form-group form-group-marging checkbox is-focused"><label><input type="checkbox" data-toggle="tooltip" data-placement="right" name="IsPrefered" data-original-title="tooltip here" disabled ' + checked + '></label></div></td>'
+                        ).appendTo('#CommunicationGrid');
+
+                    });
+                }
+
+            },
+        })
+    }
+    function LoadCommunicationType() {
+        $.ajax({
+            method: 'get',
+            url: '/CommunicationTypes/Select',
+            datatype: 'json',
+            success: function (types) {
+                
+                $('#CommunicationTypeCombo option').not(':first-child').remove();
+                $.each(types, function (index, item) {
+                    $('#CommunicationTypeCombo').append('<option value="' + item.Id + '">' + item.Name + '</option>');
+                })
+            },
+        })
+    }
+
+
+    $('body').off('click', '#btnAdd').on('click', '#btnAdd', function (e) {
+        
+        if ($('#CommunicationTypeCombo option:selected').val() != '' && $('#inputText').val() != '') {
+            var obj = {
+                GuestProfileId: $('#hdnGuestId').val(),
+                CommunicationTypeId: $('#CommunicationTypeCombo option:selected').val(),
+                CommunicationTypeName: $('#CommunicationTypeCombo option:selected').text(),
+                Value: $('#inputText').val(),
+                IsPrefered: $('.IsPrefered').prop('checked'),
+            }
+
+            
+            $.ajax({
+                method: 'POST',
+                url: '/GuestProfiles/SaveGuestCommunicationDetails',
+                datatype: 'json',
+                data: { obj: obj },
+                success: function (data) {
+                    if (data.startsWith('ERROR')) {
+
+                        ShowErrorMessage(data.replace("ERR-", ""));
+                    }
+                    else {
+                        ShowSuccessMessage('Record saved successfully.');
+                        LoadSavedCommunicationdetails()
+                    }
+
+                },
+
+            })
+        }
+        else {
+        ShowErrorMessage("Please Fill all fields")
+    }
+
+
+    });
+
+    $('#CommunicationGrid').on('click', '.rowitemDelbtn', function (e) {
+        var rowID = $(this).closest('tr');
+        $.ajax({
+            url: '/GuestProfiles/DeleteCommunicationDetails',
+            dataType: 'JSON',
+            data: { guestId: $(this).attr('guestId'), recordId: $(this).attr('communicationtypeid') },
+            method: 'get',
+            success: function (data) {
+                if (data.startsWith('ERR-')) {
+                    ShowErrorMessage(data.replace('ERR-', ""));
+                } else {
+
+                    $(rowID).closest('tr').remove();
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    });
+</script>
+
+
+

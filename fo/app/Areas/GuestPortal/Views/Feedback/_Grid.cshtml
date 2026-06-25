@@ -1,0 +1,72 @@
+﻿@model  List<Scienter.HotelERP.Common.Domain.GuestPortal_Feedback>
+@{
+    ViewBag.Title = "Guest Portal Feedbak";
+}
+
+<div class="table-responsive">
+    <table class="table table-striped" id="guestPortalFeedback">
+        @*2022-10-20*@
+        <thead>
+            <tr>
+                <th class="col-md-1 text-primary">
+                    @*Reservation No*@
+                </th>
+                <th class="col-md-1 text-primary">
+                    Arrival
+                </th>
+                <th class="col-md-1 text-primary">
+                    Departure
+                </th>
+                <th class="col-md-1 text-primary">
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr style="height: 36px !important;">
+                    <td>
+                        @item.Arrival
+                    </td>
+                    <td>
+                        @item.Arrival
+                    </td>
+                    <td>
+                        @item.Departure
+                    </td>
+                    <td class="hidden-print text-right" style="text-align:right !important;">
+                        <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="" data-title="Reservation Activity Log" data-href="" title="Activity Log" data-toggle="modal" data-target="" data-width="500">
+                            <span class="glyphicon glyphicon-tags"></span>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('#guestPortalFeedback').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ],
+                scrollY: '58vh',
+            });
+        //LoadSelectComplaintActionType();
+    });
+
+</script>

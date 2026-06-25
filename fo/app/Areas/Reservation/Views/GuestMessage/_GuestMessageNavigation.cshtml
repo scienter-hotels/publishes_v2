@@ -1,0 +1,64 @@
+﻿
+<ul class="nav nav-tabs">
+    <li  id="tab3"><a data-toggle="tab" href="#tab1">New Message</a></li>
+    <li  class="active" id="tab4"><a data-toggle="tab" href="#tab2">Messages</a></li>
+</ul>
+
+<input type="hidden" id="hiddenRoomId" value="@ViewBag.roomId" />
+<input type="hidden" id="hiddenRoomCode" value="@ViewBag.roomCode" />
+
+<div id="tab1" class="tab-pane fade in">
+    @{Html.RenderAction("GuestMessageForm", "GuestMessage");}
+</div>
+<div id="tab2" class="tab-pane  grid-tab active">
+    @{Html.RenderAction("GuestMessageGrid", "GuestMessage");}
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#tab2').show();
+        $('#tab1').hide();
+        FillGrid();
+    });
+
+    $('#tab3').click(function () {
+        $('#tab1').show();
+        $('#tab2').hide();
+        
+    })
+    $('#tab4').click(function () {
+        $('#tab1').hide();
+        $('#tab2').show();
+        
+        FillGrid();
+    });
+
+    function FillGrid() {
+        var roomId = $('#hiddenRoomId').val()
+        
+        $.ajax({
+            url: '/Reservation/GuestMessage/GuestMessageGrid',
+            data: { RoomId: roomId },
+            dataType: 'html',
+            method: 'GET',
+            success: function (response) {
+
+                $('#GuestMessageGrid').html('');
+                $('#GuestMessageGrid').html(response);
+            }
+        });
+    }
+
+    $('body').on('click', '#btnMarkAsDelivered', function () {
+        $.ajax({
+            url: '/Reservation/GuestMessage/MarkAsDelivered?Id=' + $(this).attr('data-id'),          
+            dataType: 'json',
+            method: 'POST',
+            success: function (response) {
+                FillGrid();
+                ShowSuccessMessage('Message mark as delivered.');
+            }
+        });
+    });
+
+</script>

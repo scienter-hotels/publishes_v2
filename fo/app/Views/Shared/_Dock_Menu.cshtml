@@ -1,0 +1,35 @@
+﻿
+<link href="~/Content/DocMenu.css" rel="stylesheet" />
+<div id="dockContainer">
+    <div id="dockWrapper">
+        <ul class="osx-dock"></ul>
+    </div>
+</div>
+
+
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+ <script>
+  
+     $.ajax({
+         url: '/administration/UserWiseQuickNavigations/SelectUserWiseQuickNavigationsForDhashBoard',
+         dataType: 'json',
+         method: 'GET',
+         success: function (data) {
+             
+             $(data).each(function (index, item) {
+                 $('.osx-dock').append('<li class="active" id="' + item.AreaId + '" title="' + item.AreaText + '" data-toggle="tooltip">'
+                     + '<a  class="call-popup-model"  data-title="" data-href="/administration/UserWiseQuickNavigations/SelectUserWiseQuickNavigationAreas?areaId=' + item.AreaId + '" data-width="500">'
+                     + '<image alt="' + item.AreaText + '" src="' + item.ImageUrl + '"></image>'
+                     + '</a>'                     
+                     + '</li>');
+             });
+             $('#dockContainer').css('margin-left', (($(window).width() - $('#dockContainer').width()) / 2));
+             $('ul.osx-dock').css('margin-left', (($('#dockContainer').width()- $('ul.osx-dock').width()) / 2)) ;
+             $('[data-toggle="tooltip"]').tooltip();
+         },
+         error: function () {
+             ShowErrorMessage('Sorry, There is an error in Loading this record.');
+         }
+     });       
+</script>  

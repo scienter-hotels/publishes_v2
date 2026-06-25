@@ -1,0 +1,231 @@
+﻿<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+
+<input type="hidden" id="GuestName" value="@ViewBag.guestName" />
+<input type="hidden" id="roomNo" value="@ViewBag.roomNo" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+@if (ViewBag.ReservationNo != "group")
+{
+    <form id="QuickCheckout">
+
+        <div class="row">
+            <div class="col-md-10" style="margin-bottom:10px;">
+                <div class="row">
+                    <div class="col-md-6">
+                        Reservation No:
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-5">
+                        @ViewBag.ReservationNo
+                    </div>
+                </div>
+                @*Reservation No: @ViewBag.ReservationNo*@
+            </div>
+        </div>
+        @if (ViewBag.ArrivalDate != "")
+        {
+            <div class="row">
+                <div class="col-md-10" style="margin-bottom:10px;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            Arrival:
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-5">
+                            @ViewBag.ArrivalDate
+                        </div>
+                    </div>
+                    @*Arrival: @ViewBag.ArrivalDate*@
+                </div>
+
+            </div>
+        }
+        @if (ViewBag.Departure != "")
+        {
+            <div class="row">
+                <div class="col-md-10" style="margin-bottom:10px;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            Departure:
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-5">
+                            @ViewBag.Departure
+                        </div>
+                    </div>
+                    @*Departure: @ViewBag.Departure*@
+                </div>
+
+            </div>
+            <br />
+        }
+
+        <div class="row">
+            <div class="col-md-10">
+                <b>Do you want to confirm check-out?</b>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="form-group col-md-12">
+                <input type="submit" id="btnCheckOut" value="Check-out" class="btn btn-primary QuickCheckout" />
+
+            </div>
+        </div>
+
+    </form>
+}
+else
+{
+    <form id="QuickCheckout-QCheckoutPage">
+        <div class="row">
+            <div class="col-md-10">
+                <b>Do you want to confirm check-out?</b>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="form-group col-md-12">
+                <input type="submit" id="btnCheckOut" value="Check-out" class="btn btn-primary btnCheckOutGroup" />
+
+            </div>
+        </div>
+
+    </form>
+}
+
+    <input type="hidden" value="@ViewBag.ReservationNo" id="reservationNumber" />
+
+<script>
+    //$('body').off('submit').on('submit', '#QuickCheckout', function (e) {
+    $('.QuickCheckout').off('click').on('click', function (e) {
+        debugger
+        e.preventDefault();
+        var qCheckOutsList = [];
+        var ckOutRemark = "";
+        var hotelCurrentDate = $('#hotelDate').val();
+        var departureDate = $('#departureDate').val();
+        //if (true) {
+
+        //}
+        var resNo = $('#reservationNumber').val();
+        hotelCurrentDate = hotelCurrentDate.split(' ')[0];
+        qCheckOutsList.push({
+            Id: $('input[class="data-reservation-no"]:checked').val(),
+            ReservationNo: resNo
+        });
+        ckOutRemark = "Checked out from Inhouse";
+        if (hotelCurrentDate != departureDate) {
+            ckOutRemark = "Checked out from Inhouse: Early checkout";
+            //   ShowWarningMessage('The check-out date is not hotel current date')
+            //    if (confirm('The departure date is not hotel current date.Do you wish to checkout?')) {
+
+            //        CheckoutGuest(qCheckOutsList, ckOutRemark);
+            //    } else {
+
+            //    }
+            //} else {
+
+        }
+        var EventCode = "CO";
+        var ReservationNo = $('#ReservationNumber').val();
+        var propertyId = $('#PropertyId').val();
+        var userId = $('#UserId').val();
+        var printURL = $('#DirectPrintURL').val();
+        var FromRoom = $('#roomNo').val();
+        var ToRoom = "-1";
+        var GuestName = $('#GuestName').val();
+        var ajaxUrl = printURL + 'PABX/' + EventCode + '/' + ReservationNo + '/' + propertyId + '/' + userId + '/' + FromRoom + '/' + ToRoom + '/' + GuestName + '/'
+        console.log(ajaxUrl);
+        CheckoutGuest(qCheckOutsList, ckOutRemark, ajaxUrl);
+
+    });
+    var clickedReservationNumbers = [];
+    var clickedNo = {};
+
+    //$('body').off('submit').on('submit', '#QuickCheckout-QCheckoutPage', function (e) {
+    $('.btnCheckOutGroup').off('click').on('click', function (e) {
+        debugger;
+        //alert('test2');
+        e.preventDefault();
+
+        var qCheckOutsList = [];
+        var ckOutRemark = "";
+
+        $('.quickCheckOut-checkBox').each(function (index, item) {
+
+            if ($(this).is(':checked')) {
+                qCheckOutsList.push({
+                    Id: $(this).val(),
+                    ReservationNo: $(this).attr('reservation-no')
+                });
+            }
+        });
+        ckOutRemark = $('#CheckOutRemark').val();
+
+        $('.quickCheckOut-checkBox').each(function (index, item) {
+            if ($(this).is(':checked')) {
+                clickedNo = {
+                    ReservationNo: $(this).attr('reservation-no'),
+                    GuestName: $(this).attr('guest-Name'),
+                    RoomNo: $(this).attr('room-No'),
+                }
+                clickedReservationNumbers.push(clickedNo);
+                console.log(clickedReservationNumbers);
+            }
+        });
+        debugger;
+        $.ajax({
+            url: '/reservation/QuickCheckOut/QuickCheckOut',
+            dataType: 'JSON',
+            data: { qCheckOut: qCheckOutsList, CheckOutRemark: ckOutRemark },
+            method: 'POST',
+            success: function (response) {
+                if (response.startsWith('success')) {
+                    ShowSuccessMessage('Guest checked out successfully.');
+                    $.each(clickedReservationNumbers, function (index, item) {
+                        var EventCode = "CO";
+                        var propertyId = $('#PropertyId').val();
+                        var userId = $('#UserId').val();
+                        var printURL = $('#DirectPrintURL').val();
+                        var FromRoom = $('#roomNo').val();
+
+                        var ToRoom = item.RoomNo;
+                        var GuestName = item.GuestName;
+                        var ReservationNo = item.ReservationNo;
+                        var ajaxUrl = printURL + 'PABX/' + EventCode + '/' + ReservationNo + '/' + propertyId + '/' + userId + '/' + FromRoom + '/' + ToRoom + '/' + GuestName + '/'
+                        PABXAjaxRequest(ajaxUrl);
+                        //$.ajax({
+                        //    url: ajaxUrl,
+                        //    method: 'POST',
+                        //    beforeSend: function () {
+
+                        //    },
+                        //    complete: function () {
+
+                        //    },
+                        //    success: function (data) {
+
+                        //    },
+                        //    error: function (data) {
+                        //        ShowErrorMessage('Sorry there is an error.');
+                        //    }
+                        //});
+                    });
+
+                    FillGrid();
+                    
+                } else if (response.startsWith('UnsettledBills')) {
+                    ShowWarningMessage(response.replace('UnsettledBills', 'There are unsettled bills for this room.'));
+                } else {
+                    ShowWarningMessage(response);
+                }
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in checkout.');
+            }
+        });
+    });
+</script>

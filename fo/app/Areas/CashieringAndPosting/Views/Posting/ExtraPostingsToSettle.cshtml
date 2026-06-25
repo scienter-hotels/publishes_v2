@@ -1,0 +1,233 @@
+﻿@{
+    ViewBag.Title = "Pending Postings";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card" id="rebateCard">
+            <div class="card-header hidden-print" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title hidden-print">
+                            @ViewBag.Title
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="row">
+                    <div class="col-md-6 hidden-print">
+                        <table class="table" id="pendingPostingTable" style="margin-top: 11px;">
+                            <tr>
+                                <th>Date</th>
+                                <th>Doc #</th>
+                                <th>Res #</th>
+                                <th>Room #</th>
+                                <th style="text-align:right;">Amount</th>
+                                <th></th>
+                            </tr>
+                            <tbody class="all-pending-postings">
+                                <tr>
+                                    <td class="" colspan="5">No any pending postings to settle.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-6" id="Postinginvoice">
+                        @Html.Partial("_Invoice")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery.easyPaginate.js"></script>
+
+<script>
+    $(document).ready(function () {
+        LoadPendingExtraPostingsToSettle();
+        $('#ReportFooter').addClass('hidden');
+    });
+
+    function LoadPendingExtraPostingsToSettle() {
+        $.ajax({
+            async: false,
+            url: '/CashieringAndPosting/Posting/LoadPendingExtraPostingsToSettle',
+            dataType: 'json',
+            method: 'POST',
+            beforeSend: function () {
+                $('.all-pending-postings tr').remove();
+            },
+            success: function (data) {
+                $('.all-pending-postings tr').remove();
+                $(data).each(function (index, item) {
+                    $('.all-pending-postings').append('<tr class="data-rows">' +
+                        '<td class="">' + item.ChargeDate + '</td>'+
+                        '<td class="">' + item.DocumentNo + '</td>'+
+                        '<td class="">' + item.ReservationNo + '</td>'+
+                        '<td class="">' + item.RoomNo + '</td>'+
+                        '<td class="formatNumber data-amount">' + item.Amount.toFixed(2) + '</td>' +
+                        '<td>' +
+                        '<button type="button" class="btn btn-primary btn-sm rowAdd" data-ExtraPostingId="' + item.Id+'" data-chargeDate="' + item.ChargeDate + '" data-invoiceNo="' + item.DocumentNo + '" data-reservationNo="' + item.ReservationNo + '" data-remark="' + item.Remarks + '" data-TaxGroupId="' + item.TaxGroupId + '" data-RoomNo="' + item.RoomNo + '" data-FolioText="' + item.FolioText + '" data-TaxDetail="aaa' + JSON.stringify(item.TaxDetails) + '" data-OriginalAmount="' + item.OrginalAmount + '">ADD</button>' +
+                        '</td>'+
+                        '</tr>');
+                });
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+        });
+    }
+
+
+    $('body').off('click').on('click', '.rowAdd', function (e) {
+        RoomIds = [];
+        invoiceData = {};
+        $('#ReportBody1').html("");
+        $('#easyPaginate2').html("");
+        var tableAll = "";
+        var id = $(this).attr('data-ExtraPostingId')
+
+        $('#ReportFooter').removeClass('hidden');
+        $('#ReportFooter').removeAttr('style');
+
+        invoiceData = {
+
+            roomIds: $(this).attr('data-RoomNo'),
+            billType: $(this).attr('data-FolioText'),
+            TaxGroupId: $(this).attr('data-TaxGroupId'),
+            PostingCatgNo: 1,
+            folioText: $(this).attr('data-FolioText'),
+            amount: Number(parseFloat($(this).attr('data-OriginalAmount')).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 }),
+            remarks: $(this).attr('data-remark'),
+            reservationNo: $(this).attr('data-reservationNo'),
+            invoiceNo: $(this).attr('data-invoiceNo'),
+            chargeDate: $(this).attr('data-chargeDate')
+        }
+        
+        LoadTaxDetails(id);
+
+        table = '<table class="col-md-12" id="itemtable" style="width:100%">' +
+                            '<thead style="border-bottom: 1px solid #eee;">' +
+                                '<tr style="width:100%;">' +
+                                    '<th style="width:75%; padding-left:10px;">ITEM</th>' +
+                                     '<th style="width:25%; text-align:right">AMOUNT</th>' +
+                                 '</tr>  ';
+
+        var tableTr = '<tr><td style="width:75%; padding-left:10px; padding-top:10px!important;">' + invoiceData.billType + '-' + invoiceData.folioText + '</td><td style="width:25%; text-align:right; padding-top:10px!important;">' + invoiceData.amount+ '</td><tr>'
+        var tableEnd = '</thead>' +
+                '</table>';
+        tableAll = table + tableTr + tableEnd;
+
+        $(tableAll).appendTo($('#ReportBody1'));
+
+        $('<tr>').appendTo($('#chargeCalculation'));
+
+        var a1 = '<div id="sliding-div" style="background-color:none">', a2 = '', a3 = '</div>';
+
+        a2 = '<table class="table-posting report-width100perc" style="width:100%">' +
+                             ' <tr>' +
+                                  '<th></th>' +
+                                 ' <th></th>' +
+                                  '<td class="" style="width:70%;background-color:#fff!important;">' +
+            '<div class="row" style="padding-left:20px;"><b>Room#:</b></div>' +
+            '<div class="row room-Id-each-table" style="padding-top:10px; padding-bottom:10px; padding-left:20px; font-size:30px" id="roomCode">' + invoiceData.roomIds + '</div>' +
+                                  '</td>' +
+            '<td class="" style="width:30%;background-color:#fff!important;">' +
+            '<div class="row"><b>Res No:&nbsp</b>' + invoiceData.reservationNo + '</div>' +
+            '<div class="row RptinvoiceNo"><b>Receipt#:&nbsp </b>	' + invoiceData.invoiceNo + '</div>' +
+            '<div class="row">  <b>Date:&nbsp</b>' + invoiceData.chargeDate + '</div>' +
+                                         // '<div class="row">  <b>User:&nbsp</b>'+@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Username+'</div>' +
+                                 ' </td>' +
+                             '</tr>' +
+            '</table>'+
+            '<input type="hidden" name="ExtraPostingId" id="ExtraPostingId" value="'+id+'" />'; 
+
+        var x = a1 + a2 + a3;
+        $(x).appendTo('#easyPaginate2')
+        $('#sliding-div').easyPaginate({
+            paginateElement: 'table',
+            elementsPerPage: 1,
+            effect: 'slide'
+        });
+
+    });
+
+    function LoadTaxDetails(id) {
+        
+        $.ajax({
+            url: '/CashieringAndPosting/Posting/LoadPendingExtraPostingTaxDetail',
+            dataType: 'html',
+            data: { id: id},
+            method: 'POST',
+            success: function (response) {
+                $('#TaxLoadingArea').html(response)
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+        });
+
+    }
+
+    $('body').off('click', '#btnprint').on('click', '#btnprint', function (e) {
+
+
+        var invoiceNo = "";
+        var postingtype = $('#PosringTypehdn').val();
+
+        var docType = "";
+        var docno = "";
+        var propertyId = $('#PropertyId').val();
+        var userId = $('#UserId').val();
+        var printURL = $('#DirectPrintURL').val();
+
+        invoiceNo = $('#ReportHeader .table-posting td .RptinvoiceNo').text().replace('Receipt#:', '').trim();
+        type = 'I';
+        invoiceNo = $('#ReportHeader .table-posting td .RptinvoiceNo').text().replace('Receipt#:', '').trim();
+        docno = $('#ReportHeader .table-posting td .RptinvoiceNo').text().replace('Receipt#:', '').trim();
+        docType = "GEP";
+
+        if ($('#IsDirectPrint').val() == 1) {
+            e.preventDefault();
+            $("#btnprint").attr('target', '');
+
+            var ajaxUrl = printURL + 'PRT/' + docType + '/' + docno + '/' + propertyId + '/' + userId + '/';
+
+            ReportDirectPrintRequest(ajaxUrl);
+            //$.ajax({
+            //    url: ajaxUrl,
+            //    method: 'POST',
+            //    beforeSend: function () {
+            //        $('#btnprint').val('Please wait');
+            //        $('#btnprint').prop('disabled', true);
+            //    },
+            //    complete: function () {
+            //        $('#btnprint').val('Print');
+            //        $('#btnprint').prop('disabled', false);
+            //    },
+            //    success: function (data) {
+            //       
+            //        if (data.HttpCode == "200") {
+            //            ShowSuccessMessage('Receipt printed.');
+            //            ;
+            //        } else {
+            //            ShowErrorMessage(data.HttpDescription);
+            //        }
+            //    },
+            //    error: function (data) {
+            //        ShowErrorMessage('Sorry there is an error in printing the receipt.');
+            //    }
+            //});
+
+        } else {
+
+            $("#btnprint").attr('target', '_blank');
+            var reportName = 'PostingInvoice';
+            $('#btnprint').attr("href", '/Reporting/Report/ViewReport?ReportName=' + reportName + '&DocNo=' + invoiceNo + '&IsPreview=1');
+        }
+    });
+
+</script>

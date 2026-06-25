@@ -1,0 +1,70 @@
+﻿@model Scienter.HotelERP.Common.Domain.ProfitCenterItemCategory
+@{
+    ViewBag.Title = "Create / Edit";
+}
+
+<div class="col-md-12">
+
+    <form id="ProfitCenterItemCategory">
+        @*@Html.AntiForgeryToken()*@
+        <div class="form-horizontal">
+            @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
+
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+            <input type="hidden" value="@Model.ProfitCenterId" name="Id" id="hdn-ProfitCenterId" />
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Profit Centers</label>
+                        <select name="ProfitCenters" id="ProfitCenterId" class="form-control Profit-Centers" required></select>
+                    </div>
+                    <div class="form-group label-floating">
+                        <label class="control-label">Name *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Name" name="Name" type="text" value="@Model.Name" required>
+                    </div>
+
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsActive) Is Active
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                        &nbsp;
+                        <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        //debugger;
+        LoadProfitCenterCombo();
+    });
+    function LoadProfitCenterCombo() {
+        //debugger;
+        $.ajax({
+            url: '/CashieringAndPosting/ProfitCenter/Select_ProfitCenter_ForCombo',
+            dataType: 'json',
+            success: function (modules) {
+                if ($('.Profit-Centers').length > 0) {
+                    $('.Profit-Centers option').not(':first').remove();
+
+                    $.each(modules, function (index, type) {
+                        $(' <option value="' + type.Id + '"> ' + type.Name + ' </option>').appendTo($('#ProfitCenterId'));
+                        console.log(index);
+                    });
+                }
+            },
+            complete: function () {
+                //debugger;
+                $('#ProfitCenterId').val($('#hdn-ProfitCenterId').val());
+            }
+        });
+    }
+</script>
+

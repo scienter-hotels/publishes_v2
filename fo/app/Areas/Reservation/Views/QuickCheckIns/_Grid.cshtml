@@ -1,0 +1,144 @@
+﻿
+@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.ReservationHeaderView>
+
+@{
+    ViewBag.Title = "Quick Check In";
+   
+}
+<link href="~/Scripts/ui/reservation-list/reservation-list.css" rel="stylesheet" />
+
+<table class="table table-striped" id="existingReservationHeaderGrid">
+    <thead>
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                <div class="form-group checkbox">
+                    <label>
+                        <input class="quickCheckIn-checkBox-all" type="checkbox"  />
+                    </label>
+                </div>
+            </th>
+            <th>
+                Group#
+            </th>
+            <th>
+                Res#
+            </th>
+            <th>
+                Guest
+            </th>
+            <th>
+                Arrival
+            </th>
+            <th>
+                Departure
+            </th>
+            <th>
+                Category
+            </th>
+            <th>
+                Type
+            </th>
+            <th>
+                Room
+            </th>
+            <th>
+                Status
+            </th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <div class="ribbon down guest-history-view" style="position: relative;" title="Guest repeated count" data-guest-profile-Id="@item.GuestProfileId" data-guest-repeated-count="@item.RepeatedCount"><div class="content" style="background-image: linear-gradient(to right, #008000 , #008000);">@item.RepeatedCount</div></div>
+                </td>
+                <td>
+                    <div class="form-group checkbox">
+                        <label>
+                            <input class="quickCheckIn-checkBox" type="checkbox" room-No="@item.RoomNo" guest-Name=" @item.GuestName" reservation-no="@item.ResNo" value="@item.Id" />
+                        </label>
+                    </div>
+                    <input type="hidden" name="IsAllowCheckIn" class="isAllowToCheckIn" value="@item.IsAllowCheckIn.ToString()" />
+                </td>
+
+                <td>
+                    @item.GResNo
+                </td>
+                <td>
+                    @item.ResNo
+                </td>
+                <td>
+                    @item.GuestName
+                </td>
+                <td>
+                    @item.ArrivalDate
+                </td>
+                <td>
+                    @item.DepartureDate
+                </td>
+                <td>
+                    @item.RoomCat
+                </td>
+                <td>
+                    @for (int i = 0; i < item.MaxHeadCount; i++)
+                {
+                <span class="glyphicon glyphicon-user display-inline font-size-18" data-toggle="tooltip"></span>
+                }
+                </td>
+                <td>
+                    @item.RoomNo
+                </td>
+                <td>
+                    @item.RoomStatus
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+
+    $('body').on('click', '.quickCheckIn-checkBox-all', function () {
+        if ($(this).prop('checked')) {
+            $('.quickCheckIn-checkBox').prop('checked', true);
+        } else {
+            $('.quickCheckIn-checkBox').prop('checked', false);
+        }
+    });
+
+    $(document).ready(function () {
+        setTimeout(function () {
+            $('.showForm').hide();
+        }, 500);
+        $('#existingReservationHeaderGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                "lengthMenu": [[14, 10,25, 50, -1], [15, 10,25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '50vh',
+                //scrollCollapse: false
+            } );
+    });
+
+    $('.guest-history-view').click(function () {
+        var guestid = $(this).attr('data-guest-profile-Id');
+        LoadRepeatedGuestHistory(guestid);
+    })
+</script>

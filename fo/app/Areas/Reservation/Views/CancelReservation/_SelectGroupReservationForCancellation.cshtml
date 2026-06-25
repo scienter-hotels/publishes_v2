@@ -1,0 +1,215 @@
+﻿
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+<form id="cancelReservationForm">
+    <div class="row">
+        <input type="hidden" id="hiddenGroupReservationNo" value="@ViewBag.groupReservationNo" />
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="guestGroupGrid" cellspacing="5">
+                    <thead>
+                        <tr>
+                            @*<th width="50px"></th>*@
+                            <th width="50px"><div><div class="form-group checkbox"><label><input type="checkbox" id="isAll" class="isAll" /></label></div></div></th>
+                            <th class="text-primary " input type="text" width="100px">
+                                Res.No
+                            </th>
+                            <th class="text-primary " width="100px">
+                                First Name
+                            </th>
+                            <th class="text-primary " width="100px">
+                                Last Name
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="CancelReservations">
+
+                    </tbody>
+                </table>
+                  
+
+                    @*@foreach (var item in Model)
+                    {
+                        if (item.ReservationStatus != "Cancelled")
+                        {
+                            <tr class="data-single-guest">
+                                <td style="margin-right:0.2em">
+                                    <div class="form-group checkbox">
+                                        <label>
+                                            <input class="guest-checkBox" id="Id" type="checkbox" value="@item.ReservationHeaderId" data-reservation-no="@item.ReservationNo" />
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    @item.ReservationNo @item.AttachToCancel
+                                </td>
+                                <td>
+                                    @item.FirstName
+                                </td>
+                                <td>
+                                    @item.LastName
+                                </td>
+                            </tr>
+                        }
+
+                    }*@
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="guestname-combo form-group label-floating" style="margin-top:8px;">
+                <label class="control-label">Reason </label>
+                @{Html.RenderAction("CancellationReasonsCombo", "CancellationReasons", new { area = "Administration", name = "CancellationReasonId", requiered = true, value = "" });}
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="form-group label-floating" style="margin: 10px 0 0 0;">
+                <label class="control-label">
+                    Remark
+                </label>
+                <textarea rows="1" cols="50" name="Message" id="Message" class="form-control" required></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <input type="submit" id="btnSave" value="Save" class="btn btn-primary" style="width:200px"/>
+            &nbsp;
+            <input type="reset" id="btnClear" value="Clear" class="btn btn-default" style="width:200px"/>
+        </div>
+    </div>
+</form>
+
+<script>
+
+    $(document).ready(function () {
+        SelectCancelReservationsByGroupResNo();
+    });
+
+    $('body').off('submit').on('submit', '#cancelReservationForm', function (e) {
+        e.preventDefault();
+        var selectedReservation = [];
+        var isGuestRecordSelected = false;
+   
+        $('.data-single-guest').each(function (index, item) {
+            if ($($(item).find('.guest-checkBox')).prop('checked')) {
+                isGuestRecordSelected = true;
+                return false;
+            }
+        });
+
+        if (isGuestRecordSelected == false) {
+            ShowWarningMessage('Please select at least one reservation to cancel.');
+        }
+        else {
+            $('.data-single-guest').each(function (index, item) {
+                var cancelReservation = {};
+                if ($($(item).find('.guest-checkBox')).prop('checked')) {
+                    cancelReservation = {
+                        CancellationReasonId: $('#CancellationReasonId').val(),
+                        Remark: $('#Message').val(),
+                        ReservationHeaderId: $($(item).find('.guest-checkBox')).val(),
+                    };
+                    selectedReservation.push(cancelReservation);
+                }
+            });
+
+            setTimeout(function () {
+                $.ajax({
+                    url: '/Reservation/CancelReservation/save',
+                    dataType: 'json',
+                    data: { selectedReservation: selectedReservation },
+                    method: 'POST',
+                    success: function (response) {
+                        if (response.startsWith("OK")) {
+                            ShowSuccessMessage('Reservation Cancelled Successfully.');
+                            SelectCancelReservationsByGroupResNo();
+
+                            $('#Search_StatusId').val(-1);
+                            $('#Search_StatusId').trigger('change');
+
+                            var selectedGroupReservationNo = $('#hiddenGroupReservationNo').val();
+                            $('#Search_ReservationNo').val(selectedGroupReservationNo);
+
+                            setTimeout(function () {
+                                LoadReservationGrid();
+                            }, 500);                      
+                           
+                        } else {
+                            ShowErrorMessage(response);
+
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        ShowErrorMessage('Sorry, There is an error in cancelling this reservation.');
+                    }
+                });
+            }, 1000);
+        }
+    });
+
+    $('body').off('click', '#isAll').on('click', '#isAll', function () {
+        if ($('#isAll').is(':checked')) {
+            $('.guest-checkBox').not(':disabled').prop('checked', true);
+
+        } else {
+            $('.guest-checkBox').prop('checked', false);
+        }
+    });
+
+    $('body').off('change', '.guest-checkBox').on('change', '.guest-checkBox', function () {
+        if (!($(this).is(':checked'))) {
+            $('#isAll').prop('checked', false);
+        }
+    });
+
+
+    function SelectCancelReservationsByGroupResNo() {
+        debugger;
+        var Uuid = $('#hidden-Uuid').val();
+        var GroupReservationNo = $('#hiddenGroupReservationNo').val();
+        $.ajax({
+            url: '/Reservation/CancelReservation/SelectCancelReservationByGroupResNo',
+            dataType: 'json',
+            data: { groupReservationNo: GroupReservationNo, Uuid: Uuid},
+            method: 'POST',
+            success: function (data) {
+                $('.data-single-guest').remove();
+                $.each(data, function (index, item) {
+                   if (item.ReservationStatus != "Cancelled")
+                     {
+                       $(
+                           '<tr class="data-single-guest">' +
+                           '<td style = "margin-right:0.2em" >' +
+                           '<div class="form-group checkbox">' +
+                           '<label>' +
+                           '<input class="guest-checkBox" id="Id" type="checkbox" value="' + item.ReservationHeaderId + '" data-reservation-no="' + item.ReservationNo + '" />' +
+                           '</label>' +
+                           '</div>' +
+                           '</td>' +
+                           '<td>' +
+                           item.ReservationNo + ' ' + item.AttachToCancel +
+                           '</td>' +
+                           '<td>' +
+                           item.FirstName +
+                           '</td>' +
+                           '<td>' +
+                           item.LastName +
+                           '</td>' +
+                           '</tr>'
+                ).appendTo('#CancelReservations');
+                    }
+                    });
+               
+            },
+            
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in cancelling this reservation.');
+            }
+        });
+    }
+
+</script>

@@ -1,0 +1,102 @@
+﻿
+@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.ReservationDetailsView>
+
+<div class="row searchBox">
+    <div class="col-md-10">
+        <input type="text" id="ReservationsForAdvanceSearchBy" placeholder="Search by res no, guest, group no, room or status" class="form-control" style="margin-top: -23px;" />
+    </div>
+    <div class="col-md-2">
+        <button type="button" class="btn-primary btn btn-block reservationForAdvsearchByBtn" style="width: 120%;float: right;">Search<div class="ripple-container"></div></button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table class="table table-striped" id="ReservationDetailGrid">
+                <thead>
+                    <tr>
+                        <th class="text-primary">
+                            Res#
+                        </th>
+                        <th class="text-primary">
+                            Group#
+                        </th>
+                        <th class="text-primary">
+                            Name
+                        </th>
+                        <th class="text-primary">
+                            Room#
+                        </th>
+                        <th class="text-primary">
+                            Status#
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @item.ResNo
+                            </td>
+                            <td>
+                                @item.GResNo
+                            </td>
+                            <td>
+                                @item.Name
+                            </td>
+                            <td>
+                                @item.RoomCode
+                            </td>
+                            <td>
+                                @item.Status
+                            </td>
+                            <td>
+                                <div class="form-group checkbox">
+                                    <label>
+                                        <input class="data-reservation-no_chkbox" data-reservation-headerId="@item.ReservationHeaderId" arr-date="@item.Arrival" dep-date="@item.Departure" res_no="@item.ResNo" gres_no="@item.GResNo" name="@item.Name" roomCode="@item.RoomCode" roomId="@item.RoomId" guestprofId="@item.GuestProfileId" type="checkbox" value="@item.ResNo" />
+                                    </label>
+                                </div>
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        //$('#ReservationDetailGrid').DataTable(
+        //    {
+        //        //searching: true,
+        //        ordering: true,
+        //        dom: 'ft',
+        //        "lengthMenu": [[-1], [ "All"]],
+        //        scrollY: '40vh',
+        //    });
+    });
+
+
+   /// $('#ReservationDetailGrid').DataTable(
+            //{
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+               // searching: true,
+              //  ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+              //  dom: 'Bfrtipl',
+               // select: true,
+                //buttons: [
+                //            'copy',
+                //            'excel',
+                //            'csv',
+                //            'pdf',
+                //            'print'
+                //],
+              //  scrollY: '58vh',
+           // });
+</script>

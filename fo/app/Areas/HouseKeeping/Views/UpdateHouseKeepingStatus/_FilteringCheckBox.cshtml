@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.FrontOfficeRoomStatus>
+
+<div class="form-group override-from-group-margin font-size">
+    <div class="form-group checkbox" style="margin-right: 0px;margin-left: 11px;">
+        <label>
+            <input type="checkbox" id="status-type" class="status-typs-checkbox-all" data-filter-value="*" />
+            All
+        </label>
+    </div>
+</div>
+
+@foreach (var item in Model)
+{
+    string[] clsStrArr;
+    string cls = ".";
+    clsStrArr = item.Name.ToLower().Split(' ');
+
+    for (int i = 0; i < clsStrArr.Length; i++)
+    {
+        if (i != (clsStrArr.Length - 1))
+        {
+            cls = cls + clsStrArr[i] + "-";
+        }
+        else
+        {
+            cls = cls + clsStrArr[i];
+        }
+
+    }
+
+    @*<div class="form-group override-from-group-margin font-size">
+            <input type="hidden" value="@item.Id" class="room-status-type-hidden"/>
+            <input type="checkbox" id="status-type" class="status-typs-checkbox" data-filter-value="@cls"/>
+            <label class="filter-each-text" style="color:#fff; font-size:1.1em;"> @item.Name </label>
+        </div>*@
+
+    <div class="form-group override-from-group-margin font-size">
+        <div class="form-group checkbox" style="margin-right: 0px;margin-left: 11px;">
+            <label>
+                <input type="checkbox" id="status-type" class="status-typs-checkbox" data-filter-value="@cls" />
+                @item.Name
+            </label>
+        </div>
+    </div>
+}
+
+<script>
+    $(function () {
+        $('.status-typs-checkbox-all').prop('checked', true);
+        $('.status-typs-checkbox-all').change();  
+    })    
+</script>

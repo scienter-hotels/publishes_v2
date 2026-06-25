@@ -1,0 +1,464 @@
+﻿@*@model Scienter.HotelERP.Common.Domain.ViewModels.HouseKeepingRoomBoyViewModel*@
+
+@{
+    ViewBag.Title = "HOUSE KEEPING SUPERVISOR REVIEW";
+    //Layout = null;
+}
+
+<style>
+
+    .approved-row {
+        background-color: #96ab9d; /* light green */
+    }
+
+    .rejected-row {
+        background-color: #fdeaea; /* light red */
+    }
+
+    /* make the grid scroll ~5 rows tall */
+    #RoomBoy-Assign-Rooms-Area {
+        overflow-y: auto; /* you already had this inline; move to CSS */
+        max-height: 240px; /* tweak to your row height */
+    }
+
+    /* optional: keep table tidy inside a scrolling container */
+    #tbl-RoomBoy-Assign-Rooms {
+        margin-bottom: 0;
+    }
+
+    .hk-switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .hk-switch input[type="checkbox"] {
+            display: none;
+        }
+
+        /* slider track */
+        .hk-switch label {
+            width: 44px;
+            height: 22px;
+            background: #ccc;
+            border-radius: 22px;
+            position: relative;
+            cursor: pointer;
+            margin: 0;
+        }
+
+            /* knob */
+            .hk-switch label::after {
+                content: "";
+                position: absolute;
+                top: 3px;
+                left: 3px;
+                width: 16px;
+                height: 16px;
+                background: #fff;
+                border-radius: 50%;
+                transition: all .2s ease;
+            }
+
+        /* ON state */
+        .hk-switch input:checked + label {
+            background: #28a745; /* bootstrap success-ish */
+        }
+
+            .hk-switch input:checked + label::after {
+                transform: translateX(22px);
+            }
+
+        /* state text */
+        .hk-switch .state-label {
+            font-weight: 600;
+            color: #dc3545; /* reject red by default */
+        }
+
+        .hk-switch input:checked + label + .state-label {
+            color: #28a745; /* approve green when ON */
+        }
+
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                    <div class="row" style="margin-top: -26px;">
+                        <div class=" col-md-8">
+                            @*<div class="form-group label-floating">
+                                <label class="control-label">Room Boy *</label>
+
+                                <select id="RoomBoyId" name="" class="form-control" required>
+                                    <option value="0">All</option>
+
+                                    @foreach (var option in Model.RoomBoys)
+                                    {
+                                        <option value="@option.CentralUserId" selected>@option.Name</option>
+                                    }
+                                </select>
+                            </div>*@
+                            <div class="form-group label-floating">
+                                <label class="control-label">Room Boy *</label>
+                                <select id="RoomBoyId" class="form-control" required>
+                                    <option value="0">All</option>
+                                </select>
+                              
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <button id="btnSearch" value="Search" class="btn btn-primary" style="margin:30px 0 0 0;width:100%;">SEARCH<div class="ripple-container"></div></button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <fieldset class="the-fieldset" style="padding:3px;">
+                                <legend class="the-legend">Rooms</legend>
+                                <div class="input-group searchdiv col-md-12" style="width:97%;margin-top: -20px; margin-bottom: 10px;">
+                                    <input type="text" class="form-control text-box single-line" placeholder="Search Rooms" onkeyup="searchRoom()" id="roomSearch" />
+                                </div>
+                                <div class="col-md-12 label-data" id="RoomBoy-Assign-Rooms-Area" style="overflow-y:auto;">
+                                    <table class="table table-striped" id="tbl-RoomBoy-Assign-Rooms">
+                                        <tr>
+                                            @*<th style="width:36px;">
+                                                <div class="form-group checkbox">
+                                                    <label>
+                                                        <input class="" type="checkbox" id="chkSelectAll" title="Select All"/>
+                                                    </label>
+                                                </div>
+                                            </th>*@
+                                            <th></th>
+                                            <th>Room</th>
+                                            <th>Remark</th>
+                                            <th>Date</th>
+                                            <th>Room Boy</th>
+                                            <th></th>
+                                            <th>Supervisor Remark</th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+
+                                        <tbody class="all-RoomBoy-Assign-Rooms">
+                                            <tr>
+                                                <td class="" colspan="5">No records available.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                    </div>
+
+                    @*<div class="row">
+                        <div class="col-md-4">
+                            <textarea id="remark">  </textarea>
+                        </div>
+                    </div>*@
+
+                    <div class="row">
+                        <div class="col-md-4 col-md-offset-8">
+                            <button id="btnSupervisorReview" class="btn btn-primary btn-block" style="margin:30px 0 0 0;">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var decisions = [];
+    var roomActions = {};  
+
+    $(document).ready(function () {
+        LoadRoomBoys();
+        LoadRoomBoyAssignRooms(0);
+        sizeRoomGridToFive();
+    });
+
+    function sizeRoomGridToFive() {
+        var $tb = $("#tbl-RoomBoy-Assign-Rooms tbody");
+        var rowH = $tb.find("tr:visible:first").outerHeight() || 46;
+        $("#RoomBoy-Assign-Rooms-Area").css("max-height", (rowH * 5 + 2) + "px");
+    }
+
+    //$('#RoomBoyId').on('change', function () {
+    //    debugger
+    //    var roomBoyId = $(this).val();
+    //    alert(roomBoyId)
+
+    //    roomActions = {};
+    //    decisions = [];
+
+    //    LoadRoomBoyAssignRooms(roomBoyId);
+    //})
+
+    $('#btnSearch').off('#btnSearch').on('click', function () {
+        debugger
+        var roomBoyId = $('#RoomBoyId option:selected').val();
+
+        roomActions = {};
+        decisions = [];
+
+        LoadRoomBoyAssignRooms(roomBoyId);       
+    });
+
+    function LoadRoomBoyAssignRooms(roomBoyId) {
+        debugger
+        roomActions.length = 0;
+        decisions.length = 0;
+        $.ajax({
+            method: 'GET',
+            url: '/HouseKeeping/SupervisorReview/SelectRoomBoyAssignRooms',
+            data: { roomBoyId: roomBoyId },
+            datatype: 'json',
+            beforeSend: function () {
+                $('.all-RoomBoy-Assign-Rooms tr').remove();
+            },
+            success: function (data) {
+
+                function safeText(val) {
+                    return (val === null || val === undefined || val === "" || val === "null")
+                        ? "-"
+                        : val;
+                }
+
+
+                if (data.length > 0) {
+                    $.each(data, function (index, item) {
+
+                        $('.all-RoomBoy-Assign-Rooms').append(
+                            '<tr class="data-all-RoomBoy-Assign-Rooms-rows">' +
+                            '<td>'+
+                                '<div class="form-group checkbox">'+
+                                    '<label>'+
+                                         '<input type="checkbox" class="row-select" ' +
+                            'data-record-id="' + item.RecordId + '" ' + 
+                            'data-room-id="' + item.RoomId + '" ' +
+                            'data-room-boyid="' + item.RoomBoyId + '">' +
+                                    '</label>'+
+                                '</div>'+
+                            '</td>'+
+                            '<td class="RoomName">' + item.RoomName + '</td>' +
+                            '<td class="Remark">' + safeText(item.Remark) + '</td>' +
+                            '<td class="Remark">' + (item.HotelDateToDisplay || '').toString().split(' ')[0] + '</td>' +
+                            '<td class="Remark">' + item.RoomBoyName + '</td>' +
+                            '<td><button class= "btn btn-sm btn-primary view-supervisorReview" data-view-roomname="' + item.RoomName+'" data-view-roomboyid="'+item.RoomBoyId+'" data-view-roomid="' + item.RoomId+'" data-view-reordId="' + item.RecordId+'" ' + 'data-supervisorreview="' + item.CheckListItemListJson.replace(/"/g, '&quot;') + '"><i class="fa fa-eye"></i></button></td>' +                           
+                            '<td class="SupervisorRemark">' +
+                            '<textarea class="form-control sup-remark" ' +
+                            'data-room-id="' + item.RoomId + '" ' +
+                            'data-room-boy-id="' + item.RoomBoyId + '" ' +
+                            'rows="1" maxlength="200" placeholder="Add remark..."></textarea>' +
+                            '</td>' +
+                            '<td class="text-center">' +
+                            '<div class="hk-switch">' +
+                            '<input type="checkbox" class="approve-toggle" id="appr_' + item.RoomId + '" data-room-id="' + item.RoomId + '" data-room-boyId="' + item.RoomBoyId+'">' +
+                            '<label for="appr_' + item.RoomId + '"></label>' +
+                            '<span class="state-label">Rejected</span>' +
+                            '</div>' +
+                            '</td>'+
+                            '</tr>'
+                        );
+                    });
+                } 
+            }
+        });
+    }
+
+    $('#btnSupervisorReview').off('click').on('click', function () {
+        // Find checked rows
+        var $checked = $('#tbl-RoomBoy-Assign-Rooms .row-select:checked');
+
+        if ($checked.length === 0) {
+            ShowWarningMessage("Please select at least one room to save.");
+            return;
+        }
+
+        var decisions = [];
+        var invalidRooms = [];
+        var longRemarks = [];
+
+        $checked.each(function () {
+            var $rowChk = $(this);
+            var roomId = parseInt($rowChk.data('room-id'), 10) || 0;
+            var rbId = parseInt($rowChk.data('room-boyid'), 10) || 0; // per-row RoomBoyId
+            var recId = parseInt(
+                $rowChk.data('recordId')                 // works if browser normalized
+                || $rowChk.attr('data-record-id')        // kebab-case
+                || $rowChk.attr('data-Record-id')        // your current attribute
+                || 0, 10) || 0;
+            var $row = $rowChk.closest('tr');
+
+            var approved = $row.find('.approve-toggle').is(':checked') ? 1 : 0;
+            var remark = ($row.find('.sup-remark').val() || '').trim();
+
+            if (!roomId || !rbId) {
+                invalidRooms.push(roomId || '(unknown)');
+                return; // skip pushing this one
+            }
+            if (remark.length > 200) {
+                longRemarks.push(roomId);
+            }
+
+            decisions.push({
+                RoomId: roomId,
+                RoomBoyId: rbId,
+                SupervisorApproved: approved,
+                SupervisorRemark: remark,
+                RecordId: recId
+            });
+        });
+
+        if (invalidRooms.length > 0) {
+            ShowWarningMessage("Missing RoomId/RoomBoyId for rooms: " + invalidRooms.join(', '));
+            return;
+        }
+        if (longRemarks.length > 0) {
+            ShowWarningMessage("Supervisor remark must be ≤ 200 characters. Affected rooms: " + longRemarks.join(', '));
+            return;
+        }
+        if (decisions.length === 0) {
+            ShowWarningMessage("Nothing to save. Please select valid rows.");
+            return;
+        }
+
+        var supervisorReview = {
+            RoomBoyId: 0, // not needed; we pass per-row RoomBoyId
+            CheckListItemListJson: JSON.stringify(decisions),
+            Remark: ($('#remark').val() || '').trim()
+        };
+
+        var $btn = $('#btnSupervisorReview').prop('disabled', true);
+
+        $.ajax({
+            url: '/HouseKeeping/SupervisorReview/SaveSupervisorDecisions',
+            method: 'POST',
+            data: { supervisorReview: supervisorReview },
+            success: function (res) {
+                var text = (typeof res === 'string') ? res : (res && res.d) ? res.d : res;
+                if (text === 'OK') {
+                    ShowSuccessMessage("Saved successfully.");
+                    // Optionally refresh list for the currently selected Room Boy, if you have a filter
+                    var currentRoomBoyId = parseInt($('#RoomBoyId').val(), 10) || 0;
+                    if (typeof LoadRoomBoyAssignRooms === 'function') {
+                        LoadRoomBoyAssignRooms(currentRoomBoyId);
+                    }
+                } else if (typeof text === 'string' && text.indexOf('ERR-') === 0) {
+                    ShowErrorMessage(text.substring(4) || "Error while saving supervisor decisions.");
+                } else {
+                    ShowErrorMessage("Unexpected response from server.");
+                }
+            },
+            error: function () {
+                ShowErrorMessage("Error while saving supervisor decisions.");
+            },
+            complete: function () {
+                $btn.prop('disabled', false);
+            }
+        });
+    });
+
+    function LoadRoomBoys() {
+        $.ajax({
+            url: "/HouseKeeping/SupervisorReview/SelectRoomBoys",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                // draw options into the <select id="RoomBoyId">
+                var $ddl = $("#RoomBoyId");
+                $ddl.empty(); // clear existing
+                $ddl.append($("<option>", { value: 0, text: "All" }));
+
+                if (Array.isArray(data) && data.length) {
+                    $.each(data, function (_, rb) {
+                        // Expecting StaffDetail with CentralUserId & Name
+                        var val = (rb.CentralUserId ?? rb.Id) || 0;
+                        var txt = rb.Name || "N/A";
+                        $ddl.append($("<option>", { value: val, text: txt }));
+                    });
+                } else {
+                    $ddl.append($("<option>", { value: 0, text: "No room boys found" }));
+                }
+            },
+            error: function (xhr, status, err) {
+                console.error("Failed to load room boys:", status, err);
+                var $ddl = $("#RoomBoyId");
+                $ddl.empty().append($("<option>", { value: 0, text: "Failed to load" }));
+            }
+        });
+    }
+
+    $(document).on('change', '.approve-toggle', function () {
+        var approved = $(this).is(':checked') ? 1 : 0;
+        var roomId = $(this).data('room-id');
+
+        // update text next to switch
+        var $label = $(this).siblings('.state-label');
+        $label.text(approved ? 'Approved' : 'Rejected');
+    });
+
+    $(document).off('change', '#chkSelectAll').on('change', '#chkSelectAll', function () {
+        var checked = $(this).is(':checked');
+        $('#tbl-RoomBoy-Assign-Rooms .row-select').prop('checked', checked);
+    });
+
+    $('body').off('click', '.view-supervisorReview').on('click', '.view-supervisorReview', function () {
+        var recordId = $(this).attr('data-view-reordId');
+
+        var roomId = $(this).attr('data-view-roomid');
+        var roomBoyId = $(this).attr('data-view-roomboyid');
+        var roomName = $(this).attr('data-view-roomname');
+
+        title = "Review room - " + roomName;
+        url = "/HouseKeeping/SupervisorReview/RoomBoyUpdates?roomId=" + roomId + '&roomBoyId=' + roomBoyId;
+        CallDetailModelSimple(title, url, 800);
+    });
+
+    function searchRoom() {
+        var q = ($('#roomSearch').val() || '').trim().toLowerCase();
+        var $rows = $('.all-RoomBoy-Assign-Rooms tr.data-all-RoomBoy-Assign-Rooms-rows');
+        var visible = 0;
+
+        $rows.each(function () {
+            var txt = $(this).text().toLowerCase();
+            var match = txt.indexOf(q) !== -1;
+            $(this).toggle(match);
+            if (match) visible++;
+        });
+
+        // handle "no records" message inside the same tbody
+        var $tbody = $('.all-RoomBoy-Assign-Rooms');
+        var $noRow = $tbody.find('tr.no-records');
+        if (visible === 0) {
+            if ($noRow.length === 0) {
+                $tbody.append('<tr class="no-records"><td colspan="7">No matching rooms.</td></tr>');
+            } else {
+                $noRow.show();
+            }
+        } else {
+            $noRow.hide();
+        }
+    }
+
+</script>

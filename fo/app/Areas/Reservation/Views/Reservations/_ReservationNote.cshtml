@@ -1,0 +1,227 @@
+﻿<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+</style>
+
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+<div class="col-md-12">
+    <form id="ReservationNote">
+        <div class="form-horizontal">
+            <input type="hidden" class="ReservationHeaderId" value="@ViewBag.reservationHeaderId" />
+            <div class="row">
+                <div class="col-md-4" style="padding-right: 3em;">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Note Type</label>
+                        @{Html.RenderAction("NoteForCombo", "Reservations", new { area = "Reservation", name = "ReservationNoteTypeId", required = true });}
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Reminder Date</label>
+
+                        <div id="dobContainerInGuestProfiles" class="input-group date">
+                            <input autocomplete="off" class="form-control text-box single-line datePicker" maxlength="100" name="FromDate" id="FromDate" type="text" required>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Percentage (%)</label>
+                        <input autocomplete="off" class="form-control text-box single-line percentage"
+                               max="100" min="0" id="percentage" name="percentage" type="number" value="" required step="0.01" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" style="padding-left:0px; padding-right:0px">
+                    <div class="form-group label-floating" style="margin:5px;">
+                        <label>Add New Note</label>
+                        <textarea maxlength="500" rows="2" id="Note" name="Note" class="form-control eNote" required></textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-2" style="padding-left:0px; padding-right:0px">
+                <button type="submit" id="btnReservationNote" class="btn theme-bg-color-1">
+                    Save <span class="glyphicon glyphicon-floppy-saved"></span>
+                </button>
+            </div>
+            <div class="col-md-2">
+                <button type="reset" id="btnClear" class="btn btn-default">
+                    Clear
+                </button>
+            </div>
+        </div>
+    </form>
+    <div class="row" style="margin-top:1em">
+        <div class="col-md-12 pad-l-r-0">
+            <div id="existingNoteContainArea">
+                <div id="content">@Html.Partial("_Loading")</div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        //2023-08-16--------------------------------------------------------------------------
+        $('#ReservationNoteTypeId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+
+        FillGrid();
+        $('.datePicker').daterangepicker({
+            "showDropdowns": true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "singleDatePicker": true,
+            "minDate": new Date('1900-01-01'),
+            //'Custom Range': 'custom',
+            //"yearRange": '1980:2018',
+            "changeYear": true,
+            "changeMonth": true,
+            "opens": "right",
+            "applyClass": "btn-primary",
+            "dateLimit": {
+                "days": false
+            },
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        });
+    });
+
+    //------------------------------------------------------------------------------------------------------
+
+    $('body').off('submit', '#ReservationNote').on('submit', '#ReservationNote', function (e) {
+        //alert("res note");
+        e.preventDefault();
+        var ResheaderId = $('input[class="data-reservation-no"]:checked').val();
+        var Notes = $('#Note').val();
+        var ReservationNoteType = $('#ReservationNoteTypeId').val();
+        var ReminderDate = $('#FromDate').val();
+        var Percentage = $('#percentage').val();
+
+        $.ajax({
+            url: '/reservation/reservations/SaveReservationNote',
+            dataType: 'HTML',
+            data: { ReservationHeaderId: ResheaderId, Note: Notes, ReservationNoteTypeId: ReservationNoteType, ReminderDate: ReminderDate, AdvancePercentage: Percentage },
+            method: 'POST',
+            success: function (response) {
+                var Type = $('#resType').val();
+                FillGrid();
+
+
+                $('.eNote').val('');
+                ShowSuccessMessage('Note has been saved successfully.');
+                setTimeout(function () {
+                    if (Type == "reservation") {
+                        //Update Uuid
+                        window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+                        //console.log("Uuid");
+
+                        //LoadInhouseReservationGrid();
+
+                    } else {
+                        //location.reload()
+                        LoadInhouseReservationGrid();
+                    }
+
+
+                }, 2500);
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in saving this note.');
+
+            }
+        });
+    })
+
+    //-------------------------------------------------------------------------------
+    function FillGrid() {
+
+        $.ajax({
+            url: '/reservation/reservations/ExistingReservationNotes?reservationHeaderId=' + $('.ReservationHeaderId').val(),
+            dataType: 'HTML',
+            method: 'POST',
+            success: function (response) {
+                $('#existingNoteContainArea #content').html('').fadeOut();
+                $('#existingNoteContainArea #content').html(response).fadeIn();
+
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error loading existing notes.');
+            }
+        });
+
+    }
+    //--------------------------------------------------------------------------------
+
+    $('body').off('change', '#ReservationNoteTypeId').on('change', '#ReservationNoteTypeId', function (e) {
+
+        if ($('#ReservationNoteTypeId option:selected').attr('data-isadvancerequired') == "True") {
+            $('#percentage').prop('disabled', false)
+        } else {
+            $('#percentage').prop('disabled', true);
+        }
+    });
+
+</script>
+

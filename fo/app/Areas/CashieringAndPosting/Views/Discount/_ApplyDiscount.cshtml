@@ -1,0 +1,461 @@
+﻿@using Scienter.HotelERP.Common.Domain
+@model List<FolioHeader>
+
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        overflow-x: hidden;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+</style>
+
+<input type="hidden" value="@ViewBag.ReservationHeaderId" id="reservationNo" />
+<input type="hidden" value="@ViewBag.FolioNo" id="folioNo" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate" name="" id="CurrentDate" />
+
+
+<div class="row" style="margin-top:15px">
+    <div class="col-md-3" style="border-right:2px solid #ccc">
+        @foreach (var item in ((List<ChargeCode>)ViewBag.FolioCharCodes))
+        {
+            <div style="border-bottom:1px solid #f2f2f2;">
+                <div class="checkbox">
+                    <label style="cursor:pointer !important;">
+                        <input type="checkbox" data-charge-code="@item.Prefix" class="chargeCodes"> @item.Name
+                    </label>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="col-md-9" id="ChargesContent">
+
+        <div style="min-height:300px;">
+            <table class="table table-striped" id="grid" style="overflow-y:scroll;">
+                <tr>
+                    <th width="50px"><div><div class="form-group checkbox"><label><input type="checkbox" id="isAlll" class="isAlll" /></label></div></div></th>
+                    <th class="col-md-2">Charge Date</th>
+                    <th class="col-md-6">Details</th>
+                    <th class="col-md-2 amntCurr" style="text-align:right;">Amount</th>
+                    <th class="col-md-1 amntCurr" style="text-align:right;"></th>
+                </tr>
+                @{
+                    string disabled = "";
+                    decimal notAllowedAmountInDiscount = 0;
+                    foreach (var item in Model)
+                    {
+                        disabled = "";
+                        if (item.ChargeCode == "DIS")
+                        {
+                            disabled = "disabled";
+                            notAllowedAmountInDiscount = notAllowedAmountInDiscount + item.ChargeAmount;
+                        }
+                        else
+                        {
+                            if (item.ChargeAmount < 0)
+                            {
+                                disabled = "disabled";
+                            }
+                        }
+                        <tr class="con-items">
+
+                            <td>
+                                @*@if (item.ChargeDateNotFormatted <= SessionObjects.FOSettings.CurrentDate)
+                                    {
+                                        <div class="checkbox">
+                                            <label>
+                                                <input disabled type="checkbox">
+                                            </label>
+                                        </div>
+                                    }
+                                    else
+                                    {}*@
+                                <div class="checkbox">
+                                    <label>
+                                        <input @disabled type="checkbox" class="itemCheckbox" data-charge-code="@item.ChargeCode" data-tr-FolDetId="@item.FolioDetailID" data-tr-Amount="@item.ChargeAmount" data-tr-FolioText="@item.FolioText" data-tr-PostingTypeID="@item.PostingTypeID" data-tr-CurrencyCode="@item.CurrencyCode">
+                                    </label>
+                                </div>
+
+
+                            </td>
+                            <td>@item.ChargeDate</td>
+                            <td>@item.FolioText</td>
+                            <td style="text-align:right"> <span class="number"> @item.ChargeAmount</span> @item.CurrencyCode</td>
+                            <td style="text-align:right">
+                                @if (item.ChargeCode == "DIS")
+                                {
+                                    @*<button style="font-size:10px; padding:3px 8px;" type="button" class="btn btn-danger btn-sm btn-remove-discount" data-folio-detail-id="@item.FolioDetailID" data-discounted-amount="@item.ChargeAmount">
+                <span class="glyphicon glyphicon-trash"></span>
+            </button>*@
+
+                                    var chargeDate = item.ChargeDate != null ? DateTime.Parse(item.ChargeDate.ToString()).Date : DateTime.MinValue;
+                                    var currentDate = DateTime.Parse(Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate.ToString()).Date;
+
+
+                                    if (chargeDate == currentDate)
+                                    {
+                                        <button style="font-size:10px; padding:3px 8px;"
+                                                type="button"
+                                                class="btn btn-danger btn-sm btn-remove-discount"
+                                                data-folio-detail-id="@item.FolioDetailID"
+                                                data-discounted-amount="@item.ChargeAmount">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    }
+
+                                }
+                            </td>
+                        </tr>
+                    }
+                    if (Model.Count == 0)
+                    {
+                        <tr class="no-record">
+                            <td colspan="4">No Records Found.</td>
+                        </tr>
+                    }
+                }
+
+            </table>
+        </div>
+
+        @if (Model.Count > 0)
+        {
+            <div class="row">
+                <div class="col-md-7"></div>
+                <div class="col-md-5" style="font-size:12px; text-align:center;">
+                    Selected Total : <span class="number" id="discountableTotal" style="font-weight:bold; font-size:13px;">0.00</span> @Model.ToList().FirstOrDefault().CurrencyCode
+                </div>
+            </div>
+
+            <input type="hidden" value="@notAllowedAmountInDiscount" id="notAllowedAmountInDiscount" />
+            <hr />
+            <div class="row">
+                <div class="col-md-4 form-group label-floating margin-top-10px">
+                    <label>Discount Type</label>
+                    <select class="select2 form-control" id="discountType">
+                        @*<option value="L">Itemized</option>*@
+                        <option value="G">Posting Type Wise</option>
+                        @*<option value="T">Total Bill Discount</option>*@
+                    </select>
+                </div>
+                <div class="col-md-4 form-group label-floating margin-top-10px">
+                    <label>Discount By</label>
+                    <select class="select2 form-control" id="discountBy">
+                        <option value="V">Value</option>
+                        <option value="P">Percentage</option>
+                    </select>
+                </div>
+                <div class="col-md-4 form-group label-floating margin-top-10px">
+                    <label>Amount</label>
+                    <input type="text" class="form-control number" id="discountAmount" min="1" style="text-align:left !important;" value="0.00" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-9 form-group label-floating margin-top-10px">
+                    <label>Remark *</label>
+                    <input type="text" class="form-control" maxlength="100" id="discountRemark" required />
+                </div>
+                <div class="col-md-3 form-group label-floating margin-top-10px">
+                    <button type="button" class="btn btn-success" style="margin-top:25px; width:100%;" id="btnApplyDiscount">Apply</button>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        //2023-08-16--------------------------------------------------------------------------
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+    });
+
+    $('body').on('change', '.chargeCodes', function () {
+        //debugger;
+        $('.itemCheckbox').prop('checked', false);
+        $('.chargeCodes').each(function (index, cc) {
+            if ($(cc).prop('checked')) {
+                var chargeCode = $(cc).attr('data-charge-code');
+                $('.itemCheckbox').each(function (index, item) {
+                    if ($(item).attr('data-charge-code') == chargeCode) {
+                        $(item).prop('checked', true);
+                    }
+                });
+            }
+        });
+        CalcDiscountTotal();
+    });
+
+    $('body').on('change', '.itemCheckbox', function () {
+        CalcDiscountTotal();
+    });
+
+    var discountableTotal = 0;
+    var selectedAmount = 0;
+    function CalcDiscountTotal() {
+        discountableTotal = 0;
+        $('.itemCheckbox').each(function (index, item) {
+            if ($(this).prop('checked')) {
+                selectedAmount = $(this).attr('data-tr-Amount');
+                discountableTotal = discountableTotal + Number(selectedAmount);
+            }
+        });
+        if (discountableTotal < 0) {
+            discountableTotal = 0;
+        }
+        $('#discountableTotal').html(discountableTotal.toFixed(2));
+    }
+
+    var discountAmount = 0;
+    var atLeastOneSelected = false;
+    var selectedRecords = 0;
+
+    function calcSelectedAmount() {
+        debugger;
+        discountAmount = 0;
+        var lowestAmount = 0;
+        $('.itemCheckbox').each(function () {
+            if ($(this).prop('checked')) {
+                atLeastOneSelected = true;
+                selectedRecords = selectedRecords + 1;
+                if ($('#discountBy option:selected').val() == "V") {
+                    if (lowestAmount == 0 || lowestAmount > Number($(this).attr('data-tr-Amount'))) {
+                        lowestAmount = Number($(this).attr('data-tr-Amount'));
+                    }
+                    discountAmount = (lowestAmount - Number($('#notAllowedAmountInDiscount').val()));
+                    // if multiple selected (5000,10000) we cant apply 10000 discount for 5000 amount, so we have to get lowest amount.
+                    // if the discount by percentage this will be not applied.
+                } else {
+                    discountAmount = 100;
+                }
+            }
+        });
+        if (discountAmount < 0) {
+            discountAmount = 0;
+        }
+    }
+
+    $('body').on('change', '.itemCheckbox', function () {
+        if ($('#discountBy option:selected').val() == "V") {
+            calcSelectedAmount();
+        }
+    });
+
+    $('body').off('change', '#discountType').on('change', '#discountType', function () {
+        $('#discountAmount').val('');
+        if ($('#discountType option:selected').val() == "T") {
+            $('#isAlll').attr('checked', true);
+        }
+        else {
+            $('#isAlll').attr('checked', false);
+        }
+        SelectAllCheckBoxes();
+    });
+
+
+
+    $('body').on('keyup', '#discountAmount', function (e) {
+        debugger;
+        if ($('#discountBy option:selected').val() == "V") {
+            calcSelectedAmount();
+            CalcDiscountTotal();
+            if ($('#discountType option:selected').val() == "T") {
+                discountAmount = discountableTotal;
+            }
+            if (Number($('#discountAmount').val()) > discountAmount) {
+                e.preventDefault();
+                $('#discountAmount').val(discountAmount);
+            }
+        } else {
+            e.preventDefault();
+            if (Number($('#discountAmount').val()) > 100) {
+                e.preventDefault();
+                $('#discountAmount').val(100);
+            }
+        }
+    });
+
+    $('body').on('change', '#discountBy', function () {
+        if ($('#discountBy option:selected').val() == "V") {
+            calcSelectedAmount();
+            $('#discountAmount').val(discountAmount);
+        }
+        else {
+            $('#discountAmount').val(0.00);
+        }
+    });
+
+
+
+    //btnApplyDiscount
+    $('body').off('click', '#btnApplyDiscount').on('click', '#btnApplyDiscount', function () {
+        var discountedFolioDetails = [];
+        //var discountAmountValue = Number($('#discountAmount').val());
+
+        var discountAmountValue = parseFloat($('#discountAmount').val());
+
+        calcSelectedAmount();
+        //   alert(discountAmount);
+        if (!atLeastOneSelected) {
+            ShowWarningMessage("Please select charge(s) to apply discount.");
+        } else if ($('#discountRemark').val() == "" || $('#discountRemark').val().length == 0) {
+            ShowWarningMessage("Discount remark mandatory.");
+        } else if (discountAmountValue < 0) {
+            ShowWarningMessage("Discount amount entered is invalid. It cannot be a negative value.");
+        }
+        else {
+            if (discountAmount <= 0) {
+                ShowWarningMessage("Selected record(s) total invalid to apply discount.");
+            }
+
+            else {
+              
+                if ($('#discountBy option:selected').val() == "V") {
+                    if (Number($('#discountAmount').val() <= 0) || $('#discountAmount').val() > discountAmount) {
+                        ShowWarningMessage("Invalid discount amount");
+                        return false;
+                    }
+                }
+
+                $('.itemCheckbox').each(function () {
+                    if ($(this).prop('checked')) {
+                        discountedFolioDetails.push({
+                            ReservationHeaderId: $('#reservationNo').val(),
+                            FolioNo: $('#folioNo').val(),
+                            FolioDetailId: $(this).attr('data-tr-foldetid'),
+                            ChargeAmount: $(this).attr('data-tr-amount'),
+                            PostingTypeId: $(this).attr('data-tr-postingtypeid'),
+                            DiscountBy: $('#discountBy option:selected').val(),
+                            DiscountType: $('#discountType option:selected').val(),
+                            DiscountAmount: $('#discountAmount').val().replace(',', ''),
+                            ChargeDate: '2000-01-01', // replace in SP,
+                            CurrencyCode: $(this).attr('data-tr-CurrencyCode'),
+                            DiscountRemark: $('#discountRemark').val()
+                        });
+                    }
+                });
+                if (discountedFolioDetails.length > 0) {
+                    $.ajax({
+                        url: '/CashieringandPosting/Discount/SaveDiscount',
+                        dataType: 'json',
+                        data: { lstDiscounts: discountedFolioDetails },
+                        method: 'POST',
+                        success: function (response) {
+                            if (response.toString().startsWith('ERR')) {
+                                ShowWarningMessage("Sorry, there is an error.");
+                            } else {
+                                ShowSuccessMessage("Discount added successfully.");
+                                LoadFolioChargers($('#folioNo').val());
+                                setTimeout(function () { $('#grid-record-detail-model-close').click(); }, 2000);
+                            }
+                        },
+                        error: function (error) {
+                        }
+                    });
+                } else {
+                    ShowWarningMessage("No folio details selected.");
+                }
+            }
+        }
+    });
+
+    $('body').off('click', '.btn-remove-discount').on('click', '.btn-remove-discount', function () {
+        var folioDetailId = $(this).attr('data-folio-detail-id');
+        $.ajax({
+            url: '/CashieringandPosting/Discount/RemoveDiscount',
+            dataType: 'json',
+            data: { folioDetailId: folioDetailId },
+            method: 'POST',
+            success: function (response) {
+                //if (response.toString().startsWith('ERR')) {
+                //    ShowWarningMessage("Sorry, there is an error.");
+                //}
+                if (response.toString().startsWith('ERR')) {
+                    ShowWarningMessage(response.replace('ERR', ''))
+                }
+                else {
+                    ShowSuccessMessage("Discount removed successfully.");
+                    LoadFolioChargers($('#folioNo').val());
+                    setTimeout(function () { $('#grid-record-detail-model-close').click(); }, 2000);
+                }
+            },
+            error: function (error) {
+            }
+        });
+    });
+
+    $('body').off('click', '#isAlll').on('click', '#isAlll', function () {
+        SelectAllCheckBoxes();
+    });
+
+    $('body').off('change', '.itemCheckbox').on('change', '.itemCheckbox', function () {
+        if (!($(this).is(':checked'))) {
+            $('#isAlll').prop('checked', false);
+        }
+        CalcDiscountTotal();
+    });
+
+    function SelectAllCheckBoxes() {
+        if ($('#isAlll').is(':checked')) {
+            $('.itemCheckbox').prop('checked', true);
+            CalcDiscountTotal();
+
+        } else {
+            $('.itemCheckbox').prop('checked', false);
+            $('#discountableTotal').html('');
+        }
+    }
+</script>
+

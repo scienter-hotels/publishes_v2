@@ -1,0 +1,136 @@
+﻿
+
+@*@using Scienter.DestinityHorizon.Common.Service
+@using Scienter.DestinityHorizon.Common.Domain
+
+@{
+    List<PrinterSetup> printerlst = new List<PrinterSetup>();
+    printerlst = new PrinterSetupService().Select();
+}*@
+
+<style>
+    .form-group-marging {
+        margin-top: 0px;
+    }
+
+    .card {
+        padding: 10px !important;
+    }
+
+    #searchby {
+        border-top: none;
+        border-left: none;
+        border-right: none;
+    }
+</style>
+<div class="row">
+    <div class="card">
+        <div class="card-header" data-background-color="purple">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4 class="title">
+                        @ViewBag.RecipeName
+                        <hr class="visible-print" />
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <div class="card-content" id="contentLoadingArea">
+
+            <div class="row">
+                @*<div class="master-file-form">*@
+                @*<form id="form" class="form" enctype="multipart/form-data">*@
+                <input type="hidden" id="hdnRecipeCode" name="hdnRecipeCode" value="@ViewBag.RecipeCode" />
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Location *</label>
+                            <select class="form-control" id="LocationCombo" required>
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Item *</label>
+                            <select class="form-control Damage-Item" id="ItemCombo" tabindex="2">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group  label-floating">
+                            <label class="control-label">Unit *</label>
+                            <input type="text" class="form-control" id="ItemUnit" value="" autocomplete="off" tabindex="3" disabled />
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group  label-floating">
+                            <label class="control-label">Qty *</label>
+                            <input type="number" class="qty form-control" id="qty" value="" min="0" step="0.001" autocomplete="off" tabindex="4" title="Numbers Only" />
+
+                        </div>
+                    </div>
+                    @*<div class="col-md-1">
+                <div class="form-group  label-floating">
+                    <label class="control-label hidden">Seq *</label>
+                    <input type="number" class="qty form-control hidden" id="Seq" value="" autocomplete="off" readonly />
+
+                </div>*@
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group form-group-marging checkbox">
+                        <label><input type="checkbox" class="orderTypeChkboxgrp" name="EatIn" value="R">Eat In</label><br />
+                        <label><input type="checkbox" class="orderTypeChkboxgrp" name="TakeAway" value="T">Take Away</label><br />
+                        <label><input type="checkbox" class="orderTypeChkboxgrp" name="Both" value="B">Both</label><br />
+                    </div>
+                </div>
+                @*<div class="col-md-12">
+                <div class="form-group form-group-marging checkbox col-md-3">
+                    <label><input type="checkbox" class="orderTypeChkboxgrp" name="EatIn" value="R">Eat In</label><br />
+                </div>
+                <div class="form-group form-group-marging checkbox col-md-3">
+                    <label><input type="checkbox" class="orderTypeChkboxgrp" name="TakeAway" value="T">Take Away</label><br />
+                </div>
+                <div class="form-group form-group-marging checkbox col-md-3">
+                    <label><input type="checkbox" class="orderTypeChkboxgrp" name="Both" value="B">Both</label><br />
+                </div>
+            </div>*@
+            </div>
+
+            <div class="row">
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-success btn-width-100px btn-shadow AddItemtoGrid-btn" style="margin-top:23px;" tabindex="4">
+                        Save
+                    </button>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 card" style="max-height:300px; overflow-y:auto;">
+                    <table class="table table-striped" id="RecipeItemGrid">
+                        <tr>
+                            <th></th>
+                            <th class="">Recipe Code</th>
+                            <th class="">Item Name</th>
+                            <th class="">Qty</th>
+                            <th class="">Unit</th>
+                            @*<th class="">Sequence</th>*@
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            @*</form>*@
+            @*</div>*@
+        </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/scripts/UI/Scienter.RecipeDetail.js"></script>
+

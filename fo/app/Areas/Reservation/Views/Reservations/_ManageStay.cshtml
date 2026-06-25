@@ -1,0 +1,387 @@
+﻿@using Scienter.HotelERP.Common.Domain;
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+
+    .room-details-well {
+        padding: 5px !important;
+    }
+
+    .col-md-6-padding-override {
+        padding: 5px !important;
+    }
+
+    .form-control-padding-override {
+        padding: 0px !important;
+        height: 25px !important;
+        width: 70px !important;
+    }
+
+    .padding-6px {
+        padding:6px;
+    }
+
+    .the-fieldset-padding {
+        padding: 5px;
+        height: 196px;
+        overflow-y:scroll;
+    }
+
+</style>
+<div class="form-group" style="margin-top:10px;">
+    <form id="manageStay">
+        <div class="row">
+            <div class="col-md-12">
+
+                <div class="row">
+                    @if (Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.IsDormitory)
+                    {
+                        <div class="col-md-2">
+                            <label for="ReseFor"> Reservation For </label>
+                            <select id="ReseFor" class="select2 form-control @*font-size-16px*@" required>
+                                <option value="0">Rooms</option>
+                                @*<option value="1">Full Cottage</option>*@
+                                <option value="2">Dormitory</option>
+                                <option value="3">Villas</option>
+                            </select>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-2">
+                            <label for="ReseFor"> Reservation For </label>
+                            <select id="ReseFor" class="select2 form-control @*font-size-16px*@" required>
+                                <option value="0">Rooms</option>
+                                @*<option value="1">Full Cottage</option>*@
+                                @*<option value="2">Dormitory</option>*@
+                                 @*<option value="3">Apartments</option>*@
+                            </select>
+                        </div>
+                    }
+
+                    <div class="col-md-2">
+                        <label for="ReservationType"> Reservation Type * </label>
+                        @*<select id="ReservationType" class="form-control" required>
+                <option value="S">Standard</option>
+                <option value="D">Day Use</option>
+            </select>*@
+                        <select id="ReservationType" class="select2 form-control guest-combo" required></select>
+
+                        @*@{Html.RenderAction("ReservationCategorieCombo", "ReservationCategories", new { area = "Reservation", name = "ReservationType", requiered = true, });}*@
+
+                    </div>
+                    <div class="col-md-2">
+                        <label>Status</label>
+                        @*<select id="ReservatonStatusId" class="form-control reservation-status" required></select>*@
+                        @{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { area = "Administration", name = "ReservatonStatusId", requiered = true, });}
+                    </div>
+                </div>
+                <div class="row">
+
+
+                    <div class="col-md-2">
+                        <label>Select Country</label>
+                        <select id="CountryCombo" class="select2 form-control @*font-size-16px*@" required>
+                            <option value=""></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <div class='input-group date'>
+                            <label>Select arrival and departure</label>
+                            <input type='text' class="form-control dateRangePickerTwoDays" id="reservationDateRange" required />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                    @*<div class="col-md-2">
+                        <label>Select Allotment</label>
+                        <select id="AllotmentCombo" class="select2 form-control" required>
+                            <option value=""></option>
+                        </select>
+                    </div>*@
+                    <div class="col-md-3" style="text-align:right;">
+                        <button type="button" class="btn btn-primary margin-top-20px" id="btnCheckRoomAvailability" style="float:right; width:100%;">
+                            Check Availability  <span class="glyphicon glyphicon-refresh"></span>
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-primary margin-top-20px call-popup-model btnViewRates" data-href=@*"/Administration/RoomRates/ViewRoomRates?from=2019-02-10&to=2019-02-13&countryId=217"*@ data-width="1000" data-title="Room Rates">
+                            View Rates  <span class="glyphicon glyphicon-new-window"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-12" id="roomAvailabilityContainer">
+
+
+
+                        @{Html.RenderAction("RoomAvailability", "Reservations");}
+                    </div>
+                </div>
+
+                <div class="row" style="padding-left:15px;">
+                    <div class="col-md-3 col-md-offset-7 text-right">
+                        <button type="button" id="btnManageHeadCount" class="btn btn-primary" data-toggle="modal" style="float:right; width:100%; display:none;" data-target="#myModal2">Manage Head Count</button>
+                    </div>
+                    <div class="col-md-2 text-right">
+                        <button type="button" class="btn theme-bg-color-2" id="btnStep01Next" style="float:right; width:100%;">
+                            Next  <span class="glyphicon glyphicon-arrow-right"></span>
+                        </button>
+                    </div>
+
+
+                </div>
+
+                <div id="myModal2" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header" style="padding-bottom:5px; border-bottom:1px solid #ccc;">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Manage Room Head Count</h4>
+                            </div>
+                            <div class="modal-body" style="padding-top:0px;">
+                                <div class="row room-count-fieldset">
+                                    <div class="col-md-12">
+                                        <table class="table table-striped room-wise-counts">
+                                            <thead>
+                                                <tr>
+                                                    <th class="col-md-1">
+                                                        Room
+                                                    </th>
+                                                    <th class="col-md-3">
+                                                        Category
+                                                    </th>
+                                                    <th class="col-md-1">
+                                                        Type
+                                                    </th>
+                                                    <th class="col-md-1" style="text-align: right;">
+                                                        Adult
+                                                    </th>
+                                                    <th class="col-md-1" style="text-align: right;">
+                                                        Children
+                                                    </th>
+                                                    <th class="col-md-1" style="text-align: right;">
+                                                        Infants
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="row hidden Cottage-count-fieldset">
+                                    <div class="col-md-12">
+                                        <table class="table table-striped Cottage-wise-counts">
+                                            <thead>
+                                                <tr>
+                                                    <th class="col-md-1">
+                                                        Room
+                                                    </th>
+                                                    <th class="col-md-3">
+                                                        Category
+                                                    </th>
+                                                    <th class="col-md-1">
+                                                        Type
+                                                    </th>
+                                                    <th class="col-md-1" style="text-align: right;">
+                                                        Adult
+                                                    </th>
+                                                    <th class="col-md-1" style="text-align: right;">
+                                                        Children
+                                                    </th>
+                                                    <th class="col-md-1" style="text-align: right;">
+                                                        Infants
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+
+            </div>
+            <div class="col-md-12" @*style="margin-top:80px !important"*@>
+
+            </div>
+        </div>
+
+        <input type="hidden" name="From" id="From" value="@DateTime.Now" />
+        <input type="hidden" name="To" id="To" value="@DateTime.Now.AddDays(1)" />
+    </form>
+
+
+</div>
+
+<script src="~/Scripts/ui/common/scienter.common.datatimepicker.js"></script>
+<script>
+    $(document).ready(function () {
+        //2023-08-16--------------------------------------------------------------------------
+
+        $('#ReservatonStatusId').addClass('select2');
+        $('#ReservationType').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 100);
+
+        //$('body').off('click', '.select2').on('click', '.select2', function () {
+        //    setTimeout(function () {
+        //        $('.select2-results ul li').removeClass('select2-results__option--selected');
+        //    }, 200);
+        //});
+
+        //setTimeout(function () {
+
+        //    var selectedStatus = $('#data-res-status').val();
+
+
+        //    if (selectedStatus !== undefined) {
+        //        if (selectedStatus.length > 0) {
+        //            $('.res-status').removeAttr('selected');
+        //            $('.res-status').each(function () {
+        //                if ($(this).val() == selectedStatus) {
+        //                    $(this).attr('selected', true);
+        //                }
+        //            });
+        //        }
+        //    }
+
+
+        //}, 2000);
+
+        //-------------------------------------------------------------------------------------------
+
+        //FillAllotmentCombo();
+        FillCountryCombo();
+        LoadReservationCategoriesInMakeReservationManageStay();
+        LoadCountriesInMakeReservationManageStay();
+        //LoadReservationStatusInMakeReservationManageStay();
+    });
+    function FillCountryCombo() {
+        $.ajax({
+            url: '/reservation/reservations/CountryCombo',
+            dataType: 'json',
+            success: function (data) {
+                $('#CountryCombo').find('option').not(':first-child').remove();
+                $.each(data, function (index, country) {
+                    if (country.Id == 217) {
+                        $('<option value="' + country.Id + '" selected>' + country.Name + '</option>').appendTo($('#CountryCombo'));  // Bangaladesh Modification
+                    } else {
+                        $('<option value="' + country.Id + '">' + country.Name + '</option>').appendTo($('#CountryCombo'));
+                    }
+                });
+            },
+        });
+    }
+
+    //function FillAllotmentCombo() {
+    //    var FromDate = $('.dateRangePickerTwoDays').val().split('-')[0].trim();
+    //    var ToDate = $('.dateRangePickerTwoDays').val().split('-')[1].trim();
+    //    var fromDateParts = FromDate.split('/');
+    //    var formattedFromDate = fromDateParts[2] + '-' + fromDateParts[1] + '-' + fromDateParts[0];
+    //    var toDateParts = ToDate.split('/');
+    //    var formattedToDate = toDateParts[2] + '-' + toDateParts[1] + '-' + toDateParts[0];
+    //    //var FromDate = '2024-01-01';
+    //    //var ToDate = '2024-06-01';
+    //    //alert(formattedToDate);
+    //    $.ajax({
+    //        url: '/reservation/reservations/SelectAllotments?fromDate=' + formattedFromDate + '&toDate=' + formattedToDate,
+    //        //url: '/reservation/reservations/SelectAllotments',
+    //        dataType: 'json',
+    //        method: 'POST',
+    //        success: function (data) {
+    //            $('#AllotmentCombo').find('option').not(':first-child').remove();
+    //            $.each(data, function (index, allotment) {
+    //                $('<option value="' + allotment.Id + '">' + allotment.Name + '</option>').appendTo($('#AllotmentCombo'));
+    //            });
+    //        },
+    //    });
+    //}
+
+    function LoadReservationCategoriesInMakeReservationManageStay() {
+        var dataJson = localStorage.getItem("ReservationCategories");
+        var data = JSON.parse(dataJson);
+        $('#ReservationType option').remove();
+        $(data).each(function (index, item) {
+            $('<option value="' + item.Code + '" >' + item.Name + '</optoin>').appendTo($('#ReservationType'));
+        });
+    }
+
+    function LoadCountriesInMakeReservationManageStay() {
+        var dataJson = localStorage.getItem("Countries");
+        var data = JSON.parse(dataJson);
+        $('#CountryCombo option').remove();
+        $(data).each(function (index, country) {
+            if (country.Id == 217) {
+                $('<option value="' + country.Id + '" selected>' + country.Name + '</option>').appendTo($('#CountryCombo'));  // Bangaladesh Modification
+            } else {
+                $('<option value="' + country.Id + '">' + country.Name + '</option>').appendTo($('#CountryCombo'));
+            }
+        });
+    }
+
+    //function LoadReservationStatusInMakeReservationManageStay() {
+    //    var dataJson = localStorage.getItem("ReservationStatus");
+    //    var data = JSON.parse(dataJson);
+    //    $('#ReservatonStatusId option').remove();
+    //    $(data).each(function (index, item) {
+    //        $('<option class="res-status" value="' + item.Id + '" selected data-isAllowInMakeReservation="' + item.IsAllowInMakeReservation + '">' + item.Name + ' </option>').appendTo($('#ReservatonStatusId'));
+  
+    //    });
+    //}
+
+</script>

@@ -1,0 +1,181 @@
+﻿
+@model  Scienter.HotelERP.Common.Domain.ViewModels.RoomsAndFloorsView
+@{
+    Layout = "";
+}
+<style>
+    h3 {
+        font-weight: bold;
+    }
+
+    .custom-top-padding {
+        padding-top: 5px;
+    }
+
+    .well {
+        font-size: 12px;
+    }
+
+    .override-from-group-margin {
+        margin-top: 0px;
+    }
+
+    .colorBox {
+        height: 12px;
+        width: 12px;
+    }
+
+    .box1 {
+        background-color: #FE0101;
+    }
+
+    .box2 {
+        background-color: #038959;
+    }
+
+    .box3 {
+        background-color: #ff9800;
+    }
+
+    .row-height {
+        padding-top: 5px;
+        height: 25px;
+    }
+
+    .well-height {
+        height: 135px;
+    }
+
+    .col-padding-overide {
+        padding: 1px !important;
+    }
+
+    .room-number-height {
+        height: 50px;
+    }
+
+    .content-align-center {
+        text-align: center;
+    }
+
+    .allocatedWellColor {
+        border: solid 1px black;
+        background-color: #e74c3c;
+    }
+
+    .allocatedWellColor h2 {
+        color: white;
+    }
+
+    .allocatedWellColor .deallocate-button {
+        background-color: #34495e;
+    }
+
+    .allocatedWellColor .deallocate-button:hover {
+        background-color: #798a9a;
+    }
+
+    .list-group-style {
+        height: 480px;
+    }
+</style>
+
+
+    <div class="row">
+        <div class="col-md-2">
+            <div class="row panel panel-default">
+                <div class="col-md-12 list-group list-group-style panel-body div-scroll">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <ul id="datesUL">
+                                <li>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" class="floor-name-check-all" value="" />All
+                                        </label>
+                                    </div>
+                                </li>
+                                <hr />
+
+                                <label class="control-label"> Filtration </label>
+                                @foreach (var item in Model.Floors)
+                                {
+                                    <li>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" class="floor-name-check" value="@item.RoomNameFormattedforClass" />@item.Name
+                                            </label>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div class="row rooms-container">
+                @foreach (var item in Model.RoomDetails.OrderBy(x => x.Id))
+                {
+                    string cls = "";
+                    if (item.IsAllocatedForReservation)
+                    {
+                        cls = "allocatedWellColor";
+                    }
+
+                    <div class="col-md-2  @item.RoomFloorNameFormatted">
+                        <div class="well well-height override-well @cls">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-12 content-align-center">
+                                            <h2 class="room-number"><strong>@item.Name</strong></h2>
+                                            <p>@item.RoomCatagoryName / @item.RoomTypeName</p>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" class="hidden-roomId" id="hidden-roomId" value="@item.Id" />
+                                    <input type="hidden" class="isAllocatedforReservation" id="isAllocatedforReservation" value="@item.IsAllocatedForReservation.ToString()" />
+                                </div>
+                                <div class="col-md-12 custom-top-padding content-align-center">
+                                </div>
+                                <div class="col-md-12 content-align-center">
+                                    <div class="form-group checkbox override-from-group-margin custom-top-padding">
+                                        @if (item.IsAllocatedForReservation)
+                                        {
+                                            <a class="btn btn-sm btn-danger full-width-100perc call-popup-model deallocate-button" id="popup-for-room-allocation-@item.Id" name="popup-for-room-allocation-@item.Id" data-width="600" data-title="Reservation Header Wise Room" data-href="/Reservation/Reservations/RoomWisePopUp?RoomId=@item.Id&IsAllocatedForReservation=true">De-Allocate</a>
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-theme-color-2 btn-sm btn-primary full-width-100perc call-popup-model allocate-button" id="popup-for-room-allocation-@item.Id" name="popup-for-room-allocation-@item.Id" data-width="600" data-title="Reservation Header Wise Room" data-href="/Reservation/Reservations/RoomWisePopUp?RoomId=@item.Id&IsAllocatedForReservation=false">Allocate</a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+<script>
+    $(function () {
+        if ($('input[value=True].isAllocatedforReservation').length > 0) {
+            $('.allocate-button').addClass('disabled');
+        } else if ($('input[value=True].isAllocatedforReservation').length = 0) {
+            $('.allocate-button').removeClass('disabled');
+        }
+
+        $('.floor-name-check-all').prop('checked', true);
+    });
+
+    $('.floor-name-check-all').change(function () {
+        if ($(this).is(':checked')) {
+            $('.floor-name-check').prop('checked', true);
+        } else {
+            $('.floor-name-check').prop('checked', false);
+        }
+    });
+</script>

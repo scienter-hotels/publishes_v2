@@ -1,0 +1,312 @@
+﻿@using Scienter.HotelERP.Common.Domain
+@{
+    ViewBag.Title = "Download Reservation List";
+}
+
+@*<h2>DownloadReservationList</h2>*@
+
+
+<style>
+
+    .panel-default {
+        border: none;
+    }
+
+    .panel-body-padding {
+        padding-top: 0px !important;
+    }
+
+    #reservationGrid {
+        margin-top: -20px;
+    }
+
+    .searchDate .form-group {
+        margin: 0px;
+        padding-bottom: 0px;
+    }
+    /*.highlight {
+        background-color: red;
+    }*/
+    .listLoadingArea td {
+        padding: 0px 4px !important;
+    }
+
+    .listLoadingArea .glyphicon-bell, .listLoadingArea .fa-taxi {
+        padding-left: 5px !important;
+    }
+
+    .highlight {
+        background-color: darkseagreen !important;
+    }
+
+    .listLoadingArea {
+        min-height: 430px;
+    }
+
+    #pageNoLine {
+        text-align: right;
+    }
+
+    .table thead > tr > td, .table tbody > tr > td, .table tfoot > tr > td {
+        font-size: 11px;
+    }
+
+    .current-page-no {
+        margin-right: 20px;
+        font-weight: bold;
+    }
+
+    .listLoadingArea th {
+        padding: 4px 4px !important;
+    }
+
+    .data-page-no-btn {
+        border: 1px solid #b0b0b0 !important;
+        margin-left: 3px !important;
+    }
+
+        .data-page-no-btn:hover {
+            background-color: #b45b23 !important;
+        }
+
+    .listLoadingArea tr:nth-child(even) {
+        background-color: #e9e9e9;
+    }
+
+    .searchPara {
+        width: 100%;
+        border: 1px solid #ccc;
+    }
+
+    .scroll-content ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .scroll-content ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .scroll-content ::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-11">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea" style="padding-left:15px; padding-right:15px;">
+
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div style="padding:10px; padding-bottom:3px; padding-top:6px; margin-bottom:10px; margin-top:-10px; background-color:#f2f2f2; border:1px solid #c3c3c3; border-radius:2px;">
+                            <div class="row">
+
+                                <div class="col-md-4">
+                                    <div class="row" id="filerReservationCalender">
+                                        <div class="col-md-2 searchDateLabel" style="padding:0px; padding-top:15px;  font-size:12px; text-align:right;">From : </div>
+                                        <div class="col-md-4 searchDate">
+                                            <div id="" class="input-group date">
+                                                <input autocomplete="off" class="form-control text-box single-line" maxlength="100" name="FromDate" id="fromDate" type="text" value="@SessionObjects.FOSettings.CurrentDate.ToString("dd/MM/yyyy")">
+                                                @*<span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-calendar"></span>
+                                                    </span>*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <select id="groupReservationNo" style="margin-top:-29px;" name="" class="form-control">
+                                        @*<option value="-1" selected>Group Res/No</option>*@
+                                        <option value="0" selected>All</option>
+                                        @*<option value="1">Individual Only</option>*@
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <button type="button" id="search" style="width:100%; background-color:#b45b23" class="applyBtn btn btn-default btn-sm">Search</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row scroll-container" style="height: 400px; overflow-y: scroll;">
+                    <div class="col-md-12" id="reservationGrid">
+
+                        <div class="listLoadingArea" id="content" style="padding-top:15px;">
+
+                            <div class="">
+                                <div class="row">
+                                    <div class="col-md-12 " id="main-grid-content">
+                                        <div class="table-responsive">
+                                            <table class="table font-size-12px" id="downloadReservationGrid">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-primary"> ResNo </th>
+                                                        @*<th class="text-primary col-md-1"> Room Cat </th>*@
+                                                        <th class="text-primary col-md-1"> Type</th>
+                                                        <th class="text-primary col-md-1"> Basis </th>
+                                                        <th class="text-primary col-md-2"> AgentBSP</th>
+                                                        <th class="text-primary col-md-2"> Market </th>
+                                                        <th class="text-primary col-md-4"> Remark </th>
+                                                        <th class="text-primary col-md-3"> VoucherNo </th>
+                                                        <th class="text-primary col-md-2"> TourNo </th>
+                                                        <th class="text-primary col-md-1"> Title </th>
+                                                        <th class="text-primary col-md-2"> FirstName </th>
+                                                        <th class="text-primary col-md-2"> Lastname </th>
+                                                        <th class="text-primary col-md-3"> Email </th>
+                                                        <th class="text-primary col-md-2"> ContactNo </th>
+                                                        <th class="text-primary col-md-2"> DOB </th>
+                                                        <th class="text-primary col-md-2"> Passport </th>
+                                                        <th class="text-primary col-md-3"> Address </th>
+                                                        <th class="text-primary col-md-3"> CountryCode</th>
+                                                        <th class="text-primary col-md-1"> Nationality </th>
+                                                        @*<th class="text-primary col-md-1"> Adults </th>
+                                                        <th class="text-primary col-md-1"> Kids </th>*@
+                                                                                
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="col-md-12">
+                    @*<button type="button" id="download" style="width:100%; background-color:#b45b23" class="applyBtn btn btn-default btn-sm">Download</button>*@
+                    <a href="/Reservation/Reservations/DownloadExcel" class="btn theme-bg-color-1" style="width:100%; background-color:#b45b23">
+                        Download
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+
+        $('#fromDate').daterangepicker({
+            // "minDate": $('#hotelCurrentDate').val(),
+            singleDatePicker: true, locale: {
+                format: 'DD/MM/YYYY'
+            }
+        });
+
+        $(".scroll-container").on("mousewheel DOMMouseScroll", function (e) {
+            var delta = e.originalEvent.wheelDelta || -e.originalEvent.detail;
+
+            this.scrollTop += (delta < 0 ? 1 : -1) * 30;
+            e.preventDefault();
+        });
+
+        var arrivalDate = $('#fromDate').val();
+        SelectGroupReservationNo(arrivalDate);
+        
+    });
+
+    //$('body').on('change', '#fromDate', function (e) {
+    //    var arrivalDate = $(this).val();
+    //    SelectGroupReservationNo(arrivalDate);
+    //});
+
+    var arrivalDate;
+    function SelectGroupReservationNo(arrivalDate) {
+        
+            $.ajax({
+                url: '/Reservation/Reservations/SelectGroupReservationNoByArrivalDate',
+                data: { arrivalDate: arrivalDate },
+                dataType: 'json',
+                method: 'POST',
+                beforeSend: function () {
+                    
+                },
+                success: function (data) {
+                    $('#groupReservationNo').empty();
+
+                    $(
+                        '<option value="0">All</optoin>' 
+                    ).appendTo($('#groupReservationNo'));
+
+                    $(data).each(function (index, item) {
+                        $(
+                            '<option value="' + item.GroupReservationNo + '">' + item.GroupReservationNo + '</optoin>'
+                        ).appendTo($('#groupReservationNo'));
+                    });
+                },
+                complete: function () {
+                    SelectDownloadReservationList(arrivalDate, '','');
+                }   
+            });
+        
+    }
+
+    function SelectDownloadReservationList(arrivalDate, groupReservationNo, reservationNo) {
+        $.ajax({
+            url: '/Reservation/Reservations/SelectDownloadReservationList',
+            data: { arrivalDate: arrivalDate, groupReservationNo: groupReservationNo, reservationNo: reservationNo},
+            dataType: 'json',
+            method: 'POST',
+            beforeSend: function () {
+                $('#downloadReservationGrid td').remove();
+            },
+            success: function (data) {
+               
+                $(data).each(function (index, item) {
+                    $('<tbody>' +
+                        '<tr class="">' +
+                        '<td class="col-md-2">' + item.ReservationNo + '</td>' +
+                        //'<td class="col-md-1">' + item.RoomCategoryCode + '</td>' +
+                        '<td class="col-md-1">' + item.RoomTypeCode + '</td>' +
+                        '<td class="col-md-1">' + item.MealPlanCode + '</td>' +
+                        '<td class="col-md-2">' + item.BSPCode + '</td>' +
+                        '<td class="col-md-2">' + item.MarketCode + '</td>' +
+                        '<td class="col-md-4">' + item.BookingRemark + '</td>' +
+                        '<td class="col-md-3">' + item.VoucherNo + '</td>' +
+                        '<td class="col-md-2">' + item.TourNo + '</td>' +
+                        '<td class="col-md-1">' + item.SalutationId + '</td>' +
+                        '<td class="col-md-2">' + item.FirstName + '</td>' +
+                        '<td class="col-md-2">' + item.LastName + '</td>' +
+                        '<td class="col-md-3">' + item.Email + '</td>' +
+                        '<td class="col-md-2">' + item.Mobile + '</td>' +
+                        '<td class="col-md-2">' + item.DOB.replace(' 00:00:00', '') + '</td>' +
+                        '<td class="col-md-2">' + item.PassportNo + '</td>' +
+                        '<td class="col-md-3">' + item.HomeAddress + '</td>' +
+                        '<td class="col-md-1">' + item.CountryCode + '</td>' +
+                        '<td class="col-md-1">' + item.NationalityCode + '</td>' +
+                        //'<td class="col-md-1">' + item.NoOfAdults + '</td>' +
+                        //'<td class="col-md-1">' + item.NoOfKids + '</td>' +
+                        '</tr>' +
+                        '</tbody>').appendTo('#downloadReservationGrid');
+                });
+            },
+
+        });
+    }
+
+    $('body').on('click', '#search', function () {
+        var arrivalDate = $('#fromDate').val();
+        var groupReservationNo = $('#groupReservationNo').val();
+        var reservationNo = $('#groupReservationNo').val();
+        
+        SelectDownloadReservationList(arrivalDate, groupReservationNo, reservationNo);
+    });
+    
+    
+</script>

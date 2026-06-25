@@ -1,0 +1,46 @@
+﻿@{
+    Layout = null;
+}
+
+@model List<Scienter.HotelERP.Common.Domain.Complain>
+
+<table class="table table-stripped" width="100%">
+    <tr>
+        <th>Subject</th>
+        <th>Description</th>
+        <th>Assign User</th>
+        <th>Logged Date</th>
+        <th>Assign Date</th>
+        <th>Completed User</th>
+        <th>Completed Date</th>
+        <th></th>
+    </tr>
+    @foreach (var item in Model)
+    {
+    <tr>
+        <td>@item.Subject</td>
+        <td>@item.Description</td>
+        <td>@item.AssignUser</td>
+        <td>@item.CreatedDateTime.ToString("dd/MM/yyyy")</td>
+        <td>@item.AssingnedDate.ToString("dd/MM/yyyy")</td>
+        <td>@item.CompletedUser</td>
+        <td>@item.InspectedDateTime.ToString("dd/MM/yyyy")</td>
+        <td width="240px;">
+            @if (item.IsCompleted)
+            {
+                @*<button class="btn btn-success btn-sm call-popup-model" data-href="/administration/GuestComplain/InspectionDetails?Id=@item.Id&Description=@item.Description&Subject=@item.Subject" id="btnMarkTraceAsComplete">Mark As Complete</button>*@
+                <button class="btn btn-primary btn-sm call-popup-model" data-href="/administration/GuestComplain/GuestComplainDetails?Id=@item.Id&Description=@item.Description&Subject=@item.Subject&AssignUser=@item.AssignUser&CompletedUser=@item.CompletedUser&CreatedDateTime=@item.CreatedDateTime&InspectedDateTime=@item.InspectedDateTime&Remark=@item.Remark&InspectorRemark=@item.InspectorRemark&ExpectedDate=@item.ExpectedDate&AssignedDate=@item.AssingnedDate" data-title="Complain Details :  @item.Subject" id="btnReInstateTrace">Details</button>
+            }
+            else
+            {
+                <button class="btn btn-primary btn-sm call-popup-model" data-href="/administration/GuestComplain/GuestComplainDetails?Id=@item.Id&Description=@item.Description&Subject=@item.Subject&AssignUser=@item.AssignUser&CompletedUser=@item.CompletedUser&CreatedDateTime=@item.CreatedDateTime&InspectedDateTime=@item.InspectedDateTime&Remark=@item.Remark&InspectorRemark=@item.InspectorRemark&ExpectedDate=@item.ExpectedDate&AssignedDate=@item.AssingnedDate" data-title="Complain Details :  @item.Subject" id="btnReInstateTrace">Details</button>
+                <button class="btn btn-success btn-sm call-popup-model" data-href="/administration/GuestComplain/Assignees?Id=@item.Id&Description=@item.Description&Subject=@item.Subject" data-title="Assign complain :  @item.Subject" id="btnReInstateTrace">Assign</button>
+                <button class="btn btn-danger btn-sm call-popup-model" data-href="/administration/GuestComplain/InspectionDetails?Id=@item.Id&Description=@item.Description&Subject=@item.Subject" data-title="Complete complain :  @item.Subject" id="btnReInstateTrace">Complete</button>
+
+            }
+
+        </td>
+    </tr>
+    }
+</table>
+

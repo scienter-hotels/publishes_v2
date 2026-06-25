@@ -1,0 +1,126 @@
+﻿
+@model  IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.JobsView>
+
+@{
+    ViewBag.Title = "Preventive Maintenance Scedule";
+}
+
+<div class="table-responsive">
+    <table class="table table-striped" id="existingjobsGrid">
+        <thead>
+            <tr>
+                <th class="text-primary">
+                    JobNo
+                </th>
+                <th class="text-primary">
+                    Job Type 
+                </th>
+                <th class="text-primary">
+                    Assets
+                   
+                </th>
+                <th class="text-primary">
+                    Activities
+                </th>
+                <th class="text-primary">
+                    Maintenance Type
+                </th>
+                
+                <th class="text-primary">
+                    Remark
+                </th>
+                <th class="text-primary">
+                    Status
+                </th>
+                <th class="text-primary">
+                    Assignees
+                </th>
+                <th class="col-md-1 hidden-print"></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.JobNo)
+                    </td>
+                    <td class="">
+                        @Html.DisplayFor(modelItem => item.JobTypeName)
+                    </td>
+                    <td class="">
+                        @Html.DisplayFor(modelItem => item.ReferenceNo)
+                    </td>
+                    <td class="">
+                        @Html.DisplayFor(modelItem => item.MaintenanceTypes)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Activities)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Remark)
+                    </td>
+                    <td>
+                        @if (item.CurrentStatus?.ToLower() == "started")
+                        {
+                            <span class="badge  blink_me" style="background-color:@item.Color;">Working On</span>
+                        }
+                        @*else if (item.CurrentStatus?.ToLower() == "hold")
+                        {
+                            <span class="badge blink_me" style="background-color:@item.Color;">@item.CurrentStatus</span>
+                        }*@
+                        else
+                        {
+                            <span class="badge" style="background-color:@item.Color;">@item.CurrentStatus</span>
+                        }
+                        @*@Html.DisplayFor(modelItem => item.CurrentStatus)*@
+                    </td>
+                    <td>
+                        @foreach (var a in item.Assignees)
+                        {
+                            @a.Name.Split(' ')[0]<br />
+                        }
+                    </td>
+
+                    <td class="hidden-print text-right">
+                        @*<a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Bed Type - @item.Name"  data-href="/administration/bedtypes/print/@item.Id">
+                                <span class="glyphicon glyphicon-print"></span>
+                            </a>*@
+
+                      
+                        <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" title="Edit" data-ajax-mode="replace" data-ajax-update="#content" href="/maintenance/jobs/edit/@item.Id">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+
+                        <a class="btn btn-theme-color-2 btn-sm" id="btnNote" data-ajax="true" data-ajax-mode="replace" title="Update/Add Notes" data-ajax-update="#content" href="/maintenance/jobs/UpdateNotes/@item.Id">
+                            <span class="glyphicon glyphicon-comment"></span>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#existingjobsGrid').DataTable(
+            {
+
+                searching: true,
+                ordering: true,
+
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            });
+    });
+</script>

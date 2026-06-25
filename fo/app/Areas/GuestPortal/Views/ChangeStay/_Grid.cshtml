@@ -1,0 +1,278 @@
+﻿
+@model  IEnumerable<Scienter.HotelERP.Common.Domain.GuestPortal_StayChange>
+@{
+    ViewBag.Title = "Guest Portal Stay Change Request";
+}
+
+<style>
+    .form-group {
+        margin: 0;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-4" style="position:absolute;z-index:10000;">
+        <select id="customSelect" class="custom-select form-control">
+            <option value="A">All</option>
+            <option value="R">Reservation</option>
+            <option value="I">In House</option>
+            <option value="C">Checked Out</option>
+        </select>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped" id="GuestPortalChangeStay">
+        <thead>
+            <tr>
+                <th hidden></th>
+                <th class="col-md-1 text-primary">
+                    Res / No
+                </th>
+                <th class="col-md-1 text-primary">
+                    Arr Date
+                </th>
+                <th class="col-md-1 text-primary">
+                    Dep Date
+                </th>
+                <th class="col-md-1 text-primary">
+                    Req Arr/D
+                </th>
+                <th class="col-md-1 text-primary">
+                    Req Dep/D
+                </th>
+                <th class="col-md-1 text-primary">
+                    Room Cat
+                </th>
+                <th class="col-md-1 text-primary">
+                    Room Type
+                </th>
+                <th class="col-md-1 text-primary">
+                    Meal Plan
+                </th>
+                <th class="col-md-1 text-primary">
+                    Adults
+                </th>
+                <th class="col-md-1 text-primary">
+                    Kids
+                </th>
+                <th class="col-md-1 text-primary">
+                    Infants
+                </th>
+                <th class="col-md-1 text-primary">
+                    Note
+                </th>
+                <th class="col-md-1 text-primary">
+                    Status
+                </th>
+                <th class="col-md-1 text-primary" style=" width:80px">
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr style="height: 36px !important;" data-reservation_level="@Html.DisplayFor(modelItem => item.ReservationLevel)">
+                <th hidden></th>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReservationNo)
+                    <input type="hidden" name="text" id="guestPoratlChangeStayReservationHeaderId" value="@item.ReservationHeaderId" />
+                    <input type="hidden" name="text" id="changeStayId" value="@item.Id" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChangedArrivalDateFormatted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ActualDepartureDateFormatted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChangedArrivalDateFormatted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChangedDepartureDateFormatted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomCategory)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Mealplan)
+                </td>
+                <td style="text-align:right">
+                    @Html.DisplayFor(modelItem => item.NoOfAdults)
+                </td>
+                <td style="text-align:right">
+                    @Html.DisplayFor(modelItem => item.NoOfKids)
+                </td>
+                <td style="text-align:right">
+                    @Html.DisplayFor(modelItem => item.NoOfInfants)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Remark)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ActionName)
+                </td>
+                <td style="text-align:right !important; width:80px;">
+                    <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="activityLog" data-guestPoratlChangeStayReservationHeaderId="@item.ReservationHeaderId" data-ActionTypeId="@item.ActionTypeId" data-resId="@item.ReservationHeaderId" data-id="@item.Id" data-title="Reservation Activity Log" data-href="" title="Activity Log" data-toggle="modal" data-target="" data-width="500">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </a>
+                    <a class="btn btn-theme-color-2 btn-sm call-popup-model viewactivityLog" id="viewactivityLog" data-guestPoratlChangeStayReservationHeaderId="@item.ReservationHeaderId" data-id="@item.Id" data-title="Reservation Activity Log" data-href="" title="View Activity" data-toggle="modal" data-target="" data-width="500">
+                        <span class="glyphicon glyphicon-tags"></span>
+                    </a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    //$(document).ready(function () {
+    //    $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+    //    $('#GuestPortalChangeStay').DataTable(
+    //        {
+    //            //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+    //            searching: true,
+    //            ordering: true,
+    //            //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    //            dom: 'Bfrtipl',
+    //            select: true,
+    //            buttons: [
+    //                'copy',
+    //                'excel',
+    //                'csv',
+    //                'pdf',
+    //                'print'
+    //            ],
+    //            scrollY: '58vh',
+    //        });
+    //});
+
+    var reservationLevel = $('#customSelect').val();
+    $(document).ready(function () {
+        loadGridData()
+        $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+        $('#GuestPortalChangeStay').DataTable(
+            {
+                searching: true,
+                ordering: true,
+                dom: 'frtipl',
+                select: true,
+                scrollY: '58vh',
+                scrollX:'100%',
+            });
+    });
+
+    $(document).off('change').on('change', '#customSelect', function () {
+        reservationLevel = $('#customSelect').val();
+        loadGridData();
+    });
+
+    function loadGridData() {
+        var rows = $('#GuestPortalChangeStay tr');
+        var noRecords = true;
+
+        if (reservationLevel !== "A") {
+            rows.each(function () {
+                var reservationLevelTr = $(this).data('reservation_level');
+                if (reservationLevel !== reservationLevelTr) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                    noRecords = false;
+                }
+            });
+
+            if (noRecords) {
+                $('#GuestPortalChangeStay tbody').append('<tr class="no-records"><td colspan="100%" style="text-align:center;">No Records Found</td></tr>');
+            } else {
+                $('#GuestPortalChangeStay .no-records').remove();
+            }
+        } else {
+            rows.show();
+            $('#GuestPortalChangeStay .no-records').remove();
+        }
+    }
+
+    $('body').on('click', '#btnAccept', function () {
+        debugger;
+        debugger;
+        var obj = {};
+        obj.Id = $(this).attr('data-Id');
+        obj.ReservationHeaderId = $(this).attr('data-ResId');
+        obj.ReservationNo = $(this).attr('data-ResNo');
+        obj.ActualArrivalDate = $(this).attr('data-Arrival');
+        obj.ActualDepartureDate = $(this).attr('data-Departure');
+        obj.AcceptOrReject = 'A';
+        ChangeStayAcceptOrReject(obj);
+    });
+
+    $('body').on('click', '#btnReject', function () {
+        debugger;
+        var obj = {};
+        obj.Id = $(this).attr('data-Id');
+        obj.ReservationHeaderId = $(this).attr('data-ResId');
+        obj.ReservationNo = $(this).attr('data-ResNo');
+        obj.ActualArrivalDate = $(this).attr('data-Arrival');
+        obj.ActualDepartureDate = $(this).attr('data-Departure');
+        obj.AcceptOrReject = 'R';
+        ChangeStayAcceptOrReject(obj);
+    });
+
+    function ChangeStayAcceptOrReject(obj) {
+        debugger;
+        $.ajax({
+            url: '/GuestPortal/ChangeStay/Change_ChangeStay',
+            dataType: 'html',
+            data: { guest: obj },
+            method: 'POST',
+            success: function (response) {
+                if (response == "OK") {
+                    ShowSuccessMessage('Stay Change has been changed successfully.');
+                    window.location.reload();
+                    //FillGrid();
+                }
+                else (response == "ERR-")
+                {
+                    ShowSuccessMessage(response);
+                }
+                window.location.reload();
+            }
+        });
+    }
+
+    $('body').on('click', '#activityLog', function () {
+        debugger;
+        var code = "S";
+        $(".guestportal-action-model").modal('show');
+        $('#code').val(code);
+        //$('#hdnreservationHeaderId').val($(this).attr('data-resId'));
+        $('#hdnreservationHeaderId').val($(this).attr('data-guestPoratlChangeStayReservationHeaderId'));
+        $('#requestId').val($(this).attr('data-Id'));
+        $('#hdnlabel').val("Change Stay Status");
+        $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+        LoadActionType(code);
+    });
+
+    $('body').on('click', '.viewactivityLog', function (e) {
+        debugger;
+        var code = "S";
+        var requestId = $(this).attr('data-id');
+        //var reservationHeaderId = $('#reservationHeaderId').val();
+        var reservationHeaderId = $(this).attr('data-guestPoratlChangeStayReservationHeaderId');
+        var GuestPortalActivityLogURL = '/GuestPortal/Action/ActivityLog?code=' + code + '&requestId=' + requestId + '&reservationHeaderId=' + reservationHeaderId;
+        var title = 'Change Stay Status Activity Log ';
+
+        //'&guestName=' + guestName + '&guestProfileId=' + GuestProfileId + '&Uuid=' + ResUuid + '';
+
+        CallDetailModelSimple(title, GuestPortalActivityLogURL, 1000);
+    });
+
+</script>
+
+
+

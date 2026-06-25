@@ -1,0 +1,282 @@
+﻿@using Scienter.DestinityHorizon.Common.Domain
+@using Scienter.DestinityHorizon.Common.Service
+
+<style>
+    .panel-heading {
+        background-color: #094F70 !important;
+        padding: 5px 15px;
+        height: 35px;
+    }
+
+    .panel-title {
+        color: white;
+    }
+
+    a:hover {
+        color: none;
+        cursor: pointer;
+    }
+
+    a {
+        color: none;
+    }
+
+    element.style {
+    }
+
+    .reportdiv {
+        background-color: #81b2f163 !important;
+        height: 50px;
+        border-bottom-color: black;
+        border-radius: 5px;
+        border-bottom: solid;
+    }
+
+        .reportdiv:hover .font-color {
+            font-weight: bold !important;
+        }
+
+    .card-oute:hover {
+        border-color: none !important;
+    }
+
+    .panel-title > h {
+        text-decoration: none;
+    }
+
+    .checkmark {
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        -ms-transform: rotate(45deg); /* IE 9 */
+        -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+        transform: rotate(45deg);
+        float: right;
+    }
+
+    .checkmark_circle {
+        position: absolute;
+        width: 21px;
+        height: 21px;
+        background-color: green;
+        border-radius: 11px;
+        left: 0;
+        top: 0;
+    }
+
+    .checkmark_stem {
+        position: absolute;
+        width: 3px;
+        height: 9px;
+        background-color: #fff;
+        left: 11px;
+        top: 6px;
+    }
+
+    .checkmark_kick {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background-color: #fff;
+        left: 8px;
+        top: 12px;
+    }
+
+    .reportFilterArea {
+        margin: -4px 0;
+    }
+
+    .panel-title {
+        font-size: 13px !important;
+        text-transform: uppercase;
+        padding-top: 2px;
+    }
+
+    .panel-title {
+        margin-bottom: 5px;
+        /*margin-left: 10px;*/
+    }
+
+    a .view-accordion {
+        color: white !important;
+    }
+
+    .disabled {
+        cursor: not-allowed;
+    }
+
+    .panel-title a.view-accordion:focus, .panel-title a.view-accordion:hover {
+        color: #e95e0a;
+        font-weight: 500;
+    }
+
+    .glyphicon {
+        top: -2px !important;
+    }
+</style>
+
+@{
+    ReportDetails rd = new ReportDetails();
+    List<ReportDetails> list = new ReportService().SelectReportNames();
+}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-content" id="contentLoadingArea">
+                <div class="col-md-6">
+                    <div class="panel-group" id="accordion">
+                        <div class="panel panel-default">
+                            <div class="panel-heading active">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" class="view-accordion accView" data-parent="#accordion" href="#collapseOne">
+                                        <i class="more-less glyphicon glyphicon-plus"></i> Reports
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse">
+                                <div class="panel-body">
+
+                                    @foreach (var item in list)
+                                    {
+                                        if (item.ReportCategory == 1)
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="card reportdiv">
+                                                    <span class="checkmark hidden">
+                                                        <div class="checkmark_circle"></div>
+                                                        <div class="checkmark_stem"></div>
+                                                        <div class="checkmark_kick"></div>
+                                                    </span>
+                                                    <div class="card-outer">
+                                                        <input type="hidden" value="@item.ReportNameWithType" data-IsPrintCopy="@item.IsPrintCopy" data-reportTitle="@item.DisplayName" data-reportName="@item.ReportName" data-reportId="@item.ReportId" data-reportCat="@item.ReportCategory" class="hdnrportName" />
+                                                        <img style="padding:10px;" src="~/Images/glyphicons-42-charts.png" />
+                                                        <label style="padding:0px; margin-top: 8px; color:black;">
+                                                            <span class="font-color" style="font-size:12px;">@item.DisplayName</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div id="ParameterLoadingArea">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="selectedRpt" />
+<input type="hidden" id="hdncheckedsignPrev" value="" />
+<input type="hidden" id="hdncheckedsignCurrent" value="" />
+<input type="hidden" id="reportId" value="@ViewBag.ReportId" />
+<script>
+    var reportNamehdnval = ""; var reportActualName = "";
+
+    function toggleIcon(e) {
+        $(e.target)
+            .prev('.panel-heading')
+            .find(".more-less")
+            .toggleClass('glyphicon-plus glyphicon-minus');
+    }
+    $('.panel-group').on('hidden.bs.collapse', toggleIcon);
+    $('.panel-group').on('shown.bs.collapse', toggleIcon);
+
+
+    $(document).ready(function () {
+        var reportId = $('#reportId').val();
+        debugger
+        console.log(reportId);
+
+        if (reportId != '' || reportId != null) {
+            var category = $('.hdnrportName[data-reportId=' + reportId + ']').attr('data-reportCat');
+            $('.hdnrportName[data-reportCat=' + category + ']').closest('.panel').find('a').click();
+            $('.hdnrportName[data-reportId=' + reportId + ']').closest('.reportdiv').click();
+        }
+        $('.reportdiv').not('.hdnrportName[data-reportId=' + reportId + ']').prop('disabled', true).addClass("disabled");
+
+        $('.panel-collapse').on('show.bs.collapse', function () {
+            $(this).siblings('.panel-heading').addClass('active');
+        });
+
+        $('.panel-collapse').on('hide.bs.collapse', function () {
+            $(this).siblings('.panel-heading').removeClass('active');
+        });
+        $('#hdncheckedsignPrev').val('');
+        $('#hdncheckedsignCurrent').val('');
+    });
+
+
+    $('body').off('click', '.reportdiv').on('click', '.reportdiv', function (e) {
+        $('.checkmark').addClass('hidden');
+        $('#hdncheckedsignCurrent').val('');
+        $(this).find('.checkmark').removeClass('hidden');
+
+        $('.report-param-title').html('');
+        $('.report-param-title').html($($($('.checkmark').not(':hidden')).parent('.reportdiv').find('input[type="hidden"]')).attr('data-reportTitle'));
+
+        reportNamehdnval = $(e.currentTarget).find('.hdnrportName').val();
+        reportActualName = $(e.currentTarget).find('.hdnrportName').attr('data-reportName');
+        LoadParameters(reportNamehdnval);
+    });
+
+
+    function LoadParameters(reportNamehdnval) {
+        var rptName = reportNamehdnval;
+        $.ajax({
+            url: '/report/SelectReportParamaters',
+            dataType: 'html',
+            method: 'POST',
+            data: { ReportName: rptName },
+            success: function (response) {
+                $('#ParameterLoadingArea').html(response);
+            }
+        });
+    }
+
+    $('body').off('click', '.reportViewBtn').on('click', '.reportViewBtn', function (e) {
+        debugger;
+        e.preventDefault();
+
+        var ReportName = reportActualName;
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();
+        var FunctionTypeId = $('#FunctionType').val();
+        var Operation = $('#generateUsing').val();
+        var FunctionStatusId = $('#FunctionStatuse').val();
+        var VenueId = $('#Venue').val();
+        var Type = $('#ReportType').val();
+        var ReservationNo = $('.ResNo-combo').val();
+        var ReservationDate = $('#ReservationDate').val();
+        var FunctionMenu = $('#FunctionMenu').val();
+        var UserId = $('#User').val();
+        var PropertyId = $('#property').val();
+        var ModuleId = $('#module').val();
+        var AuditTrailModuleId = $('#audittrailmodule').val();
+        var AuditTrailProcessId = $('#audittrailprocesses').val();
+        var AuditTrailReferenceNo = $('#referenceno').val();
+        //var SubTitle = $('#ReportSubTitle').val();
+        var IsPreview = 0;
+        debugger;
+        console.log(ReportName, FromDate, ToDate, FunctionTypeId, Operation, FunctionStatusId, VenueId, IsPreview);
+
+        $('.reportViewBtn').attr("href", '/Report/ViewReport?ReportName=' + ReportName + '&FromDate=' + FromDate + '&ToDate=' + ToDate + '&FunctionTypeId=' + FunctionTypeId + '&Operation=' + Operation + '&FunctionStatusId=' + FunctionStatusId + '&VenueId=' + VenueId + '&IsPreview=' + IsPreview + '&ReservationNo=' + ReservationNo + '&ReservationDate=' + ReservationDate + '&FunctionMenu=' + FunctionMenu + '&UserId=' + UserId + '&PropertyId=' + PropertyId + '&ModuleId=' + ModuleId + '&AuditTrailModuleId=' + AuditTrailModuleId + '&AuditTrailProcessId=' + AuditTrailProcessId + '&AuditTrailReferenceNo=' + AuditTrailReferenceNo);
+
+        //$('.reportViewBtn').attr("href", '/Report/ViewReport?ReportName=' + ReportName + '&FromDate=' + FromDate + '&ToDate=' + ToDate + '&FunctionTypeId=' + FunctionTypeId + '&Operation=' + Operation + '&FunctionStatusId=' + FunctionStatusId + '&VenueId=' + VenueId + '&IsPreview=' + IsPreview + '&ReservationNo=' + ReservationNo + '&ReservationDate=' + ReservationDate + '&FunctionMenu=' + FunctionMenu + '&UserId=' + UserId + '&PropertyId=' + PropertyId + '&ModuleId=' + ModuleId + '&AuditTrailModuleId=' + AuditTrailModuleId + '&AuditTrailProcessId=' + AuditTrailProcessId);
+
+        var page = '/Report/ViewReport?ReportName=' + ReportName + '&FromDate=' + FromDate + '&ToDate=' + ToDate + '&FunctionTypeId=' + FunctionTypeId + '&Operation=' + Operation + '&FunctionStatusId=' + FunctionStatusId + '&VenueId=' + VenueId + '&Type' + Type + '&IsPreview=' + IsPreview + '&ReservationNo=' + ReservationNo + '&ReservationDate=' + ReservationDate + '&FunctionMenu=' + FunctionMenu + '&UserId=' + UserId + '&PropertyId=' + PropertyId + '&ModuleId=' + ModuleId + '&AuditTrailModuleId=' + AuditTrailModuleId + '&AuditTrailProcessId=' + AuditTrailProcessId + '&AuditTrailReferenceNo=' + AuditTrailReferenceNo;
+
+        //var page = '/Report/ViewReport?ReportName=' + ReportName + '&FromDate=' + FromDate + '&ToDate=' + ToDate + '&FunctionTypeId=' + FunctionTypeId + '&Operation=' + Operation + '&FunctionStatusId=' + FunctionStatusId + '&VenueId=' + VenueId + '&Type' + Type + '&IsPreview=' + IsPreview + '&ReservationNo=' + ReservationNo + '&ReservationDate=' + ReservationDate + '&FunctionMenu=' + FunctionMenu + '&UserId=' + UserId + '&PropertyId=' + PropertyId + '&ModuleId=' + ModuleId + '&AuditTrailModuleId=' + AuditTrailModuleId + '&AuditTrailProcessId=' + AuditTrailProcessId ;
+
+        window.location.href = page;
+
+
+    })
+
+</script>

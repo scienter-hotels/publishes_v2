@@ -1,0 +1,130 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.ProfitCenter>
+@{
+                /**/
+
+                ViewBag.Title = "Exising Profit Centers";
+}
+<div class="table-responsive">
+    <table class="table table-striped" id="existingProfitCenterGrid">
+        <thead>
+            <tr>
+                <th class="text-primary" style="display:none">
+                    Id
+                </th>
+                <th class="text-primary">
+                    Name
+                </th>
+                <th class="col-md-1 text-primary">
+                    Is Need To Show Warking Bill Taxes
+                </th>
+                <th class="col-md-1 text-primary">
+                    Is Active
+                </th>
+                <th class="col-md-1 hidden-print">
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td style="display:none">
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        <div class="form-group checkbox">
+                            <label>
+                                @Html.DisplayFor(modelItem => item.IsNeedToShowWarkingBillTaxes)
+                                <span class="hidden">
+                                    @if (item.IsNeedToShowWarkingBillTaxes)
+                                    {
+                                        @:Active
+                                    }
+                                    else
+                                    {
+                                        @:Inactive
+                                    }
+                                </span>
+                            </label>
+                        </div>
+                    </td>
+                    <td class="col-md-1">
+                        <div class="form-group checkbox">
+                            <label>
+                                @Html.DisplayFor(modelItem => item.IsActive)
+                                <span class="hidden">
+                                    @if (item.IsActive)
+                                    {
+                                        @:Active
+                                    }
+                                    else
+                                    {
+                                        @:Inactive
+                                    }
+                                </span>
+                            </label>
+                        </div>
+                    </td>
+                    <td class="hidden-print text-right">
+                        <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/ProfitCenter/Edit_ProfitCenter/@item.Id">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+
+                        <a class="btn btn-danger btn-sm " id="btnDelete" data="@item.Id"> @*data-href="/administration/ProfitCenter/Delete_ProfitCenter/@item.Id">*@
+                            <span class="glyphicon glyphicon-trash"></span> @*call-popup-model-delete*@
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#existingProfitCenterGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ],
+                scrollY: '58vh',
+            });
+    });
+
+    //row delete codes
+    $('body').on('click', '#btnDelete', function () {
+        debugger;
+        if (confirm("Do you want to delete this row?")) {
+            var id = $(this).attr('data');
+            console.log(id);
+            $.ajax({
+                method: "POST",
+                data: { id: id },
+                url: "/administration/ProfitCenter/Delete_ProfitCenter",
+                success: function (data) {
+                    debugger;
+                    if (data.startsWith("ERR-")) {
+                        ShowWarningMessage(data.replace("ERR-", ""));
+                    } else {
+                        ShowSuccessMessage("Record has been deleted successfully.");
+                        FillGrid();
+                    }
+                }
+            });
+        }
+    });
+</script>

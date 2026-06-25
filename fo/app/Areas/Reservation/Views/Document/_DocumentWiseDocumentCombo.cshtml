@@ -1,0 +1,31 @@
+﻿
+@using Scienter.HotelERP.FrontOffice.WebUIMvc.Models
+@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.Common.Domain.ViewModels
+@using Scienter.HotelERP.Common.Utility
+
+@model ComboBoxViewModel<DocumentProcessWiseDocumentView>
+@{
+    string required = "";
+    if (Model.Required) { required = "required"; }
+}
+@if (Model.SelectedValue == null || Model.SelectedValue == "")
+{
+    Model.SelectedValue = SessionObjects.FOSettings.DefaultSegment.ToString();
+}
+<select id="@Model.Id" name="@Model.Name" @required class="form-control">
+    <option value="@ComboBoxes.DefaultOptionValue">@ComboBoxes.DefaultOptionMessage</option>
+
+    @foreach (var option in Model.Options)
+    {
+        if (option.Id.ToString() == Model.SelectedValue)
+        {
+            <option value="@option.Id" selected data-folder-name="@option.FolderName">@option.Name</option>
+        }
+        else
+        {
+            <option value="@option.Id" data-folder-name="@option.FolderName">@option.Name</option>
+        }
+    }
+</select>
+

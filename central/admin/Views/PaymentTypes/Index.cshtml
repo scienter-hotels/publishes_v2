@@ -1,0 +1,181 @@
+﻿
+@{
+    /**/
+
+    ViewBag.Title = "Payment Types";
+}
+<style>
+    .form-group-marging {
+        margin-top: 0px;
+    }
+</style>
+<div class="row">
+    <div class="card">
+        <div class="card-header" data-background-color="purple">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4 class="title">
+                        @ViewBag.Title
+                        <hr class="visible-print" />
+                    </h4>
+                </div>
+                <div class="col-md-4 text-right hidden-print">
+                    <button type="button" class="btn btn-sm btn-theme-color-2 showForm" title="Add New">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                    <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid" title="Show Grid">
+                        <span class="glyphicon glyphicon-th-list"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-content" id="contentLoadingArea">
+            <div class="row">
+                <div class="col-md-12" id="searchdiv">
+                    <input type="text" id="searchby" onkeyup="SearchGrid()" placeholder="Search by any Column" title="Search by any Column">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 master-file-grid" style="overflow-y:scroll; max-height:450px;">
+                    @*Grid comes here*@
+                    <div class="row grid">
+                        <div class="col-md-12 table-responsive">
+                            <div id="loadingProjects" class="well">
+                                <center>
+                                    <img src="~/Images/loading.gif" style="width:50px; margin-top:20px; margin-bottom:0px;" />
+                                </center>
+                            </div>
+
+                            <table class="table table-striped" id="grid" style="display:none;">
+                                <tr>
+                                    <th class="col-md-1">Code</th>
+                                    <th>Description</th>
+                                    <th class="col-md-1">Active</th>
+                                    <th class="col-md-2"></th>
+                                </tr>
+                                <tr class="no-record">
+                                    <td colspan="4">No Records Found.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-12 master-file-form ">
+                    @*Form Comes here*@
+                    <div class="col-md-12">
+                        <form id="form" class="form" enctype="multipart/form-data" hidden>
+                            <input type="hidden" id="hdnpaycode" name="PayCode" value="" />
+                            <div class="row">
+
+                                <div class="col-md-3">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group  label-floating">
+                                                <label class="control-label">Code *</label>
+                                                <input type="text" class="code form-control" id="paycode" value="" required autocomplete="off" maxlength="2" />
+                                                @*<input type="text" class="code form-control" id="paycode" value="" required autocomplete="off" maxlength="2" pattern="[a-zA-Z0-9-]+{2}" title="Numbers Only maximum length 2" />*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Description *</label>
+                                                <input type="text" class="form-control" id="description" minlength="1" autocomplete="off" maxlength="20" required />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6"></div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <div class="form-group form-group-marging label-floating">
+                                                <label class="label-floating">Type</label>
+
+                                                <div class="form-group form-group-marging checkbox  paymentTypeChkboxgrp">
+
+                                                    <label><input type="checkbox" name="Cash" value="1">Cash</label><br />
+                                                    <label><input type="checkbox" name="CreditCard" value="2">Credit Card</label><br />
+                                                    <label><input type="checkbox" name="Credit" value="3">Credit</label><br />
+                                                    <label><input type="checkbox" name="Voucher" value="4">Voucher</label><br />
+                                                    <label><input type="checkbox" name="ECR" value="5">ECR</label><br />
+                                                    <label><input type="checkbox" name="EWallet" value="6">EWallet</label><br />
+                                                    <label><input type="checkbox" name="RoomPosting" value="7">RoomPosting</label><br />
+
+
+
+                                                    @*<label><input type="checkbox" name="Cash" value="1">Cash</label><br />
+                                                        <label><input type="checkbox" name="Credit" value="2">Credit</label><br />
+                                                        <label><input type="checkbox" name="CreditCard" value="3">Credit Card</label><br />
+                                                        <label><input type="checkbox" name="Other" value="4">Other</label><br />
+                                                        <label><input type="checkbox" name="ZeroValue" value="5">Zero Value</label><br />
+                                                        <label><input type="checkbox" name="Frimi" value="6">Frimi</label><br />*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <div class="form-group form-group-marging label-floating">
+                                                <label class="label-floating">Options</label>
+                                                <div class="form-group form-group-marging checkbox paymentOptionschkboxgrp  ">
+                                                    <label><input type="checkbox" name="Remarks" value="1">Remarks</label><br />
+                                                    <label><input type="checkbox" name="DrawerOpen" value="2">Drawer Open</label><br />
+                                                    <label><input type="checkbox" name="Advance" value="3">Advance</label><br />
+                                                    @*<label><input type="checkbox" name="Cash" value="1">Cash</label><br />
+                                                        <label><input type="checkbox" name="CreditCard" value="2">Credit Card</label><br />
+                                                        <label><input type="checkbox" name="Credit" value="3">Credit</label><br />
+                                                        <label><input type="checkbox" name="Voucher" value="4">Voucher</label><br />
+                                                        <label><input type="checkbox" name="Remarks" value="5">Remarks</label><br />
+                                                        <label><input type="checkbox" name="DrawerOpen" value="6">Drawer Open</label><br />
+                                                        <label><input type="checkbox" name="ECR" value="7">ECR</label><br />
+                                                        <label><input type="checkbox" name="EWallet" value="8">EWallet</label><br />
+                                                        <label><input type="checkbox" name="RoomPosting" value="9">RoomPosting</label><br />*@
+                                                    @*<label><input type="checkbox" name="Active" value="5">Active</label><br />*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">    </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <div class="form-group checkbox">
+                                                <label><input type="checkbox" id="is-active" class="is-active" name="is-active" />Active</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6"></div>
+                            </div>
+                            <div class="row">
+
+                                <button type="submit" class="btn btn-success btn-width-100px" id="btnSubmit">
+                                    Save
+                                </button>
+                                <button type="button" class="btn btn-default btn-width-100px btn-shadow btnClear" onclick="ClearForm()">
+                                    Clear
+                                </button>
+                                <input type="hidden" id="hdnAction">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/scripts/UI/Scienter.paymentType.js"></script>

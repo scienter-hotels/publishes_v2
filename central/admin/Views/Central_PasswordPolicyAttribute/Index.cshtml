@@ -1,0 +1,296 @@
+﻿
+@{
+    ViewBag.Title = "Password Policy";
+}
+
+<style>
+    .form-group-marging {
+        margin-top: 0px;
+    }
+
+    .card-content {
+        height: 520px !important;
+        /*min-height: 500px !important;*/
+    }
+
+    .card {
+        padding: 10px !important;
+        border-radius: 0px !important;
+    }
+        .card .card-header {            
+            border-radius: 0px;            
+        }
+    #loading {
+        background: url('../../Images/spinner.gif') no-repeat center center;
+        position: absolute;
+        margin-top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 9999999;
+    }
+
+    .table thead tr th {
+        font-weight: bold !important;
+    }
+
+    .card [data-background-color="purple"] {
+        border-radius: 0px;
+    }
+
+    .card .card-header {
+        border-radius: 0px;
+    }
+
+    .card {
+        border-radius: 0px;
+    }
+
+    .btn, .navbar .navbar-nav > li > a.btn {
+        border-radius: 0px
+    }
+
+    /**/
+    .margin-top {
+        margin-top: 1.5em
+    }
+
+    .checkbox label {
+        cursor: pointer;
+        padding-left: 0;
+        color: rgba(0, 0, 0, 0.5);
+        color: #094f70;
+        font-weight: 500;
+        font-size: 0.9em;
+    }
+
+    .checkbox input[type=checkbox] {
+        opacity: 0;
+        position: absolute;
+        margin: 0;
+        z-index: -1;
+        width: 0;
+        height: 0;
+        overflow: hidden;
+        left: 0;
+        pointer-events: none;
+    }
+
+    .checkbox .checkbox-material {
+        vertical-align: middle;
+        position: relative;
+        top: 3px;
+        padding-right: 5px;
+    }
+
+    .checkbox input[type=checkbox]:checked + .checkbox-material:before {
+        -webkit-animation: rippleOn 500ms;
+        -moz-animation: rippleOn 500ms;
+        -o-animation: rippleOn 500ms;
+        -ms-animation: rippleOn 500ms;
+        animation: rippleOn 500ms;
+    }
+
+    .checkbox .checkbox-material:before {
+        display: block;
+        position: absolute;
+        left: 0;
+        content: "";
+        background-color: rgba(0, 0, 0, 0.84);
+        height: 20px;
+        width: 20px;
+        border-radius: 100%;
+        z-index: 1;
+        opacity: 0;
+        margin: 0;
+        -webkit-transform: scale3d(2.3, 2.3, 1);
+        -moz-transform: scale3d(2.3, 2.3, 1);
+        -o-transform: scale3d(2.3, 2.3, 1);
+        -ms-transform: scale3d(2.3, 2.3, 1);
+        transform: scale3d(2.3, 2.3, 1);
+    }
+
+    .checkbox input[type=checkbox]:checked + .checkbox-material .check {
+        background: #fb6003;
+    }
+
+    .checkbox .checkbox-material .check {
+        position: relative;
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        /* border: 1px solid rgba(0, 0, 0, .54); */
+        border: 1px solid rgb(251, 96, 3);
+        overflow: hidden;
+        z-index: 1;
+        border-radius: 0px;
+    }
+
+    .checkbox-value {
+        margin-top: 0;
+        margin-bottom: 0;
+        margin-left: 10px;
+        padding: 0;
+        width: 18px;
+    }
+
+
+    .btn.btn-primary, .navbar .navbar-nav > li > a.btn.btn-primary,
+    .btn.btn-default, .navbar .navbar-nav > li > a.btn.btn-default {
+        border-radius: 0px;
+    }
+
+    .panel-title {
+        margin-top: 0;
+        margin-bottom: 0;
+        font-size: 16px;
+        background-color: #ddd;
+    }
+
+    .btn, .btn:hover, .btn:focus, .btn:active, .btn.active, .btn:active:focus, .btn:active:hover, .btn.active:focus, .btn.active:hover, .open > .btn.dropdown-toggle, .open > .btn.dropdown-toggle:focus, .open > .btn.dropdown-toggle:hover, .btn.btn-default, .btn.btn-default:hover, .btn.btn-default:focus, .btn.btn-default:active, .btn.btn-default.active, .btn.btn-default:active:focus, .btn.btn-default:active:hover, .btn.btn-default.active:focus, .btn.btn-default.active:hover, .open > .btn.btn-default.dropdown-toggle, .open > .btn.btn-default.dropdown-toggle:focus, .open > .btn.btn-default.dropdown-toggle:hover, .navbar .navbar-nav > li > a.btn, .navbar .navbar-nav > li > a.btn:hover, .navbar .navbar-nav > li > a.btn:focus, .navbar .navbar-nav > li > a.btn:active, .navbar .navbar-nav > li > a.btn.active, .navbar .navbar-nav > li > a.btn:active:focus, .navbar .navbar-nav > li > a.btn:active:hover, .navbar .navbar-nav > li > a.btn.active:focus, .navbar .navbar-nav > li > a.btn.active:hover, .open > .navbar .navbar-nav > li > a.btn.dropdown-toggle, .open > .navbar .navbar-nav > li > a.btn.dropdown-toggle:focus, .open > .navbar .navbar-nav > li > a.btn.dropdown-toggle:hover, .navbar .navbar-nav > li > a.btn.btn-default, .navbar .navbar-nav > li > a.btn.btn-default:hover, .navbar .navbar-nav > li > a.btn.btn-default:focus, .navbar .navbar-nav > li > a.btn.btn-default:active, .navbar .navbar-nav > li > a.btn.btn-default.active, .navbar .navbar-nav > li > a.btn.btn-default:active:focus, .navbar .navbar-nav > li > a.btn.btn-default:active:hover, .navbar .navbar-nav > li > a.btn.btn-default.active:focus, .navbar .navbar-nav > li > a.btn.btn-default.active:hover, .open > .navbar .navbar-nav > li > a.btn.btn-default.dropdown-toggle, .open > .navbar .navbar-nav > li > a.btn.btn-default.dropdown-toggle:focus, .open > .navbar .navbar-nav > li > a.btn.btn-default.dropdown-toggle:hover {
+        background-color: #999999;
+        color: #FFFFFF;
+    }
+
+        .btn.btn-danger, .btn.btn-danger:hover, .btn.btn-danger:focus, .btn.btn-danger:active, .btn.btn-danger.active, .btn.btn-danger:active:focus, .btn.btn-danger:active:hover, .btn.btn-danger.active:focus, .btn.btn-danger.active:hover, .open > .btn.btn-danger.dropdown-toggle, .open > .btn.btn-danger.dropdown-toggle:focus, .open > .btn.btn-danger.dropdown-toggle:hover, .navbar .navbar-nav > li > a.btn.btn-danger, .navbar .navbar-nav > li > a.btn.btn-danger:hover, .navbar .navbar-nav > li > a.btn.btn-danger:focus, .navbar .navbar-nav > li > a.btn.btn-danger:active, .navbar .navbar-nav > li > a.btn.btn-danger.active, .navbar .navbar-nav > li > a.btn.btn-danger:active:focus, .navbar .navbar-nav > li > a.btn.btn-danger:active:hover, .navbar .navbar-nav > li > a.btn.btn-danger.active:focus, .navbar .navbar-nav > li > a.btn.btn-danger.active:hover, .open > .navbar .navbar-nav > li > a.btn.btn-danger.dropdown-toggle, .open > .navbar .navbar-nav > li > a.btn.btn-danger.dropdown-toggle:focus, .open > .navbar .navbar-nav > li > a.btn.btn-danger.dropdown-toggle:hover {
+            background-color: #f44336;
+            color: #FFFFFF;
+        }
+
+    .btn, .navbar .navbar-nav > li > a.btn {
+        border: none;
+        border-radius: 0px;
+        position: relative;
+        padding: 8px 30px;
+        margin: 5px 1px;
+        font-size: 12px;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0;
+        will-change: box-shadow, transform;
+        transition: box-shadow 0.2s cubic-bezier(0.4, 0, 1, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    table .btn-theme-color-2 {
+        border-radius: 0px !important;
+    }
+    .form-group {  
+        padding-bottom: 5px;
+        padding-top: 0px;
+        margin: 5px 0px 0px 0px;
+    }
+    .table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
+        background-color: #ededed;
+        /*background-color: #ccc;*/
+    }
+    .table > tbody > tr {
+        height:2.7em !important;
+    }
+
+</style>
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="title">
+                    @ViewBag.Title
+                    <hr class="visible-print" />
+                </h4>
+            </div>
+            <div class="col-md-4 text-right hidden-print">
+                <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
+
+                <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                    <span class="glyphicon glyphicon-th-list"></span>
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="card-content " id="contentLoadingArea">
+        <div class="row form">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="form-group label-floating">
+                            <input type="hidden" class="password-policy-id" value="0" />
+                            <label class="control-label">Name</label>
+                            <input autocomplete="off" class="form-control text-box single-line Name" maxlength="100" name="Name" type="text" value="" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top: 2em;">
+                    <div class="col-md-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr class="data-single-record">
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody class="passwordAttributes"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                @*<div class="row" style="margin-top: 2em;">
+                    <div class="col-md-3">
+                        <div class="form-group checkbox">
+                            <label>
+                                <input type="checkbox" name="IsActive" value="True" id="IsActive" class="IsActive" />Is Active
+                            </label>
+                        </div>
+                    </div>
+                </div>*@
+                <div class="row" style="margin-top:2em;">
+                    <div class="col-md-7"></div>
+                    <div class="col-md-5 text-right">
+                        <div class="form-group">
+                            <input type="submit" value="Save" class="btn btn-primary savePasswordPolicy" style="width:200px;" />
+                            &nbsp;
+                            <input type="reset" value="Clear" class="btn btn-default clearPasswordPolicy" style="width:200px;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row grid" style="max-height:430px;">
+            <div class="col-md-12 table-responsive">
+                @*<input type="text" id="searchby" onkeyup="SearchGrid()" placeholder="Search by any Column" title="Search by any Column">*@
+                @*<div id="loading" class="well">
+                </div>*@
+                <div class="grid" style="max-height:430px;">
+                    <table class="table table-striped" id="tableData">
+                        @*<thead>*@
+                            <tr>
+                                <th>Name</th>
+                                @*<th>Active</th>*@
+                                <th></th>
+                            </tr>
+                        @*</thead>*@  
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<script src="~/Scripts/UI/Scienter.PasswordPolicy.js"></script>
+
+<script>
+    $(document).ready(function () {
+        debugger;
+
+        $("input")addClass('form-control text-box');
+        //$('#tableData').DataTable();
+    });
+</script>

@@ -1,0 +1,208 @@
+﻿@model List<Scienter.DestinityHorizon.Common.Domain.NavigationMain>
+@using Scienter.DestinityHorizon.Common.Service;
+
+<div class="col-md-6">
+    <div class="row">
+        <div class="form-group label-floating col-md-6">
+            <label class="control-label">User</label>
+            <select id="UserId" class="form-control @*font-size-16px*@" required>
+                <option value=""></option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="table-responsive col-md-6">
+            <table class="table table-striped user-table">
+                <tr>
+                    <th class="col-md-4 text-primary">
+                        <b>Main Navigations</b>
+                    </th>
+                    <th class="col-md-1 text-primary">
+                    </th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="col-md-4">
+                            @item.Name
+                        </td>
+                        <td class="col-md-1">
+                            <button class="btn btn-primary btn-sm mainMenus" data-main-menu-name="@item.Name" value="@item.Id"> <span class="glyphicon glyphicon-share" title="View Pages" data-toggle="tooltip"></span> </button>
+                        </td>
+                    </tr>
+                }
+
+
+            </table>
+        </div>
+    </div>    
+
+    <div class="">
+        <input type="submit" id="btnSavePages" value="Save" class="btn btn-primary" />
+        &nbsp;
+        <input type="reset" id="btnClear" value="CLEAR" class="btn btn-default" />
+    </div>
+
+</div>
+
+@* -------------------------------------------------------------------------------------------------------------------------------- *@
+
+<div class="col-md-6">
+
+    <div class="row">
+        <div class="col-md-12" style="margin-left:15px;">
+            <div class="checkbox">
+                <label><input type="checkbox" class="All-checkBox"> Select All </label>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive" style="margin-top:-12px;">
+        <table class="table" id="existingPagesGrid">
+            <thead>
+                <tr>
+                    <th class="col-md-1 text-primary">
+                    </th>
+                    <th class="hidden"></th>
+                    <th class="col-md-7 text-primary">
+                        <b>Pages</b>
+                    </th>
+                    <th class="col-md-1">Select</th>
+                    <th class="col-md-1">Insert</th>
+                    <th class="col-md-1">Update</th>
+                    <th class="col-md-1">Delete</th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var Main in Model)
+                {
+                    foreach (var Areas in Main.Areas)
+                    {
+                        foreach (var Pages in Areas.Pages)
+                        {
+
+                            <tr class="page-details">
+                                <td class="col-md-1">
+                                    <div class="form-group checkbox pageCheckBox">
+
+                                        <label>
+                                            <input type="checkbox" class="Page-combo" id="@Pages.Id" value="@Pages.Id" Main-Id="@Main.Id" />
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="hidden">
+                                    @Main.Name @Areas.Name
+                                </td>
+                                <td class="col-md-7">
+                                    @Pages.Name
+                                </td>
+
+                                <td class="col-md-1">
+                                    <div class="form-group checkbox">
+
+                                        <label>
+                                            <input type="checkbox" class="select-checkBox permissionChkbox" />
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="col-md-1">
+                                    <div class="form-group checkbox">
+
+                                        <label>
+                                            <input type="checkbox" class="insert-checkBox permissionChkbox" />
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="col-md-1">
+                                    <div class="form-group checkbox">
+
+                                        <label>
+                                            <input type="checkbox" class="update-checkBox permissionChkbox" />
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="col-md-1">
+                                    <div class="form-group checkbox">
+
+                                        <label>
+                                            <input type="checkbox" class="delete-checkBox permissionChkbox" />
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+
+        </table>
+    </div>
+</div>
+<script>
+
+    $('#UserId').on('change', function () {           
+        $('.permissionChkbox').prop('checked', false); 
+        var userId = $('#UserId').val();      
+        $.ajax({
+            url: '/UserWiseIndividualAccesses/UserWiseIndividualAccessSelect?UserId=' + userId + '&mainNavigationId=' + 1,
+            dataType: 'JSON',
+            method: 'POST',
+            success: function (data) {  
+                $('input:checkbox').prop('checked', false)
+                $('#existingPagesGrid tr.page-details').removeClass('selectdRecord');
+               
+                $.each(data, function (index, data) {
+                    var dataObj = data;
+                    $('#existingPagesGrid tr.page-details').each(function (index, page) {
+                        var pageObj = page;
+                        if ($(pageObj).find('.Page-combo').val() == dataObj.PageId) {
+                            $(pageObj).closest('tr').addClass('selectdRecord');
+                            $(pageObj).find('input.Page-combo').prop('checked', true);
+                            $(pageObj).find('input.insert-checkBox').prop('checked', dataObj.IsAllowInsert);
+                            $(pageObj).find('input.update-checkBox').prop('checked', dataObj.IsAllowUpdate);
+                            $(pageObj).find('input.delete-checkBox').prop('checked', dataObj.IsAllowDelete);
+                            $(pageObj).find('input.select-checkBox').prop('checked', dataObj.IsAllowSelect);
+                        }
+                    });
+                });
+                changePageCheckBoxStatus();
+                var obj = JSON.parse(data[0].POSAccessJson);
+               
+                $(obj).each(function (index, Arrayitem) {
+                    $(".PosAccesscheckBoxGroup").each(function (index, item) {
+                        if ($(this).attr('accesscode-no') == Arrayitem.AccessCodeId) {
+                            $(this).prop('checked', true);
+                        }
+                    });
+                });
+                changePosAccessgrpCheckBoxStatus();
+            },
+            error: handleAjaxError
+        });        
+    });
+
+
+
+    function changePageCheckBoxStatus() {       
+        if ($('#existingPagesGrid input:checkbox').length == $('#existingPagesGrid input:checked').length) {
+            $('.All-checkBox').prop('checked', true);
+        }
+        else {
+            $('.All-checkBox').prop('checked', false);
+        }
+    }
+
+    function changePosAccessgrpCheckBoxStatus() {
+        if ($('.PosAccesscheckBoxGroup').length == $('.PosAccesscheckBoxGroup:checked').length) {
+            $('.All-PosAccesscheckBox').prop('checked', true);
+        }
+        else {
+            $('.All-PosAccesscheckBox').prop('checked', false);
+        }
+    }
+   
+
+</script>

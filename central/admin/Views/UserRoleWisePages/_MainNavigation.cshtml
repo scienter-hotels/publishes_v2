@@ -1,0 +1,196 @@
+﻿@model List<Scienter.DestinityHorizon.Common.Domain.NavigationMain>
+
+<div class="col-md-4">
+    <div>
+        <div class="form-group label-floating">
+            <label class="control-label">Role</label>
+            <select id="UserRoleId" class="form-control @*font-size-16px*@" required>
+                <option value=""></option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped user-table">
+            <tr>
+                <th class="col-md-4 text-primary">
+                    <b>Main Navigations</b>
+                </th>
+                <th class="col-md-1 text-primary">
+                </th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="col-md-4">
+                        @item.Name
+                    </td>
+                    <td class="col-md-1">
+                        <button class="btn btn-primary btn-sm mainMenus" data-main-menu-name="@item.Name" value="@item.Id"> <span class="glyphicon glyphicon-share" title="View Pages" data-toggle="tooltip"></span> </button>
+                    </td>
+                </tr>
+            }
+
+
+        </table>
+    </div>
+
+
+
+    <div class="">
+        <input type="submit" id="btnSavePages" value="Save" class="btn btn-primary" />
+        &nbsp;
+        <input type="reset" id="btnClear" value="CLEAR" class="btn btn-default" />
+    </div>
+
+</div>
+
+@* -------------------------------------------------------------------------------------------------------------------------------- *@
+
+<div class="col-md-8">
+    <div class="row">
+        <div class="col-md-12" style="margin-left:15px;">
+            <div class="checkbox">
+                <label><input type="checkbox" class="All-checkBox"> Select All </label>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive" style="margin-top:-12px;">
+        <table class="table" id="existingPagesGrid">
+            <thead>
+                <tr>
+                    <th class="col-md-1 ">
+
+                    </th>
+                    <th class="hidden"></th>
+                    <th class="text-primary">
+                        <b>Pages</b>
+                    </th>
+                    <th class="col-md-1">Select</th>
+                    <th class="col-md-1">Insert</th>
+                    <th class="col-md-1">Update</th>
+                    <th class="col-md-1">Delete</th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var Main in Model)
+                {
+                    if (Main.Areas != null)
+                    {
+                        foreach (var Areas in Main.Areas)
+                        {
+                            foreach (var Pages in Areas.Pages)
+                            {
+
+                                <tr class="page-details">
+                                    <td class="col-md-1">
+                                        <div class="form-group checkbox pageCheckBox">
+
+                                            <label>
+                                                <input type="checkbox" class="Page-combo" id="@Pages.Id" value="@Pages.Id" Main-Id="@Main.Id" />
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td class="hidden">
+                                        @Main.Name @Areas.Name
+                                    </td>
+                                    <td class="col-md-7">
+                                        @Pages.Name
+                                    </td>
+
+                                    <td class="col-md-1">
+                                        <div class="form-group checkbox">
+
+                                            <label>
+                                                <input type="checkbox" class="select-checkBox disabled" />
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td class="col-md-1">
+                                        <div class="form-group checkbox">
+
+                                            <label>
+                                                <input type="checkbox" class="insert-checkBox" />
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td class="col-md-1">
+                                        <div class="form-group checkbox">
+
+                                            <label>
+                                                <input type="checkbox" class="update-checkBox" />
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td class="col-md-1">
+                                        <div class="form-group checkbox">
+
+                                            <label>
+                                                <input type="checkbox" class="delete-checkBox" />
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+
+                }
+            </tbody>
+
+        </table>
+    </div>
+</div>
+<script>
+
+    $('#UserRoleId').on('change', function () {
+        
+        //var MainNavigationId = $(this).val();
+        var RoleId = $('#UserRoleId').val();
+
+        if ($('#UserRoleId').val() > 0) {
+            $.ajax({
+                url: '/userrolewisepages/UserRoleWisePagesSelect?roleId=' + RoleId + '&mainNavigationId=' + 1,
+                dataType: 'JSON',
+                method: 'POST',
+                success: function (data) {
+                    $('input:checkbox').prop('checked', false)
+                    $('#existingPagesGrid tr.page-details').removeClass('selectdRecord');
+
+                    $.each(data, function (index, data) {
+                        var dataObj = data;
+                        $('#existingPagesGrid tr.page-details').each(function (index, page) {
+                            var pageObj = page;
+                            if ($(pageObj).find('.Page-combo').val() == dataObj.PageId) {
+                                $(pageObj).closest('tr').addClass('selectdRecord');
+                                $(pageObj).find('input.Page-combo').prop('checked', true);
+                                $(pageObj).find('input.insert-checkBox').prop('checked', dataObj.IsAllowInsert);
+                                $(pageObj).find('input.update-checkBox').prop('checked', dataObj.IsAllowUpdate);
+                                $(pageObj).find('input.delete-checkBox').prop('checked', dataObj.IsAllowDelete);
+                                $(pageObj).find('input.select-checkBox').prop('checked', dataObj.IsAllowSelect);
+                            }
+                        });
+                    });
+                    changePageCheckBoxStatus();
+                },
+                error: handleAjaxError
+            });
+        }
+        else {
+            ShowWarningMessage('Please Select a Role to Retrieve or Save Data.');
+        }
+    });
+
+
+    function changePageCheckBoxStatus() {
+        if ($('#existingPagesGrid input:checkbox').length == $('#existingPagesGrid input:checked').length) {
+            $('.All-checkBox').prop('checked', true);
+        }
+        else {
+            $('.All-checkBox').prop('checked', false);
+        }
+    }
+    </script>>

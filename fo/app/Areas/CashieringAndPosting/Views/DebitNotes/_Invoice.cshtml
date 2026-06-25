@@ -1,0 +1,166 @@
+﻿@using Scienter.HotelERP.Common.Domain
+<style>
+    .easyPaginateNav a {
+        padding: 5px;
+        /*background-color:#fff!important;*/
+    }
+
+        .easyPaginateNav a.current {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+    .invoiceBox {
+        margin-top: 9px;
+    }
+
+    #ReportLoadingArea hr {
+        margin-bottom: 10px !important;
+        margin-top: 10px !important;
+    }
+
+    #ReportLoadingArea tr {
+        background-color: #fff !important;
+    }
+</style>
+
+<link href="~/Content/ConerRibbon.css" rel="stylesheet" />
+<fieldset class="the-fieldset invoiceBox ribbonbox" style="min-height:475px; margin-top:8px;">
+    <div class="pritableArea">
+        <div class="ribbon hidden-print"><span>Bill Preview</span></div>
+
+        <div id="ReportLoadingArea" class="col-md-12" style="min-height:300px;">
+            <div id="ReportHeader">
+                <table class="col-md-12" style="width:100%;margin-bottom:10px!important; margin-top:5px!important;">
+                    <tr>
+                        @if (ViewBag.postingType == "rebate")
+                        {
+                            <th style="text-align:center; font-weight:bold; font-size:16px;" colspan="5">REBATE BILL</th>
+
+                        }
+                        else
+                        {
+                            <th style="text-align:center;font-weight:bold; font-size:16px;" colspan="5">DEBIT NOTE</th>
+                        }
+                    </tr>
+                </table>
+                <hr />
+                @if ((ViewBag.postingType == "inhouse") || (ViewBag.postingType == "rebate"))
+                {
+                    <table style="width:100%">
+                        <tr>
+                            <td id="easyPaginate2" style="width:100%"></td>
+                        </tr>
+
+                    </table>
+
+
+                }
+                else
+                {
+
+
+                    <table id="walkin-billheader" style="width:100%"></table>
+                }
+                <input type="hidden" value="@ViewBag.postingType" name="" id="PosringTypehdn" />
+            </div>
+            <hr />
+            <div id="ReportBody1" style="width:100%;margin-top:20px;">
+
+                <label style="width:75%; padding-left:10px;" id="remarkArea"></label>
+            </div>
+            <hr />
+            <div id="ReportTaxCalCulationArea" style="width:100%;">
+
+                <div class="row" style="margin-top:10px;">
+                    <div class="col-md-5"></div>
+                    <div class="col-md-7 report-width60perc report-float-right" id="TaxLoadingArea">
+                        @Html.Partial("_TaxCalculation", new List<Scienter.HotelERP.Common.Domain.ViewModels.TaxCalculationsViewModel>())
+                    </div>
+                </div>
+                <hr />
+                <div class="row" style="margin-top:10px;">
+                    <div class="col-md-5"></div>
+                    <div class="col-md-7 report-width60perc report-float-right">
+                        <table class="table hidden" id="paymentTable" style="width:100%">
+                            <tr></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="ReportFooter" style="height:100px; margin-top:5px;">
+            <div class="row">
+                <div class="col-md-12 report-width100perc"> </div>
+                <span class="currencyTc  report-width100perc"> * All currency amounts are in @SessionObjects.LocalCurrency.Name (@SessionObjects.LocalCurrency.ISOCode)</span>
+
+            </div>
+            <div class="row" style="padding-top:30px; width:100%;">
+                <div class="col-md-12">
+                    <table style="width:100%" class="report-width100perc">
+                        <tr>
+                            <td>
+                                <div class="col-md-4" style="padding-right:10px; ">
+                                </div>
+                            </td>
+                            <td style="padding-right:20px;width:35%;">
+                                <hr />
+                            </td>
+                            <td style="padding-right:20px;width:35%;">
+                                <hr />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="">
+                                <div style="padding-right:10px;"></div>
+                            </td>
+                            <td class="report-width30px" style="width:33.3%">
+
+                                @*<div style="padding-right:10px;text-align:center;">Prepared By</div>*@
+
+                            </td>
+                            <td>
+                                <div style="padding-right:10px;text-align:right;">Guest Signature</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+
+                    <button class="btn btn-primary disabled hidden-print" id="btnSave" data-title="Bill-Payment Posting" data-href="/CashieringAndPosting/DebitNotes/SaveDebitNote">
+                        Save
+                    </button>
+
+                    @*@if ((ViewBag.postingType == "walkin"))
+        {*@
+                    @*<button class="btn call-popup-model btn-primary disabled hidden-print" id="btnbillpayment" data-title="Bill-Payment Posting" data-href="/CashieringAndPosting/Posting/BillPayment/">
+            Settle Bill
+        </button>*@
+
+                    @*}
+        else if ((ViewBag.postingType == "inhouse"))
+        {
+            <input id="btnSave" value="Save" class="btn btn-primary disabled hidden-print" />@:&nbsp;
+            <button class="btn  call-popup-model btn-primary disabled hidden-print" id="btnbillpayment" data-title="Bill-Payment Posting" data-href="/CashieringAndPosting/DebitNotes/SaveDebitNote">
+                Settle Now
+            </button>
+        }
+        else
+        {
+            <input id="btnSave" value="POST TO ROOM" class="btn btn-primary disabled hidden-print" />
+        }
+        &nbsp;
+        <a id="btnprint" class="btn btn-primary disabled hidden-print" target="_blank">
+            <span class="glyphicon glyphicon-print"></span>
+        </a>
+
+        <input type="hidden" value="" name="" id="PosringTypehdn" />*@
+
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>

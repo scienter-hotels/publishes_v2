@@ -1,0 +1,172 @@
+﻿@model Scienter.HotelERP.Common.Domain.PackageDetail
+<div class="col-md-12">
+    <script src="~/Scripts/ui/common/scienter.common.datatimepicker.js"></script>
+        <form id="packageDetailsForm">
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+
+                @*@Html.HiddenFor(model => model.Id)*@
+                <input type="hidden" value="@Model.Id" id="Id"/>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="form-group label-floating col-md-4">
+                                <label class="control-label">Package Header *</label>
+                                @{Html.RenderAction("PackageHeaderCombo", "PackageHeaders", new { name = "PackageHeaderId", requiered = true, value = Model?.PackageHeaderId });}
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="form-group label-floating col-md-4">
+                                <label class="control-label">Charge Code *</label>
+                                @{Html.RenderAction("ChargeCodeCombo", "ChargeCodes", new { name = "ChargeCodeId", requiered = true, value = Model?.ChargeCodeId });}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group label-floating col-md-4">
+                                <label class="control-label">Posting type *</label>
+                                @{Html.RenderAction("PostingtypesCombo", "PostingTypes", new { name = "PostingTypeId", requiered = true, value = Model?.PostingTypeID });}
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="form-group label-floating col-md-4">
+                                <label class="control-label">Posting Rhythms *</label>
+                                @{Html.RenderAction("PostingRhythmsCombo", "PostingRhythms", new { name = "PostingRhythmId", requiered = true, value = Model?.PostingRhythmId });}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label for="category-name">Charge code Type</label>
+                            <div class="">
+                                @*<div class="form-group label-floating col-md-8">*@
+                                <div class="col-md-4">
+                                    <div class="form-radio">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input CalcTypes in-line" name="CalcType" id="CalcType" value="A" checked> Accomandation
+                                            <i class="input-helper"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-radio">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input CalcTypes in-line" name="CalcType" id="CalcType" value="F"> Food
+                                            <i class="input-helper"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                                @*<div class="col-md-1"></div>*@
+                                <div class="col-md-4">
+                                    <div class="form-radio">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input CalcTypes" name="CalcType" id="CalcType" value="B"> Beverage
+                                            <i class="input-helper"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-radio">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input CalcTypes" name="CalcType" id="CalcType" value="O"> Other
+                                            <i class="input-helper"></i>
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="form-group label-floating col-md-4">
+                                <label class="control-label">Calc Order *</label>
+                                @{Html.RenderAction("CalcOrderCombo", "PackageDetails", new { name = "CalcOrder", requiered = true, value = Model?.CalcOrder });}
+                            </div>
+                            <div class="col-md-1"></div>
+                            <div class="form-group label-floating col-md-4">
+                                <label class="control-label">Name *</label>
+                                <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Name" name="Name" type="text" value="@Model.Name" required>
+                            </div>
+                        </div>
+                       
+                        <div class="row">
+                            <div class="form-group label-floating col-md-4">
+                                <label class="control-label">Amount *</label>
+                                <input autocomplete="off" class="form-control text-box single-line number" maxlength="100" id="Amount" name="Amount" type="text" value="@Model.Amount" required>
+                            </div>
+                            <div class="col-md-1"></div>
+                           
+                        </div>
+                        <div class="row">
+                            <div class="form-group checkbox col-md-4">
+                                <label>
+                                    @Html.CheckBoxFor(model => model.IsActive) Is Active
+                                </label>
+                                @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+
+                        <div class="col-md-4">
+                            <div class="row">
+                                <div class="form-group label-floating col-md-6">
+                                    <label class="control-label">StartingDate *</label>
+                                    <div id="dobContainerInPackageDetails" class='input-group date'>
+                                        <input autocomplete="off" class="form-control datePicker text-box single-line" maxlength="100" id="StartingDate" name="StartingDate" type="text" value="@Model.StartingDate" required>
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-1"></div>
+                                <div class="form-group label-floating col-md-6">
+                                    <label class="control-label">EndingDate *</label>
+                                    <div id="dobContainerInPackageDetails" class='input-group date'>
+                                        <input autocomplete="off" class="form-control datePicker text-box single-line" maxlength="100" id="EndingDate" name="EndingDate" type="text" value="@Model.EndingDate" required>
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>        
+                <div class="form-group">
+                    <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                    &nbsp;
+                    <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+
+<script>
+   
+    $(document).ready(function () {
+        ;
+        var id = $('#Id').val();
+        if (id > 0) {
+            editcalcTypes();
+        }
+    });
+
+    function editcalcTypes() {
+        ;
+        $.ajax({
+            url: '/administration/packagedetails/SelectCalcType',
+            dataType: 'JSON',
+            data: { id: $('#Id').val() },
+            method: 'POST',
+            success: function (data) {
+                
+                $('.CalcTypes').each(function (index, item) {
+                    if ($(item).val() == data.CalcType) {
+                        $(this).prop('checked', true);
+                    }
+                });
+            }
+
+        });
+    }
+  
+
+</script>

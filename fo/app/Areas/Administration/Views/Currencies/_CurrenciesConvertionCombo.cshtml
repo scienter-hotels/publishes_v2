@@ -1,0 +1,25 @@
+﻿
+@using Scienter.HotelERP.FrontOffice.WebUIMvc.Models
+@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.Common.Utility
+
+@model ComboBoxViewModel<CurrencyConversion>
+@{
+    string required = "";
+    if (Model.Required) { required = "required"; }
+}
+
+<select id="@Model.Id" name="@Model.Name" @required class="form-control">
+    <option value="@ComboBoxes.DefaultOptionValue">@ComboBoxes.DefaultOptionMessage</option>
+    @foreach (var option in Model.Options)
+    {
+        if (option.Id.ToString() == Model.SelectedValue)
+        {
+            <option data-currency-code="@option.ConvCurrCode" value="@option.Id" data-rate="@option.SellingRate" selected>@option.ConvCurrCode</option>
+        }
+        else
+        {
+            <option data-currency-code="@option.ConvCurrCode" data-rate="@option.SellingRate" value="@option.Id">@option.ConvCurrCode</option>
+        }
+    }
+</select>

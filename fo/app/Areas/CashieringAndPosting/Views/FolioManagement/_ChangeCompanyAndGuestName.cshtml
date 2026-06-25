@@ -1,0 +1,59 @@
+﻿<input type="hidden" value="@ViewBag.FolioHeader" id="folio-header-id"/>
+<br />
+@*<div class="row">
+    <div class="col-md-12">
+        <div class="form-group label-floating margin-top-10px">
+            <label class="control-label">
+                Company Name
+            </label>
+            <input type="text" class="form-control" id="company-name" />
+        </div>
+
+    </div>
+</div>
+<br />*@
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group label-floating margin-top-10px">
+            <label class="control-label">
+                Guest Name
+            </label>
+            <input type="text" class="form-control" id="guest-name" />
+        </div>
+    </div>
+</div>
+@*<br />
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-group label-floating margin-top-10px">
+            <label class="control-label">
+               Guest Address
+            </label>            
+            <textarea maxlength="500" rows="2" id="folio-address" name="FolioAddress" class="form-control folioAddress" required></textarea>
+        </div>
+    </div>
+</div>*@
+<div class="row">
+    <div class="col-md-6">
+        <div class="label-floating margin-top-10px">
+            <input type="button" class="btn btn-success folio-names-change" value="Save">
+        </div>
+    </div>
+</div>
+
+<script>
+    $('body').on('click', '.folio-names-change', function () {
+       
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/SaveCompanyAndCustomerName?folioHeaderId=' + $('#folio-header-id').val() + '&companyName=' + $('#company-name').val() + '&guestName=' + $('#guest-name').val() + '&folioAddress=' + $('#folio-address').val(),
+            dataType: 'json',
+            success: function (data) {                
+                ShowSuccessMessage('Record has been saved successfully.');                
+                $("#grid-record-detail-model").hide();
+            },
+            error: function () {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+        });
+    })
+</script>

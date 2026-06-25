@@ -1,0 +1,128 @@
+﻿
+@{
+    ViewBag.Title = "Day End";
+}
+
+<style>
+    .text-center {
+        text-align: center
+    }
+
+    .custom-hr {
+        border-top: 10px solid #c5c5c5;
+    }
+
+    .warning-card {
+        background-color: #ec6a6a;
+        border-radius: 10px;
+    }
+</style>
+
+
+
+
+<div class="row" style="min-height:475px;">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header hidden-print" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="title hidden-print">
+                            @ViewBag.Title
+                            <span class="hotel-date" style="float:right;"></span>
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-content">
+
+
+
+
+                <div class="row">
+                    <div class="col-md-9">               
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="" style="height:300px; border:1px solid #4e0043; margin-top:10px; margin-bottom:10px; border-radius:5px;">
+                                    <h4 style="padding:10px 15px; background-color:#4e0043;color:white">Front Office</h4>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="" style="height:300px; border:1px solid #4e0043; margin-top:10px; margin-bottom:10px; border-radius:5px;">
+                                    <h4 style="padding:10px 15px; background-color:#4e0043;color:white">Front Office</h4>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="col-md-3">
+                        <div class="" style="height:300px; border:1px solid #de4b00; margin-top:10px; margin-bottom:10px; border-radius:5px;">
+                            <h4 style="padding:10px 15px; background-color:#de4b00;color:white">Status</h4>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="well">
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <h2 class="hotel-date"></h2>
+                                </div>
+                            </div>
+                            <div class="row custom-hr"></div>
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <h3 class="pending-checkins"></h3>
+                                    <h3 class="pending-checkouts"></h3>
+                                </div>
+                            </div>
+                            <div class="row custom-hr"></div>
+                            <div class="row pending-process-error blink hidden">
+                                <div class="col-md-offset-3 col-md-6">
+                                    <div class="col-md-12 text-center">
+                                        <h3 class="warning-card" style="color:white">Please Check Above Pendings</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 text-center">
+                                    <input type="button" data-backdrop="static" data-title="Day End" data-href="/cashieringandposting/dayendprocess/DayEndProgress" data-width="600" class="btn process-button btn-lg call-popup-model" value="Start process" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/CashieringAndPosting/DayEndProcess/GetPendingProcess',
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                if (data.PendingArrivals > 0 || data.PendingCheckOuts > 0) {
+                    $('.process-button').addClass('btn-warning');
+                    $('.process-button').prop('disabled', true);
+                    $('.pending-process-error').removeClass('hidden');
+                }
+                else if (data.PendingArrivals == 0 && data.PendingCheckOuts == 0) {
+                    $('.process-button').addClass('btn-success');
+                }
+
+                $('.pending-checkins').html('Pending Checkins : ' + data.PendingArrivals);
+                $('.pending-checkouts').html('Pending Checkouts : ' + data.PendingCheckOuts);
+                $('.hotel-date').html('Hotel Date: ' + data.HotelDate);
+            },
+        });
+    })
+</script>
+

@@ -1,0 +1,911 @@
+﻿<style>
+    .card-popup {
+        /*width: auto;
+        height: 263px;*/
+        border: 2px solid #094F70;
+        padding: 10px;
+        /*margin: 10px 0;*/
+    }
+
+    .fixed-navbar {
+        position: fixed;
+        top: 90px;
+        left: 34px;
+        width: 94%;
+        z-index: 1;
+    }
+
+    .image-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .base-div {
+        margin-bottom: 10px;
+    }
+
+    .title-header {
+        background-color: #DDE6ED;
+        padding: 5px 10px;
+        color: #4d4d4d;
+    }
+
+    .panel .table {
+        padding: 15px;
+    }
+
+    .panel {
+        margin-bottom: 0px !important;
+    }
+
+    .show-hide {
+        display: none;
+    }
+
+    .img-icon {
+        width: 25px;
+        margin-right: 10px;
+        margin-top: -9px;
+    }
+
+    #guestDetailsTable {
+        line-height: 19px;
+    }
+
+    .data-cell {
+        font-size: 18px;
+        margin-left: 35px;
+    }
+
+    .summary {
+        margin-top: 15px;
+    }
+
+    #GuestHistory table:not(.table-striped) tr:first-child {
+        background-color: transparent;
+    }
+</style>
+
+<link href="~/Content/customGuestHistory.css" rel="stylesheet" />
+<input type="hidden" id="resId" class="resId" value="@ViewBag.resId" />
+<input type="hidden" value="@ViewBag.guestID" id="hdnGuestId" />
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="fixed-navbar">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a id="SummaryTab" data-toggle="tab" href="#summary">Summary</a></li>
+                    <li><a id="ReservationsTab" data-toggle="tab" href="#reservations">Reservations</a></li>
+                    <li><a id="PreferencesTab" data-toggle="tab" href="#preferences">Preferences</a></li>
+                    <li><a id="AllergiesTab" data-toggle="tab" href="#alergics">Allergies</a></li>
+                    <li><a id="NotesTab" data-toggle="tab" href="#notes">Notes</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="tab-content" style="margin-top:45px;" id="GuestHistory">
+        <div id="summary" class="tab-pane fade in active">
+
+            <div class="row" style=" margin-top: -10px;">
+                <div class="col-md-12">
+                    <div class="summary">
+                        <div id="sum">
+                            @Html.Partial("_Loader")
+                            <div class="row" id="summaryTable" style="margin: 0 -15px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-7">
+                    <div class="card-popup guest-details">
+                        <h5 class="title-header">Guest Details</h5>
+                        <div class="panel panel-default">
+
+                            <div class="panel-body" id="sum" style="padding-bottom:0px;">
+                                @Html.Partial("_Loader")
+                                <div class="table show-hide" style="margin-bottom:0px !important;" id="guestDetailsTable"> </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <div class="card-popup passport">
+                        <h5 class="title-header">Passport Image</h5>
+                        <div class="panel panel-default">
+                            <div class="panel-body" id="sum">
+                                @Html.Partial("_Loader")
+
+                                <div class="image-container show-hide">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="reservations" class="tab-pane fade">
+            <div class="base-div card-popup">
+                <h5 class="title-header">InHouse Reservations</h5>
+                <div class="panel panel-default">
+                    <div class="panel-body" id="res">
+                        @Html.Partial("_Loader")
+                        <table class="table show-hide" style="margin-bottom:0px !important;" id="currentResTable">
+
+                            <tr>
+                                <th>Property</th>
+                                <th>Arrival</th>
+                                <th>Departure</th>
+                                <th>Res No</th>
+                                <th>G.Res No</th>
+                                <th>Agent</th>
+                                <th>Market</th>
+                                <th>Rate Code</th>
+                                <th style="text-align:right;">Room Rate</th>
+                                <th style="text-align:right;">R.Rev</th>
+                                <th style="text-align:right;">O.Rev</th>
+                                <th style="text-align:right;">Invoice Total</th>
+                                <th><span style="margin-left:5px;">Segment</span></th>
+                                <th></th>
+                            </tr>
+
+                            <tr>
+                                <td colspan="12" class="data-row-i">No Records</td>
+                            </tr>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="base-div card-popup">
+                <h5 class="title-header">Future Reservations</h5>
+                <div class="panel panel-default">
+                    <div class="panel-body" id="res">
+                        @Html.Partial("_Loader")
+                        <table class="table show-hide" style="margin-bottom:0px !important;" id="futureResTable">
+                            <tr>
+                                <th>Status</th>
+                                <th>Property</th>
+                                <th>Arrival</th>
+                                <th>Departure</th>
+                                <th>Res No</th>
+                                <th>G.Res No</th>
+                                <th>Agent</th>
+                                <th>Market</th>
+                                <th>Rate Code</th>
+                                <th style="text-align:right;">Room Rate</th>
+                                <th style="text-align:right;">R.Rev</th>
+                                <th style="text-align:right;">O.Rev</th>
+                                <th style="text-align:right;">Invoice Total</th>
+                                <th><span style="margin-left:5px;">Segment</span></th>
+                            </tr>
+
+                            <tr>
+                                <td colspan="12" class="data-row-r">No Records</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="base-div card-popup">
+                <h5 class="title-header">Checked Out Reservations</h5>
+                <div class="panel panel-default">
+                    <div class="panel-body" id="res">
+                        @Html.Partial("_Loader")
+                        <table class="table show-hide" style="margin-bottom:0px !important;" id="pastResTable">
+
+                            <tr>
+                                <th>Property</th>
+                                <th>Arrival</th>
+                                <th>Departure</th>
+                                <th>Res No</th>
+                                <th>G.Res No</th>
+                                <th>Agent</th>
+                                <th>Market</th>
+                                <th>Rate Code</th>
+                                <th style="text-align:right;">Room Rate</th>
+                                <th style="text-align:right;">R.Rev</th>
+                                <th style="text-align:right;">O.Rev</th>
+                                <th style="text-align:right;">Invoice Total</th>
+                                <th><span style="margin-left:5px;">Segment</span></th>
+                                <th></th>
+                            </tr>
+
+                            <tr>
+                                <td colspan="14" class="data-row-c">No Records</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="base-div card-popup">
+                <h5 class="title-header">Canceled Reservations</h5>
+                <div class="panel panel-default">
+                    <div class="panel-body" id="res">
+                        @Html.Partial("_Loader")
+                        <table class="table show-hide" style="margin-bottom:0px !important;" id="cancelResTable">
+
+                            <tr>
+                                <th>Status</th>
+                                <th>Property</th>
+                                <th>Arrival</th>
+                                <th>Departure</th>
+                                <th>Res No</th>
+                                <th>G.Res No</th>
+                                <th>Agent</th>
+                                <th>Market</th>
+                                <th>Rate Code</th>
+                                <th style="text-align:right;">Room Rate</th>
+                                <th style="text-align:right;">R.Rev</th>
+                                <th style="text-align:right;">O.Rev</th>
+                                <th style="text-align:right;">Invoice Total</th>
+                                <th><span style="margin-left:5px;">Segment</span></th>
+
+                            </tr>
+
+                            <tr>
+                                <td colspan="14" class="data-row-b">No Records</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="preferences" class="tab-pane fade card-popup">
+            <h5 class="title-header">Preferences</h5>
+            <div class="panel panel-default">
+                <div id="extraPostingCollaps" class="panel-collapse in" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="panel-body" id="pref">
+                        @Html.Partial("_Loader")
+                        <table id="existingFolioDetails" style="margin-bottom:0px !important; width:100%;" class="table show-hide">
+
+                            <tr>
+                                <th>Item</th>
+                                <th style="text-align:right;">Quantity</th>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="data-row-x">No Records</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="alergics" class="tab-pane fade card-popup">
+            <h5 class="title-header">Allergies</h5>
+            <div class="panel panel-default">
+                <div class="panel-body" id="alg">
+                    @Html.Partial("_Loader")
+                    <table class="table show-hide" style="margin-bottom:0px !important;" id="alergicsTable">
+                        <tr>
+                            <th style="width:40%;">Allergic</th>
+                            <th>Remark</th>
+                        </tr>
+
+                        <tr>
+                            <td colspan="12" class="data-row-a">No Records</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="notes" class="tab-pane fade card-popup">
+            <h5 class="title-header">Notes</h5>
+            <div class="panel panel-default">
+                <div class="panel-body" id="note">
+                    @Html.Partial("_Loader")
+                    <table class="table show-hide" style="margin-bottom:0px !important;" id="notesTable">
+                        <tr>
+                            <th style="width:15%;">Date</th>
+                            <th>Notes</th>
+                        </tr>
+
+                        <tr>
+                            <td colspan="12" class="data-row-n">No Records</td>
+                        </tr>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('#grid-record-detail-body').css('width', 1155);
+
+        setTimeout(function () {
+            FillGuestSummaryDetails();
+        }, 2000);
+
+    });
+
+    var guestid = $('#existingGuestProfileGrid').find('.guest-checkBox:checked').val();
+
+    //Summary Tab
+    function FillGuestSummaryDetails() {
+
+        $.ajax({
+            url: '/Administration/GuestHistory/LoadGuestDetails?GuestProfileId=' + guestid,
+            dataType: 'JSON',
+            method: 'POST',
+            beforeSend: function () {
+                $('#sum .loader-load').show();
+                $('#sum .show-hide').hide();
+            },
+            success: function (data) {
+                $('#sum .loader-load').hide();
+                $('#summaryTable .loader-load').hide();
+                $('#sum .show-hide').show();
+                $('.data-row').remove();
+
+                var guestDetails = JSON.parse(data.Summary);
+
+                //guestDetails
+                $(
+                    '<form class="data-row">' +
+
+                    '<div class="row">' +
+
+                    '<div class="col-md-9">' +
+                    '<div class="row">' +
+
+                    '<div class="col-md-6">' +
+                    '<div class="form-group">' +
+                    //'<img src="/Images/assets/guesthistoryicons/deal.png" style="width:15px; margin-bottom:5px; margin-right:10px;"/>' +
+                    '<label for="salutation">Salutation</label>' +
+                    '<input type="text" class="form-control" id="salutation" disabled>' +
+                    '</div>' +
+                    '</div>' +
+
+                    '<div class="col-md-6">' +
+                    '<div class="form-group">' +
+                    //'<img src="/Images/assets/guesthistoryicons/user-name.png" style="width:15px; margin-bottom:5px; margin-right:10px;"/>' +
+                    '<label for="lastName">Membership Number</label>' +
+                    '<input type="text" class="form-control" id="membershipNumber" disabled>' +
+                    '</div>' +
+                    '</div>' +
+
+                    '</div>' +
+
+
+                    '<div class="row">' +
+                    '<div class="col-md-6">' +
+                    '<div class="form-group">' +
+                    //'<img src="/Images/assets/guesthistoryicons/user-name.png" style="width:15px; margin-bottom:5px; margin-right:10px;"/>' +
+                    '<label for="firstName">First Name</label>' +
+                    '<input type="text" class="form-control data-row" id="firstName" disabled>' +
+                    '</div>' +
+                    '</div>' +
+
+                    '<div class="col-md-6">' +
+                    '<div class="form-group">' +
+                    '<label for="lastName">Last Name</label>' +
+                    '<input type="text" class="form-control" id="lastName" disabled>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+
+                    '</div>' +
+
+                    '<div class="col-md-3">' +
+                    '<img src = "/Images/assets/guesthistoryicons/Profile_avatar_placeholder_large.png" style="width:170px;" alt="guest image" id="guestImage"/>' +
+                    '</div>' +
+
+                    '</div>' +
+
+
+                    '<div class="row">' +
+
+                    //'</div>' +
+                    '<div class="col-md-6">' +
+                    '<div class="form-group">' +
+                    //'<img src="/Images/assets/guesthistoryicons/emails.png" style="width:15px; margin-bottom:5px; margin-right:10px;"/>' +
+                    '<label for="contactNo">Contact Number</label>' +
+                    '<input type="text" class="form-control" id="contactNo" disabled>' +
+                    '</div>' +
+                    '</div>' +
+
+                    //'<div class="row">' +
+                    '<div class="col-md-3">' +
+                    '<div class="form-group">' +
+                    //'<img src="/Images/assets/guesthistoryicons/location.png" style="width:15px; margin-bottom:5px; margin-right:10px;"/>' +
+                    '<label for="country">Country</label>' +
+                    '<input type="text" class="form-control" id="country" disabled>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="col-md-3">' +
+                    '<div class="form-group">' +
+                    //'<img src="/Images/assets/guesthistoryicons/citizen.png" style="width:15px; margin-bottom:5px; margin-right:10px;"/>' +
+                    '<label for="nationality">Nationality</label>' +
+                    '<input type="text" class="form-control" id="nationality" disabled>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+
+                    '<div class="row">' +
+                    '<div class="col-md-6">' +
+                    '<div class="form-group">' +
+                    //'<img src="/Images/assets/guesthistoryicons/phone-contact.png" style="width:15px; margin-bottom:5px; margin-right:10px;"/>' +
+                    '<label for="email">Email</label>' +
+                    '<input type="text" class="form-control" id="email" disabled>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="col-md-3">' +
+                    '<div class="form-group">' +
+                    //'<img src="/Images/assets/guesthistoryicons/location.png" style="width:15px; margin-bottom:5px; margin-right:10px;"/>' +
+                    '<label for="country">VIP Level</label>' +
+                    '<input type="text" class="form-control" id="vipLevel" disabled>' +
+                    '</div>' +
+                    '</div>' +
+
+                    '<div class="col-md-3">' +
+                    '<div class="form-group">' +
+                    //'<img src="/Images/assets/guesthistoryicons/citizen.png" style="width:15px; margin-bottom:5px; margin-right:10px;"/>' +
+                    '<label for="nationality">Preffered Room</label>' +
+                    '<input type="text" class="form-control" id="prefferedRoom" disabled>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+
+                    '</form>'
+
+                ).appendTo('#guestDetailsTable');
+
+                $('#salutation').val(data.Salutation);
+                $('#firstName').val(data.FirstName);
+                $('#lastName').val(data.LastName);
+                $('#country').val(data.Country);
+                $('#nationality').val(data.Nationality);
+                $('#contactNo').val(data.ContactNo);
+                $('#email').val(data.Email);
+                $('#vipLevel').val(data.VipLevel);
+                $('#prefferedRoom').val(data.PreferedRoom);
+                $('#membershipNumber').val(data.MembershipNo);
+
+
+                $('#guestDetailsTable .form-control').css({ 'height': '35px', 'font-size': '16px', });
+                $('#guestDetailsTable .form-group').css({ 'margin': '0px', });
+                $('#guestDetailsTable .form-group label').css({ 'color': '#00001B', 'font-size': '11px', });
+
+
+                //passport image
+                $('<div style="display:flex; justify-content:center; align-items:center;"><img src="' + data.GuestImage + '" alt="Passport Image" style="width:95%; margin-top:0px;"  class="data-row"/></div>').appendTo('.image-container');
+
+                setTimeout(function () {
+
+                    var gdetails = $('#guestDetailsTable').height();
+                    var pimage = $('.image-container').height();
+
+                    var row1max = (Math.max.apply(null, [gdetails, pimage])) + 81;
+
+                    $('.guest-details').height(row1max);
+                    $('.passport').height(row1max);
+                }, 500);
+
+                //guest Summary
+                $(guestDetails).each(function (index, item) {
+
+                    $(
+                        '<div class="col-md-2 data-row">' +
+                        '<div class="card-popup sum-panel" style="margin-bottom:15px!important; text-align:center;">' +
+                        '<div class="" id="sum">' +
+                        '<table style="width:100%;" class="table-condensed">' +
+                        '<tr style=:background-color:transparent;>' +
+                        '<td style="width:30px;">' +
+                        '<div><img src = "/Images/assets/guesthistoryicons/' + index + '.png" style="width:30px; margin-bottom:10px;" alt="" /></div>' +
+                        '</td>' +
+                        '<td style="text-align:right;">' +
+                        '<span class="value">' + item.Value + '</span>' +
+                        '<div class="lable">' + item.Lable + '</div>' +
+                        '</td>' +
+                        '</tr>' +
+                        '</table>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>'
+                    ).appendTo('#summaryTable');
+                })
+
+                $('.value').css({ 'color': '#000002 ', 'font-size': '15px', 'font-weight': 'bold' });
+                $('.lable').css({ 'color': '#4d4d4d ', 'font-size': '12px', });
+
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error loading existing setups.');
+            },
+
+            complete: function () {
+
+            },
+        });
+    }
+
+    //Reservation Tab
+    function FillReservations() {
+        $.ajax({
+            url: '/Administration/GuestHistory/LoadGuestReservation?GuestProfileId=' + guestid,
+            dataType: 'HTML',
+            method: 'POST',
+            beforeSend: function () {
+                $('#res .loader-load').show();
+                $('#res .show-hide').hide();
+            },
+            success: function (data) {
+                $('#res .loader-load').hide();
+                $('#res .show-hide').show();
+                $('.currentinvoiceDetailsTable').find('.data-row').remove();
+                $('.futureinvoiceDetailsTable').find('.data-row').remove();
+                $('.pastinvoiceDetailsTable').find('.data-row').remove();
+
+                $('.data-row').remove();
+                $('#i-invoice .data-row').remove();
+                $('#r-invoice .data-row').remove();
+                $('#c-invoice .data-row').remove();
+
+                var reservationDetails = JSON.parse(data);
+
+                $(reservationDetails).each(function (index, item) {
+                    var InvoiceDetails = JSON.parse(item.InvoiceNo);
+                    var RoomRateCurr = JSON.parse(item.RoomRate);
+                    var RoomRateCurrOne = RoomRateCurr[0];
+
+                    if (item.ReservationLevel == "I") {
+                        $('.data-row-i').remove();
+                        $(
+
+                            '<tr class="data-row">' +
+                            '<td><span>' + item.propertyName + '</span></td>' +
+                            '<td><span>' + item.Arrival + '</span></td>' +
+                            '<td><span>' + item.Departure + '</span></td>' +
+                            '<td><span>' + item.ReservationNo + '</span></td>' +
+                            '<td><span>' + item.GroupReservationNo + '</span></td>' +
+                            '<td><span >' + item.Agent + '</span></td>' +
+                            '<td><span>' + item.Market + '</span></td>' +
+                            '<td><span>' + item.RateCode + '</span></td>' +
+                            '<td style="text-align:right;"><span>' + RoomRateCurrOne.RoomRate + '(' + RoomRateCurrOne.CurrencyCode + ')</span></td>' +
+                            '<td style="text-align:right;"><span>' + item.RoomRev + '</span></td>' +
+                            '<td style="text-align:right;"><span>' + item.OtherRev + '</span></td>' +
+                            '<td style="text-align:right;"><span>' + item.InvoiceTotal + '</span></td>' +
+                            '<td><span style="margin-left:5px;">' + item.Segment + '</span></td>' +
+                            '<td class="grid-grow-plus-click-td text-center CurrentPlus"><span class="fa fa-plus grid-grow-plus-click" data-toggle="collapse" ></span></td>' +
+                            '</tr>' +
+
+                            '<tr id = "invoiceDetailsTableDiv" class="data-row" style="">' +
+                            '<td colspan="13">' +
+                            '<table class = "currentinvoiceDetailsTable col-md-4 col-lg-offset-8" style="display:none;">' +
+                            '<tr>' +
+                            '</tr >' +
+                            '</table>' +
+                            '</td>' +
+                            '</tr>'
+
+                        ).appendTo('#currentResTable');
+
+                        $(InvoiceDetails).each(function (index2, item2) {
+
+                            $(
+                                '<tr class = "futureinvoiceDetailsTableDiv data-row">' +
+                                '<td style="width:50%"><span>' + item2.InvoiceNo + '</span></td>' +
+                                '<td><p class="GetInvoiceDeatils" style="color:#094F70; font-weight:bold;">Details</p></td>' +
+                                '</tr>'
+
+                            ).appendTo('.currentinvoiceDetailsTable');
+                        })
+
+                    }
+                    else if (item.ReservationLevel == "C") {
+                        $('.data-row-c').remove();
+                        $(
+                            '<tr class="data-row">' +
+                            '<td><span>' + item.propertyName + '</span></td>' +
+                            '<td><span>' + item.Arrival + '</span></td>' +
+                            '<td><span>' + item.Departure + '</span></td>' +
+                            '<td><span>' + item.ReservationNo + '</span></td>' +
+                            '<td><span>' + item.GroupReservationNo + '</span></td>' +
+                            '<td><span >' + item.Agent + '</span></td>' +
+                            '<td><span>' + item.Market + '</span></td>' +
+                            '<td><span>' + item.RateCode + '</span></td>' +
+                            '<td style="text-align:right;"><span>' + RoomRateCurrOne.RoomRate + '(' + RoomRateCurrOne.CurrencyCode + ')</span></td>' +
+                            '<td style="text-align:right;"><span>' + item.RoomRev + '</span></td>' +
+                            '<td style="text-align:right;"><span>' + item.OtherRev + '</span></td>' +
+                            '<td style="text-align:right;"><span>' + item.InvoiceTotal + '</span></td>' +
+                            '<td><span style="margin-left:5px;">' + item.Segment + '</span></td>' +
+                            '<td class="grid-grow-plus-click-td text-center PastPlus"><span class="fa fa-plus grid-grow-plus-click" data-toggle="collapse"></span></td>' +
+                            '</tr>' +
+
+                            '<tr id = "invoiceDetailsTableDiv" class=" data-row" style="">' +
+                            '<td colspan="13">' +
+                            '<table class = "pastinvoiceDetailsTable col-md-4 col-lg-offset-8" style="display:none;">' +
+                            '<tr>' +
+                            '</tr >' +
+                            '</table>' +
+                            '</td>' +
+                            '</tr>'
+
+                        ).appendTo('#pastResTable');
+
+                        $(InvoiceDetails).each(function (index2, item2) {
+
+                            $(
+
+                                '<tr class = "futureinvoiceDetailsTableDiv">' +
+                                '<td class="data-row" style="width:50%"><span>' + item2.InvoiceNo + '</span></td>' +
+                                '<td class="data-row"><p style="color:#094F70;font-weight:bold;" class="GetInvoiceDeatils "><a ' +
+                                'href="/Reporting/Report/ViewReport?ReportName=FolioInvoice&amp;FromDate=undefined&amp;ToDate=undefined&amp;FromTime=undefined&amp;ToTime=undefined&amp;Uuid=undefined&amp;ResNo=undefined&amp;Date=undefined&amp;Time=undefined&amp;Arrival=undefined&amp;Departure=undefined&amp;Company=undefined&amp;Status=undefined&amp;RateCode=undefined&amp;GroupReservationNo=undefined &amp;RoomRate=undefined&amp;DocNo=undefined&amp;InvoiceNo=' + item2.InvoiceNo + '&amp;Type=undefined&amp;SubTitle=undefined&amp;ExtensionCode=undefined&amp;CallDirection=undefined&amp;CallType=undefined&amp;IsPreview=0&amp;InspectionTimeId=undefined&amp;Segment=undefined&amp;MealAdvDocNo=undefined&amp;IsLKROnlyInvoice=0&amp;TelePhoneNo=undefined&amp;ExtensionGroup=undefined"' +
+                                ' target="_blank">Details<div class="ripple-container"></div></a></p></td>' +
+                                '</tr>'
+
+                            ).appendTo('.pastinvoiceDetailsTable');
+                        })
+                    }
+                    else if (item.StatusId != "1") {
+
+                        $('.data-row-r').remove();
+                        $(
+                            '<tr class="data-row">' +
+                            '<td title="' + item.ReservationStatuesColor + '" style="width: 15px; background-color: ' + item.ReservationStatuesColor + ';display: block;border-radius: 50%; height: 15px; margin-top: 7px;margin-left: 11px;"><span></span></td>' +
+                            '<td><span>' + item.propertyName + '</span></td>' +
+                            '<td><span>' + item.Arrival + '</span></td>' +
+                            '<td><span>' + item.Departure + '</span></td>' +
+                            '<td><span>' + item.ReservationNo + '</span></td>' +
+                            '<td><span>' + item.GroupReservationNo + '</span></td>' +
+                            '<td><span >' + item.Agent + '</span></td>' +
+                            '<td><span>' + item.Market + '</span></td>' +
+                            '<td><span>' + item.RateCode + '</span></td>' +
+                            '<td style="text-align:right;"><span>' + RoomRateCurrOne.RoomRate + '(' + RoomRateCurrOne.CurrencyCode + ')</span></td>' +
+                            '<td style="text-align:right;"><span>' + item.RoomRev + '</span></td>' +
+                            '<td style="text-align:right;"><span>' + item.OtherRev + '</span></td>' +
+                            '<td style="text-align:right;"><span>' + item.InvoiceTotal + '</span></td>' +
+                            '<td><span style="margin-left:5px;">' + item.Segment + '</span></td>' +
+                            '</tr>'
+                        ).appendTo('#futureResTable');
+                    }
+
+                    else {
+                        $('.data-row-b').remove();
+                        $(
+                            '<tr class="data-row">' +
+                            '<td title="' + item.ReservationStatuesColor + '" style="width: 15px; background-color: ' + item.ReservationStatuesColor + ';display: block;border-radius: 50%; height: 15px; margin-top: 7px;margin-left: 11px;"><span></span></td>' +
+                            '<td><span>' + item.propertyName + '</span></td>' +
+                            '<td><span>' + item.Arrival + '</span></td>' +
+                            '<td><span>' + item.Departure + '</span></td>' +
+                            '<td><span>' + item.ReservationNo + '</span></td>' +
+                            '<td><span>' + item.GroupReservationNo + '</span></td>' +
+                            '<td><span >' + item.Agent + '</span></td>' +
+                            '<td><span>' + item.Market + '</span></td>' +
+                            '<td><span>' + item.RateCode + '</span></td>' +
+                            '<td style="text-align:right;"><span>' + RoomRateCurrOne.RoomRate + '(' + RoomRateCurrOne.CurrencyCode + ')</span></td>' +
+                            '<td style="text-align:right;"><span>' + item.RoomRev + '</span></td>' +
+                            '<td style="text-align:right;"><span>' + item.OtherRev + '</span></td>' +
+                            '<td style="text-align:right;"><span>' + item.InvoiceTotal + '</span></td>' +
+                            '<td><span style="margin-left:5px;">' + item.Segment + '</span></td>' +
+                            '</tr>'
+                        ).appendTo('#cancelResTable');
+                    }
+                })
+
+
+                $(document).off('click', '.CurrentPlus').on('click', '.CurrentPlus', function () {
+                    $(this).closest('tr.data-row').next('tr.data-row').find('.currentinvoiceDetailsTable').toggle();
+                });
+
+                $(document).off('click', '.FuturePlus').on('click', '.FuturePlus', function () {
+                    $(this).closest('tr.data-row').next('tr.data-row').find('.futureinvoiceDetailsTable').toggle();
+                });
+
+                $(document).off('click', '.PastPlus').on('click', '.PastPlus', function () {
+                    $(this).closest('tr.data-row').next('tr.data-row').find('.pastinvoiceDetailsTable').toggle();
+                });
+
+                //$(document).on('click', '.grid-grow-plus-click', function (e) {
+                //    e.stopPropagation();
+                //});
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error loading existing setups.');
+            }
+        });
+    };
+
+    //Preference Tab
+    function FillOtherFolioDetails() {
+
+        $.ajax({
+            url: '/Administration/GuestHistory/LoadGuestExtraPosting?GuestProfileId=' + guestid,
+            dataType: 'HTML',
+            method: 'POST',
+            beforeSend: function () {
+                $('#pref .loader-load').show();
+                $('#pref .show-hide').hide();
+            },
+            success: function (data) {
+
+                $('#pref .loader-load').hide();
+                $('#pref .show-hide').show();
+                $('.data-row').remove();
+
+                var preferences = JSON.parse(data);
+
+                if (preferences.length != 0) {
+
+                    $('.data-row-x').remove();
+                    $(preferences).each(function (index, item) {
+                        $(
+                            '<tr class="data-row-x">' +
+                            '<td><span>' + item.ItemName + '</span></td>' +
+                            '<td style="text-align:right; width:60%;"><span>' + item.Quantity + '</span></td>' +
+                            '</tr>'
+                        ).appendTo('#existingFolioDetails');
+
+                    })
+                }
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error loading existing setups.');
+            }
+        });
+    }
+
+    //Allergies Tab
+    function FillAllergies() {
+        $.ajax({
+            url: '/Administration/GuestHistory/GuestAlergic?GuestProfileId=' + guestid,
+            dataType: 'HTML',
+            method: 'POST',
+            beforeSend: function () {
+                $('#alg .loader-load').show();
+                $('#alg .show-hide').hide();
+            },
+            success: function (data) {
+                $('#alg .loader-load').hide();
+                $('#alg .show-hide').show();
+                $('.data-row').remove();
+
+                var allergies = JSON.parse(data);
+
+                if (allergies.length != 0) {
+
+                    $(allergies).each(function (index, item) {
+
+
+                        $('.data-row-a').remove();
+                        $(
+                            '<tr class="data-row">' +
+                            '<td><span>' + item.Alergic + '</span></td>' +
+                            '<td><span>' + item.Remark + '</span></td>' +
+
+                            '</tr>'
+                        ).appendTo('#alergicsTable');
+
+                    })
+                }
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error loading existing setups.');
+            }
+        });
+    }
+
+    //Notes Tab
+    function FillNotes() {
+        $.ajax({
+            url: '/Administration/GuestHistory/GuestNote?GuestProfileId=' + guestid,
+            dataType: 'HTML',
+            method: 'POST',
+            beforeSend: function () {
+                $('#note .loader-load').show();
+                $('#note .show-hide').hide();
+            },
+
+            success: function (data) {
+                $('#note .loader-load').hide();
+                $('#note .show-hide').show();
+                $('.data-row').remove();
+
+                var notes = JSON.parse(data);
+
+                if (notes.length != 0) {
+
+                    $(notes).each(function (index, item) {
+
+                        $('.data-row-n').remove();
+                        $(
+                            '<tr class="data-row">' +
+                            '<td><span>' + item.CreateDate + '</span></td>' +
+                            '<td><span>' + item.Note + '</span></td>' +
+
+                            '</tr>'
+                        ).appendTo('#notesTable');
+
+                    })
+                }
+
+            },
+
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error loading existing setups.');
+            }
+        });
+    }
+
+
+
+    $('#SummaryTab').click(function () {
+        $('#sum .loader-load').show();
+        $('#sum .show-hide').hide();
+        $('#summaryTable .loader-load').show();
+        $('#summaryTable .show-hide').hide();
+        setTimeout(function () {
+            FillGuestSummaryDetails();
+        }, 2000);
+    });
+
+    $('#ReservationsTab').click(function () {
+        $('#res .loader-load').show();
+        $('#res .show-hide').hide();
+        //$('.currentinvoiceDetailsTable').find('.data-row').remove();
+        //$('.futureinvoiceDetailsTable').find('.data-row').remove();
+        //$('.pastinvoiceDetailsTable').find('.data-row').remove();
+
+        // $('.data-row').remove();
+        setTimeout(function () {
+            FillReservations();
+        }, 2000);
+    });
+
+    $('#PreferencesTab').click(function () {
+        $('#pref .loader-load').show();
+        $('#pref .show-hide').hide();
+        setTimeout(function () {
+            FillOtherFolioDetails();
+            setTimeout(function () {
+                $('#existingFolioDetails div').css('height', 'auto');
+                $('#existingFolioDetails div').css('overflow-y', 'auto');
+            }, 1000);
+        }, 2000);
+
+    });
+
+    $('#AllergiesTab').click(function () {
+        $('#alg .loader-load').show();
+        $('#alg .show-hide').hide();
+        setTimeout(function () {
+            FillAllergies();
+        }, 2000);
+    });
+
+    $('#NotesTab').click(function () {
+        $('#note .loader-load').show();
+        $('#note .show-hide').hide();
+        setTimeout(function () {
+            FillNotes();
+        }, 2000);
+    });
+
+    $(document).off('click', '.GetInvoiceDeatils').on('click', '.GetInvoiceDeatils', function () {
+        $(this).css('color', 'black');
+    });
+
+</script>

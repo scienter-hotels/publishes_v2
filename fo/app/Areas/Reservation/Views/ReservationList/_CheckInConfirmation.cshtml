@@ -1,0 +1,142 @@
+﻿<style>
+    .container-padding {
+        padding: 100px 400px;
+    }
+</style>
+
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+<input type="hidden" value="@ViewBag.ReservationNo" id="reservationNumber" />
+<input type="hidden" id="GuestName" value="@ViewBag.guestName" />
+<input type="hidden" id="roomNo" value="@ViewBag.roomNo" />
+<input type="hidden" id="ReservationNumber2" value="@ViewBag.ReservationNo" />
+<input type="hidden" id="ArrivalDate2" value="@ViewBag.ArrivalDate" />
+<input type="hidden" id="DepartureDate2" value="@ViewBag.Departure" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+<div class="container container-padding">
+
+    <form id="QuickCheckin">
+
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:10px;">
+                <div class="row">
+                    <div class="col-md-6">
+                        Reservation No :
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-5 text-right">
+                        @ViewBag.ReservationNo
+                    </div>
+                </div>
+                @*Reservation No: @ViewBag.ReservationNo*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:10px;">
+                <div class="row">
+                    <div class="col-md-6">
+                        Arrival :
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-5 text-right">
+                        @ViewBag.ArrivalDate
+                    </div>
+                </div>
+                @*Arrival: @ViewBag.ArrivalDate*@
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="margin-bottom:10px;">
+                <div class="row">
+                    <div class="col-md-6">
+                        Departure :
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-5 text-right">
+                        @ViewBag.Departure
+                    </div>
+                </div>
+                @*Departure: @ViewBag.Departure*@
+            </div>
+
+        </div>
+
+        <div class="row" style="display:flex;align-items:center;">
+            <div class="col-md-8">
+                <b>Do you want to confirm check-in?</b>
+            </div>
+            <div class="col-md-4">
+                <input type="submit" id="btnQuickCheckIn" value="Check-in" class="btn btn-primary btn-width-100" />
+            </div>
+        </div>
+
+
+    </form>
+
+</div>
+
+    <script>
+        $('body').on('submit', '#QuickCheckin', function (e) {
+            //  $('body').off('submit').on('submit', '#QuickCheckin', function (e) {
+            e.preventDefault();
+
+            var qCheckInsList = [];
+            var ckInRemark = "Success";
+            var arrival = $('#arrivalDate').val();
+            var departure = $('#departureDate').val();
+
+            var ArrivalDate2 = $('#ArrivalDate2').val();
+            var DepartureDate2 = $('#DepartureDate2').val();
+
+
+            $('.data-reservation-no').each(function (index, item) {
+                if ($(this).is(':checked')) {
+                    qCheckInsList.push({ Id: $(this).val() });
+                }
+            });
+            if ($('.data-reservation-no:checked').attr('room-Id') > 0) {
+                $.ajax({
+                    url: '/reservation/QuickCheckIns/QuickCheckIn',
+                    dataType: 'JSON',
+                    data: { qCheckIns: qCheckInsList, CheckInRemark: ckInRemark },
+                    method: 'POST',
+                    success: function (response) {
+
+                    if (response.startsWith('ERR-')) {
+                        ShowWarningMessage(response.replace('ERR-', ''));
+                    }
+                    else {
+                        ShowSuccessMessage('Guest checked in successfully.');
+                        var EventCode = "CI";
+                        var ReservationNo = $('#ReservationNumber2').val();
+                        var propertyId = $('#PropertyId').val();
+                        var userId = $('#UserId').val();
+                        var printURL = $('#DirectPrintURL').val();
+                        var FromRoom = $('#roomNo').val();
+                        var ToRoom = "-1";
+                        var GuestName = $('#GuestName').val();
+                        var ajaxUrl = printURL + 'PABX/' + EventCode + '/' + ReservationNo + '/' + propertyId + '/' + userId + '/' + FromRoom + '/' + ToRoom + '/' + GuestName + '/' + ArrivalDate2 + '/' + DepartureDate2 + '/';
+                        console.log(ajaxUrl);
+                        PABXAjaxRequest(ajaxUrl);
+                        $('#grid-record-detail-model').modal('hide');
+                        setTimeout(function () {
+                            //Update Uuid
+                            window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+                            console.log("Uuid");
+                        }, 3000);
+                    }
+
+                    },
+                    error: function (xhr, status, error) {
+                        ShowWarningMessage('Sorry, There is an error in check in this reservation.');
+                    }
+                });
+            } else {
+                ShowWarningMessage('Please allocate a room before check-in.');
+            }
+        });
+
+    </script>

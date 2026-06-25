@@ -1,0 +1,328 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.CurrencyEncashmentViewModel
+<link href="~/Content/RadioButtonSwitch.css" rel="stylesheet" />
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        overflow-x: hidden;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-container--default .select2-selection--single {
+        background-color: #f5f5f5;
+    }
+        /*-------------------------------------------------------------------------------*/
+        /*button css*/
+        .button-onBlue {
+        width: 200px;
+        height: 30px;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+        font-weight: 500;
+        color: #3498db;
+        background-color: #fff;
+        border: none;
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease 0s;
+        cursor: pointer;
+        outline: none;
+    }
+
+        .button-onBlue:hover {
+            background-color: #4aa3df;
+            /*box-shadow: 0px 15px 20px rgba(102, 209, 226, 0.4);*/
+            color: #fff;
+            /*transform: translateY(-7px);*/
+        }
+
+    .button-onGreen {
+        width: 200px;
+        height: 30px;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+        font-weight: 500;
+        color: #29b765;
+        background-color: #fff;
+        border: none;
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease 0s;
+        cursor: pointer;
+        outline: none;
+    }
+
+        .button-onGreen:hover {
+            background-color: #40d47e;
+            /*box-shadow: 0px 15px 20px rgba(54, 255, 79, 0.4);*/
+            color: #fff;
+            /*transform: translateY(-7px);*/
+        }
+
+    .panel-height {
+        height: 485px;
+    }
+
+    .panel-body-height {
+        height: 505px;
+    }
+
+    .form-group-styel-override {
+        padding-bottom: 0px !important;
+        margin: 0px !important;
+    }
+
+    .well-bottom {
+        margin-bottom: 5px !important;
+    }
+
+    .well-height {
+        margin-top: 0px;
+        height: 76px;
+    }
+
+    .attribute-area {
+        height: 485px !important;
+    }
+
+    .attribute-blue {
+        background-color: #2980b9;
+        border: #2980b9;
+    }
+
+    .attribute-green {
+        background-color: #27ae60;
+        border: #27ae60;
+    }
+
+    .row-height {
+        margin-bottom: 10px;
+    }
+
+    .form-control-margin {
+        margin-top: 20px;
+    }
+
+    .guest label, .other label {
+        color: white !important;
+    }
+
+    .guest input, .other input {
+        color: white !important;
+    }
+
+    .guest select {
+        color: white !important;
+        background-color: #2980b9 !important;
+    }
+
+    span {
+        color: white;
+    }
+
+    .transfer-type-empty-text {
+        font-weight: bolder;
+        font-size: 25px;
+        color: #b3b3b394;
+        text-align: center;
+        margin-top: 50px;
+    }
+
+    .can-toggle label .can-toggle__switch {
+        height: 40px;
+        flex: 0 0 343px;
+        border-radius: 0px;
+    }
+
+    .guest select {
+        color: white !important;
+        background-color: #094f70 !important;
+    }
+
+    .can-toggle.demo-rebrand-1 label .can-toggle__switch {
+        transition: background-color 0.3s ease-in-out;
+        background: #34495e;
+    }
+
+    .can-toggle.demo-rebrand-1 input[type="checkbox"]:focus ~ label .can-toggle__switch, .can-toggle.demo-rebrand-1 input[type="checkbox"]:hover ~ label .can-toggle__switch {
+        background-color: #2f4254;
+    }
+
+    .can-toggle.demo-rebrand-1 label .can-toggle__switch:after {
+        -webkit-transition: -webkit-transform 0.3s ease-in-out;
+        transition: transform 0.3s ease-in-out;
+        color: #34495e;
+    }
+
+    .can-toggle.demo-rebrand-1 input[type="checkbox"]:focus ~ label .can-toggle__switch:after, .can-toggle.demo-rebrand-1 input[type="checkbox"]:hover ~ label .can-toggle__switch:after {
+        color: #34495e;
+    }
+
+    .can-toggle label .can-toggle__switch:after {
+        top: 2px;
+        left: 2px;
+        border-radius: 2px;
+        width: 170px;
+        line-height: 36px;
+        font-size: 12px;
+    }
+
+
+    .can-toggle.demo-rebrand-1 input[type="checkbox"]:checked ~ label .can-toggle__switch:after {
+        color: #e67e22;
+    }
+
+    .can-toggle.demo-rebrand-1 input[type="checkbox"]:checked:focus ~ label .can-toggle__switch, .can-toggle.demo-rebrand-1 input[type="checkbox"]:checked:hover ~ label .can-toggle__switch {
+        background-color: #d26d13;
+    }
+
+    .other select {
+        color: white !important;
+        background-color: #e67e22 !important;
+    }
+
+    .button-onBlueFor:hover {
+        background-color: #34495e;
+        color: #fff;
+    }
+
+    .form-group.label-floating label.control-label, .form-group.label-placeholder label.control-label {
+        top: -7px;
+        font-size: 14px;
+        line-height: 1.42857;
+        color: #4d4d4d;
+    }
+</style>
+
+<div class="col-md-12 well well-margin-override main-well" style="#f2f2f2; border-radius:1px">
+    @*<div class="row row-height">
+            <div class="col-md-12 can-toggle demo-rebrand-1">
+                <input id="currency-encashment-type" type="checkbox">
+                <label for="currency-encashment-type">
+                    <div class="can-toggle__switch" data-checked="Walkin" data-unchecked="Guest"></div>
+                    <div class="can-toggle__label-text "></div>
+                </label>
+            </div>
+        </div>*@
+    <div id="card" class="flip-card">
+        <div class="form-control-area-front row front front-card" style="background-color:#f2f2f2; margin-right:-25px;transform: translateY(15px);">
+            @{ Html.RenderAction("CurrencyEncashmentControlsForGuest");}
+        </div>
+        <div class="form-control-area-front row back back-card" style="background-color:#e67e22;margin-right:-25px;transform: translateY(15px);">
+            @{ Html.RenderAction("CurrencyEncashmentControlsForWalkIn");}
+        </div>
+    </div>
+
+</div>
+
+<script src="~/Scripts/jquery.flip.min.js"></script>
+<script>
+    $(document).ready(function () {
+        //2023-08-16--------------------------------------------------------------------------
+        $('#CountryId').addClass('select2');
+        $('#CurrencyId').addClass('select2');
+        $('#RoomId').addClass('select2');
+        $('#GuestId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2'});
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+    });
+
+    $('.flip-card').flip({
+        trigger: 'manual'
+    });
+
+    $('input[name=tType]').click(function () {
+        var dataTransportType = $(this).data('transport-type');
+        changeOnRadioClick(dataTransportType);
+        clearControlsOnRadioChange(dataTransportType);
+        $('.attributes-container').html('');
+    })
+
+    $('body').on('change', '#currency-encashment-type', function () {
+
+        if ($(this).is(':checked')) {
+            $('.flip-card').flip(true);
+            $('.main-well').css('background', '#e67e22', 'important');
+            $('#book-transport').removeClass('button-onBlueFor');
+            $('#book-transport').addClass('button-onOrange');
+        } else {
+            $('.flip-card').flip(false);
+            $('.main-well').css('background', '#094F70', 'important');
+            $('#book-transport').removeClass('button-onOrange');
+            $('#book-transport').addClass('button-onBlueFor');
+        }
+    })
+
+    function clearControlsOnRadioChange(type) {
+        if (type == 'g') {
+            $('.other .transport-for-other').val('');
+            $('.other .transfer-types').val(0);
+            $('.other .transfer-modes').val(0);
+            $('.other .required-date').val('');
+            $('.other .time-range').val(0);
+            $('.other .remarks').val('');
+            $('.other .reservation-status').val(0);
+        } else if (type == 'o') {
+            $('.guest .reservation-headers').val(0);
+            $('.guest .guest-name').val('');
+            $('.guest .guest-name').data('guest-id', '');
+            $('.guest .transfer-types').val(0);
+            $('.guest .transfer-modes').val(0);
+            $('.guest .required-date').val('');
+            $('.guest .time-range').val(0);
+            $('.guest .remarks').val('');
+            $('.guest .reservation-status').val(0);
+        }
+    }
+
+</script>

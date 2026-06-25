@@ -1,0 +1,215 @@
+﻿@{
+    ViewBag.Title = "Modules";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    .text-color {
+        color: #fff;
+        font-weight: 400;
+        text-transform: uppercase;
+        font-size: 12px;
+        float: right;
+    }
+
+        .text-color:hover {
+            color: #f95f03;
+            font-weight: 400;
+            transition: all 0.5s;
+        }
+
+    .card img {
+        width: 6em;
+        float: right;
+    }
+
+    .card-padding {
+        margin-top: 2.5em;
+    }
+    a.linkURL {
+        color: #fff
+    }
+
+
+    #dock-container li img {
+        width: 90px;
+        height: 90px;
+        -webkit-box-reflect: below 2px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(0.7, transparent), to(rgba(255,255,255,.5)));
+        -webkit-transition: all 0.3s;
+        -webkit-transform-origin: 50% 100%;
+        margin-right: 10px;
+         border-radius: 0px; 
+        cursor: pointer !important;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row" style="padding-right: 0px;padding-left: 0px;">
+        <div class="col-md-12" style="padding-right: 0px;padding-left: 0px;">
+            <input type="hidden" class="propertid" value="@ViewBag.PropertyId" />
+        </div>        
+    </div>
+    <div class="row" style="padding-right: 0px;padding-left: 0px;">
+        <div class="col-md-12" style="padding-right: 0px;padding-left: 0px;">
+            <div class="wrapper">
+                <div class="container">
+                </div>
+                <div id="dock-container">
+                    <ul id="card">
+                     
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="text" name="LoggedUser" id="LoggedUser" value="@Scienter.DestinityHorizon.Common.Domain.SessionObjects.LoggedUser.Id" />
+@*<div class="container" style="max-width:1070px; margin:0 auto; margin-top:2em;">
+    <div class="row">
+        <div class="row">
+            <input type="hidden" class="propertid" value="@ViewBag.PropertyId" />
+            @*<input type="text" class="uuid" value="@ViewBag.Uuid" />*@
+@*</div>
+            <div id="card" class="row card-padding">
+
+            </div>
+        </div>
+    </div>*@
+
+<script src="~/Scripts/jquery-3.2.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+        debugger;
+        var propertid = $('.propertid').val();
+        $.ajax({
+            url: '/Modules/SelectUserWiseModulesByPropertyId',
+            dataType: 'Json',
+            method: 'GET',
+            data: { propertid: propertid },
+            success: function (data) {
+                console.log(data);
+                $.each(data, function (index, item) {
+                    var PublishUrl = item.PublishUrl
+                    var Uuid = item.Uuid;
+                    var link = PublishUrl + Uuid;
+                   
+
+                    //$('#card').append(
+                    //    '<li><span style="bottom:186px">' + item.Name + '</span>'
+                    //    + '<a class="linkURL" href="' + PublishUrl + '" target="_blank" id="btnModule" data-module-id="' + item.Id + '" data-uuid="' + item.Uuid + '"> <div><img id="modulename" alt="" src= "' + item.Image + '" data-module="' + item.Id + '" /></div></a><div>' +
+                    //    '</div></li>'
+                    //);
+                    $('#card').append(
+                        '<li><span style="bottom:186px">' + item.Name + '</span>'
+                        + '<div class="linkURL" data-href="' + PublishUrl + '" target="_blank" id="btnModule" data-module-id="' + item.Id + '" data-uuid="' + item.Uuid + '"> <div><img id="modulename" alt="" src= "' + item.Image + '" data-module="' + item.Id + '" /></div></div><div>' +
+                        '</div></li>'
+                    );
+
+                   
+
+                })
+
+                //$('body').on('click', '#btnModule', function (e) {
+                //    debugger;
+                //    e.preventDefault();
+
+                //    var ModuleId = $(this).attr('data-module-id');
+                //    var Uuid = $(this).attr('data-uuid');
+                //    var PropertyId = propertid;
+                //    var SessionStorageId = Math.floor(Math.random() * 26) + Date.now()
+                //    console.log(SessionStorageId);
+                //    var LocalStorageId = Math.floor(Math.random() * 26) + Date.now()
+                //    console.log(LocalStorageId);
+                //    sessionStorage.setItem("SessionStorageId", SessionStorageId);
+                //    // localStorage.setItem("LocalStorageId", LocalStorageId);
+
+                //    //----------------Storing the data in local storage-----------------//
+                //    window.localStorage.setItem("LocalStorageId", LocalStorageId);
+                //    //--------------------------------//
+
+                //    var object = {
+                //        ModuleId: ModuleId,
+                //        Uuid: Uuid,
+                //        PropertyId: PropertyId,
+                //        SessionStorageId: SessionStorageId,
+                //        LocalStorageId: LocalStorageId
+                //    }
+
+                //    var clickedLinkURL = $(this).attr('data-href');
+
+
+                //    $.ajax({
+                //        url: '/Modules/SaveCentralUserWiseModuleLogin',
+                //        dataType: 'JSON',
+                //        data: { obj: object },
+                //        method: 'POST',
+                //        success: function (data) {
+                //            var autority = data.Authority;
+                //          //  console.log(autority);
+                //            window.location.href = clickedLinkURL + data.Uuid;
+                //        }
+                //    });
+                //});
+
+            },
+            complete: function () {
+                $('body').on('click', '#btnModule', function (e) {
+                    debugger;
+                    e.preventDefault();
+
+                    var ModuleId = $(this).attr('data-module-id');
+                    var Uuid = $(this).attr('data-uuid');
+                    var PropertyId = propertid;
+                    var SessionStorageId = Math.floor(Math.random() * 26) + Date.now()
+                    console.log(SessionStorageId);
+                    var LocalStorageId = Math.floor(Math.random() * 26) + Date.now()
+                    console.log(LocalStorageId);
+                    sessionStorage.setItem("SessionStorageId", SessionStorageId);
+                    // localStorage.setItem("LocalStorageId", LocalStorageId);
+
+                    //----------------Storing the data in local storage-----------------//
+                    window.localStorage.setItem("LocalStorageId", LocalStorageId);
+                    //--------------------------------//
+
+                    var object = {
+                        ModuleId: ModuleId,
+                        Uuid: Uuid,
+                        PropertyId: PropertyId,
+                        SessionStorageId: SessionStorageId,
+                        LocalStorageId: LocalStorageId
+                    }
+
+                    var clickedLinkURL = $(this).attr('data-href');
+
+                    if (window.location.href.includes('?dev')) {
+                        clickedLinkURL = "https://localhost:44328/autologin/proceed?token="
+                    } 
+
+
+                    $.ajax({
+                        url: '/Modules/SaveCentralUserWiseModuleLogin',
+                        dataType: 'JSON',
+                        data: { obj: object },
+                        method: 'POST',
+                        success: function (data) {
+                            debugger;
+                            var autority = data.Authority;
+                            //  console.log(autority);
+                            window.location.href = clickedLinkURL + data.Uuid;
+                        }
+                    });
+                });
+            },
+            error: function () {
+                ShowWarningMessage('Sorry, There is an error.');
+            }
+
+        });
+    });
+
+       
+</script>
+

@@ -1,0 +1,418 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.LostAndFoundView
+@{
+    ViewBag.Title = "Lost and Found";
+}
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .image-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+        .image-wrapper img {
+            width: 80px;
+            height: 80px;
+        }
+
+    .remove-btn {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        font-size: 12px;
+        line-height: 18px;
+        text-align: center;
+    }
+    /*-------------------------------------------------------------------------------*/
+    </style>
+
+<form id="lostItem">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header" data-background-color="purple">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="title">
+                                @ViewBag.Title
+                                <hr class="visible-print" />
+                            </h4>
+                        </div>
+                        <div class="col-md-4 text-right hidden-print">
+                            <a class="btn btn-sm  btn-theme-color-2 showGrid" href="~/Administration/lostandfound/Landing">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </a>
+                            <a class="btn btn-sm  btn-theme-color-2 showGrid" href="~/Administration/lostandfound/Inquiry">
+                                <span class="glyphicon glyphicon-th-list"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="card-content">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group label-floating">
+                                <label class="required control-label">Doc No</label>
+                                <label name="DocNo" class="form-control DocNo"> </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group  label-floating">
+                                <label class="required control-label">Location</label>
+                                <select name="LostAndFoundLocationId" id="LostAndFoundLocationId" class="select2 form-control">
+                                    <option value="0">N/A</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group  label-floating">
+                                <label class="required control-label">Type</label>
+                                <select name="LostAndFoundTypeId" id="LostAndFoundTypeId" class="select2 form-control">
+                                    <option value="0">N/A</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group  label-floating">
+                                <label class="required control-label">Action</label>
+                                <select name="LostAndFoundActionId" id="LostAndFoundActionId" class="select2 form-control">
+                                    <option value="0">N/A</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group  label-floating">
+                                <label class="required control-label">Action Date</label>
+                                <input type="text" name="From" id="LostAndFoundActionDate" class="form-control dateSelect start-date-picker" value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group  label-floating" id="LostAndFoundActionTime">
+                                <label class="required control-label">Action Time</label>
+                                @{Html.RenderPartial("_TimeRange");}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group  label-floating">
+                                <label class="required control-label">Quantity</label>
+                                <input type="number" name="LostAndFoundQuantity" id="LostAndFoundQuantity" min="0" class="form-control" value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group  label-floating">
+                                <label class="required control-label">Found By</label>
+                                @{Html.RenderAction("RoomBoyDetailsCombo", "RoomBoyDetails", new { name = "RoomBoyId", requiered = true, value = Model.RoomBoyId });}
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group  label-floating">
+                                <label class="required control-label">Belongs to</label>
+                                @{Html.RenderAction("GuestProfileCombo", "GuestProfiles", new { name = "GuestId", value = Model.GuestId });}
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group  label-floating">
+                                <label class="required control-label">Room Area</label>
+                                @{Html.RenderAction("RoomAreaCombo", "RoomAreas", new { name = "RoomAreaId", requiered = true, value = Model.RoomAreaId });}
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group  label-floating">
+                                <label class="required control-label">Floor</label>
+                                @{Html.RenderAction("FloorCombo", "Floors", new { name = "FloorId", requiered = true, value = Model.FloorId });}
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group  label-floating">
+                                <label class="required control-label">Room No</label>
+                                @{Html.RenderAction("RoomDetailCombo", "RoomDetails", new { name = "RoomId", value = Model.RoomId });}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <fieldset class="the-fieldset col-md-5" style="padding:5px; background-color:#f8f8f8; height:156px; overflow:auto;">
+                                <legend class="the-legend"><b> Remark</b></legend>
+                                <div class="form-group label-floating">
+                                    <textarea name="Remark" required class="form-control Remark"> </textarea>
+                                </div>
+                            </fieldset>
+                            <div class="col-md-1"></div>
+                            <fieldset class="the-fieldset col-md-6" style="padding:5px; background-color:#f8f8f8; height:156px; overflow:auto;">
+                                <legend class="the-legend"><b> Image(s)</b></legend>
+                                <div class="form-group label-floating">
+                                    @*@if (@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("FilesUploadTo") == "AzureBlobStorage")
+                                    {
+                                        <div style="margin-bottom:5px;">
+
+
+                                        </div>
+                                    }
+                                    else
+                                    {*@
+                                        <div id="imageContainer" style="display:flex; flex-wrap:wrap; gap:10px; padding:5px;">
+                                        </div>
+                                        <button type="button" id="chooseFileBtn" class="btn btn-success" title="Upload" style="margin-top:10px;">
+                                            <span class="glyphicon glyphicon-upload"></span>
+                                        </button>
+                                        <input type="file" name="Images" id="Images" accept="image/*" multiple style="display:none;">
+                                    @*}*@
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-primary ">
+                                Save
+                            </button>
+                        </div>
+                        <div class="col-md-1 ">
+                            <button type="reset" class="btn btn-primary ">
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    $(document).ready(function () {
+        //2023-08-16--------------------------------------------------------------------------
+
+        $('#RoomBoyId').addClass('select2');
+        $('#GuestId').addClass('select2');
+        $('#RoomAreaId').addClass('select2');
+        $('#FloorId').addClass('select2');
+        $('#RoomId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+
+        LoadLostAndfoundLocations();
+        LoadLostAndfoundTypes();
+        LoadLostAndfoundActions();
+    });
+    $('body').on('submit', '#lostItem', function (e) {
+
+        e.preventDefault();
+
+        console.log(uploadedFiles);
+
+        var itemdetails = {
+            __RequestVerificationToken: $('__RequestVerificationToken').val(),
+            Id: $('#Id').val(),
+            StaffId: $("#RoomBoyId").val(),
+            FloorId: $("#FloorId").val(),
+            RoomId: $("#RoomId").val(),
+            GuestId: $("#GuestId").val(),
+            Remark: $('.Remark').val(),
+            RoomAreaId: $("#RoomAreaId").val(),
+            LostAndFoundTypeId: $("#LostAndFoundTypeId").val(),
+            Quantity: $("#LostAndFoundQuantity").val(),
+            LostAndFoundActionId: $("#LostAndFoundActionId").val(),
+            LostAndFoundLocationId: $("#LostAndFoundLocationId").val(),
+            ActionDate: $("#LostAndFoundActionDate").val(),
+            ActionTime: $('#LostAndFoundActionTime #Timerange').val(),
+        };
+
+        $.ajax({
+            url: '/administration/lostandfound/save',
+            dataType: 'JSON',
+            data: { itemdetails: itemdetails, LostAndFoundImages: uploadedFiles},
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(response).fadeIn();
+                $('.DocNo').text(response.DocNo);
+                ShowSuccessMessage('Record has been saved successfully.');
+                window.location.href = "/Administration/lostandfound/Inquiry"
+            }
+
+        });
+
+    });
+
+    function LoadLostAndfoundLocations() {
+        $.ajax({
+            url: '/Administration/LostAndFound/SelectLostAndFoundLocationsForCombo',
+            dataType: 'JSON',
+            method: 'POST',
+            beforeSend: function () {
+               // $('#LostAndFoundLocationId option').remove();
+            },
+            success: function (data) {
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#LostAndFoundLocationId'));
+                });
+            }
+
+        });
+    }
+
+    function LoadLostAndfoundTypes() {
+        $.ajax({
+            url: '/Administration/LostAndFound/SelectLostAndFoundTypesForCombo',
+            dataType: 'JSON',
+            method: 'POST',
+            beforeSend: function () {
+                // $('#LostAndFoundTypeId option').remove();
+            },
+            success: function (data) {
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#LostAndFoundTypeId'));
+                });
+            }
+
+        });
+    }
+
+    function LoadLostAndfoundActions() {
+        $.ajax({
+            url: '/Administration/LostAndFound/SelectLostAndFoundActionsForCombo',
+            dataType: 'JSON',
+            method: 'POST',
+            beforeSend: function () {
+                // $('#LostAndFoundActionId option').remove();
+            },
+            success: function (data) {
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#LostAndFoundActionId'));
+                });
+            }
+
+        });
+    }
+
+    // Array to store the selected image files
+    let uploadedFiles = [];
+
+    // Trigger hidden file input when "Choose File" button is clicked
+    $("#chooseFileBtn").click(function () {
+        $("#Images").click();
+    });
+
+    function readDocURLs(input) {
+        if (input.files) {
+            Array.from(input.files).forEach(function (file, index) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    var docBytes = e.target.result;
+
+                    if (
+                        docBytes.toLowerCase().indexOf("jpg") < 0 &&
+                        docBytes.toLowerCase().indexOf("jpeg") < 0 &&
+                        docBytes.toLowerCase().indexOf("png") < 0
+                    ) {
+                        ShowWarningMessage('Invalid Image type. Only JPG, JPEG, PNG files are allowed.');
+                    } else {
+                        // Add the file to the array
+                        var lostandfoundImages = {
+                            Image: docBytes
+                        }
+                        uploadedFiles.push(lostandfoundImages);
+
+                        var imageWrapper = $('<div class="image-wrapper"></div>');  // Image wrapper
+                        var removeBtn = $('<button class="remove-btn" title="Remove">X</button>'); // X button
+                        var img = $('<img class="img img-thumbnail show-popup-image" src="' + docBytes + '" style="width: 80px; height: 80px;">');
+
+                        // Add click event to remove the image
+                        removeBtn.click(function (event) {
+                            event.stopPropagation();  // Prevents triggering the file input
+
+                            // Remove the image from the DOM
+                            imageWrapper.remove();
+
+                            // Remove the corresponding file from the uploadedFiles array
+                            // Remove the corresponding docBytes from the uploadedDocBytes array
+                            var indexToRemove = uploadedFiles.indexOf(docBytes);
+                            if (indexToRemove !== -1) {
+                                uploadedFiles.splice(indexToRemove, 1);
+                            }
+                        });
+
+                        imageWrapper.append(img);  // Add image to wrapper
+                        imageWrapper.append(removeBtn);  // Add X button to wrapper
+                        $('#imageContainer').append(imageWrapper);  // Append to image container
+                    }
+                }
+
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+
+    $("#Images").change(function (e) {
+        readDocURLs(this);
+    });
+
+
+
+
+
+</script>
+

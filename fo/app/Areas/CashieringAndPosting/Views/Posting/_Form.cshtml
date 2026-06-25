@@ -1,0 +1,143 @@
+﻿@model Scienter.HotelERP.Common.Domain.Posting
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        overflow-x: hidden;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+</style>
+
+<div class="col-md-12 disabled" style="margin-top:-15px;">
+    <form id="Posting-inhouse">
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group label-floating">
+                <label class="control-label">Currency Type</label>
+                @{Html.RenderAction("CurrenciesConvertionCombo", "Currencies", new { area = "Administration", name = "CurrencyId", ChargeTypeCode = "PT", required = true }); }
+                @Html.ValidationMessageFor(model => model.CurrencyId, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group label-floating">
+                <label class="control-label">Charge Type</label>
+                <div id="PostingBillTypeComboContainer">
+                    @{Html.RenderAction("PostingBillTypeCombo", "PostingBillType", new { name = "BillTypeId", required = true, value = Model.BillTypeId }); }
+                </div>
+                @Html.ValidationMessageFor(model => model.BillTypeId, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group label-floating">
+                <label class="control-label">Folio Text</label>
+                <input autocomplete="off" class="form-control text-box single-line" maxlength="150" id="FolioText" name="FolioText" type="text" value="">
+            </div>
+
+            <div class="row" style="margin-left:-20px; margin-top:5px;">
+                <div class="col-md-6">
+                    <div class="form-group label-floating" id="amountField">
+                        <label class="control-label">Amount</label>
+                        <input autocomplete="off" class="form-control text-box single-line number number-only" id="Amount" name="Amount" required type="text" value="" maxlength="10" minlength="0" style="text-align:left !important;">
+                    </div>
+                </div>
+                <div class="col-md-1">
+
+                </div>
+
+                <div class="col-md-5">
+
+                    <div class="form-group checkbox IsComplementarychkbox">
+                        <label style="color:#000000">
+                            @Html.CheckBoxFor(model => model.IsComplementary)
+                            Complementary
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsComplementary, "", new { @class = "text-danger" })
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="form-group label-floating">
+                <label class="control-label">Remarks</label>
+                <textarea autocomplete="off" class="form-control text-box single-line" maxlength="300" id="Remarks" name="Remarks" rows="3" type="text" value=""></textarea>
+            </div>
+            <div style="position:absolute; width:104%; bottom:-32px; margin-left:-20px;">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input type="submit" id="btnAdd" value="Add" class="btn btn-primary disabled" style="width:100%;" />  &nbsp;
+                    </div>
+                    <div class="col-md-4">
+                        <input type="button" id="btnClear" value="Clear" class="btn btn-default" style="width:100%;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<style>
+    .card form .row {
+        padding: 0 15px;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        //2023-08-16--------------------------------------------------------------------------
+        $('#CurrencyId').addClass('select2');
+        $('#BillTypeId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+
+        $('.card form-group').css('margin-bottom', '10px')
+    });
+</script>

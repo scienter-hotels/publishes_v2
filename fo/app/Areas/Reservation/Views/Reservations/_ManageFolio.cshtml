@@ -1,0 +1,673 @@
+﻿<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-15---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+    .redBackground {
+        background-color: #ff5050;
+    }
+</style>
+<input type="hidden" id="ReservationType" value="@ViewBag.ReservationType" />
+<input type="hidden" id="resId" class="resId" value="@ViewBag.resId" />
+<input type="hidden" id="Path" class="Path" value="@ViewBag.Path" />
+<input type="hidden" id="folioDId" />
+<input type="hidden" id="iscmp" />
+<input type="hidden" id="isDormitory" name="isDormitory" value="@ViewBag.IsDormitory" required />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+<div class="row">
+    <div class="col-md-2">
+        <fieldset class="the-fieldset">
+            <legend class="the-legend">Reservation No</legend>
+            <div id="IsTaxInclusive-block">
+
+            </div>
+            <div class="col-md-12" style="padding:3px;  height:485px; overflow-y:scroll" id="reservationNumbersLoadingArea">
+
+            </div>
+        </fieldset>
+    </div>
+    @*<div class="col-md-2">
+                    <div class="panel panel-default ">
+                        <div class="panel-heading" role="tab" id="headingZero">
+                            <h4 class="panel-title">
+                                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#accomadationCollape" aria-expanded="true" aria-controls="collapseOne">
+                                    <i class="more-less glyphicon glyphicon-minus"></i>
+                                    Reservation No
+                                </a>
+                            </h4>
+                        </div>
+                        <div class="col-md-12" style="height:200px; overflow-y:scroll" id="reservationNumbersLoadingArea">
+
+                        </div>
+                    </div>
+        </div>*@
+    <div class="col-md-10">
+        <div class="custom-accordian">
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#accomadationCollape" aria-expanded="true" aria-controls="collapseOne">
+                                <i class="more-less glyphicon glyphicon-minus"></i>
+                                Accomadation Chargers
+                            </a>
+                        </h4>
+                    </div>
+                    <form id="accomadationList">
+                        <div id="accomadationCollape" class="panel-collapse in" role="tabpanel" aria-labelledby="headingOne">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-md-12" id="accommodationFolioDetails">
+                                    </div>
+                                </div>
+
+                                <div style="padding:0px 10px; border:1px #eaeaea solid; margin-bottom:10px;">
+                                    <div class="row">
+                                        @*<div class="col-md-2"><div class="form-group checkbox"><label><input type="checkbox" id="isCompli" class="isCompli" /> Complimentary</label></div></div>*@
+                                        <div class="col-md-3"><div class="form-group  label-floating"><label class="required control-label">Room Type</label><select name="rMTId" id="rMTId" class="select2 form-control" required><option></option></select></div></div>
+                                        @*<label class="required control-label">Room Type</label><select name="rMTId" id="rMTId" class="form-control" required><option></option></select>*@
+                                        <div class="col-md-3"><div class="form-group  label-floating"><label class="required control-label">Meal Plan</label><select name="mPlanId" id="mPlanId" class="select2 form-control" required><option></option></select></div></div>
+                                        @*<label class="required control-label">Meal Plan</label><select name="mPlanId" id="mPlanId" class="form-control" required><option></option></select>*@
+                                        <div class="col-md-1"><div class="form-group  label-floating"> <label class="control-label">Conversion</label><input disabled class="form-control convsn number" type="number" min="0" /> </div></div>
+                                        <div class="col-md-1"><div class="form-group  label-floating"> <label class="control-label">Amount</label><input class="form-control amnt number" type="text" min="0" /></div></div>
+                                        <div class="col-md-2"><div class="form-group checkbox"><label><input type="checkbox" id="isAll" class="isAll" /> Update All nights</label></div></div>
+                                        @*<div class="col-md-2"><div class="form-group text-right"><button type="button" class="btn btn-primary" id="btnUpdate">Update<span class="glyphicon "></span></button></div></div>*@
+                                        <div class="col-md-2"><div class="form-group text-right"><button type="submit" class="btn btn-primary" id="btnUpdate">Update<span class="glyphicon "></span></button></div></div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group label-floating" style="margin:5px;">
+                                                <label>Folio Text</label>
+                                                <textarea maxlength="500" rows="1" id="Note" name="Note" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#extraPostingCollaps" aria-expanded="true" aria-controls="collapseOne">
+                                <i class="more-less glyphicon glyphicon-minus"></i>
+                                Extra Postings
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="extraPostingCollaps" class="panel-collapse in" role="tabpanel" aria-labelledby="headingOne">
+                        <div class="panel-body">
+                            <div id="existingFolioDetails">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingTwo">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#changeChargeCategoryCollapse" aria-expanded="false" aria-controls="collapseTwo">
+                                <i class="more-less glyphicon glyphicon-plus"></i>
+                                Change Charge Category
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="changeChargeCategoryCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                        <div class="panel-body">
+                            <form method="post" id="ChangeChargeCategoryForm">
+                                <div class="row">
+                                    <div class="col-md-4">
+
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">Charge Category *</label>
+                                            @{Html.RenderAction("RoomCategoryCombo", "RoomCategories", new { area = "Administration", name = "ChargeCategoryId", value = "", required = true });}
+                                        </div>
+
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="control-label"></label>
+                                        <div class="form-group" style="margin-top:2px;"><button type="submit" class="btn btn-primary" id="btnUpdateChargeCategory">Update<span class="glyphicon "></span></button></div>
+                                    </div>
+
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingTwo">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#lockUnlockFolioCollapse" aria-expanded="false" aria-controls="collapseTwo">
+                                <i class="more-less glyphicon glyphicon-plus"></i>
+                                Lock / Unlock Folio
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="lockUnlockFolioCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                        <div class="panel-body">
+                            <form method="post" id="LockFolioForm">
+                                <div class="form-group checkbox"><label><input type="checkbox" id="isLockFolio" class="isLockFolio" /> Lock Folio</label></div>
+                                <div class="form-group" style="margin-top:5px;"><button type="submit" class="btn btn-primary" id="btnUpdateLockFolio">Update<span class="glyphicon "></span></button></div>
+                            </form>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div><!-- panel-group by sachith -->
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.number.formatting.js"></script>
+<script>
+    $(document).ready(function () {
+
+        //2023-08-16--------------------------------------------------------------------------
+        $('#ChargeCategoryId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+        FillAccommodationFolioDetails();
+        FillOtherFolioDetails();
+        var reservationHeaderId = $('#resId').val();
+        var Type = $('#ReservationType').val();
+
+        LoadReservationNumbers(reservationHeaderId, Type);
+
+        setTimeout(function () {
+            debugger
+            var IsTaxInclusive = $('#res-status').val();
+            if (IsTaxInclusive == "true") {
+                $(
+                    '<button type="button" disabled class="btn btn-success" style="color: white;font-weight: bold;">TAX INC </button>'
+                ).appendTo("#IsTaxInclusive-block");
+            } else {
+                $(
+                    '<button type="button" disabled class="btn btn-primary" style="color: white;font-weight: bold;">TAX EXC </button>'
+                ).appendTo("#IsTaxInclusive-block");
+            }
+
+        }, 3000);
+
+        // accordian -----------------------------------------
+        function toggleIcon(e) {
+            $(e.target)
+                .prev('.panel-heading')
+                .find(".more-less")
+                .toggleClass('glyphicon-plus glyphicon-minus');
+        }
+        $('.panel-group').on('hidden.bs.collapse', toggleIcon);
+        $('.panel-group').on('shown.bs.collapse', toggleIcon);
+        //end accordian -----------------------------------------
+
+    });
+    //--- Change Charge Category ----------------------------------
+    $('body').off('submit', '#ChangeChargeCategoryForm').on('submit', '#ChangeChargeCategoryForm', function (e) {
+        e.preventDefault();
+        var chargeCategoryId = $('#ChargeCategoryId').val();
+        var selectedReservations = [];
+        var res = {};
+        $.each($('.checbox-item'), function (index, item) {
+            if ($(item).prop('checked')) {
+                res = {
+                    ReservationHeaderId: $(item).val()
+                }
+                selectedReservations.push(res);
+                console.log(selectedReservations);
+            }
+        });
+
+        if ($('#ChargeCategoryId').val() == "" || $('#ChargeCategoryId').val() == undefined || $('#ChargeCategoryId').val() <= 0) {
+            ShowWarningMessage('Please select a charge category.');
+        }
+        else {
+
+            $.ajax({
+                url: '/reservation/reservations/ChangeChargeCategory',
+                dataType: 'JSON',
+                data: { selectedReservations: selectedReservations, chargeCategoryId: chargeCategoryId },
+                method: 'POST',
+                success: function (response) {
+                    if (response.startsWith("ERR-")) {
+                        ShowErrorMessage(response);
+                        // Load new inhouse reservation grid
+                        LoadInhouseReservationGrid();
+                    } else {
+                        FillAccommodationFolioDetails();
+                        ShowSuccessMessage('Charge category changed successfully.');
+
+                        // Load new inhouse reservation grid
+                        LoadInhouseReservationGrid();
+                    }
+
+                },
+                error: function (xhr, status, error) {
+                    ShowErrorMessage('Sorry, There is an error.');
+                    // Load new inhouse reservation grid
+                    LoadInhouseReservationGrid();
+                }
+            });
+        }
+    });
+    //--- End of Change Charge Category ---------------------------
+
+    //--- Change Lock Folio ----------------------------------
+    //STEHANI - 15 / 12 / 2020
+    $('body').off('submit', '#LockFolioForm').on('submit', '#LockFolioForm', function (e) {
+        e.preventDefault();
+        var isLocked = $('#isLockFolio').prop('checked');
+        var selectedReservations = [];
+        var res = {};
+        $.each($('.checbox-item'), function (index, item) {
+            if ($(item).prop('checked')) {
+                res = {
+                    ReservationHeaderId: $(item).val()
+                }
+                selectedReservations.push(res);
+                console.log(selectedReservations);
+            }
+        });
+
+        $.ajax({
+            url: '/reservation/reservations/LockFolio',
+            dataType: 'JSON',
+            data: { selectedReservations: selectedReservations, isLocked: isLocked },
+            method: 'POST',
+            success: function (response) {
+                if (response.startsWith("ERR-")) {
+                    ShowErrorMessage('Sorry, There is an error.');
+                    // Load new inhouse reservation grid
+                    LoadInhouseReservationGrid();
+                } else {
+                    if ($('#isLockFolio').prop('checked') == false) {
+                        ShowSuccessMessage('Folio Unlocked successfully.');
+                    } else {
+                        ShowSuccessMessage('Folio Locked successfully.');
+                    }
+                    // Load new inhouse reservation grid
+                    LoadInhouseReservationGrid();
+                }
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error.');
+                // Load new inhouse reservation grid
+                LoadInhouseReservationGrid();
+            }
+        });
+    });
+    $('body').on('click', '.grid-grow-plus-click', function () {
+        if ($(this).hasClass('fa-plus')) {
+            $(this).removeClass('fa-plus');
+            $(this).addClass('fa-minus');
+            $('.' + $(this).data('target')).removeClass('collapse').fadeIn();
+        } else if ($(this).hasClass('fa-minus')) {
+            $(this).removeClass('fa-minus');
+            $(this).addClass('fa-plus');
+            $('.' + $(this).data('target')).addClass('collapse').fadeOut();
+        }
+    })
+
+    //Table data fill--------------------------------------------------------------------------------------------------------------
+    function FillAccommodationFolioDetails() {
+
+        $.ajax({
+            url: '/reservation/reservations/FolioDetailSelect?resNo=' + $('#resId').val() + '&ChargeType=' + 'AC',
+            dataType: 'HTML',
+            method: 'POST',
+            success: function (response) {
+
+                $('#accommodationFolioDetails').html('').fadeOut();
+                $('#accommodationFolioDetails ').html(response).fadeIn();
+
+                $('#ChargeCategoryId').val($('#hdnChargeCategoryId').val());
+                if ($('#flock').val() == "True") {
+                    $('#isLockFolio').prop('checked', true);
+                } else {
+                    $('#isLockFolio').prop('checked', false);
+                }
+
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error loading existing setups.');
+            }
+        });
+    }
+
+    function FillOtherFolioDetails() {
+
+        $.ajax({
+            url: '/reservation/reservations/FolioDetailSelect?resNo=' + $('#resId').val() + '&ChargeType=' + 'OT',
+            dataType: 'HTML',
+            method: 'POST',
+            success: function (response) {
+
+
+                $('#existingFolioDetails').html('').fadeOut();
+                $('#existingFolioDetails ').html(response).fadeIn();
+
+                if ($('#flock').val() == "True") {
+                    $('#lockchkbox').prop('checked', true);
+                }
+                else {
+                    $('#lockchkbox').prop('checked', false);
+                }
+
+                if ($('#lockchkbox').is(":checked")) {
+                    $('#lockDiv').addClass("redBackground");
+                } else {
+                    $('#lockDiv').removeClass("redBackground");
+                }
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error loading existing setups.');
+            }
+        });
+    }
+    var mealPlanId;
+    var roomTypeId;
+
+    $('body').off('click', '#accommodationGrid tr').on('click', '#accommodationGrid tr', function () {
+        var conversion = parseFloat($(this).find('input.selected-folio-detail').attr('conversionRate'));
+        mealPlanId = $(this).find('input.selected-folio-detail').attr('mealPlanId');
+        roomTypeId = $(this).find('input.selected-folio-detail').attr('roomTypeID');
+        var folioText = $(this).find('input.selected-folio-detail').attr('folioText');
+        var amount = parseFloat($(this).find('input.selected-folio-detail').attr('amount'));
+        var isDormitory = $('#isDormitory').val();
+        LoadMealPlan(isDormitory);
+        LoadRoomType(isDormitory);
+        $('.convsn').val(conversion);
+        $('#mPlanId').val(mealPlanId);
+        $('#rMTId').val(roomTypeId);
+        $('#Note').val(folioText);
+        $('.amnt').val(amount);
+        FormatNumbers();
+    });
+
+    function LoadMealPlan(isDormitory) {
+        $.ajax({
+            url: '/Administration/MealPlans/SelectMealPlanForAddRoom?isDormitory=' + isDormitory,
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $('#mPlanId option').remove();
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#mPlanId'));
+                });
+            },
+            complete: function () {
+                $('#mPlanId').val(mealPlanId);
+            }
+        });
+    }
+    function LoadRoomType(isDormitory) {
+        $.ajax({
+            url: '/Administration/RoomTypes/SelectRoomTypesForAddRoom?isDormitory=' + isDormitory,
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $('#rMTId option').remove();
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#rMTId'));
+                });
+            },
+            complete: function () {
+                $('#rMTId').val(roomTypeId);
+            }
+        });
+    }
+
+    $('body').off('submit', '#accomadationList').on('submit', '#accomadationList', function (e) {
+        e.preventDefault();
+        var selectedReservations = [];
+        var res = {};
+        $.each($('.checbox-item'), function (index, item) {
+            if ($(item).prop('checked')) {
+                res = {
+                    ReservationHeaderId: $(item).val()
+                }
+                selectedReservations.push(res);
+                console.log(selectedReservations);
+            }
+        });
+
+        var selectedListForReservationFolioDetail = [];
+        var isRecordSelected = false;
+
+        $('.data-single-record').each(function (index, item) {
+            if ($($(item).find('.selected-folio-detail')).prop('checked')) {
+                isRecordSelected = true;
+                return false;
+            }
+        });
+
+        if (isRecordSelected == false) {
+            ShowWarningMessage('Please select at-least one folio item.');
+        }
+        else {
+            if (ValidateUpdateDetails()) {
+                RemoveFormatNumber();
+                if ($('#isCompli').attr('type') === 'checkbox') {
+                    var isComp = +$('#isCompli').is(':checked');
+                }
+
+                if ($('#isAll').attr('type') === 'checkbox') {
+                    var isAll = +$('#isAll').is(':checked');
+                    var FolioHeaderID = $('#folioHeaderId').val();
+                }
+
+                if ($('#folioDId').val() == 0) {
+                    FolioDetailID = $('#fdId').val();
+                }
+                else {
+                    FolioDetailID = $('#folioDId').val();
+                }
+
+                $('.data-single-record').each(function (index, item) {
+                    var record = {};
+                    if ($($(item).find('.selected-folio-detail')).prop('checked')) {
+
+                        record = {
+                            //MealPlanID: $(this).find('input.selected-folio-detail').attr('mealPlanId'),
+                            //RoomTypeID: $(this).find('input.selected-folio-detail').attr('roomTypeID'),
+                            CR: $($(item).find('.selected-folio-detail')).val(),
+                            MealPlanID: $('#mPlanId').val(),
+                            RoomTypeID: $('#rMTId').val(),
+                            ReservationHeaderID: $('#resId').val(),
+                            FolioDetailID: $($(item).find('.selected-folio-detail')).attr('folioDetailId'),
+                            IsComplimentory: $($(item).find('.selected-folio-detail')).attr('isComplntry'),
+                            ChargeAmount: $('.amnt').val(),
+                            ConvertionRate: $('.convsn').val(),
+                            IsAll: isAll,
+                            FolioHeaderID: $('#folioHeaderId').val(),
+                            IsLock: $($(item).find('.selected-folio-detail')).attr('isLock'),
+                            ChargeType: "AC"
+                        }
+                        selectedListForReservationFolioDetail.push(record);
+                        console.log(record);
+                    }
+                });
+
+                $.ajax({
+                    url: '/reservation/reservations/FolioDetailManageUpdate',
+                    dataType: 'JSON',
+                    data: { selectedFolioDetail: selectedListForReservationFolioDetail, selectedReservations: selectedReservations },
+                    method: 'POST',
+                    success: function (response) {
+                        var Type = $('#ReservationType').val();
+                        if (response.startsWith("ERR-")) {
+                            ShowWarningMessage(response.replace("ERR-", ""));
+                            // Load new inhouse reservation grid
+                            LoadInhouseReservationGrid();
+                        } else {
+                            $('#isAll').prop('checked', false);
+                            ShowSuccessMessage('Folio details successfully updated.');
+                            setTimeout(function () {
+                                //Update Uuid
+                                if (Type == "reservation") {
+                                    window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+                                    console.log("Uuid");
+                                } else if ($('#Path').val() == "chart") {
+                                    setTimeout(function () {
+                                        LoadCalenderByDateRange();
+                                        $('#grid-record-detail-model-close').click();
+                                    }, 1000);
+                                }
+                                else {
+                                    //location.reload()
+
+                                    // Load new inhouse reservation grid
+                                    LoadInhouseReservationGrid();
+                                }
+                            }, 5000);
+
+                            // Load new inhouse reservation grid
+                            LoadInhouseReservationGrid();
+
+                            $('#mPlanId').val('');
+                            $('#rMTId').val('');
+                            $('.amnt').val('');
+                            $('.convsn').val('');
+                            $('#Note').val('');
+                            $('#isCompli').prop('checked', false);
+                            FillAccommodationFolioDetails();
+                            FormatNumbers();
+                        }
+
+                    },
+                    error: function (xhr, status, error) {
+                        ShowErrorMessage('Sorry, There is an error updating folio details.');
+                        // Load new inhouse reservation grid
+                        LoadInhouseReservationGrid();
+                    }
+                });
+            }
+        }
+
+    });
+
+    //Select All----------------------------------------------------------------------------------------------------------------------
+    $('body').off('click', '#isAll').on('click', '#isAll', function () {
+        if ($('#isAll').is(':checked')) {
+            $('.selected-folio-detail').not(':disabled').prop('checked', true);
+
+        } else {
+            $('.selected-folio-detail').prop('checked', false);
+        }
+    });
+    //----------------------------------------------------------------------------
+    $('#lockchkbox').change(function () {
+        if ($(this).is(":checked")) {
+            $('#lockDiv').addClass("redBackground");
+        } else {
+            $('#lockDiv').removeClass("redBackground");
+        }
+    });
+    //Validations--------------------------------------------------------------------------------
+
+    function ValidateUpdateDetails() {
+        var isValid = true;
+        if ($("select[name='rMTId']").val() == '') {
+            $('#rMTId').focus();
+            isValid = false;
+        }
+        if ($("select[name='mPlanId']").val() == '') {
+            $('#mPlanId').focus();
+            isValid = false;
+        }
+        if ($('.convsn').val() == '') {
+            $('.convsn').focus();
+            isValid = false;
+        }
+        if ($('.number').val() == '') {
+            $('.number').focus();
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    $('body').on('change', '#rMTId, #mPlanId', function () {
+
+        if ($('#rMTId').val() == '' || $('#mPlanId').val() == '' || $('.selected-folio-detail:checked').length == 0) {
+
+        }
+        else {
+            var mealPlanId = $('#mPlanId').val();
+            var roomTypeId = $('#rMTId').val();
+            var folioDetailId = $($('.selected-folio-detail:checked')[0]).attr('foliodetailid');
+
+            $.ajax({
+                url: '/reservation/reservations/ManageFolioChangeGetPrice?folioDetailId=' + folioDetailId + '&roomTypeId=' + roomTypeId + '&mealPlanId=' + mealPlanId,
+                dataType: 'JSON',
+                method: 'POST',
+                success: function (response) {
+                    $('.amnt').val(parseFloat(response).toFixed(2));
+                },
+                error: function (xhr, status, error) {
+                    ShowErrorMessage('Sorry, There is an error updating folio details.');
+                }
+            });
+        }
+    })
+
+
+</script>

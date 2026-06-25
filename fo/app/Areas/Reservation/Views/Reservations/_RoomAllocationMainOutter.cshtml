@@ -1,0 +1,57 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.ReservationHeaderView
+<input type="hidden" value="@Model.Id" id="hidden-reservation-header-id"/>
+<input type="hidden" value="@Model.ArrivalDate" id="hidden-arrival-date" />
+<input type="hidden" value="@Model.DepartureDate" id="hidden-departure-date" />
+<input type="hidden" value="@Model.ResNo" id="hidden-reservation-no" />
+<input type="hidden" value="@Model.GuestName" id="hidden-guest-name" />
+<input type="hidden" value="@ViewBag.RoomAllocationType" id="hidden-room-allocation-type" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+<div class="" id="contentLoadingAreaRooms">
+
+</div>
+
+<div class="hide" id="contentLoadingAreaForRoomWisePopUp">
+
+</div>
+
+<script src="~/Scripts/isotope.pkgd.min.js"></script>
+<script>
+    $(function () {
+       
+        FillRooms($('#hidden-reservation-header-id').val(), $('#hidden-room-allocation-type').val());
+    })
+
+    function FillRooms(reservtionHeaderId, roomAllocationType) {
+       
+        $.ajax({
+            url: '/reservation/reservations/RoomListForAllocation?reservationHeaderId=' + reservtionHeaderId + '&roomAllocationType=' + roomAllocationType + '&Uuid=' + $('#hidden-Uuid').val(),
+            dataType: 'html',
+            method: 'get',
+            success: function (response) {
+                $('#contentLoadingAreaRooms').html('');
+                $('#contentLoadingAreaRooms').html(response).fadeIn();
+            }
+        });
+    }
+
+    $('body').off('click', '.floor-name-check').on('click', '.floor-name-check', function () {
+        if ($('.floor-name-check:checked').length == 0) {
+            $('.floor-name-check-all').prop('checked', true);
+        } else {
+            $('.floor-name-check-all').prop('checked', false);
+        }
+
+        //-------filteration--------//
+        var inclusives = [];
+        $('.floor-name-check').each(function (i, elem) {
+
+            if (elem.checked) {
+                inclusives.push(elem.value);
+            }
+        });
+        var filterValue = inclusives.length ? inclusives.join(', ') : '*';
+        $('.rooms-container').isotope({ filter: filterValue })
+        //------------------------//
+    });
+</script>

@@ -1,0 +1,37 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.TaxCalculationsViewModel>
+@using Scienter.HotelERP.Common.Domain;
+<table id="taxCalculationTable" class="table" style="width:100%">
+
+    @{
+        int iteration = 0;
+    }
+    @foreach (var item in Model)
+    {
+        iteration++;
+        if (iteration < Model.Count())
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+
+                <td style="text-align:right">
+                    @item.Value.ToString("#,##0.00")
+                </td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td style="font-weight:bold; font-size:15Px;">
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+
+                <td style="text-align:right; font-weight:bold; font-size:15Px;">
+                    @item.Value.ToString("#,##0.00")
+                </td>
+            </tr>
+        }
+    }
+
+</table>

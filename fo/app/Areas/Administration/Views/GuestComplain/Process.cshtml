@@ -1,0 +1,94 @@
+﻿@{
+    ViewBag.Title = "Process Guest Complains";
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div style="border:1px solid #ccc;min-height:200px; margin-bottom:20px;border-radius:5px; padding:20px; margin-top:5px;">
+                            <h6 style="margin-bottom:10px;">Pending Complains</h6>
+                            <div id="pendingComplains" style="max-height:250px; overflow-y:scroll;">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div style="border:1px solid #ccc;min-height:200px; margin-bottom:20px; border-radius:5px; padding:20px;">
+                            <h6 style="margin-bottom:10px;">Completed Complains</h6>
+                            <div id="completedComplains" style="max-height:250px; overflow-y:scroll;">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div style="border:1px solid #ccc;min-height:200px; margin-bottom:20px; border-radius:5px; padding:20px;">
+                            <h6 style="margin-bottom:10px;">All Complains</h6>
+                            <div id="allComplains" style="max-height:250px; overflow-y:scroll;">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Scripts/ui/common/scienter.number.formatting.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        FillTracesGrids();
+    });
+
+
+
+    function FillTracesGrids() {
+        FillTraces(0, '#pendingComplains');
+        FillTraces(1, '#completedComplains');
+        FillTraces(-1, '#allComplains');
+    }
+
+
+    function FillTraces(complainType, containerId) {
+        $.ajax({
+            url: '/Administration/GuestComplain/ComletedOrPending?complainType=' + complainType,
+            dataType: 'html',
+            method: 'POST',
+            beforeSend: function () {
+                $(containerId).html('');
+                $(containerId).html('<p>Please wait ...<p>');
+            },
+            success: function (response) {
+                $(containerId).html(response);
+            }
+        });
+    }
+
+
+</script>

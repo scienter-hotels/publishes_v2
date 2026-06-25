@@ -1,0 +1,253 @@
+﻿#searchby {
+    background-image: url('/Images/searchicon.png');
+    background-position: 10px 10px;
+    background-repeat: no-repeat;
+    width: 100%;
+    font-size: 14px;
+    padding: 8px 20px 8px 40px;
+    border: 1px solid #ddd;
+    margin-bottom: 12px;
+}
+
+#searchbyitem {
+    background-image: url('/Images/searchicon.png');
+    background-position: 10px 10px;
+    background-repeat: no-repeat;
+    width: 100%;
+    font-size: 14px;
+    padding: 8px 20px 8px 40px;
+    border: 1px solid #ddd;
+    margin-bottom: 12px;
+}
+
+@import url('RobotoFont.css');
+body {
+    font-size: 15px !important;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+
+}
+
+.font-size-10px {
+    font-size: 10px !important;
+}
+
+.font-size-12px tr td {
+    font-size: 12px !important;
+}
+
+.font-size-16px{
+    font-size:16px !important;
+}
+
+.padding-left-right-0px{
+    padding-left:0px !important;
+    padding-right:0px !important;
+}
+.padding-right-10px{
+    margin-right:10px;
+}
+
+.btn-theme-color-2 {
+    /*background-color: #038959 !important;*/
+    border-radius:0px !important;  
+}
+
+table .btn-theme-color-2 {
+    border-radius: 3px !important;
+}
+
+.input-group-btn btn{
+    background-color:#979797 !important;
+}
+
+.input-group-btn btn:hover {
+    background-color: #038959 !important;
+}
+
+th, td{
+    vertical-align:middle !important;
+}
+
+.cursor-pointer{
+    cursor:pointer !important;
+}
+
+.number{
+    text-align:right !important;
+}
+
+
+#contentLoadingArea{
+    /*max-height:350px;*/
+}
+
+
+.margin-top-10px {
+    margin-top: 10px;
+}
+
+.margin-top-15px {
+    margin-top: 15px;
+}
+
+
+.margin-top-20px{
+    margin-top:20px;
+}
+
+#contentLoadingArea {
+    /*padding-left:30px;*/
+    /*padding-left: 50px;
+    padding-right: 50px;*/
+}
+
+
+.the-legend {
+    border-style: none;
+    border-width: 0;
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 0;
+    width: auto;
+    padding: 0 10px;
+}
+
+.the-fieldset {
+    border: 1px solid #bebebe;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.full-width-100perc{
+    width:100% !important;
+}
+
+.full-width-200perc{
+    width:200% !important;
+}
+
+.model-popup-close-btn {
+    float: right;
+    margin-top: -40px;
+    margin-right: -40px;
+    background-color: #fff;
+    border-radius: 50px;
+    padding: 4px;
+    cursor: pointer;
+}
+
+.model-popup-close-btn img{
+    width:28px !important;
+}
+
+.model-popup-title{
+    /*padding-bottom:20px;*/
+    font-weight:bold;
+}
+.model-popup-title h4 {
+    border-bottom: 1px solid #979797;
+    padding-bottom:10px;
+    font-weight:bold;
+}
+
+.model-popup-title img {
+    width:40px !important;
+}
+
+.modal-body .icon-holder {
+    vertical-align:middle !important; 
+}
+
+.reservation-form-height {
+    max-height: 420px !important;
+}
+
+.modal-dialog {   
+    vertical-align: middle;
+}
+
+.form-headers {
+    font-size: 16px;
+    margin-top: 0px;    
+    font-weight: bold;    
+}
+
+tr{
+    cursor:pointer;
+}
+
+th{
+    font-size:13px !important;
+}
+
+.card .title{
+    font-size:15px !important;
+    text-transform:uppercase;
+    padding-top:3px;
+}
+
+
+
+.tile-height {
+    height: 105px !important;
+    padding: 10px;
+}
+
+.tile-lable {
+    font-size: 12px;
+    margin-bottom: 25px;
+    display: block;
+    text-transform: uppercase;
+    text-align: right !important;
+    line-height: 14px;
+}
+
+.tile-value {
+    display: block;
+    font-size: 65px;
+    font-weight: normal;
+    text-align: right !important;
+}
+
+.tile-light {
+    color: #ffffff;
+}
+
+.tile-dark {
+    color: #000000;
+}
+
+.flip {
+}
+
+
+#searchby {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+.card, .card-header, .btn {
+    border-radius: 3px !important;
+}
+
+.card-content{
+    overflow:auto !important;
+}
+
+
+
+

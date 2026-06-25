@@ -1,0 +1,714 @@
+﻿@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.FrontOffice.Service
+
+<style>
+    .panel-heading {
+        background-color: #094F70 !important;
+        padding: 5px 15px;
+        height: 35px;
+    }
+
+    .panel-title {
+        color: white;
+    }
+
+    a:hover {
+        color: none;
+        cursor: pointer;
+    }
+
+    a {
+        color: none;
+    }
+
+    element.style {
+    }
+
+    .reportdiv {
+        background-color: #81b2f163 !important;
+        height: 50px;
+        border-bottom-color: black;
+        border-radius: 5px;
+        border-bottom: solid;
+    }
+
+        .reportdiv:hover .font-color {
+            font-weight: bold !important;
+        }
+
+    .card-oute:hover {
+        border-color: none !important;
+    }
+
+    .panel-title > h {
+        text-decoration: none;
+    }
+
+    .checkmark {
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        -ms-transform: rotate(45deg); /* IE 9 */
+        -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+        transform: rotate(45deg);
+        float: right;
+    }
+
+    .checkmark_circle {
+        position: absolute;
+        width: 21px;
+        height: 21px;
+        background-color: green;
+        border-radius: 11px;
+        left: 0;
+        top: 0;
+    }
+
+    .checkmark_stem {
+        position: absolute;
+        width: 3px;
+        height: 9px;
+        background-color: #fff;
+        left: 11px;
+        top: 6px;
+    }
+
+    .checkmark_kick {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background-color: #fff;
+        left: 8px;
+        top: 12px;
+    }
+
+    .reportFilterArea {
+        margin: -4px 0;
+    }
+
+    .panel-title {
+        font-size: 13px !important;
+        text-transform: uppercase;
+        padding-top: 2px;
+    }
+
+    .panel-title {
+        margin-bottom: 5px;
+        margin-left: 10px;
+    }
+
+    a .view-accordion {
+        color: white !important;
+    }
+
+    .disabled {
+        cursor: not-allowed;
+    }
+
+    /*2023-08-10---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 6px;
+        font-size: 14px;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 200;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+    /*-------------------------------------------------------------------------------*/ 
+</style>
+@{
+    /**/
+
+    ReportDetails rd = new ReportDetails();
+
+    List<ReportDetails> listReports = new ReportService().SelectReportNames();
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-content" id="contentLoadingArea">
+
+                <div class="col-md-6">
+                    <div id="ParameterLoadingArea" style="padding:10px 0 20px 0;margin-left:-20px;">
+
+                    </div>
+                </div>
+                <div class="col-md-6" style="z-index:-1;max-height:10px;overflow:hidden;">
+                    <div class="panel-group" id="accordion">
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading active">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" class="view-accordion accView" data-parent="#accordion" href="#collapseOne">
+                                        <i class="more-less glyphicon glyphicon-plus"></i> Reservation
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    @foreach (var item in listReports)
+                                    {
+                                        if (item.ReportCategory == "1")
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="card reportdiv">
+                                                    <span class="checkmark hidden">
+                                                        <div class="checkmark_circle"></div>
+                                                        <div class="checkmark_stem"></div>
+                                                        <div class="checkmark_kick"></div>
+                                                    </span>
+                                                    <div class="card-outer">
+                                                        <input type="hidden" value="@item.ReportNameWithType" data-IsPrintCopy="@item.IsPrintCopy" data-reportTitle="@item.DisplayName" data-reportName="@item.ReportName" data-reportId="@item.ReportId" data-reportCat="@item.ReportCategory" class="hdnrportName" />
+                                                        <img style="padding:10px;" src="~/Images/glyphicons-42-charts.png" />
+                                                        <label style="padding:5px; margin-top: 8px; color:black;">
+                                                            <font class="font-color" style="font-size:12px;">@item.DisplayName</font>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="panel panel-default">
+                            <div class="panel-heading ">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" class="view-accordion accView" data-parent="#accordion" href="#collapseTwo">
+                                        <i class="more-less glyphicon glyphicon-plus"></i> In House
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseTwo" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    @foreach (var item in listReports)
+                                    {
+                                        if (item.ReportCategory == "8")
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="card reportdiv">
+                                                    <span class="checkmark hidden">
+                                                        <div class="checkmark_circle"></div>
+                                                        <div class="checkmark_stem"></div>
+                                                        <div class="checkmark_kick"></div>
+                                                    </span>
+                                                    <div class="card-outer">
+                                                        <input type="hidden" value="@item.ReportNameWithType" data-IsPrintCopy="@item.IsPrintCopy" data-reportTitle="@item.DisplayName" data-reportName="@item.ReportName" data-reportId="@item.ReportId" data-reportCat="@item.ReportCategory" class="hdnrportName" />
+                                                        <img style="padding:10px;" src="~/Images/glyphicons-42-charts.png" />
+                                                        <label style="padding:5px; margin-top: 8px; color:black;">
+                                                            <font class="font-color" style="font-size:12px;">@item.DisplayName</font>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="panel panel-default">
+                            <div class="panel-heading ">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" class="view-accordion accView" data-parent="#accordion" href="#collapseThree">
+                                        <i class="more-less glyphicon glyphicon-plus"></i> Analysis
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseThree" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    @foreach (var item in listReports)
+                                    {
+                                        if (item.ReportCategory == "2")
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="card reportdiv">
+                                                    <span class="checkmark hidden">
+                                                        <div class="checkmark_circle"></div>
+                                                        <div class="checkmark_stem"></div>
+                                                        <div class="checkmark_kick"></div>
+                                                    </span>
+                                                    <div class="card-outer">
+                                                        <input type="hidden" value="@item.ReportNameWithType" data-IsPrintCopy="@item.IsPrintCopy" data-reportTitle="@item.DisplayName" data-reportName="@item.ReportName" data-reportId="@item.ReportId" data-reportCat="@item.ReportCategory" class="hdnrportName" />
+                                                        <img style="padding:10px;" src="~/Images/glyphicons-42-charts.png" />
+                                                        <label style="padding:5px; margin-top: 8px; color:black;">
+                                                            <font class="font-color" style="font-size:12px;">@item.DisplayName</font>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="panel panel-default">
+                            <div class="panel-heading ">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" class="view-accordion accView" data-parent="#accordion" href="#collapseFour">
+                                        <i class="more-less glyphicon glyphicon-plus"></i> Forecast
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseFour" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    @foreach (var item in listReports)
+                                    {
+                                        if (item.ReportCategory == "3")
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="card reportdiv">
+                                                    <span class="checkmark hidden">
+                                                        <div class="checkmark_circle"></div>
+                                                        <div class="checkmark_stem"></div>
+                                                        <div class="checkmark_kick"></div>
+                                                    </span>
+                                                    <div class="card-outer">
+                                                        <input type="hidden" value="@item.ReportNameWithType" data-IsPrintCopy="@item.IsPrintCopy" data-reportTitle="@item.DisplayName" data-reportName="@item.ReportName" data-reportId="@item.ReportId" data-reportCat="@item.ReportCategory" class="hdnrportName" />
+                                                        <img style="padding:10px;" src="~/Images/glyphicons-42-charts.png" />
+                                                        <label style="padding:5px; margin-top: 8px; color:black;">
+                                                            <font class="font-color" style="font-size:12px;">@item.DisplayName</font>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="panel panel-default">
+                            <div class="panel-heading ">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" class="view-accordion accView" data-parent="#accordion" href="#collapseFive">
+                                        <i class="more-less glyphicon glyphicon-plus"></i> Revenue Management
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseFive" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    @foreach (var item in listReports)
+                                    {
+                                        if (item.ReportCategory == "4")
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="card reportdiv">
+                                                    <span class="checkmark hidden">
+                                                        <div class="checkmark_circle"></div>
+                                                        <div class="checkmark_stem"></div>
+                                                        <div class="checkmark_kick"></div>
+                                                    </span>
+                                                    <div class="card-outer">
+                                                        <input type="hidden" value="@item.ReportNameWithType" data-IsPrintCopy="@item.IsPrintCopy" data-reportTitle="@item.DisplayName" data-reportName="@item.ReportName" data-reportId="@item.ReportId" data-reportCat="@item.ReportCategory" class="hdnrportName" />
+                                                        <img style="padding:10px;" src="~/Images/glyphicons-42-charts.png" />
+                                                        <label style="padding:5px; margin-top: 8px; color:black;">
+                                                            <font class="font-color" style="font-size:12px;">@item.DisplayName</font>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <br />
+                        <div class="panel panel-default">
+                            <div class="panel-heading ">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" class="view-accordion accView" data-parent="#accordion" href="#collapseSix">
+                                        <i class="more-less glyphicon glyphicon-plus"></i> Print Copies
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseSix" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    @foreach (var item in listReports)
+                                    {
+                                        if (item.ReportCategory == "5")
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="card reportdiv">
+                                                    <span class="checkmark hidden">
+                                                        <div class="checkmark_circle"></div>
+                                                        <div class="checkmark_stem"></div>
+                                                        <div class="checkmark_kick"></div>
+                                                    </span>
+                                                    <div class="card-outer">
+                                                        <input type="hidden" value="@item.ReportNameWithType" data-IsPrintCopy="@item.IsPrintCopy" data-reportTitle="@item.DisplayName" data-reportName="@item.ReportName" data-reportId="@item.ReportId" data-reportCat="@item.ReportCategory" class="hdnrportName" />
+                                                        <img style="padding:10px;" src="~/Images/glyphicons-42-charts.png" />
+                                                        <label style="padding:5px; margin-top: 8px; color:black;">
+                                                            <font class="font-color" style="font-size:12px;">@item.DisplayName</font>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="panel panel-default">
+                            <div class="panel-heading ">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" class="view-accordion accView" data-parent="#accordion" href="#collapseSeven">
+                                        <i class="more-less glyphicon glyphicon-plus"></i> Night Audit
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapseSeven" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    @foreach (var item in listReports)
+                                    {
+                                        if (item.ReportCategory == "6")
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="card reportdiv">
+                                                    <span class="checkmark hidden">
+                                                        <div class="checkmark_circle"></div>
+                                                        <div class="checkmark_stem"></div>
+                                                        <div class="checkmark_kick"></div>
+                                                    </span>
+                                                    <div class="card-outer">
+                                                        <input type="hidden" value="@item.ReportNameWithType" data-IsPrintCopy="@item.IsPrintCopy" data-reportTitle="@item.DisplayName" data-reportName="@item.ReportName" data-reportId="@item.ReportId" data-reportCat="@item.ReportCategory" class="hdnrportName" />
+                                                        <img style="padding:10px;" src="~/Images/glyphicons-42-charts.png" />
+                                                        <label style="padding:5px; margin-top: 8px; color:black;">
+                                                            <font class="font-color" style="font-size:12px;">@item.DisplayName</font>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="panel panel-default">
+                            <div class="panel-heading ">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" class="view-accordion accView" data-parent="#accordion" href="#collapeight">
+                                        <i class="more-less glyphicon glyphicon-plus"></i> Miscellaneous
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapeight" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    @foreach (var item in listReports)
+                                    {
+                                        if (item.ReportCategory == "7")
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="card reportdiv">
+                                                    <span class="checkmark hidden">
+                                                        <div class="checkmark_circle"></div>
+                                                        <div class="checkmark_stem"></div>
+                                                        <div class="checkmark_kick"></div>
+                                                    </span>
+                                                    <div class="card-outer">
+                                                        <input type="hidden" value="@item.ReportNameWithType" data-IsPrintCopy="@item.IsPrintCopy" data-reportTitle="@item.DisplayName" data-reportName="@item.ReportName" data-reportId="@item.ReportId" data-reportCat="@item.ReportCategory" class="hdnrportName" />
+                                                        <img style="padding:10px;" src="~/Images/glyphicons-42-charts.png" />
+                                                        <label style="padding:5px; margin-top: 8px; color:black;">
+                                                            <font class="font-color" style="font-size:12px;">@item.DisplayName</font>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="selectedRpt" />
+<input type="hidden" id="hdncheckedsignPrev" value="" />
+<input type="hidden" id="hdncheckedsignCurrent" value="" />
+<input type="hidden" id="reportId" value="@ViewBag.ReportId" />
+<script>
+    var reportNamehdnval = ""; var reportActualName = "";
+
+    function toggleIcon(e) {
+        $(e.target)
+            .prev('.panel-heading')
+            .find(".more-less")
+            .toggleClass('glyphicon-plus glyphicon-minus');
+    }
+    $('.panel-group').on('hidden.bs.collapse', toggleIcon);
+    $('.panel-group').on('shown.bs.collapse', toggleIcon);
+
+
+    $(document).ready(function () {  
+        var reportId = $('#reportId').val();
+        console.log(reportId);
+        if (reportId != '' || reportId != null) {
+            var category = $('.hdnrportName[data-reportId=' + reportId + ']').attr('data-reportCat');
+            $('.hdnrportName[data-reportCat=' + category + ']').closest('.panel').find('a').click();       
+            $('.hdnrportName[data-reportId=' + reportId + ']').closest('.reportdiv').click();
+        }
+        $('.reportdiv').not('.hdnrportName[data-reportId=' + reportId + ']').prop('disabled', true).addClass("disabled");
+     //   $('.reportdiv').not('.hdnrportName[data-reportCat=' + category + ']').prop('disabled', true).addClass("disabled");
+        
+        $('.panel-collapse').on('show.bs.collapse', function () {
+            $(this).siblings('.panel-heading').addClass('active');
+        });
+
+        $('.panel-collapse').on('hide.bs.collapse', function () {
+            $(this).siblings('.panel-heading').removeClass('active');
+        });
+
+        $('#hdncheckedsignPrev').val('');
+        $('#hdncheckedsignCurrent').val('');
+        //2023-08-10--------------------------------------------------------------------------
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px'});
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('html, body').animate({
+            scrollTop: 0
+        }, 2500);
+
+    });
+
+    $('body').off('click', '.select2-selection__rendered').on('click', '.select2-selection__rendered', function () {
+        setTimeout(function () {
+            $('.select2-results ul li').removeClass('select2-results__option--selected');
+        }, 200);
+    });
+    //-------------------------------------------------------------------------------------------
+    $('body').off('click', '.reportdiv').on('click', '.reportdiv', function (e) {
+
+        $('.checkmark').addClass('hidden');       
+        $('#hdncheckedsignCurrent').val('');
+        $(this).find('.checkmark').removeClass('hidden');  
+
+        $('.report-param-title').html('');
+        $('.report-param-title').html($($($('.checkmark').not(':hidden')).parent('.reportdiv').find('input[type="hidden"]')).attr('data-reportTitle'));
+       
+        reportNamehdnval = $(e.currentTarget).find('.hdnrportName').val();
+        reportActualName = $(e.currentTarget).find('.hdnrportName').attr('data-reportName');
+        LoadParameters(reportNamehdnval);
+    });
+
+ 
+
+    $('body').on('click', '.reportdiv', function (e) {
+
+    });
+
+    function LoadParameters(reportNamehdnval) {
+       
+        var rptName = reportNamehdnval;
+        $.ajax({
+            url: '/reporting/report/SelectReportParamaters',
+            dataType: 'html',
+            method: 'POST',
+            data: { ReportName: rptName },
+            success: function (response) {
+                console.log(response)
+                //$('#ParameterLoadingArea').html('').fadeOut();
+                    $('#ParameterLoadingArea').html(response);
+            }
+        });
+    }
+
+    //View Button To Display Report
+    $('body').on('click', '.reportViewBtn', function () {
+        debugger;
+        //Parameters
+        //var reportName = reportNamehdnval;
+        var reportName = reportActualName;
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        var fromTime = $('#FromTime').val();
+        var toTime = $('#ToTime').val();
+        var resNo = $('#ResNo').val();
+        var uuid = $('#Uuid').val();
+        //if (reportName == "ProformaInvoice") {
+            uuid = $('#ProfomaResUuid').val()
+        //}
+        var date = $('#Date').val();
+        var time = $('#Time').val();
+        var GroupResNo = $('#GroupResNo').val();
+        var RoomRate = $('#roomrate').val();
+        var arrival = $('#Arrival').val();
+        var deparute = $('#Departure').val();
+        var company = $('#Company').val();
+        var status = $('#Status').val();
+        var rateCode = $('#RateCode').val();
+        var docNo = $('#DocNo').val();
+        var InvoiceNo = $('#InvoiceNo').val();
+        var Type = $('#ReportType').val();
+        var SubTitle = $('#ReportSubTitle').val();
+        var IsPreview = 0;      
+        var ExtensionCode = $('#ExtensionCode').val();
+        var CallDirection = $('#CallDirection').val();
+        var CallType = $('#CallType').val();
+        var InspectionTimeId = $('#InspectionTime').val();
+        var Segment = $('#Segment').val();
+        var MealAdvDocNo = $('#DocNo').val();
+        var TelePhoneNo = $('#TelePhoneNo').val();//new
+        var ExtensionGroup = $('#ExtensionGroup').val();//new
+        var RoomBoyId = $('#RoomBoy').val();
+        var Department = $('#Department').val();
+        var Market = $('#Market').val();
+        var CompanyProfileType = $('#CompanyProfileType').val();
+        var SalesPerson = $('#SalesPerson').val();
+     
+        $('.reportViewBtn').attr("href", '/Reporting/Report/ViewReport?ReportName=' + reportName + '&FromDate=' + fromDate + '&ToDate=' + toDate + '&FromTime=' + fromTime + '&ToTime=' + toTime + '&Uuid=' + uuid + '&ResNo=' + resNo + '&Date=' + date + '&Time=' + time + '&Arrival=' + arrival + '&Departure=' + deparute + '&Company=' + company + '&Status=' + status + '&RateCode=' + rateCode + '&GroupReservationNo=' + GroupResNo + ' &RoomRate=' + RoomRate + '&DocNo=' + docNo + '&InvoiceNo=' + InvoiceNo + '&Type=' + Type + '&SubTitle=' + SubTitle + '&ExtensionCode=' + ExtensionCode + '&CallDirection=' + CallDirection + '&CallType=' + CallType + '&IsPreview=' + IsPreview + '&InspectionTimeId=' + InspectionTimeId + '&Segment=' + Segment + '&MealAdvDocNo=' + MealAdvDocNo + '&IsLKROnlyInvoice=0' + '&TelePhoneNo=' + TelePhoneNo + '&ExtensionGroup=' + ExtensionGroup + '&RoomBoyId=' + RoomBoyId + '&DepartmentId=' + Department + '&Market=' + Market + '&CompanyProfileType=' + CompanyProfileType + '&SalesPerson=' + SalesPerson );
+    })
+
+    $('body').on('click', '#btnLKRBill', function (e) {
+        var reportName = reportActualName;
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        var fromTime = $('#FromTime').val();
+        var toTime = $('#ToTime').val();
+        var resNo = $('#ResNo').val();
+        var uuid = $('#Uuid').val();
+        //if (reportName == "ProformaInvoice") {
+        uuid = $('#ProfomaResUuid').val()
+        //}
+        var date = $('#Date').val();
+        var time = $('#Time').val();
+        var GroupResNo = $('#GroupResNo').val();
+        var RoomRate = $('#roomrate').val();
+        var arrival = $('#Arrival').val();
+        var deparute = $('#Departure').val();
+        var company = $('#Company').val();
+        var status = $('#Status').val();
+        var rateCode = $('#RateCode').val();
+        var docNo = $('#DocNo').val();
+        var InvoiceNo = $('#InvoiceNo').val();
+        var Type = $('#ReportType').val();
+        var SubTitle = $('#ReportSubTitle').val();
+        var IsPreview = 0;
+        var ExtensionCode = $('#ExtensionCode').val();
+        var CallDirection = $('#CallDirection').val();
+        var CallType = $('#CallType').val();
+        var InspectionTimeId = $('#InspectionTime').val();
+        var Segment = $('#Segment').val();
+        var MealAdvDocNo = $('#DocNo').val();
+        var Department = $('#Department').val();
+        var Market = $('#Market').val();
+        var CompanyProfileType = $('#CompanyProfileType').val();
+        var SalesPerson = $('#SalesPerson').val();
+
+        $('#btnLKRBill').attr("href", '/Reporting/Report/ViewReport?ReportName=' + reportName + '&FromDate=' + fromDate + '&ToDate=' + toDate + '&FromTime=' + fromTime + '&ToTime=' + toTime + '&Uuid=' + uuid + '&ResNo=' + resNo + '&Date=' + date + '&Time=' + time + '&Arrival=' + arrival + '&Departure=' + deparute + '&Company=' + company + '&Status=' + status + '&RateCode=' + rateCode + '&GroupReservationNo=' + GroupResNo + ' &RoomRate=' + RoomRate + '&DocNo=' + docNo + '&InvoiceNo=' + InvoiceNo + '&Type=' + Type + '&SubTitle=' + SubTitle + '&ExtensionCode=' + ExtensionCode + '&CallDirection=' + CallDirection + '&CallType=' + CallType + '&IsPreview=' + IsPreview + '&InspectionTimeId=' + InspectionTimeId + '&Segment=' + Segment + '&MealAdvDocNo=' + MealAdvDocNo + '&IsLKROnlyInvoice=1' + '&DepartmentId=' + Department + '&Market=' + Market + '&CompanyProfileType=' + CompanyProfileType + '&SalesPerson=' + SalesPerson  );
+    });
+
+    $('body').on('click', '#btnBreifBill', function (e) {
+        var reportName = "FolioInvoice";
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        var fromTime = $('#FromTime').val();
+        var toTime = $('#ToTime').val();
+        var resNo = $('#ResNo').val();
+        var uuid = $('#Uuid').val();
+        //if (reportName == "ProformaInvoice") {
+        uuid = $('#ProfomaResUuid').val()
+        //}
+        var date = $('#Date').val();
+        var time = $('#Time').val();
+        var GroupResNo = $('#GroupResNo').val();
+        var RoomRate = $('#roomrate').val();
+        var arrival = $('#Arrival').val();
+        var deparute = $('#Departure').val();
+        var company = $('#Company').val();
+        var status = $('#Status').val();
+        var rateCode = $('#RateCode').val();
+        var docNo = $('#DocNo').val();
+        var InvoiceNo = $('#InvoiceNo').val();
+        var Type = $('#ReportType').val();
+        var SubTitle = $('#ReportSubTitle').val();
+        var IsPreview = 0;
+        var ExtensionCode = $('#ExtensionCode').val();
+        var CallDirection = $('#CallDirection').val();
+        var CallType = $('#CallType').val();
+        var InspectionTimeId = $('#InspectionTime').val();
+        var Segment = $('#Segment').val();
+        var MealAdvDocNo = $('#DocNo').val();
+        var Department = $('#Department').val();
+        var Market = $('#Market').val();
+        var CompanyProfileType = $('#CompanyProfileType').val();
+        var SalesPerson = $('#SalesPerson').val();
+
+        $('#btnBreifBill').attr("href", '/Reporting/Report/ViewReport?ReportName=' + reportName + '&FromDate=' + fromDate + '&ToDate=' + toDate + '&FromTime=' + fromTime + '&ToTime=' + toTime + '&Uuid=' + uuid + '&ResNo=' + resNo + '&Date=' + date + '&Time=' + time + '&Arrival=' + arrival + '&Departure=' + deparute + '&Company=' + company + '&Status=' + status + '&RateCode=' + rateCode + '&GroupReservationNo=' + GroupResNo + ' &RoomRate=' + RoomRate + '&DocNo=' + docNo + '&InvoiceNo=' + InvoiceNo + '&Type=' + Type + '&SubTitle=' + SubTitle + '&ExtensionCode=' + ExtensionCode + '&CallDirection=' + CallDirection + '&CallType=' + CallType + '&IsPreview=' + IsPreview + '&InspectionTimeId=' + InspectionTimeId + '&Segment=' + Segment + '&MealAdvDocNo=' + MealAdvDocNo + '&IsLKROnlyInvoice=0' + '&DepartmentId=' + Department + '&Market=' + Market + '&CompanyProfileType=' + CompanyProfileType + '&SalesPerson=' + SalesPerson );
+    })
+
+    $('body').on('click', '#reportDetailViewBtn', function (e) {
+        var reportName = "FolioInvoiceDetail";
+        var fromDate = $('#FromDate').val();
+        var toDate = $('#ToDate').val();
+        var fromTime = $('#FromTime').val();
+        var toTime = $('#ToTime').val();
+        var resNo = $('#ResNo').val();
+        var uuid = $('#Uuid').val();
+        //if (reportName == "ProformaInvoice") {
+        uuid = $('#ProfomaResUuid').val()
+        //}
+        var date = $('#Date').val();
+        var time = $('#Time').val();
+        var GroupResNo = $('#GroupResNo').val();
+        var RoomRate = $('#roomrate').val();
+        var arrival = $('#Arrival').val();
+        var deparute = $('#Departure').val();
+        var company = $('#Company').val();
+        var status = $('#Status').val();
+        var rateCode = $('#RateCode').val();
+        var docNo = $('#DocNo').val();
+        var InvoiceNo = $('#InvoiceNo').val();
+        var Type = $('#ReportType').val();
+        var SubTitle = $('#ReportSubTitle').val();
+        var IsPreview = 0;
+        var ExtensionCode = $('#ExtensionCode').val();
+        var CallDirection = $('#CallDirection').val();
+        var CallType = $('#CallType').val();
+        var InspectionTimeId = $('#InspectionTime').val();
+        var Segment = $('#Segment').val();
+        var MealAdvDocNo = $('#DocNo').val();
+        var Department = $('#Department').val();
+        var Market = $('#Market').val();
+        var CompanyProfileType = $('#CompanyProfileType').val();
+        var SalesPerson = $('#SalesPerson').val();
+
+        $('#reportDetailViewBtn').attr("href", '/Reporting/Report/ViewReport?ReportName=' + reportName + '&FromDate=' + fromDate + '&ToDate=' + toDate + '&FromTime=' + fromTime + '&ToTime=' + toTime + '&Uuid=' + uuid + '&ResNo=' + resNo + '&Date=' + date + '&Time=' + time + '&Arrival=' + arrival + '&Departure=' + deparute + '&Company=' + company + '&Status=' + status + '&RateCode=' + rateCode + '&GroupReservationNo=' + GroupResNo + ' &RoomRate=' + RoomRate + '&DocNo=' + docNo + '&InvoiceNo=' + InvoiceNo + '&Type=' + Type + '&SubTitle=' + SubTitle + '&ExtensionCode=' + ExtensionCode + '&CallDirection=' + CallDirection + '&CallType=' + CallType + '&IsPreview=' + IsPreview + '&InspectionTimeId=' + InspectionTimeId + '&Segment=' + Segment + '&MealAdvDocNo=' + MealAdvDocNo + '&IsLKROnlyInvoice=1' + '&DepartmentId=' + Department + '&Market=' + Market + '&CompanyProfileType=' + CompanyProfileType + '&SalesPerson=' + SalesPerson );
+    })
+
+</script>

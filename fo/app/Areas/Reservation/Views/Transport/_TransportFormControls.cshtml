@@ -1,0 +1,759 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.ReservationHeaderView
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li{
+            color: #f4f9fc !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+            background-color: #2980b9;
+        }
+
+    .select2-search__field {
+        color: #f4f9fc !important;
+        background-color: #2980b9 !important;
+    }
+
+    .select2-search--dropdown {
+        color: #f4f9fc !important;
+        background-color: #2980b9 !important;
+    }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #f4f9fc !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #f4f9fc;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-container--default .select2-selection--single {
+        background-color: #2980b9 !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+
+    .panel-height {
+        height: 485px;
+    }
+
+    .panel-body-height {
+        height: 505px;
+    }
+
+    .form-group-styel-override {
+        padding-bottom: 0px !important;
+        margin: 0px !important;
+    }
+
+    .well-bottom {
+        margin-bottom: 5px !important;
+    }
+
+    .well-height {
+        margin-top: 0px;
+        height: 76px;
+    }
+
+    .attribute-area {
+        height: 485px !important;
+    }
+
+    .attribute-blue {
+        background-color: #2980b9;
+        border: #2980b9;
+    }
+
+    .attribute-green {
+        background-color: #27ae60;
+        border: #27ae60;
+    }
+
+    .row-height {
+        margin-bottom: 10px;
+    }
+
+    .form-control-margin {
+        margin-top: 20px;
+    }
+
+    .guest label, .other label {
+        color: white !important;
+    }
+
+    .guest input, .other input {
+        color: white !important;
+    }
+
+    .guest select {
+        color: white !important;
+        background-color: #2980b9 !important;
+    }
+
+    .other select {
+        color: white !important;
+        background-color: #27ae60 !important;
+    }
+
+    span {
+        color: white;
+    }
+
+    .transfer-type-empty-text {
+        font-weight: bolder;
+        font-size: 25px;
+        color: #b3b3b394;
+        text-align: center;
+        margin-top: 50px;
+    }
+
+    .card .card-content{
+        padding:5px 20px;
+    }
+
+    /*.transport-header-area {
+        margin: -24px;
+    }
+
+    .transport-wiseAttributes-area{
+        margin-left: 10px;
+    }*/
+</style>
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+<div class="row" style="margin: 0 -30px;">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+
+                        <button type="button" class="btn btn-sm btn-theme-color-2 show-Form">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 show-Grid" style="margin-right: 10px;">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content font-in-card" id="content-form">
+                <div class="transport-form-controls">
+                    <div class="panel-body-height">
+                        <input type="hidden" id="is-from-reservation-screen" class="is-from-reservation-screen" value="@Model.isFromReservationList" />
+                        <input type="hidden" id="reservation-hed-id" class="reservation-hed-id" value="@Model.Id" />
+                        <div class="row" style="margin: 15px 0;">
+                            <div class="col-md-4 transport-header-area">
+                                @{Html.RenderAction("TransportDetailsArea");}
+                            </div>
+                            <div class="col-md-8 transport-wiseAttributes-area ">
+                                <div class="row">
+                                    <div class="panel panel-default panel-height">
+                                        <div class="panel-body attributes-container attribute-area">
+                                            <p class="transfer-type-empty-text">Select Transfer Type</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content hide" id="content-grid">
+                <ul class="nav nav-tabs">
+                    <li class="guest-transport-grid active"><a data-toggle="tab" href="#GuestList">Guest Transport</a></li>
+                    <li class="other-transport-grid"><a data-toggle="tab" href="#OtherList">Other Transport</a></li>
+                </ul>
+
+                <div class="tab-content" style="margin: 15px;">
+                    <div id="GuestList" class="tab-pane fade in active ">
+                    </div>
+                    <div id="OtherList" class="tab-pane fade">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+
+    $(function () {
+        //2023-08-16--------------------------------------------------------------------------
+        setTimeout(function () {
+            console.log('1')
+            $('#Transfertype').addClass('select2');
+            $('#InHouseGuests').addClass('select2');
+            $('#Transfermode').addClass('select2');
+            $('#TransportStatus').addClass('select2');
+            $('#Timerange').addClass('select2');
+        $('.select2').select2();
+
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+        }, 1000);
+
+        //-------------------------------------------------------------------------------------------
+
+        $('.show-Grid').click();
+
+        if ($('.is-from-reservation-screen').val() == 1) {
+            $('.can-toggle').addClass('hide');
+            $('.reservation-headers').val($('.reservation-hed-id').val())
+
+            ReservationChange($('.reservation-hed-id').val());
+
+            $('.guest #Reservations').prop('disabled', true);
+            $('.guest #InHouseRooms').prop('disabled', true);
+
+            //$('.is-from-reservation-screen').closest('.card').find('.card-header').addClass('hide');
+            $('.tab-content #OtherList, .nav-tabs .other-transport-grid').addClass('hide');
+            $('.tab-content').siblings('.nav-tabs').addClass('hide');
+            $('.is-from-reservation-screen').closest('.card').css('margin-top', '15px', 'important');
+            $('.is-from-reservation-screen').closest('.card').css('height', '480px', 'important');
+
+            $('.attributes-container').css('height', '445px', 'important');
+            $('.attributes-container').closest('.panel').css('height', '445px', 'important');
+
+            $('.is-from-reservation-screen').closest('.modal-body').css('height', '580px', 'important');
+            $('.is-from-reservation-screen').closest('.modal-body').css('padding-top', '10px', 'important');
+        }
+    });
+
+    //$('body').off('click', '.grid-record-delete-yes-btn').on('click', '.grid-record-delete-yes-btn', function (e) {
+    //
+
+    //})
+
+    $('body').on('click', '.show-Form', function () {
+        $('#content-form').removeClass('hide');
+        $('#content-grid').addClass('hide');
+    })
+
+    $('body').on('click', '.show-Grid', function () {
+        $('.guest-transport-grid').click();
+        $('#content-form').addClass('hide');
+        $('#content-grid').removeClass('hide');
+    })
+
+    $('body').on('click', '.guest-transport-grid', function () {
+        $('#content-grid #OtherList').html('');
+        $.ajax({
+            method: 'get',
+            url: '/Reservation/Transport/TransportTypeWiseListForGuest?reservationNo=' + $('.reservation-hed-id').val(),
+            datatype: 'html',
+            success: function (htmlContent) {
+                $('#content-grid #GuestList').html('');
+                $('#content-grid #GuestList').html(htmlContent);
+            },
+        });
+    })
+
+    $('body').on('click', '.other-transport-grid', function () {
+
+        $('#content-grid #GuestList').html('');
+        $.ajax({
+            method: 'get',
+            url: '/Reservation/Transport/TransportTypeWiseListForOthers',
+            datatype: 'html',
+            success: function (htmlContent) {
+                $('#content-grid #OtherList').html('');
+                $('#content-grid #OtherList').html(htmlContent);
+            },
+        });
+    })
+
+
+
+    //-----------Save-------------//
+    $('body').on('click', '#book-transport', function () {
+        var tTypeVal = $('#transport-header-type').is(':checked') ? 'o' : 'g';
+
+        if (tTypeVal == 'g') {
+            transportHeaderId = $('.guest .transport-header-id').val()
+            reservationHeaderId = $('.guest .reservation-headers-id').val();
+            guestProfileId = $('.guest #InHouseGuests').val();
+            transferTypeId = $('.guest .transfer-types').val();
+            transferModeId = $('.guest .transfer-modes').val();
+            requiredDate = $('.guest .required-date').val();
+            requiredTime = $('.guest .time-range').val();
+            remarks = $('.guest .remarks').val();
+            statusId = $('.guest .reservation-status').val();
+
+        } else if (tTypeVal == 'o') {
+            transportFor = $('.other .transport-for-other').val();
+            transportHeaderId = $('.other .transport-header-id').val()
+            transferTypeId = $('.other .transfer-types').val();
+            transferModeId = $('.other .transfer-modes').val();
+            requiredDate = $('.other .required-date').val();
+            requiredTime = $('.other .time-range').val();
+            remarks = $('.other .remarks').val();
+            statusId = $('.other .reservation-status').val();
+        }
+
+        var isValidation = TransportHeaderReservationValidation(tTypeVal);
+
+
+
+        if (isValidation) {
+            CollectFormDataAndSave(tTypeVal);
+            setTimeout(function () {
+                ClearControls();
+            }, 1000);
+
+        }
+
+    });
+
+    //------Transfer Type Change function-----------//
+    $('.transfer-types').change(function () {
+        TransferTypeOnChange($(this).val(), -1);
+    });
+    //----------------------------------------------//
+
+    //--------------------Edit----------------------//
+    $('body').on('click', '.row-edit', function () {
+
+        var tType;
+        var transportHeaderId = $(this).closest('tr').find('.transport-header-id').val();
+        var resHeaderId = $(this).closest('tr').find('.reservation-header-id').val();
+        var transportFor = $(this).closest('tr').find('.transport-for').val();
+
+        if (typeof resHeaderId === 'undefined' && transportFor.length > 0) {
+            tType = 'o';
+        } else if (resHeaderId.length > 0 && typeof transportFor === 'undefined') {
+            tType = 'g';
+        }
+        var transferTypeId = $(this).closest('tr').find('.transfer-type-id').val();
+        var transferModeId = $(this).closest('tr').find('.transfer-mode-id').val();
+        var requiredDate = $(this).closest('tr').find('.required-date').val();
+        var requiredTime = $(this).closest('tr').find('.required-time').val();
+        var remarks = $(this).closest('tr').find('.remarks').val();
+        var statusid = $(this).closest('tr').find('.status-id').val();
+
+        var guestId = $(this).closest('tr').find('.guest-id').val();
+
+        $('body .show-Form').click();
+
+
+        if (tType == 'g') {
+
+            $('#transport-header-type').prop('checked', false);
+
+            $('.guest .transport-header-id').val(transportHeaderId);
+            $('.guest .reservation-headers').val(resHeaderId);
+            $('.guest .transfer-types').val(transferTypeId);
+            $('.guest .transfer-modes').val(transferModeId);
+            $('.guest .required-date').val(requiredDate);
+            $('.guest .time-range').val(requiredTime);
+            $('.guest .remarks').val(remarks);
+            $('.guest .reservation-status').val(statusid);
+
+            changeOnReservationHeaderChange($('.reservation-headers'));
+            InHouseRoomChange(guestId);
+
+            $('.guest #Reservations').prop('disabled', true);
+            $('.guest #InHouseRooms').prop('disabled', true);
+            $('.guest .transfer-types').prop('disabled', true);
+
+        } else {
+            $('#transport-header-type').prop('checked', true);
+
+            $('.other .transport-header-id').val(transportHeaderId);
+            $('.other .transport-for-other').val(transportFor);
+            $('.other .transfer-types').val(transferTypeId);
+            $('.other .transfer-modes').val(transferModeId);
+            $('.other .required-date').val(requiredDate);
+            $('.other .time-range').val(requiredTime);
+            $('.other .remarks').val(remarks);
+            $('.other .reservation-status').val(statusid);
+            $('.other .transport-for-other').prop('disabled', true);
+            $('.other .transfer-types').prop('disabled', true);
+        }
+
+
+        TransferTypeOnChange($('.transfer-types').val(), transportHeaderId);
+    })
+
+    function TransferTypeOnChange(typeVal, transportHeaderId) {
+        $.ajax({
+            method: 'get',
+            url: '/Administration/TransportAttributes/TransferTypeWiseAttributes?transferTypeId=' + typeVal,
+            datatype: 'html',
+            success: function (htmlContent) {
+                $('.attributes-container').html('');
+                $('.attributes-container').html(htmlContent);
+                $('#transport-header-type').change();
+                if (transportHeaderId != -1) {
+                    SetTransportHeaderWiseDetails(transportHeaderId);
+                }
+                //$('.guest .guest-combo').prop('disabled', true);
+            },
+        })
+    }
+
+    function SetTransportHeaderWiseDetails(transportHeaderId) {
+
+        $.ajax({
+            method: 'get',
+            url: '/Reservation/Transport/GetTransportHeaderWiseTransportDetails?TransportHeaderId=' + transportHeaderId,
+            datatype: 'json',
+            success: function (TransportDetailList) {
+
+                var attributeWithValuesLis = [];
+                var attributeValue;
+
+                $(TransportDetailList).each(function (index, transportDetail) {
+                    if (transportDetail.ValueType == 'S') {
+
+                        attributeValue = {
+                            attributeId: transportDetail.TransportAttributeId,
+                            valueType: transportDetail.ValueType,
+                            value: transportDetail.AttributeValue1
+                        }
+                    }
+                    else if (transportDetail.ValueType == 'D') {
+                        attributeValue = {
+                            attributeId: transportDetail.TransportAttributeId,
+                            valueType: transportDetail.ValueType,
+                            value: transportDetail.AttributeValue2DateString
+                        }
+                    }
+                    else if (transportDetail.ValueType == 'T') {
+                        attributeValue = {
+                            attributeId: transportDetail.TransportAttributeId,
+                            valueType: transportDetail.ValueType,
+                            value: transportDetail.AttributeValue3TimeString
+                        }
+                    }
+                    else if (transportDetail.ValueType == 'B') {
+                        attributeValue = {
+                            attributeId: transportDetail.TransportAttributeId,
+                            valueType: transportDetail.ValueType,
+                            value: transportDetail.AttributeValue4
+                        }
+                    }
+                    else if (transportDetail.ValueType == 'I') {
+                        attributeValue = {
+                            attributeId: transportDetail.TransportAttributeId,
+                            valueType: transportDetail.ValueType,
+                            value: transportDetail.AttributeValue5
+                        }
+                    }
+                    else if (transportDetail.ValueType == 'M') {
+                        attributeValue = {
+                            attributeId: transportDetail.TransportAttributeId,
+                            valueType: transportDetail.ValueType,
+                            value: transportDetail.AttributeValue6
+                        }
+                    }
+                    attributeWithValuesLis.push(attributeValue);
+                });
+
+                arrayList = {
+                    items: attributeWithValuesLis
+                }
+
+                $('.attribute-area .well').each(function (index, eachWell) {
+
+                    attributeId = $(eachWell).find('.attribute-id').data('attribute-id');
+                    var object = $.grep(arrayList.items, function (item, index) {
+                        return item.attributeId == attributeId;
+                    })
+                    SetAttributeVaule(object[0], eachWell);
+                });
+            }
+        })
+    }
+
+    function SetAttributeVaule(attributeObj, attributeWell) {
+
+        if (attributeObj.valueType == 'B') {
+            $(attributeWell).find('.attribute-check-box').prop('checked', attributeObj.value);
+        } else if (attributeObj.valueType == 'S') {
+            $(attributeWell).find('.input-type-for-string').val(attributeObj.value);
+        } else if (attributeObj.valueType == 'D') {
+            $(attributeWell).find('.date-picker').val(attributeObj.value);
+        } else if (attributeObj.valueType == 'T') {
+            $(attributeWell).find('.time-range').val(attributeObj.value);
+        } else if (attributeObj.valueType == 'I') {
+            $(attributeWell).find('.input-type-for-int').val(attributeObj.value);
+        } else if (attributeObj.valueType == 'M') {
+            $(attributeWell).find('.input-type-for-money').val(attributeObj.value);
+        }
+    }
+
+    function ClearControls() {
+        $('.guest-check').prop('checked', true);
+        $('.guest .transport-header-id').val('');
+        $('.guest .reservation-headers').val('');
+        $('.guest .inhouseRoom-combo').val('');
+        $('.guest .transfer-types').val('');
+        $('.guest .transfer-modes').val('');
+        $('.guest .guest-combo').val('');
+        $('.guest .required-date').val('');
+        $('.guest .time-range').val('');
+        $('.guest .remarks').val('');
+        $('.guest .reservation-status').val('');
+
+        $('.other .transport-header-id').val('');
+        $('.other .transport-for-other').val('');
+        $('.other .transfer-types').val('');
+        $('.other .transfer-modes').val('');
+        $('.other .required-date').val('');
+        $('.other .time-range').val('');
+        $('.other .remarks').val('');
+        $('.other .reservation-status').val('');
+
+        $('.attribute-area').html('');
+    }
+
+    function TransportHeaderReservationValidation(tTypeVal) {
+
+        var isValidation = false;
+        //Guest Reservation Validation//
+        if (tTypeVal == 'g') {
+            if ($('.guest .reservation-headers').val() != '') {
+                if ($('.guest .guest-combo').val() != '') {
+                    if ($('.guest .transfer-types').val() != '') {
+                        if ($('.guest .transfer-modes').val() != '') {
+                            if ($('.guest .required-date').val() != '') {
+                                if ($('.guest .time-range').val() != '') {
+                                    if ($('.guest .remarks').val() != '') {
+                                        if ($('.guest .reservation-status').val() != '') {
+                                            isValidation = TransportDetailValidation();
+                                            if (isValidation == true)
+                                                return true;
+                                            else
+                                                return false;
+
+                                        } else {
+                                            ShowErrorMessage('Reservation Status Cannot be Empty!');
+                                            return false;
+                                        }
+                                    } else {
+                                        ShowErrorMessage('Remark cannot be empty!');
+                                        return false;
+                                    }
+                                } else {
+                                    ShowErrorMessage('Required Time cannot be empty!');
+                                    return false;
+                                }
+                            } else {
+                                ShowErrorMessage('Required Date cannot be empty!');
+                                return false;
+                            }
+                        } else {
+                            ShowErrorMessage('Transfer Mode cannot be empty!');
+                            return false;
+                        }
+                    } else {
+                        ShowErrorMessage('Transfer Type cannot be empty!');
+                        return false;
+                    }
+                } else {
+                    ShowErrorMessage('Guest cannot be empty!');
+                    return false;
+                }
+            } else {
+                ShowErrorMessage('Reservation cannot be empty!');
+                return false;
+            }
+            //Others Validation//
+        } else {
+            if ($('.other .transport-for-other').val() != '') {
+                if ($('.other .transfer-types').val() != '') {
+                    if ($('.other .transfer-modes').val() != '') {
+                        if ($('.other .required-date').val() != '') {
+                            if ($('.other .time-range').val() != '') {
+                                if ($('.other .remarks').val() != '') {
+                                    if ($('.other .reservation-status').val() != '') {
+
+                                        isValidation = TransportDetailValidation();
+                                        if (isValidation == true)
+                                            return true;
+                                        else
+                                            return false;
+                                    } else {
+                                        ShowErrorMessage('Reservation Status Cannot be Empty!');
+                                        return false;
+                                    }
+                                } else {
+                                    ShowErrorMessage('Remark cannot be empty!');
+                                    return false;
+                                }
+                            } else {
+                                ShowErrorMessage('Required Time cannot be empty!');
+                                return false;
+                            }
+                        } else {
+                            ShowErrorMessage('Required Date cannot be empty!');
+                            return false;
+                        }
+                    } else {
+                        ShowErrorMessage('Transfer Mode cannot be empty!');
+                        return false;
+                    }
+                } else {
+                    ShowErrorMessage('Transfer Type cannot be empty!');
+                    return false;
+                }
+            } else {
+                ShowErrorMessage('Transport For cannot be empty!');
+                return false;
+            }
+        }
+    }
+
+    function TransportDetailValidation() {
+        var validation = true;
+        $('.attribute-area :input').not('input[type=hidden]').each(function (index, eachInput) {
+            if ($(eachInput).is(':required')) {
+                if ($(eachInput).val() == '') {
+                    ShowErrorMessage($(this).siblings('label').text() + ' cannot be empty!');
+                    validation = false;
+                    return false;
+                }
+            }
+        });
+        if (validation) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    function CollectFormDataAndSave(tTypeVal) {
+        var transportHeader, transportHeaderId, transportDetail, reservationHeaderId, guestProfileId, transportFor, transferTypeId, transferModeId, requiredDate, requiredTime, remarks, statusId;
+        var transportDetails = [];
+
+        if (tTypeVal == 'g') {
+            transportHeaderId = $('.guest .transport-header-id').val()
+            reservationHeaderId = $('.guest .reservation-headers').val();
+            guestProfileId = $('.guest .guest-combo').val();
+            transferTypeId = $('.guest .transfer-types').val();
+            transferModeId = $('.guest .transfer-modes').val();
+            requiredDate = $('.guest .required-date').val();
+            requiredTime = $('.guest .time-range').val();
+            remarks = $('.guest .remarks').val();
+            statusId = $('.guest .reservation-status').val();
+        } else if (tTypeVal == 'o') {
+            transportFor = $('.other .transport-for-other').val();
+            transportHeaderId = $('.other .transport-header-id').val()
+            transferTypeId = $('.other .transfer-types').val();
+            transferModeId = $('.other .transfer-modes').val();
+            requiredDate = $('.other .required-date').val();
+            requiredTime = $('.other .time-range').val();
+            remarks = $('.other .remarks').val();
+            statusId = $('.other .reservation-status').val();
+        }
+
+        $('.attribute-area :input').not('input[type=hidden]').each(function (index, eachInput) {
+
+            if ($(eachInput).is(':checkbox')) {
+                if ($(eachInput).is(':checked')) {
+                    val = true;
+                }
+                else {
+                    val = false;
+                }
+                transportDetail = {
+                    ValueType: $(eachInput).data('value-type'),
+                    Value: val,
+                    Id: $(eachInput).siblings('.attribute-id').data('attribute-id')
+                }
+            } else {
+                transportDetail = {
+                    ValueType: $(eachInput).data('value-type'),
+                    Value: $(eachInput).val(),
+                    Id: $(eachInput).closest('.well').find('.attribute-id').data('attribute-id')
+                }
+            }
+            transportDetails.push(transportDetail);
+        });
+
+        transportHeader = {
+            Id: transportHeaderId,
+            ReservationHeaderId: reservationHeaderId,
+            GuestProfileId: guestProfileId,
+            TransportFor: transportFor,
+            TransferTypeId: transferTypeId,
+            TransferModeId: transferModeId,
+            RequiredDate: requiredDate,
+            RequiredTime: requiredTime,
+            Remarks: remarks,
+            StatusId: statusId,
+            TransportDetailViews: transportDetails
+        }
+
+        SaveData(transportHeader);
+    }
+
+    function SaveData(transportHeader) {
+        $.ajax({
+            method: 'post',
+            url: '/Reservation/Transport/Save',
+            datatype: 'json',
+            data: transportHeader,
+            success: function (data) {
+                var Type = $('#resType').val();
+                if (data == 'success')
+                    ShowSuccessMessage('Transport Reserved');
+                setTimeout(function () {
+                    if (Type == "reservation") {
+                      //  closeFullContent();
+                        LoadReservationGrid();
+
+                    } else {
+                      //  location.reload()
+                    }
+                }, 2500);
+                ClearControls();
+            },
+        });
+    }
+</script>

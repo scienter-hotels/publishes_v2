@@ -1,0 +1,278 @@
+﻿@model Scienter.HotelERP.Common.Domain.ReservationType
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+
+    .form-group {
+        margin-top: 20px !important;
+    }
+
+    .container-padding {
+        padding: 50px 250px;
+    }
+</style>
+
+<input type="hidden" value="@ViewBag.ChangeType" class="data-changeType" />
+<input type="hidden" value="@ViewBag.ReservationHeaderId" class="data-reservationHeaderId" />
+<input type="hidden" value="@ViewBag.ArrivalDate" class="data-arrivalDate" />
+<input type="hidden" value="@ViewBag.DepartureDate" class="data-departureDate" />
+
+<input type="hidden" value="@Model.Code" class="data-Code" />
+<input type="hidden" value="@Model.IsAddToOccupancy" class="data-IsAddToOccupancy" />
+<input type="hidden" value="@Model.IsRateZero" class="data-IsRateZero" />
+<input type="hidden" value="@Model.IsComplimentary" class="data-IsComplimentary" />
+<input type="hidden" value="@Model.Id" class="data-ReservationTypeId" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+<div class="container container-padding">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-4">
+                    <fieldset class="the-fieldset" style="min-height:273px; margin-top:-12px;">
+                        <legend class="the-legend">
+                            <div class="checkbox">
+                                <label style="color:black"> <input type="checkbox" id="cb-selectAllRes" /> Res No </label>
+                            </div>
+                        </legend>
+                        <div class="col-md-12" style="padding:0px;overflow-y:auto;height:218px;margin-top: -30px;" id="reservationNumbersLoadingArea">
+
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-4" style="min-height:280px;">
+                    <fieldset class="the-fieldset">
+                        <legend class="the-legend">Booking Dates</legend>
+                        <div class="col-md-12" style="height:200px; overflow-y:auto;" id="reservationDatesLoadingArea"></div>
+                    </fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset class="the-fieldset" style="min-height:261px;padding-top: 0;">
+                        <legend class="the-legend">Change Type</legend>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group label-floating">
+                                    <label class="required control-label"> Reason</label>
+                                    <select required id="complimentary-reason-id" name="complimentary-reason-id" class="select2 form-control">
+                                        <option value="0">-- Select Complimentary Reason --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Remark</label>
+                                    <input type="text" name="complimentary-remark" id="complimentary-remark" class="form-control complimentary-remark" value="" />
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-10"></div>
+        <div class="col-md-2">
+            <div class="form-group label-floating">
+                <button type="button" class="btn btn-primary save-reservation-type-change btn-width-100" id="" style="margin-top: -15px;">
+                    UPDATE
+                </button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var reservationHeaderId = $('.data-reservationHeaderId').val();
+            var Type = $('#reservationLevel').val();
+            LoadReservationNumbers(reservationHeaderId, Type);
+        });
+
+
+        $(function () {
+            //2023-08-16--------------------------------------------------------------------------
+            $('body').off('click', '.select2').on('click', '.select2', function () {
+                setTimeout(function () {
+                    $('.select2-results ul li').removeClass('select2-results__option--selected');
+                }, 200);
+            });
+
+            //-------------------------------------------------------------------------------------------
+
+            GetDates($('.data-arrivalDate').val(), $('.data-departureDate').val());
+            LoadComplimentaryReasons($('.data-changeType').val());
+        })
+
+
+        function GetDates(arrival, depature) {
+
+            $.ajax({
+                method: 'GET',
+                url: '/CashieringAndPosting/SchedulePosting/GetReservationDates?arrivalDate=' + arrival + '&departureDate=' + depature,
+                datatype: 'html',
+                success: function (htmlContent) {
+                    $('#reservationDatesLoadingArea').html('');
+                    $('#reservationDatesLoadingArea').html(htmlContent);
+                    LoadExistingDates();
+                },
+                error: function (xhr, status, error) {
+                    ShowErrorMessage('Sorry, There is an error in getting records.');
+                }
+            });
+
+        }
+
+        function LoadComplimentaryReasons(reservationType) {
+
+            $.ajax({
+                method: 'GET',
+                url: '/Reservation/ReservationList/SelectReservationTypeWiseComplimentaryReasons?type=' + reservationType,
+                datatype: 'json',
+                success: function (data) {
+                    $('#complimentary-reason-id').html('');
+                    $('#complimentary-reason-id').append('<option value="0"> Select a reason </option>')
+                    $.each(data, function (index, item) {
+                        $('#complimentary-reason-id').append('<option value="' + item.Id + '"> ' + item.Name + ' </option>')
+                    })
+                },
+                error: function (xhr, status, error) {
+                    ShowErrorMessage('Sorry, There is an error in getting records.');
+                }
+            });
+        }
+
+        $('body').off('click', '.save-reservation-type-change').on('click', '.save-reservation-type-change', function () {
+            var dates = [];
+            var IsRemovedComplimentary = 0
+
+            $.each($('.data-not-disabled-checkboxes'), function (index, checkbox) {
+                dates.push({
+                    Sceduledate: $(checkbox).val(),
+                    IsDateChecked: $(checkbox).prop('checked')
+                });
+            });
+
+            $.each($('.data-not-disabled-checkboxes'), function (index, checkbox) {
+                if ($(this).prop('checked')) {
+                } else {
+                    IsRemovedComplimentary = 1;
+                }
+            });
+
+            selectedReservationHeaderIds = [];
+
+            $('.checbox-item').each(function (index, date) {
+
+                if ($(this).prop('checked')) {
+                    selectedReservationHeaderIds.push({
+                        ReservationHeaderId: $(this).val()
+                    });
+                }
+            });
+
+            console.log(selectedReservationHeaderIds);
+
+            var reservationTypeChangeObj = {
+                ReservationHeaderId: $('.data-reservationHeaderId').val(),
+                ReservationDates: dates,
+                ReservationTypeId: $('.data-ReservationTypeId').val(),
+                ReasonId: $('#complimentary-reason-id').val(),
+                Remarks: $('#complimentary-remark').val(),
+                SelectedReservationHeaderIds: selectedReservationHeaderIds
+            }
+            console.log(reservationTypeChangeObj);
+            $.ajax({
+                url: '/Reservation/ReservationList/SaveReservationTypeChange',
+                method: 'POST',
+                dataType: 'JSON',
+                data: { reservationTypeChange: reservationTypeChangeObj },
+                success: function (data) {
+                    var Type = $('#resType').val();
+                    if (data == 'success') {
+                        if (IsRemovedComplimentary == 1) {
+                            ShowSuccessMessage('Complimentary Removed, Please update the rates using manage folio.')
+                        } else {
+                            ShowSuccessMessage('Complimentary changed.')
+                        }
+                        setTimeout(function () {
+                            if (Type == "reservation") {
+                                //   closeFullContent();
+                                LoadReservationGrid();
+
+                            } else {
+                                location.reload()
+                            }
+                        }, 2000);
+                    } else {
+                        ShowErrorMessage(data.split('-')[1])
+                    }
+                },
+
+            })
+
+        })
+
+        function LoadExistingDates() {
+
+            var reservationHeaderId = $('.data-reservationHeaderId').val();
+            var ReservationTypeId = $('.data-ReservationTypeId').val();
+            $.ajax({
+                method: 'GET',
+                url: '/CashieringAndPosting/SchedulePosting/ReservationCompelemntrySelectById',
+                datatype: 'html',
+                data: { ReservationHeaderId: reservationHeaderId, ReservationTypeId: ReservationTypeId },
+                success: function (data) {
+
+                    $.each(data, function (index, item) {
+                        var Dates = 'input.data-not-disabled-checkboxes.date-checkbox[value="' + item.ReservationDate + '"]';
+                        if (item.IsComplementry) {
+                            var Dates = 'input.data-not-disabled-checkboxes[value="' + item.ReservationDate + '"]';
+                            $(Dates).prop('checked', true);
+                            console.log(Dates)
+                        }
+                        console.log(item.ReservationDate);
+                    });
+
+                }
+            });
+        }
+    </script>

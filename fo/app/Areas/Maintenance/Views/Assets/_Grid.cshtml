@@ -1,0 +1,109 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.Asset>
+
+@{
+    ViewBag.Title = "Exising Assets";
+}
+
+<div class="table-responsive">
+    <table id="existingAssetGrid" class="table table-striped">
+        <thead>
+            <tr>
+                <th class="text-primary">
+                    @Html.DisplayNameFor(model => model.ReferenceNo)
+                </th>
+                <th class="text-primary">
+                   Asset Type
+                </th>
+                <th class="text-primary">
+                   Location
+                </th>
+                <th class="text-primary">
+                    @Html.DisplayNameFor(model => model.Remarks)
+                </th>
+                <th class="text-primary">
+                    @Html.DisplayNameFor(model => model.ProductSerialNo)
+                </th>
+                <th class=" text-primary">
+                    @Html.DisplayNameFor(model => model.IsActive)
+                </th>
+                <th class="col-md-1 hidden-print"></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReferenceNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AssetTypeName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LocationName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Remarks)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProductSerialNo)
+                    </td>
+                    <td class="text-right">
+                        <div class="form-group checkbox">
+                            <label>
+                                @Html.DisplayFor(modelItem => item.IsActive)
+                                <span class="hidden">
+                                    @if (item.IsActive)
+                                    {
+                                        @:Active
+                                    }
+                                    else
+                                    {
+                                        @:Inactive
+                                    }
+                                </span>
+                            </label>
+                        </div>
+                    </td>
+                    <td class="hidden-print text-right">
+                        @*<a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Bed Type - @item.Name"  data-href="/administration/bedtypes/print/@item.Id">
+                                <span class="glyphicon glyphicon-print"></span>
+                            </a>*@
+
+                        <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/maintenance/assets/edit/@item.Id">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+
+                        <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/maintenance/assets/delete/@item.Id">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#existingAssetGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+</script>

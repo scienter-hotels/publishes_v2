@@ -1,0 +1,498 @@
+﻿
+<style>
+
+    .panel-default {
+        border: none;
+    }
+
+    .panel-body-padding {
+        padding-top: 0px !important;
+    }
+
+    #reservationGrid {
+        margin-top: -20px;
+    }
+
+    .searchDate .form-group {
+        margin: 0px;
+        padding-bottom: 0px;
+    }
+    .highlight {
+        background-color: red;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-5">
+                        <h4 class="title">
+                            @ViewBag.Title (@ViewBag.CurrentHistory.ToUpper())
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-5" style="border-right:1px solid #ccc;" >
+                        <div class="row" id="filerReservationCalender">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-1" style="padding:0px; padding-top:15px;  font-size:12px; text-align:right;">From : </div>
+                            <div class="col-md-4 searchDate">
+                                <div id="" class="input-group ">
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="100" name="DateFilterFromReservation" id="DateFilterFromReservation" type="text" style="color:white; font-size:13px; padding-bottom:2px;">
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-1" style="padding:0px; padding-top:15px;  font-size:12px; text-align:right;">To : </div>
+                            <div class="col-md-4 searchDate">
+                                <div id="" class="input-group ">
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="100" name="DateFilterToReservation" id="DateFilterToReservation" type="text" style="color:white; font-size:13px; padding-bottom:2px;">
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="applyBtn btn btn-default btn-sm">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+
+                    <div class="col-md-1 text-right hidden-print">
+                        <a class="btn btn-sm btn-theme-color-2" href="~/reservation/reservations/makereservation">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                        <a class="btn btn-sm  btn-theme-color-2" href="~/reservation/reservations/list">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="row">
+                    <div class="col-md-12" id="reservationGrid">
+                        <div id="content" style="padding-top:15px;">
+
+                        </div>
+                        @Html.Partial("_Loading")
+                    </div>
+                    <div class="col-md-2" style="display:none;" id="reservationOptions">
+                        @Html.Partial("_SideButtons")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@{
+    DateTime hotelDate = Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate;
+}
+<input type="hidden" id="From" name="From" value="@hotelDate.ToString("yyyy-MM-dd")" />
+<input type="hidden" id="To" name="To" value="@hotelDate.AddDays(30).ToString("yyyy-MM-dd")" />
+
+<input type="hidden" id="defaultToDate" value="@hotelDate.AddDays(60).ToString("dd/MM/yyyy")" />
+<input type="hidden" id="defaultFromDate" value="@hotelDate.AddDays(0).ToString("dd/MM/yyyy")" />
+
+<input type="hidden" id="defaultToDateCheckout" value="@hotelDate.AddDays(-60).ToString("dd/MM/yyyy")" />
+<input type="hidden" id="defaultFromDateCheckout" value="@hotelDate.AddDays(0).ToString("dd/MM/yyyy")" />
+
+<input type="hidden" id="arrivalDate" />
+<input type="hidden" id="departureDate" />
+
+<input type="hidden" value="@HttpContext.Current.Session["ResNo"].ToString()" id="resNo" />
+
+<input type="hidden" id="type" value="@ViewBag.type" />
+<input type="hidden" id="CurrentHistory" value="@ViewBag.CurrentHistory" />
+<input type="hidden" id="reservation-uuid" value="@ViewBag.Uuid" />
+@*<script src="~/Scripts/ui/common/scienter.grid2.js"></script>*@
+<script src="~/Scripts/ui/common/Scienter.Common.TimeFormat.js"></script>
+<script>
+    // form load --------------------------------
+    var resNo = $('#resNo').val();
+    var gridId = "#existingReservationGrid";
+    $(document).ready(function () {
+
+        if ($('#type').val() == "inhouse") {
+            $('#filerReservationCalender').hide();
+        }
+       
+
+        $('#DateFilterFromReservation').daterangepicker({
+            "showDropdowns": true,
+            singleDatePicker: true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "opens": "right",
+            "applyClass": "btn-primary",
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        }, function (start, end, label) {
+            $('input[name="From"]').val(start.format('DD/MM/YYYY'));
+        });
+
+        $('#DateFilterToReservation').daterangepicker({
+            "showDropdowns": true,
+            singleDatePicker: true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "opens": "right",
+            "applyClass": "btn-primary",
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        }, function (start, end, label) {
+            $('input[name="To"]').val(end.format('DD/MM/YYYY'));
+        });
+
+        //ScorelToTop60px();
+        if ($('#type').val() == "reservation") {
+
+            $('#DateFilterFromReservation').val($('#defaultFromDate').val());
+            $('#DateFilterToReservation').val($('#defaultToDate').val());
+
+            $('#DateFilterFromReservation').daterangepicker({
+               // "minDate": $('#hotelCurrentDate').val(),
+                singleDatePicker: true, locale: {
+                    format: 'DD/MM/YYYY'
+                }
+            });
+
+            $('#DateFilterToReservation').daterangepicker({
+               // "minDate": $('#hotelCurrentDate').val(),
+                singleDatePicker: true,
+                locale: {
+                    format: 'DD/MM/YYYY'
+                }
+            });
+
+        }
+
+        if ($('#CurrentHistory').val() == "history") {
+            $('#DateFilterFromReservation').val($('#defaultFromDate').val());
+            $('#DateFilterToReservation').val($('#defaultToDate').val());
+
+            $('#DateFilterFromReservation').daterangepicker({
+              //  "minDate": $('#hotelCurrentDate').val(),
+                singleDatePicker: true, locale: {
+                    format: 'DD/MM/YYYY'
+                }
+            });
+
+            $('#DateFilterToReservation').daterangepicker({
+              //  "minDate": $('#hotelCurrentDate').val(),
+                singleDatePicker: true,
+                locale: {
+                    format: 'DD/MM/YYYY'
+                }
+            });
+        }
+
+        if ($('#type').val() == "checkout") {
+
+            $('#DateFilterToReservation').val($('#defaultFromDateCheckout').val());
+            $('#DateFilterFromReservation').val($('#defaultToDateCheckout').val());
+
+            $('#DateFilterFromReservation').daterangepicker({
+                // "maxDate": $('#hotelCurrentDate').val(),
+                singleDatePicker: true, locale: {
+                    format: 'DD/MM/YYYY'
+                }
+            });
+
+            $('#DateFilterToReservation').daterangepicker({
+                "maxDate": $('#hotelCurrentDate').val(),
+                singleDatePicker: true,
+                locale: {
+                    format: 'DD/MM/YYYY'
+                }
+            });
+        }      
+        var fromDt = $('#DateFilterFromReservation').val();
+        var toDt = $('#DateFilterToReservation').val();
+        $('#From').val(ChangeDateFormat(fromDt));
+        $('#To').val(ChangeDateFormat(toDt));
+
+        var paginations = {
+            //PageIndex: 1,
+            //PageSize: 20,
+            PageIndex: $(gridId).closest('.grid-container').attr('data-page-index'),
+            PageSize: $(gridId).closest('.grid-container').attr('data-page-size'),
+            FilterType: $(gridId).closest('.grid-container').attr('data-filter-type'),
+            SearchKeyword: $(gridId).closest('.grid-container').attr('data-search-keyword'),
+            CurrentHistory: $('#CurrentHistory').val(),
+            tempValue: $('#reservation-uuid').val(),
+            FromDate: $('#From').val(),
+            ToDate: $('#To').val()
+        }
+        FillGrid(paginations);
+       
+    });
+
+    window.addEventListener('scroll', (event) => {
+        console.log('Scrolling...');
+    });
+
+    $('body').on('click', '.applyBtn', function (e) {
+        var fromDt = $('#DateFilterFromReservation').val();
+        var toDt = $('#DateFilterToReservation').val();
+        $('#From').val(ChangeDateFormat(fromDt));
+        $('#To').val(ChangeDateFormat(toDt));
+        var paginations = {
+            //PageIndex: 1,
+            //PageSize: 20,
+            PageIndex: $(gridId).closest('.grid-container').attr('data-page-index'),
+            PageSize: $(gridId).closest('.grid-container').attr('data-page-size'),
+            FilterType: $(gridId).closest('.grid-container').attr('data-filter-type'),
+            SearchKeyword: $(gridId).closest('.grid-container').attr('data-search-keyword'),
+            CurrentHistory: $('#CurrentHistory').val(),
+            tempValue: $('#reservation-uuid').val(),
+            FromDate: $('#From').val(),
+            ToDate: $('#To').val()
+        }
+        FillGrid(paginations);
+    });
+
+    $('body').on('click', '.showForm', function (e) {
+        window.location.href = '/reservation/reservations/makereservation';
+    });
+
+    //$('body').on('click', '.paginate_button', function (e) {
+    //    var index = $(this).attr('data-dt-idx');
+    //  //  alert(index);
+    //    var paginations = {
+    //        //PageIndex: index,
+    //        //PageSize: 20,
+    //        PageIndex: $(gridId).closest('.grid-container').attr('data-page-index'),
+    //        PageSize: $(gridId).closest('.grid-container').attr('data-page-size'),
+    //        FilterType: $(gridId).closest('.grid-container').attr('data-filter-type'),
+    //        SearchKeyword: $(gridId).closest('.grid-container').attr('data-search-keyword'),
+    //        CurrentHistory: $('#CurrentHistory').val(),
+    //        tempValue: $('#reservation-uuid').val(),
+    //        FromDate: $('#From').val(),
+    //        ToDate: $('#To').val()
+    //    }
+    //    FillGrid(paginations);
+    //});
+    // fill grid -- ReservationHeader -----------------------------------
+    function FillGrid(paginations) {
+        var resNo = $('#resNo').val();
+        var gridId = "#existingReservationGrid"; // change this - relevent grid id
+        //var paginations = {
+        //    PageIndex: $(gridId).closest('.grid-container').attr('data-page-index'),
+        //    PageSize: $(gridId).closest('.grid-container').attr('data-page-size'),
+        //    FilterType: $(gridId).closest('.grid-container').attr('data-filter-type'),
+        //    SearchKeyword: $(gridId).closest('.grid-container').attr('data-search-keyword'),
+        //    CurrentHistory: $('#CurrentHistory').val(),
+        //    tempValue: $('#reservation-uuid').val(),
+        //    FromDate: $('#From').val(),
+        //    ToDate: $('#To').val()
+        //}
+
+        // $("id").val() = "reservation";
+
+        var actionURL = "/reservation/reservations/CheckOutReservationList";
+        // var id = "reservation";
+
+        if ($('#type').val() == "inhouse") {
+            actionURL = "/reservation/reservations/InHouseReservationList"
+            // actionURL = "reservation/reservations/reservationlist"
+        }
+        else if ($('#type').val() == "checkout") {
+            actionURL = "/reservation/reservations/CheckOutReservationList";
+        }
+        else {
+            actionURL = "/reservation/reservations/reservationlist";
+            //  $('#dobContainerInGuestProfiles').show();
+        }
+
+        $.ajax({
+            url: actionURL,
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+                var resNo = $('#resNo').val();
+                //SelectLastRes(resNo);
+            },
+            complete: function () {
+
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+    const ShowResult = () => {
+        $.ajax({
+            url: '/Reservation/Reservations/SelectReservationListFilter',
+            dataType: 'Json',
+            success: function (response) {
+                if (response.toString().startsWith('ERR-')) {
+                    ShowErrorMessage("Sorry, There is an error in saving this record.");
+                } else {
+
+                    if (response.FilterMethod == 1) {
+                        GridFilterByText('Confirmed');
+                    }
+                    else if (response.FilterMethod < 0) {
+                        GridFilterByText('Tentative');
+                    }
+                    else if (response.FilterMethod > 1) {
+                        GridFilterByText('');
+                    }
+                    else {
+                        GridFilterByText('Cancelled');
+                    }
+                }
+            },
+            error: function (xhr, status, error) {
+                ShowWarningMessage('Sorry, There is an error in saving this record.');
+            }
+        });
+    };
+
+    function GridFilterByConfirmed() {
+        setTimeout(function () {
+            GridFilterByText('Confirmed');
+        }, 2000);
+    }
+
+    function SelectLastRes(resNo) {
+        setTimeout(function () {
+            GridFilterByText(resNo)
+        }, 1000);
+    }
+
+    function GridFilterByText(stringValue) {
+        $('.dataTables_filter input[type="search"]').val(stringValue);
+        $('.dataTables_filter input[type="search"]').focus();
+        $($('.dataTables_wrapper').find('table')).DataTable().search(stringValue).draw();
+    }
+
+    function SaveBill() {
+
+        $('#grid-record-detail-model').modal('show');
+        guestInfo = [];
+        guestInfo.push({
+            ReservationNo: $('#resNo_AP').val(),
+            groupresNo: $('#gresNo_AP').val(),
+            GuestName: $('#guestName_AP').val(),
+            RoomCode: $('#roomNo_AP').val(),
+            RoomId: $('#roomId_AP').val(),
+            GuestProfileId: $('#guestProf_AP').val(),
+        });
+
+        //var advancepayment = {
+        //    BillTypeId: $('#Ad_pPostingTypeId').val(),
+        //    TaxGroupId: $('#Ad_pTaxId').val(),
+        //    Amount: Billtotal,
+        //    Remarks: $('#AdvancedPayRemark').val() == "" ? "Advance Payment" : $("#AdvancedPayRemark").val(),// Remarks: $('#AdvancedPayRemark').val(),
+        //    PostingCategoryId: $('#Ad_pPostingCatgId').val(),
+        //    DRCR: 'C',
+        //    ChargeCodeId: $('#Ad_pChargeCodeId').val(),
+        //    RoomDetails: guestInfo,
+        //    BillPaymentDetails: billpaymentArray
+        //};
+        var advancepayment = {
+            BillTypeId: $('#Ad_pPostingTypeId').val(),
+            TaxGroupId: $('#Ad_pTaxId').val(),
+            Amount: Billtotal,
+            //Amount: parseFloat($('#AdvancedPayAmount').val().trim().replace(/,/g, '')).toFixed(2),
+            Remarks: $('#AdvancedPayRemark').val() == "" ? "Advance Payment" : $("#AdvancedPayRemark").val(),
+            PostingCategoryId: $('#Ad_pPostingCatgId').val(),
+            DRCR: 'C',
+            ChargeCodeId: $('#Ad_pChargeCodeId').val(),
+            RoomDetails: guestInfo,
+            BillPaymentDetails: billpaymentArray
+        };
+
+        $.ajax({
+            url: '/CashieringAndPosting/AdvancedPayment/SaveAdvancePayment',
+            dataType: 'Json',
+            data: advancepayment,
+            method: 'POST',
+            success: function (response) {
+                if (response.toString().startsWith('ERR-')) {
+                    ShowErrorMessage("Sorry, There is an error in saving this record.");
+                } else {
+                    $('#grid-record-detail-model').modal('show');
+                    $('#btnprint').removeClass('disabled');
+                    $('#btnSave').prop('disabled', true);
+                    $('#preview').text('');
+                    $('.ribbon').addClass('hidden');
+                    $('#billPayment').hide();
+                    $('#ReportLoadingArea').show();
+                    $('#ReportFooter').show();
+                    $('#ribbonId').show();
+                    $('#btnbillpaymentforreservation').addClass('disabled');
+                    getInvoiceNo(response);
+                }
+            },
+            error: function (xhr, status, error) {
+                ShowWarningMessage('Sorry, There is an error in saving this record.');
+            },
+            timeout: 10000
+
+        });
+
+        $('.currencyTc').removeClass('hidden');
+        $('#AddPayment').addClass('hidden');
+        $('#btnClear').val('New');
+    }
+
+    function getInvoiceNo(response) {
+        $('#Advancedpayment-billheader').html('');
+
+        var elements = '<tr>' +
+            '<td class="report-width75perc" style="width:60%" >' +
+            '<div class="row" style="padding-left:20px">  <b>Reservation No:&nbsp</b>' + response.ReservationNo + '</div>' +
+            '<div class="row" style="padding-left:20px">  <b>Room:&nbsp</b>' + response.RoomCode + '</div>' +
+            '<div class="row" style="padding-left:20px"><b>Name:&nbsp</b>' + response.GuestName + '</div>' +
+            '</td>' +
+            '<td class="report-width25perc" style="width:40%">' +
+            '<div class="row" style="padding-left:10px"><b>Receipt No:&nbsp </b>' + response.InvoiceNo + ' </div>' +
+            '<div class="row" style="padding-left:10px">  <b>Date:&nbsp</b>' + fomatTime(response.RecordInsertTime, 'd') + '</div>' +
+            '</td>' +
+            '</tr>';
+
+
+        $(elements).appendTo($('#Advancedpayment-billheader'));
+
+    }
+
+    $('body').on('click', '#clearbtn', function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: '/reservation/reservations/ClearResNoFromSession',
+            dataType: 'Json',
+            method: 'POST',
+            success: function () {
+                text = "";
+                $('.dataTables_filter input[type="search"]').val(text);
+                $('.dataTables_filter input[type="search"]').focus();
+                $($('.dataTables_wrapper').find('table')).DataTable().search(text).draw();
+                location.reload();
+            },
+
+        });
+    });
+
+
+    $(document).ready(function () {
+        //setInterval(function () {
+        //    $('#existingReservationGrid').DataTable().search($('#existingReservationGrid_filter input[type="search"]').val()).draw(false);
+        //}, 3000);
+      
+    });
+
+
+</script>
+
+

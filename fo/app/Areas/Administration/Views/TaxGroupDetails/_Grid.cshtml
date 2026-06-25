@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.TaxGroupDetail>
+
+
+<div class="table-responsive">
+    <table class="table table-striped"
+           id="existingRoomWiseInventoryItemGrid">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.TaxDetailId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TaxGroupId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TaxID)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TaxDetailId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TaxGroupId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TaxID)
+                    </td>
+                    <td class="hidden-print text-right">
+                        <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="room wise inventory items - @item.RoomName" data-href="/administration/roomwiseinventoryitems/print/@item.Id">
+                            <span class="glyphicon glyphicon-print"></span>
+                        </a>
+
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#existingRoomWiseInventoryItemGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+</script>

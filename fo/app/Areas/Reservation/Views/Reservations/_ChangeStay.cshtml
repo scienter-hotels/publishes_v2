@@ -1,0 +1,655 @@
+﻿
+<style>
+    .disabled {
+        cursor: not-allowed;
+    }
+</style>
+<input type="hidden" id="ReservationType" value="@ViewBag.ReservationType" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+<div class="row">
+    @*<div class="col-md-1"></div>*@
+    <div class="col-md-4">
+        @*<div class="col-md-2">*@
+        <fieldset class="the-fieldset" style="margin-top:15px;">
+            <legend class="the-legend">Reservation No</legend>
+            <div class="col-md-12" style="overflow-y:scroll" id="reservationNumbersLoadingArea">
+
+            </div>
+        </fieldset>
+        @*</div>*@
+    </div>
+    <div class="col-md-8">
+        <div style="min-height:500px;">
+            <input type="hidden" id="resHeadId" value="@ViewBag.ResheaderId" />
+            <input type="hidden" id="roomCategoryId" value="@ViewBag.RoomCategoryId" />
+            <input type="hidden" id="ViewRateCodeHeaderId" value="@ViewBag.RateCodeHeaderId" />
+            <input type="hidden" id="ViewMealPlanId" value="@ViewBag.MealPlanId" />
+            <input type="hidden" id="ViewRoomTypeId" value="@ViewBag.RoomTypeId" />
+            <input type="hidden" id="IsChangeRoom" value="@ViewBag.IsChangeRoom" />
+            <input type="hidden" id="CurrentDate" value="@ViewBag.CurrentDate" />
+            <input type="hidden" id="ViewCompanyId" value="@ViewBag.CompanyId" />
+            <input type="hidden" id="ViewCountryId" value="@ViewBag.CountryId" />
+            <input type="hidden" id="isDormitory" name="isDormitory" value="@ViewBag.IsDormitory" required />
+
+            @*<div class="row">
+            <div class="col-md-12">
+                <div class="form-group form-group-margin-override label-floating">
+                    <label class="control-label">Guest Name</label>
+                    <input type="text" name="GuestName" id="GuestName" class="form-control" value="@ViewBag.GuestName" readonly />
+                </div>
+            </div>
+        </div>*@
+            <div class="hiddenSection">
+                <br />
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group  label-floating change-departure-container" style="margin-top:5px;">
+                            <label class="control-label">Reason*</label>
+                            <div id="StayChangeReasonComboContainer">
+                                <select name="StayChangeReasonId" id="StayChangeReasonId" class="form-control" required>
+                                    <option> </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group label-floating" style="margin-top:5px;">
+                            <label class="control-label">Remark*</label>
+                            <textarea maxlength="1000" rows="1" id="Remark" name="Remark" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group form-group-margin-override label-floating">
+                            <label class="control-label">Arrival*</label>
+                            @if (ViewBag.ReservationType == "reservation")
+                            {
+                                <input type="text" name="From" id="ArrivalDate" class="form-control dateSelect inhouse-start-date-picker ArrivalDate disabled" value="@Convert.ToDateTime(ViewBag.arrivalDate).ToShortDateString()" />
+
+                            }
+                            else
+                            {
+                                <input type="text" name="From" id="ArrivalDate" class="form-control dateSelect ArrivalDate disabled" value="@Convert.ToDateTime(ViewBag.arrivalDate).ToShortDateString()" />
+
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group form-group-margin-override label-floating">
+                            <label class="control-label">Departure*</label>
+                            <input type="text" name="To" id="DepartureDate" class="form-control dateSelect end-date-picker DepartureDate" value="@Convert.ToDateTime(ViewBag.departureDate).ToShortDateString()" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4" style="margin-top:20px;">
+                        <input type="button" id="btnSelectDate" value="Check Availability" class="btn btn-primary" />
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-2">
+                        <div class="form-group form-group-margin-override label-floating">
+                            @*<label class="control-label">Meal Plan*</label>
+                        @{Html.RenderAction("MealPlanCombo", "MealPlans", new
+                            {
+                                area = "Administration",
+                                name = "MealPlanId",
+                                requiered = true
+
+                            });}*@
+                            <label class="required control-label">Meal Plan*</label><select name="MealPlanId" id="MealPlanId" class="form-control" required><option></option></select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group  label-floating">
+                            @*<label class="control-label">Room Type*</label>
+                        @{Html.RenderAction("RoomTypeCombo", "RoomTypes", new { area = "Administration", name = "RoomType" });}*@
+                            <label class="required control-label">Room Type*</label><select name="RoomType" id="RoomType" class="form-control" required><option></option></select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group  label-floating">
+                            <label class="control-label">Company*</label>
+                            <select required id="CompanyId" name="CompanyId" class="form-control">
+                                <option value="">-- Select Company --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group  label-floating rate-code-container">
+                            <label class="control-label">Rate Code*</label>
+                            @{Html.RenderAction("RateCodeHeadersCombo", "RateCodeHeaders", new { area = "Administration", name = "RateCodeHeaderId", IBEEnable = ViewBag.IsLocalRate, value = ViewBag.RateCodeHeaderId });}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="availabilityArea">
+                <div class="row grid">
+                    <div class="col-md-12 table-responsive">
+                        <table class="table table-striped" id="grid" style="display:none; overflow-y:scroll;">
+                            <tr>
+                                <th class="">Category</th>
+                                <th class="">Availability</th>
+                                <th class="col-md-1" style="text-align:center"><span data-toggle="tooltip" title="Active / Inactive">Set</span></th>
+                            </tr>
+                            <tr class="no-record">
+                                <td colspan="4">No Rooms Available for Date Period.</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <input type="button" style="float:right;margin-right:14px; display:none;" id="btnChange" value="Change" class="btn btn-primary" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    @*<div class="col-md-1"></div>*@
+</div>
+
+
+<script src="~/Scripts/ui/common/scienter.common.datatimepicker.js"></script>
+<script src="~/Scripts/ui/common/Scienter.Common.ComboBoxes.js"></script>
+
+<script>
+
+    //function LoadReservationNumbers() {
+    //    var reservationHeaderId = $('#resHeadId').val();
+    //    var Type = $('#ReservationType').val();
+    //    $.ajax({
+    //        method: 'GET',
+    //        url: '/Reservation/Reservations/SelectReservationNumbersById?reservationHeaderId=' + reservationHeaderId + '&Type=' + Type,
+    //        datatype: 'html',
+    //        success: function (data) {
+    //            console.log(data);
+    //            $.each(data, function (index, item) {
+    //                var disabled = ""
+    //                var checked = ""
+
+    //                if (item.Id == reservationHeaderId) {
+    //                    disabled = "disabled";
+    //                    checked = "checked";
+    //                }
+
+    //                $(
+    //                    '<ul id="myUL">' +
+    //                    '<li>' +
+    //                    '<div class="checkbox">' +
+    //                    '<label>' +
+    //                    '<input type="checkbox" ' + checked + ' class="checkBoxGroup checbox-item" id="res-item" ' + disabled + ' reservation-no="' + item.ReservationNo + '" name="' + item.ReservationNo + '" value="' + item.Id + '" />' +
+    //                    item.ReservationNo +
+    //                    '</label>' +
+    //                    '</div>' +
+    //                    '</li>' +
+    //                    '</ul>'
+    //                ).appendTo("#reservationNumbersLoadingArea");
+    //            });
+
+    //        }
+    //    });
+    //}
+
+    $('body').off('change', '#CompanyId').on('change', '#CompanyId', function (e) {
+        LoadRateCodeByCompanyId($('#CompanyId').val(), 0);
+    });
+
+
+    $('body').off('change', '#ArrivalDate').on('change', '#ArrivalDate', function (e) {
+        $('.availabilityArea').hide();
+    });
+
+    $('body').off('change', '#DepartureDate').on('change', '#DepartureDate', function (e) {
+        $('.availabilityArea').hide();
+    })
+
+    $('body').off('change', '#StayChangeReasonId').on('change', '#StayChangeReasonId', function (e) {
+        
+        var selectedOptionExtendStay = $('#StayChangeReasonId option:selected').attr('data-IsExtendStay');
+        var selectedOptionEarlyDeparture = $('#StayChangeReasonId option:selected').attr('data-IsEarlyDeparture');
+        var departureDate = $('#DepartureDate').val();
+
+        $('.end-date-picker').daterangepicker({
+            linkedCalendars: true,
+            "showWeekNumbers": true,
+            "alwaysShowCalendars": true,
+            singleDatePicker: true,
+            "minDate": $('#hotelCurrentDate').val(),
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        }, function (start, end, label) {
+            $('#checkout').val(end.format('DD/MM/YYYY'));
+        });
+
+        if (selectedOptionExtendStay == 'True') {
+           
+            console.log(selectedOptionExtendStay);
+            $('.end-date-picker').daterangepicker({
+                linkedCalendars: true,
+                "showWeekNumbers": true,
+                "alwaysShowCalendars": true,
+                singleDatePicker: true,
+                "minDate": $('#DepartureDate').val(),
+                locale: {
+                    format: 'DD/MM/YYYY'
+                }
+            }, function (start, end, label) {
+                $('#checkout').val(end.format('DD/MM/YYYY'));
+            });
+        }
+
+
+        if (selectedOptionEarlyDeparture == 'True') {
+            console.log($('#hotelCurrentDate').val());
+            console.log($('#DepartureDate').val());
+            $('.end-date-picker').daterangepicker({
+                linkedCalendars: true,
+                "showWeekNumbers": true,
+                "alwaysShowCalendars": true,
+                singleDatePicker: true,
+                "maxDate": $('#DepartureDate').val(),
+                "minDate": $('#hotelCurrentDate').val(),
+                // "endDate": moment().add(1, 'days'),
+                locale: {
+                    format: 'DD/MM/YYYY'
+                }
+            }, function (start, end, label) {
+                $('#checkout').val(end.format('DD/MM/YYYY'));
+            });
+        }
+
+    })
+
+    $(document).ready(function () {
+        LoadCompanies();
+        LoadStayChangeReason();
+        var reservationHeaderId = $('#resHeadId').val();
+        var Type = $('#ReservationType').val();
+        LoadReservationNumbers(reservationHeaderId, Type);
+        LoadMealPlan();
+        LoadRoomType();
+        //$('#RateCodeHeader').val($('#ViewRateCodeHeaderId').val());
+        $('#MealPlanId').val($('#ViewMealPlanId').val());
+        $('#RoomType').val($('#ViewRoomTypeId').val());
+
+        $('#MealPlanId').prop("disabled", true);
+        $('#RoomType').prop("disabled", true);
+        $('#btnChange').hide();
+        Setdatepicker();
+
+        setInterval(function () {
+            if ($('#type').val() == "inhouse") {
+                $('#ArrivalDate').prop("disabled", true);
+                $('#CompanyId').prop("disabled", true);
+                $('#RateCodeHeaderId').prop("disabled", true);
+                //LoadStayChangeReason(IsFromReservation);
+                //$('#StayChangeReasonId').prop("disabled", false);
+            }
+            else {
+                //var IsFromReservation = true;
+                //LoadStayChangeReason(IsFromReservation);
+            }
+
+            if ($('#CompanyId').length > 0 && $('#CompanyId').val() == undefined || $('#CompanyId').val() == "") {
+                $('#CompanyId').val($('#ViewCompanyId').val());
+            }
+        }, 500);
+    });
+
+ 
+
+    function LoadStayChangeReason() {
+        //var IsFromReservation
+        if ($('#type').val() == "inhouse") {
+            var IsFromReservation = false;
+        }
+        else {
+            var IsFromReservation = true;
+        }
+
+        $.ajax({
+            url: '/Reservation/Reservations/StayChangeReason',
+            dataType: 'html',
+            data: {
+                name: "StayChangeReasonId",
+                required: true,
+                isFromReservation: IsFromReservation
+            },
+            method: 'POST',
+            beforeSend: function () {
+                $('#StayChangeReasonComboContainer').html("");
+            },
+            success: function (data) {
+                $('#StayChangeReasonComboContainer').html("");
+                $('#StayChangeReasonComboContainer').html(data);
+            },
+        });
+    }
+    $('body').off('click', '#btnChange').on('click', '#btnChange', function () {
+        //alert("change");
+        var selectedReservations = [];
+        var res = {};
+        $.each($('.checbox-item'), function (index, item) {
+            if ($(item).prop('checked')) {
+                res = {
+                    ReservationHeaderId: $(item).val()
+                }
+                selectedReservations.push(res);
+                console.log(selectedReservations);
+            }
+        });
+       
+        var arrival = $('#ArrivalDate').val();
+        var departure = $('#DepartureDate').val();
+        //var resHeadId = $('#resHeadId').val();
+        var roomCategoryId = "";
+        var roomTypeId = $('#RoomType').val();
+        var RateCodeHeaderId = $('#RateCodeHeaderId').val();
+        var CompanyId = $('#CompanyId').val();
+        var MealPlanId = $('#MealPlanId').val();
+        var StayChangeReasonId = $('#StayChangeReasonId').val();
+        var remark = $('#Remark').val();
+
+        $('.itemCheckbox').each(function (index, page) {
+            if ($(page).prop('checked') == true) {
+                roomCategoryId = $(page).closest('tr').attr('value');
+            }
+        });
+
+        if (roomCategoryId == "") {
+            ShowWarningMessage('Please check availability!');
+
+        } else if ($('#CompanyId').val() == undefined || $('#CompanyId').val() == "") {
+            ShowWarningMessage('Please select a company.');
+        }
+        else if ($('#StayChangeReasonId').val() == undefined || $('#StayChangeReasonId').val() == "") {
+            ShowWarningMessage('Please select a reason.');
+        }
+        else if ($('#RoomType').val() == undefined || $('#RoomType').val() == "") {
+            ShowWarningMessage('Please select a room type.');
+        }
+        else if ($('#MealPlanId').val() == undefined || $('#MealPlanId').val() == "") {
+            ShowWarningMessage('Please select a meal plan.');
+        } else if ($('#RateCodeHeaderId').val() == undefined || $('#RateCodeHeaderId').val() == "") {
+            ShowWarningMessage('Please select a rate code.');
+        }
+        else {
+            $.ajax({
+                url: '/Reservation/Reservations/ChangeStaySave?arrival=' + arrival + '&departure=' + departure + '&roomCategoryId=' + roomCategoryId + '&rateCodeHeaderId=' + RateCodeHeaderId + '&mealPlanId=' + MealPlanId + '&roomTypeId=' + roomTypeId + '&companyId=' + $('#CompanyId').val() + '&ratecodeHeaderId=' + $('#RateCodeHeaderId').val() + '&StayChangeReasonId=' + StayChangeReasonId + '&remark=' + remark,
+                dataType: 'json',
+                data: { selectedReservations: selectedReservations},
+                method: 'POST',
+                beforeSend: function () {
+                    $("#btnChange").html("Please wait...");
+                   // $("#btnChange").prop("disabled", true);
+                    $("#btnChange").prop('disabled', true).addClass("disabled");
+                },
+                success: function (response) {
+                    var Type = $('#resType').val();
+                   // $('#grid-detail-popup-container').hide();
+                    if (response.startsWith('ERR-')) {
+                        ShowWarningMessage(response.replace('ERR-', ''))
+                    } else {
+                        ShowSuccessMessage('Successfully Changed');
+                        setTimeout(function () {
+                            if (Type == "reservation") {
+                                //Update Uuid
+                                //window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+                                //console.log("Uuid");
+
+                                LoadInhouseReservationGrid();
+
+                            } else {
+                                //location.reload()
+                                LoadInhouseReservationGrid();
+                            }
+                        }, 3000);
+                    }
+
+                    //setTimeout(function () {
+                    //    window.location.reload();
+                    //}, 3000);
+                    
+
+                    //$('.success-popup-ok, .error-popup-ok').closest('.modal').on('hide.bs.modal', function (e) {
+                    //    location.reload();
+                    //})
+                },
+                complete: function () {
+                    $("#btnChange").html("Change");
+                    $("#btnChange").prop("disabled", false).removeClass("disabled");
+                }
+            });
+        }
+    });
+
+    $('body').off('click', '#btnSelectDate').on('click', '#btnSelectDate', function (e) {
+        e.preventDefault()
+        var resHeadId = $('#resHeadId').val();
+        
+        var fromDate;
+        var ToDate = $('#DepartureDate').val();
+        if ($('#type').val() == "inhouse") {
+            fromDate = $('#CurrentDate').val();
+        }
+        else {
+            fromDate = $('#ArrivalDate').val();
+        }
+
+
+
+        $('.grid').show();
+        if ($('#grid').length == 1) {
+            $('#grid tr').not(':first-child').remove();
+            $.ajax({
+                method: 'POST',
+                url: '/Reservation/Reservations/ChangeStayGrid?fromDate=' + fromDate + '&toDate=' + ToDate + '&reservationHeaderId=' + resHeadId + '&roomCategoryId=' + $('#roomCategoryId').val(),
+                datatype: 'json',
+                beforeSend: function () {
+                    $('#grid').hide();
+                    $('#btnChange').hide();
+                    $('.availabilityArea').hide();
+                },
+                complete: function () {
+                    $('#grid').show();
+                    var roomCategoryId = $('#roomCategoryId').val()
+
+                    $('#grid tr.page-items').each(function (index, page) {
+                        if ($(page).attr('value') == roomCategoryId) {
+                            $(page).find('input.itemCheckbox').prop('checked', true);
+                        }
+                    });
+                },
+                success: function (rawItems) {
+                    if (rawItems.length == 0) {
+                        $('#grid tr').not(':first-child').remove();
+                        $('<tr><td colspan="4">No Rooms Available for Date Period.</td></tr>').appendTo($('#grid'));
+                    } else {
+                        $('#grid tr').not(':first-child').remove();
+
+                        $.each(rawItems, function (index, item) {
+                            console.log($('#type').val());
+                            var dis = ""
+                            if (item.Available == 0) {
+                                dis = "disabled";
+                            }
+
+                            var isDisabled = ""
+                            if ($('#type').val() == "inhouse") {
+                                dis = "";
+                                isDisabled = 'disabled'
+                            }
+
+
+                            $('<tr class="page-items" value="' + item.RoomCategoryId + '" data-available="' + item.Available + '">' +
+                                '<td>' + item.Name + '</td>' +
+                                '<td>' + item.Available + '</td>' +
+                                '<td><div class="checkbox"><label><input type="checkbox" ' + isDisabled + dis + ' class="itemCheckbox"></label></div></td>' +
+                                '</tr>').appendTo($('#grid'));
+                        });
+                    }
+
+                    $('#btnChange').show();
+                    $('.availabilityArea').show();
+                }
+            });
+        }
+    });
+
+    $('body').off('change', '.itemCheckbox').on('click', '.itemCheckbox', function (e) {
+        if ($(this).prop("checked") == true) {
+
+            if ($(this).closest('tr').attr('data-available') != 0) {
+                $.each($('.itemCheckbox'), function (index, item) {
+                    $(item).prop('checked', false);
+                });
+                $(this).prop("checked", true);
+            }
+            else {
+                $(this).prop("checked", false);
+                $(this).attr("disabled", true);
+            }
+
+        } else ($(this).prop("checked") == false)
+        {
+
+        }
+    });
+
+    function LoadRateCodeByCompanyId(companyId, countryId) {
+        $.ajax({
+            url: '/administration/ratecodeheaders/ratecodeheaderscombobycountryid?name=RateCodeHeaderId&countryId=' + countryId + '&companyId=' + companyId + '&requiered=true&fromDate=' + $('#arrivalDate').val() + '&toDate=' + $('#departureDate').val(),
+            dataType: 'html',
+            method: 'get',
+            success: function (response) {
+
+                $('.rate-code-container').html('');
+                $('<label class="required control-label">Rate Code*</label>').appendTo($('.rate-code-container'));
+                $(response).appendTo($('.rate-code-container'));
+            },
+            complete: function () {
+               // LoadSegments(companyId);
+            },
+            error: function (error) {
+            }
+        });
+    }
+
+    function Setdatepicker() {
+        ;
+        //var d = new Date();
+        var d = new Date($('#ArrivalDate').val().split('-')[0]);
+
+        $('.start-date-picker').daterangepicker({
+            linkedCalendars: true,
+            "showWeekNumbers": true,
+            "alwaysShowCalendars": true,
+            // "minDate": d.getDate(),
+            "minDate": $('#hotelCurrentDate').val(),
+            singleDatePicker: true,
+            locale: {
+                format: 'DD/MM/YYYY'
+
+            }
+        }, function (start, end, label) {
+            minDate = start.format('DD/MM/YYYY');
+            $('#checkin').val(start.format('DD/MM/YYYY'));
+        });
+
+        $('.inhouse-start-date-picker').daterangepicker({
+            linkedCalendars: true,
+            "showWeekNumbers": true,
+            "alwaysShowCalendars": true,
+            singleDatePicker: true,
+            "minDate": $('#hotelCurrentDate').val(),
+            locale: {
+                format: 'DD/MM/YYYY'
+
+            }
+        }, function (start, end, label) {
+            minDate = start.format('DD/MM/YYYY');
+            $('#checkin').val(start.format('DD/MM/YYYY'));
+        });
+
+        $('.end-date-picker').daterangepicker({
+            linkedCalendars: true,
+            "showWeekNumbers": true,
+            "alwaysShowCalendars": true,
+            singleDatePicker: true,
+            "minDate": $('#hotelCurrentDate').val(),
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        }, function (start, end, label) {
+            $('#checkout').val(end.format('DD/MM/YYYY'));
+        });
+
+        $('.start-date-picker').on('apply.daterangepicker', function (ev, picker) {
+            var new_start = picker.startDate.clone().add(1, 'days');
+
+            $('.end-date-picker').daterangepicker({
+                singleDatePicker: true,
+                autoApply: true,
+                minDate: new_start,
+                startDate: new_start,
+                locale: {
+                    format: 'DD/MM/YYYY',
+                    firstDay: 1
+                }
+            },
+                function (start, end, label) {
+                    $('#checkout').val(end.format('DD/MM/YYYY'));
+                });
+            $('.end-date-picker').click();
+        });
+    }
+
+    function LoadMealPlan() {
+        $.ajax({
+            url: '/Administration/MealPlans/SelectMealPlanForAddRoom?isDormitory=' + $('#isDormitory').val(),
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $('#MealPlanId option').remove();
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#MealPlanId'));
+                });
+            },
+            complete: function () {
+                $('#MealPlanId').val($('#ViewMealPlanId').val());
+                $('#MealPlanId').prop("disabled", true);
+            }
+        });
+    }
+    function LoadRoomType() {
+        $.ajax({
+            url: '/Administration/RoomTypes/SelectRoomTypesForAddRoom?isDormitory=' + $('#isDormitory').val(),
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $('#RoomType option').remove();
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#RoomType'));
+                });
+            },
+            complete: function () {
+                $('#RoomType').val($('#ViewRoomTypeId').val());
+                $('#RoomType').prop("disabled", true);
+            }
+        });
+    }
+</script>

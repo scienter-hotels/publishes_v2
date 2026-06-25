@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.Floor>
+
+@foreach (var item in Model)
+{
+    string[] clsStrArr;
+    string cls = ".";
+    clsStrArr = item.Name.ToLower().Split(' ');
+
+    for (int i = 0; i < clsStrArr.Length; i++)
+    {
+        if (i != (clsStrArr.Length - 1))
+        {
+            cls = cls + clsStrArr[i] + "-";
+        }
+        else
+        {
+            cls = cls + clsStrArr[i];
+        }
+
+    }
+
+    <div class="form-group override-from-group-margin">
+        <input type="hidden" value="@item.Id" class="floor-number-hidden"/>
+        <input type="checkbox" id="floor-number" class="floor-number-checkbox" data-filter-value="@cls"/>
+        <label style="color:black"> @item.Name </label>
+    </div>
+}

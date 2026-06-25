@@ -1,0 +1,85 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.ReservationTraces>
+
+<style>
+    #TracesGrid {
+        margin-top: 20px;
+    }
+
+    #TracesGrid th, #TracesGrid td {
+        padding: 0 10px;
+    }
+</style>
+
+<div class="col-md-12"  style="overflow-y:auto; height:280px;padding:10px 20px;">
+    <table class="table"
+           id="TracesGrid"
+           data-page-index="1"
+           data-page-size="5"
+           data-filter-type="2"
+           data-search-keyword=""
+           data-grid-top-functionalities="true"
+           data-grid-pageable="true"
+           data-grid-sortable="true"
+          >
+        <tr style="height: 30px;">
+            <th class="text-primary">
+                Item Name
+            </th>
+            <th class="text-primary text-center">
+                Quantity
+            </th>
+            <th class="text-primary">
+                Remark
+            </th>
+            <th class="text-primary">
+                Dates
+            </th>
+            <th class="text-primary">
+                Departments
+            </th>
+            <th></th>
+
+        </tr>
+        @foreach (var item in Model)
+        {
+        <tr value="@item.Id">
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemName)
+            </td>
+            <td class="text-right">
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Remark)
+            </td>
+            <td>
+                @foreach (var date in item.Dates)
+                {
+                    @Html.DisplayFor(modelItem => date.Date) <br />
+                }
+            </td>
+            <td>
+                @foreach (var department in item.DepartmentsList)
+                {
+                    @Html.DisplayFor(modelItem => department.DepartmentName) <br />
+                }
+            </td>
+
+            <td>
+                <a class="btn btn-theme-color-2 btn-sm btnEdit" id="btnEdit">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </a>
+            @*</td>
+            <td>*@
+                <a class="btn btn-danger btn-sm" id="btnDelete" data-trace-Id="@item.Id">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a>
+            </td>
+        </tr>
+        }
+
+    </table>
+</div>
+<script>
+ 
+</script>

@@ -1,0 +1,223 @@
+﻿
+@{
+    ViewBag.Title = "Guest Profile Merge";
+}
+
+<style>
+    .margin-all {
+        margin-top: 1em;
+        margin-right: 0px;
+        margin-left: 0px;
+        margin-bottom: 1em;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header" data-background-color="purple">
+        <div class="row hidden-print">
+            <div class="col-md-8">
+                <h4 class="title">
+                    @ViewBag.Title
+                </h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-right: 0px;margin-left: 0px;margin-top: 1.5em;">
+        <div class="col-md-5">
+            <fieldset class="the-fieldset" style="">
+                <legend class="the-legend">Main Guest Profile</legend>
+                <div class="card-content contentLoadingArea mainProfile bothgrid" style="padding: 0px 0px 15px 10px;">
+                    <div class="row">
+                        <div class="form-group label-floating col-md-12" style="margin-top:0em;margin-bottom:1em;">
+                            <label class="control-label">Keyword*</label>
+                            <input autocomplete="off" class="form-control keyword" maxlength="100" name="Keyword" type="text" required width="100%">
+                        </div>
+
+                    </div>
+                    <div class="content">
+
+                    </div>
+
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-md-5">
+            <fieldset class="the-fieldset" style="">
+                <legend class="the-legend">Profiles To Merge </legend>
+                <div class="card-content contentLoadingArea mergeProfile bothgrid" style="padding: 0px 0px 15px 0px;">
+                    <div class="form-group label-floating col-md-12" style="margin-top:0em;margin-bottom:1em;">
+                        <label class="control-label">Keyword*</label>
+                        <input autocomplete="off" class="form-control keyword" maxlength="100" name="Keyword" value="@ViewBag.keyword" type="text" required width="100%">
+                    </div>
+                    <div class="content">
+
+                    </div>
+
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-md-2 ">
+            <fieldset class="the-fieldset" style="">
+                <legend class="the-legend" title="Active Reservations">Active Res.</legend>
+                <div class="card-content contentLoadingArea mergeProfile bothgrid table-responsive" style="padding: 0px 0px 15px 0px;">
+                    <table id="ExistingReservationGrid" class="table table-striped">
+                        <tr>
+                            <th>Res.No</th>
+                        </tr>
+
+                    </table>
+
+                </div>
+            </fieldset>
+            
+        </div>
+    </div>
+
+    <div class="row margin-all" style="margin-top: 1em;">
+        <div class="col-md-12">
+            <input type="submit" id="saveGuestProfile" value="Save" class="btn btn-primary" />
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+
+        GuestProfileMerge();
+
+        $(".mainProfile .keyword").on('keyup', function () {
+            GuestProfileMerge('.mainProfile');
+        });
+
+        $(".mergeProfile .keyword").on('keyup', function () {
+            GuestProfileMerge('.mergeProfile');
+        });
+
+    });
+
+    $('body').on('click', '#saveGuestProfile', function () {
+
+        //var selectedMainProfile = $('.mainProfile .rowVal input:checkbox').prop(':checked').val('');
+
+        var selectedMainProfile = $('.mainProfile input:checkbox:checked').val();
+
+        var selectedMergeProfile = [];
+
+        $('.mergeProfile .guestprofile-checkBox').each(function (index, item) {
+            if ($(this).is(':checked')) {
+                selectedMergeProfile.push({Id: $(this).val()});
+            }
+        });
+
+        //var selectedMainProfile = selectedMainProfile + selectedMergeProfile
+
+        //console.log(selectedMergeProfile + selectedMainProfile);
+
+        if ($('.mainProfile .guestprofile-checkBox').is(':checked') == false) {
+            ShowWarningMessage("Please select a main profile.");
+        } else if (selectedMergeProfile.length == 0) {
+            ShowWarningMessage("Please select at least one merge profiles.");
+        } else {
+            $.ajax({
+                url: '/administration/guestprofiles/GuestProfileMergeSave',
+                dataType: 'JSON',
+                method: 'POST',
+                data: { selectedMergeProfile: selectedMergeProfile, selectedMainProfile: selectedMainProfile },
+                success: function (response) {
+                    ShowSuccessMessage("Successfully Saved");
+                    GuestProfileMerge();
+                }
+            });
+        }
+
+
+        
+    })
+
+    function GuestProfileMerge(gridType = '.bothgrid') {
+
+        var keyword = $(gridType + ' .keyword').val();
+
+        if (keyword == 'undefined') {
+            keyword = '';
+        }
+
+        if (keyword.length >= 3 || gridType == '.bothgrid') {
+            $.ajax({
+                url: '/administration/guestprofiles/guestprofilemergegrid?keyword=' + keyword,
+                dataType: 'html',
+                method: 'GET',
+                success: function (response) {
+                    $(gridType + ' .content').html('');
+                    $(gridType + ' .content').html(response);
+                },
+                beforeSend: function () {
+                    $(gridType + ' .content').html('');
+                }
+            });
+        }
+       
+    }
+
+
+    //$(".mainProfile input:checkbox").click(function () {
+    //    var $inputs = $('.mainProfile input:checkbox')
+    //    if ($(this).is(":checked")) {
+    //        ('.mainProfile input:checkbox').not($(this)).prop('disabled', true);
+    //    } else {
+    //        $inputs.prop('disabled', false);
+    //    }
+    //});
+
+
+    $('.mainProfile').on('click', '.guestprofile-checkBox', function () {
+        
+        var $inputs = $('.mainProfile input:checkbox')
+        if ($(this).is(":checked")) {
+            ($inputs).not($(this)).prop('disabled', true);
+        } else {
+            $inputs.prop('disabled', false);
+        }
+
+    });
+
+
+    $('.mergeProfile').on('click', '#guestprofile-checkBox', function () {
+
+        var selectedMergeProfiles = [];
+
+        $('.mergeProfile .guestprofile-checkBox').each(function (index, item) {
+            if ($(this).is(':checked')) {
+                selectedMergeProfiles.push({ Id: $(this).val() });
+            }
+        });
+
+        //console.log(selectedMergeProfiles);
+
+        $.ajax({
+            url: '/administration/guestprofiles/existingreservationlistselect?selectedProfileIds=' + JSON.stringify(selectedMergeProfiles),
+            dataType: 'JSON',
+            data: 'POST',
+            beforeSend: function () {
+                $('#ExistingReservationGrid tr').not(':first-child').remove();
+            },
+            success: function (data) {
+                //console.log(data);
+                $.each(data, function (index, item) {
+                    $('<tr>'
+                        + '<td>' + item.ReservationNo + '</td>'
+                        + '</tr>'
+                    ).appendTo('#ExistingReservationGrid');
+
+                });
+            }
+        });
+
+
+    });
+    
+</script>

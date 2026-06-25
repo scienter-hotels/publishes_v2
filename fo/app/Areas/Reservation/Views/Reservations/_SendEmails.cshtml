@@ -1,0 +1,155 @@
+﻿<input type="hidden" id="resId" class="resId" value="@ViewBag.reservationHeaderId" />
+<input type="hidden" id="guestId" class="guestId" value="@ViewBag.GuestProfileId" />
+<input type="hidden" id="reservationUuid" class="reservationUuid" value="@ViewBag.reservationUuid" />
+<input type="hidden" id="reportFolder" class="reportFolder" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("SSRSReportsFolder").ToString()" />
+<input type="hidden" id="reportServer" class="reportServer" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("ReportServer").ToString()" />
+<input type="hidden" id="ReportSourceConStr" class="ReportSourceConStr" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("ReportSourceConStr").ToString()" />
+
+<form method="post" id="emailSubmitForm">
+    <div class="row">
+        <div class="col-md-4">
+            <fieldset class="the-fieldset">
+                <legend class="the-legend">Email Types</legend>
+                <div class="col-md-12" id="emailTypesLoadingArea">
+
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-md-8">
+            <fieldset class="the-fieldset">
+                <legend class="the-legend">Compose</legend>
+                <div class="col-md-12" id="emailComposeArea">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group label-floating">
+                                <div id="mailId">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Message</label>
+                                <textarea maxlength="1000" rows="4" id="subject" name="subject" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <input type="submit" id="btnSend" value="Send" class="btn btn-primary" />
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        FillMailAddress();
+        LoadReservationNumbers();
+    });
+
+    function FillMailAddress() {
+        debugger;
+        var guestProfileId = $('#guestId').val();
+
+        $.ajax({
+            url: '/reservation/reservations/GuestProfileSelect?guestProfileId=' + guestProfileId,
+            dataType: 'JSON',
+            method: 'POST',
+            success: function (data) {
+                console.log(data.Email);
+                $(
+                    '<label class="control-label">Email </label>' +
+                    '<input type="text" name="Email" id="email" class="form-control" value="' + data.Email + '" />'
+                ).appendTo("#mailId");
+            },
+            error: function (error) {
+                ShowErrorMessage('There is an error in loading this record.')
+            },
+            complete: function () {
+            }
+        });
+    }
+
+    function LoadReservationNumbers() {
+        $.ajax({
+            method: 'GET',
+            url: '/Reservation/Reservations/SelectEmailTypes',
+            datatype: 'html',
+            success: function (data) {
+                $.each(data, function (index, item) {
+                    $(
+                        '<ul id="myUL">' +
+                        '<li>' +
+                        '<div class="checkbox">' +
+                        '<label>' +
+                        '<input type="checkbox" class="checkBoxGroup checbox-item" id="mail-type" value="' + item.Id + '" />' +
+                        item.Name +
+                        '</label>' +
+                        '</div>' +
+                        '</li>' +
+                        '</ul>'
+                    ).appendTo("#emailTypesLoadingArea");
+                });
+
+            }
+        });
+    }
+
+    $('body').off('submit', '#emailSubmitForm').on('submit', '#emailSubmitForm', function (e) {
+        e.preventDefault();
+        var ReservationUuid = $('#reservationUuid').val();
+        var HotelDate = $('#hotelDate').val();
+        var ReportFolder = $('#reportFolder').val();
+        var ReportServer = $('#reportServer').val();
+        var ReportSourceConStr = $('#ReportSourceConStr').val();
+
+        var ReservationEmail = [];
+        var mail = {};
+
+        $.each($('.checbox-item'), function (index, item) {
+            if ($(item).prop('checked')) {
+                mail = {
+                    EmailTypeId: $(item).val(),
+                    ReservationHeaderId: $('#resId').val(),
+                    EmailId: $('#email').val(),
+                    Subject: $('#subject').val()
+                }
+                ReservationEmail.push(mail);
+                console.log(ReservationEmail);
+            }
+        });
+        $.ajax({
+            url: '/reservation/reservations/SaveReservationEmail',
+            dataType: 'JSON',
+            data: { receivedMails: ReservationEmail, Uuid: ReservationUuid, ReportFolder: ReportFolder, ReportServer: ReportServer, ReportSourceConStr: ReportSourceConStr },
+            method: 'POST',
+            success: function (response) {
+                if (response.startsWith("ERR-")) {
+                    ShowErrorMessage('Please select at least one email type.');
+                } else {
+                    ShowSuccessMessage('Message sent successfully.');
+                }
+
+
+                setTimeout(function () {
+
+                    //Update Uuid
+                    window.location.href = "/reservation/reservations/list/" + $('#reservationUuid').val();
+                    console.log("Uuid");
+
+                }, 2500);
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+        });
+
+    });
+
+</script>

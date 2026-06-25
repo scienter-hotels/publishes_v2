@@ -1,0 +1,171 @@
+﻿@*@model Scienter.HotelERP.Common.Domain.ViewModels.ReservationView
+    <div class="row">
+        <div class="col-md-12" style="padding-left:0px; padding-right:0px;">
+            <div class="card hidden-print">
+                <div class="card-header" data-background-color="purple">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="title">
+                                @ViewBag.Title
+                                <hr class="visible-print" />
+                            </h4>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card-content" id="contentLoadingArea" >
+                    <input type="hidden" id="ResId" value="@Model.ReservationHeaderId">
+                    <input type="hidden" id="RoomId" value="@Model.RoomNo">
+                    <div class="row" id="postingTypes" >
+
+                        @* Load from Jquery *@
+
+@*</div>
+                    <div class="row">
+                        <input type="button" value="Split" id="splitBtn" class="btn btn-primary" />
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div*@
+@model IEnumerable<Scienter.HotelERP.Common.Domain.PostingCategory>
+
+<div id="postsettingArea" class="postDetail" style="padding-top:20px;">
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 postSet">
+                <div class="form-group label-floating">
+                    <div class="catHeadId"><label class="control-label">@item.Name</label> <input type="hidden" name="postCategory" class="postCategory" value="@item.Id"></div>
+
+                    <div><input type="number" name="" required class="form-control folioNo" value="@item.FolioNo" /> </div>
+                </div>
+            </div>
+
+        }
+
+
+    </div>
+
+
+    <div class="row" style="margin-top:30px;">
+
+        <div class="col-md-12 text-right ">
+            <p><button id="postSettings" class="btn theme-bg-color-1 ">Save</button></p>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+
+        //   LoadPostingTypes();
+       
+        CheckAvailabelFolioNos(ResheaderId, RoomId);
+
+    })
+    var invalidFolioNumbers = []
+    var isInvalidFolio=0
+    var ResheaderId = $('.reservation-header-id').val();
+    var RoomId = $('.reservation-room-id').val();
+
+    //Save
+    $('#postSettings').on('click', function ()
+    {    
+       
+        $(invalidFolioNumbers).each(function (index, item) {
+            $('.postSet').find('.folioNo').each(function (index, itemFolioSet) {
+
+                if (item.folioNumber == $('.postSet').find('.folioNo').eq(index).val()) {
+
+                    isInvalidFolio = 1
+                }
+            })
+        });
+     
+        if (isInvalidFolio == 0) {
+           
+
+            var ResHeaderWisePostcategory = [];
+
+            $(".postDetail").each(function (index, eachDiv) {
+                var catHead = $('.postDetail').find('.postSet');
+
+                $(catHead).each(function (index, eachInDiv) {
+                    catWiseFolioNo = {
+                        category: $(eachInDiv).find('.postCategory').val(),
+                        folio: $(eachInDiv).find('.folioNo').val()
+                    }
+                    ResHeaderWisePostcategory.push(catWiseFolioNo);
+                });
+
+            });
+            
+            SavePostingWiseFolio(ResheaderId, RoomId, ResHeaderWisePostcategory);
+
+            $('.tbl-folioWiseTable').html('')
+            $('.btn-folio-numbers').html('')
+            LoadAllTransactions(RoomId, ResheaderId);
+            GetAllFoliosNumbers(RoomId, ResheaderId)
+
+        } else {
+            ShowErrorMessage('Cant Select Already Settled Folio Numbers !');
+        }
+
+    })
+
+
+    // FUnction Check Availabel FOlio NOs
+    function CheckAvailabelFolioNos(ResheaderId,RoomId) {
+
+
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/CheckAvailabelFolios',
+            dataType: 'json',
+            data: { ReservationHeaderId: ResheaderId, RoomId: RoomId },
+            method: 'GET',
+            success: function (data) {
+                
+                $.each(data, function (index, item) {
+
+                    invalidFolioNumbers.push({
+                        folioNumber: item.FolioNo,
+                        id:item.Id
+                    });
+                })
+
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+        });
+
+    }
+
+    function SavePostingWiseFolio(ResheaderId, RoomId, ResHeaderWisePostcategory) {
+
+
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/FolioSplitWiseReservationSave',
+            dataType: 'json',
+            data: { ReservationHeaderId: ResheaderId, RoomId: RoomId, ResHeaderWisePostcategory: ResHeaderWisePostcategory },
+            method: 'POST',
+            success: function (response) {
+                
+
+                ShowSuccessMessage('Folio Splited Successfully !');
+               
+            }
+        });
+    }
+
+
+</script>

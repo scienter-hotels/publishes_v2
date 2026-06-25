@@ -1,0 +1,145 @@
+﻿@model Scienter.HotelERP.Common.Domain.RemarktypeWiseRemarks
+
+<style>
+    #reservationNumbersLoadingArea td {
+    line-height:10px;
+    }
+
+    #reservationNumbersLoadingArea td span{
+        margin-right:2px;
+    }
+
+    .form-control, .form-group .form-control {
+        background-image: none !important;
+    }
+
+</style>
+
+<input type="hidden" id="resHeadId" value="@ViewBag.ResheaderId" />
+<input type="hidden" id="ReservationType" value="@ViewBag.ReservationType" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+<form action="/" method="post">
+    <div style="margin-right:-10px;">
+        <div class="row">
+            <div class="col-md-4">
+                <fieldset class="the-fieldset" style="padding:3px; height:320px;overflow-y:auto;margin-top: 10px;">
+                    <legend class="the-legend">Reservation No</legend>
+                    <div class="col-md-12 label-data" id="reservationNumbersLoadingArea"></div>
+                </fieldset>
+            </div>
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-12">
+                        <fieldset class="the-fieldset" style="padding:3px; height:100px;overflow-y:auto;margin-top: 10px;">
+                            <legend class="the-legend">Reservation Remark</legend>
+                            <textarea class="form-control label-data" style="height:145px; margin-top:-30px; padding:10px;" name="ReservationRemark" id="ReservationRemarkId" value="@Model.ReservationRemark"> @Model.ReservationRemark</textarea>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-12">
+                        <fieldset class="the-fieldset" style="padding:3px; height:100px;overflow-y:auto;margin-top: 10px;">
+                            <legend class="the-legend">Hotel Remark</legend>
+                            <textarea class="form-control label-data" style="height:145px; margin-top:-30px; padding:10px;" name="HotelRemark" id="HotelRemarkId" value="@Model.HotelRemark"> @Model.HotelRemark</textarea>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-12">
+                        <fieldset class="the-fieldset" style="padding:3px; height:100px;overflow-y:auto;margin-top: 10px;">
+                            <legend class="the-legend">Cashier Remark</legend>
+                            <textarea class="form-control label-data" style="height:145px; margin-top:-30px; padding:10px;" name="CashierRemark" id="CashierRemarkId" value="@Model.CashierRemark"> @Model.CashierRemark</textarea>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (ViewBag.ReservationType != "checkout")
+        {
+            <div class="row">
+                <div class=" col-md-2 col-md-offset-10">
+                    <button type="button" class="btn btn-primary pull-right" id="reservation-remark-update">
+                        Update Remark  <span class="glyphicon "></span>
+                    </button>
+                </div>
+            </div>
+        }
+
+
+    </div>
+</form>
+
+<script>
+
+    $(document).ready(function () {
+        var ReservationHeaderId = $('#resHeadId').val();
+        var Type = $('#ReservationType').val();
+        LoadReservationNumbers(ReservationHeaderId, Type);
+
+        PopUpRemarkContent();
+
+       
+
+    });
+
+    $('body').on('click', '#reservation-remark-update', function (e) {
+        UpdateRemark();
+    });
+
+
+
+    function UpdateRemark() {
+        var reservationType = $('#ReservationType').val();
+        var reservations = [];
+
+        $.each($('.checbox-item'), function (index, item) {
+            if ($(item).prop('checked')) {
+                res = {
+                    ReservationHeaderId: $(item).val()
+                }
+                reservations.push(res);
+            }
+        });
+
+        var reservationNos = JSON.stringify(reservations);
+
+        var remarks = {
+            ReservationRemark: $('#ReservationRemarkId').val(),
+            HotelRemark: $('#HotelRemarkId').val(),
+            CashierRemark: $('#CashierRemarkId').val()
+        }
+
+        //var ReservationRemark = $('#ReservationRemarkId').val()
+
+        $.ajax({
+            url: '/reservation/reservations/ReservationRemarkUpdate',
+            dataType: 'json',
+            type: 'POST',
+            data: { reservationType, reservationNos, remarks },
+            success: function (response) {
+                if (response == 'OK') {
+                    ShowSuccessMessage("Reservation updated succsessfully.");
+                    setTimeout(function () {
+                        //Update Uuid
+                        //window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+
+                        LoadInhouseReservationGrid();
+
+                    }, 2500);
+                }
+                else {
+                    ShowWarningMessage(response);
+                }
+            },
+            error: function (error) {
+                ShowErrorMessage("Error in reservation update.");
+            },
+        })
+    }
+
+    function PopUpRemarkContent() {
+        document.getElementById('ReservationRemarkId').addEventListener('input', function () {
+            var userInput = this.value;
+            this.setAttribute('title', userInput)
+        })
+    }
+
+</script>
+

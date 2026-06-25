@@ -1,0 +1,200 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Proceed Login</title>
+
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+
+    <script>
+
+        function LoadLocalStorage(reloadOrRedirect) {
+            $.ajax({
+                url: '/autologin/localstorage',
+                type: 'POST',
+                success: function (response) {
+
+                    $(response).each(function (index, item) {
+                        localStorage.removeItem(item.Key);
+                    });
+
+                    $(response).each(function (index, item) {
+
+                        // added by sachith on 12th June 2024
+
+                        var mergedData = [];
+                        var existingData = localStorage.getItem(item.Key); // if json is big, send it with 100, 100 rows as JSON in same key in SQL SP, Ex: companies
+
+
+                        if (existingData) {
+                            existingData = JSON.parse(existingData); // get existing data with same key
+                            $.each(existingData, function (ind, itm) {
+                                mergedData.push(itm);
+                            });
+                            $.each(JSON.parse(item.Value), function (ind, itm) {
+                                mergedData.push(itm);
+                            });
+                            localStorage.setItem(item.Key, JSON.stringify(mergedData));
+                        } else {
+                            localStorage.setItem(item.Key, item.Value);
+                        }
+
+                    });
+
+                    if (reloadOrRedirect == "reload") {
+                        window.location.reload();
+                    } else {
+                        setTimeout(function () {
+                            window.location.href = "/administration/dashboard/landing";
+                        }, 3000);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching data:", error);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            LoadLocalStorage("redirect");
+        });
+    </script>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Poppins",sans-serif;
+        }
+
+        .spinnerContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .loader {
+            color: #094F70 !important;
+            font-weight: 500;
+            font-size: 25px;
+            box-sizing: content-box;
+            height: 40px;
+            padding: 10px 10px;
+            display: flex;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .words {
+            overflow: hidden;
+        }
+
+        .word {
+            display: block;
+            height: 100%;
+            padding-left: 6px;
+            color: #e67e22 !important;
+            animation: cycle-words 5s infinite;
+        }
+
+        @@keyframes cycle-words {
+            10% {
+                transform: translateY(-105%);
+            }
+            25% {
+                transform: translateY(-100%);
+            }
+            35% {
+                transform: translateY(-205%);
+            }
+            50% {
+                transform: translateY(-200%);
+            }
+            60% {
+                transform: translateY(-305%);
+            }
+            75% {
+                transform: translateY(-300%);
+            }
+            85% {
+                transform: translateY(-405%);
+            }
+            100% {
+                transform: translateY(-400%);
+            }
+        }
+
+        p {
+            margin-top: 0;
+        }
+
+        img {
+            width: 100px;
+        }
+
+        .image-loader {
+            animation: scaleTranslate 2s ease-in-out infinite;
+        }
+
+        @@keyframes scaleTranslate {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(.8);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+    </style>
+
+</head>
+<body>
+
+
+
+
+    @*<br />
+        <br />
+        <br />
+        <center>
+            <img src="~/Images/loading_pot.gif" width="100px" />
+            <p>Please Wait ...</p>
+        </center>
+
+        <br />
+        <br />
+        <br />*@
+
+    <div class="spinnerContainer">
+        <div class="image-loader">
+            <img src="~/Images/destinity_logo.png" alt="Destinity Logo" />
+        </div>
+        <div class="loader">
+            <p>Checking </p>
+            <div class="words">
+                <span class="word">master files</span>
+                <span class="word">hotel details</span>
+                <span class="word">access</span>
+                <span class="word">reservations</span>
+                <span class="word">master files</span>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

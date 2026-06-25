@@ -1,0 +1,169 @@
+﻿@model Scienter.HotelERP.Common.Domain.AdvancePaymentLink
+@{
+    string viewClass = "col-md-4";
+    string buttonClass = "col-md-4";
+    if (ViewBag.DirectFrom == "I")
+    {
+        viewClass = "col-md-6";
+        buttonClass = "col-md-4 col-md-offset-8";
+    }
+
+    string LKR = "";
+    string USD = "";
+}
+
+<style>
+    .form-group {
+        margin-top:0px;
+    }
+    .control-label {
+        margin: 0px !important;
+    }
+</style>
+
+<form id="data-advanced-payment-links-form">
+    <input type="hidden" value="0" name="Id" id="Id">
+    <div class="col-md-12" style="margin-left:1%">
+        <div class="row">
+            <div class="@viewClass">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Doc No*</label>
+                            <input type="text" name="complimentary-remark" id="data-advancedpayment-docno" class="form-control" value="@Model.DocNo" disabled placeholder="Auto generated" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Reference No*</label>
+                            <input type="text" name="" id="data-advancedpayment-reference-no" class="form-control" value="@Model.ReferenceNo" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Currency*</label>
+                            <select id="data-advancedpayment-currency" name="Currency" value="@Model.Currency" required class="form-control">
+                                <option value=""></option>
+                                @if (Model.Currency == "LKR")
+                                {
+                                    LKR = "selected";
+                                }
+                                else
+                                {
+                                    USD = "selected";
+                                }
+                                <option value="LKR" @LKR>LKR</option>
+                                <option value="USD" @USD>USD</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Amount* </label>
+                            <input type="text" name="complimentary-remark" id="data-advancedpayment-amount" class="form-control" value="@Model.Amount" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Guest Name*</label>
+                            <input type="text" name="GuestName" id="data-advancedpayment-guest-name" class="form-control" value="@Model.GuestName" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Contact No*</label>
+                            <input type="text" name="complimentary-remark" id="data-advancedpayment-contact-no" class="form-control" value="@Model.ContactNo" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="@viewClass">
+                <fieldset class="the-fieldset" style="padding: 0px 20px 0px 20px;">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label">Email*</label>
+                                <input type="email" name="Email" required id="data-advancedpayment-email" class="form-control" value="@Model.Email" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label">Email Title*</label>
+                                <input type="text" name="EmailTitle" required id="data-advancedpayment-email-title" class="form-control" value="@Model.EmailTitle" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label">Email Body*</label>
+                                <textarea class="form-control" name="Email" required id="data-advancedpayment-email-body" rows="5"> @Model.EmailBody</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group checkbox">
+                                <label>
+                                    @*@Html.CheckBoxFor(model => model.ActiveForPayment)*@
+                                    <input type="checkbox" name="ActiveForPayment" id="ActiveForPayment" checked />
+                                    Active for payment
+                                </label>
+                                @Html.ValidationMessageFor(model => model.ActiveForPayment, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <div class="@buttonClass">
+                    <input type="submit" id="btnSave" value="Save" class="btn btn-primary">
+                    &nbsp;
+                    <input type="reset" id="btnClear" value="Clear" class="btn btn-default">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    // save --------------------------------------
+    $('body').off('submit', '#data-advanced-payment-links-form').on('submit', '#data-advanced-payment-links-form', function (e) {
+        e.preventDefault();
+        var obj = {
+            Name: $('#Name').val(),
+            IsActive: $('#IsActive').prop("checked"),
+            DocNo: $('#data-advancedpayment-docno').val(),
+            Currency: $('#data-advancedpayment-currency').val(),
+            Amount: $('#data-advancedpayment-amount').val(),
+            GuestName: $('#data-advancedpayment-guest-name').val(),
+            ContactNo: $('#data-advancedpayment-contact-no').val(),
+            Email: $('#data-advancedpayment-email').val(),
+            EmailTitle: $('#data-advancedpayment-email-title').val(),
+            EmailBody: $('#data-advancedpayment-email-body').val(),
+            ReferenceNo: $('#data-advancedpayment-reference-no').val(),
+            ActiveForPayment: $('#ActiveForPayment').prop('checked') 
+        };
+        $.ajax({
+            url: '/administration/advancedpayment/saveadvancepaymentlink',
+            dataType: 'html',
+            data: obj,
+            method: 'POST',
+            success: function (response) {
+
+                ShowSuccessMessage('Record has been saved successfully.');
+                FillGrid();
+            }
+        });     
+    });
+</script>

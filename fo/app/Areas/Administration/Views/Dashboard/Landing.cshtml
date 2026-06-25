@@ -1,0 +1,492 @@
+﻿@model Scienter.HotelERP.Common.Domain.Dashboard
+@{
+    ViewBag.Title = "Welcome Page";
+}
+
+<style>
+    body {
+        background: url(/bg-img.png) no-repeat center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+
+    .cd-main-content {
+        background: none !important;
+    }
+    /*2023-08-15----------------------------------------------------------------------------------------------*/
+    .tile-height {
+        height: 88px !important;
+        border: 5px solid #ffffff;
+        border-radius: 8px;
+    }
+    .tile-value {
+        font-size: 30px;
+    }
+
+    .tile-lable {
+        font-size: 10px;
+        margin-bottom: 15px;
+        line-height: 12px;
+    }
+    /*--------------------------------------------------------------------------------------------------------*/
+</style>
+
+
+@*<input type="hidden" class="warningMessage" id="warningMessage" value="@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.Message" />*@
+<div class="container">
+    <div class="row" style="margin-top:30px;">
+        <div class="col-md-3">
+            @if (Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.ShowSaasProperty == true)
+            {
+                <div>
+                    <div class="text-left" style="padding-top:150px;">
+                        <img class="comp-img" src="@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.HotelLogo" style="max-width:300px" />
+                    </div>
+                </div>
+            }
+        </div>
+        <div  class="col-md-3"></div>
+        @*<div class="col-md-3">
+            <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
+            <script src="~/signalR/hubs" type="text/javascript"></script>
+
+
+
+            <script>
+                $(function () {
+                    var notifications = $.connection.notificationHub;
+
+                    notifications.client.recieveNotification = function (a) {
+                        $(".data-notification-row").remove();
+                        $("#notification-count").html('');
+                        $("#notification-count").html(a.length);
+                        $.each(a, function (index, item) {
+                            $('<tr class="data-notification-row">' +
+                                '<td>' + item.ReservationHeaderId + '</td>' +
+                                '<td>' + item.Title + '</td> ' +
+                                '<td>' + item.Description + '</td> ' +
+                                '<td><button type="button" data-id="' + item.Id + '" class="btnIsRead">Read</button></td> ' +
+                                '</tr>').appendTo("#notificationTable");
+                        });
+                    };
+
+                    $.connection.hub.start().done(function () {
+                        notifications.server.sendNotification()
+                    }).fail(function (e) {
+                        alert(e);
+                    });
+                });
+            </script>
+
+            <br />
+
+
+            <!-- Modal -->
+            <div id="notification-modal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                  
+                        <div class="modal-body">
+
+                            <table id="notificationTable" class="table table-striped">
+                                <tr>
+                                    <th>Res. Id</th>
+                                    <th>Title</th>
+                                    <th>Desc.</th>
+                                    <th></th>
+                                </tr>
+                            </table>
+                        </div>
+                      
+                    </div>
+
+                </div>
+            </div>
+
+
+
+
+
+
+
+        </div>*@
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="col-md-6 tile-height">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 tile-height">
+
+                        </div>
+                    </div>
+                    @*<div class="row">
+                            <div class="col-md-6 tile-height">
+
+                            </div>
+                        </div>*@
+                    <div class="row">
+                        @*<div class="col-md-6 tile-height" >
+
+                            </div>*@
+                        <div class="col-md-6 col-md-offset-6 tile-height" style="background-color:#34495e">
+                            <a href="~/reservation/roomavailability/RoomAvailabilityGrid"><span class="tile-lable tile-light">Room<br />Availability</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="col-md-6 tile-height">
+
+                        </div>
+                        <div class="col-md-6  tile-height">
+
+                        </div>
+                        <div class="col-md-6  tile-height">
+
+                        </div>
+
+                        <div class="col-md-6  tile-height" style="background-color:#bdc3c7">
+                            <span class="tile-lable tile-dark">Hotel Date<br /><br /><span style="font-size:12px; font-weight:bold;">@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.HotelDate</span></span>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-6 tile-height" style="background-color:#d0d0d0">
+                            <a href="~/reservation/reservations/list"><span class="tile-lable tile-dark">Manage<br />Reservations</span></a>
+
+                        </div>
+
+                        <div class="col-md-6  tile-height" style="background-color:#34495e">
+                            <a href="~/cashieringandposting/currencyencashment"><span class="tile-lable tile-light">Currency<br />Encachment</span></a>
+                        </div>
+                        <div class="col-md-6  tile-height flip" style="background-color:#e67e22" data-order="1">
+                            <a href="~/reservation/quickcheckout"><span class="tile-lable tile-light" style="margin-bottom: 10px;">EXP.<br />DEPARTURES</span></a>
+                            <span class="tile-value tile-light"><span style="font-size:12px;"> </span>@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.TodayDeparture</span>
+                        </div>
+                        <div class="col-md-6  tile-height flip" style="background-color:#808080" data-order="4">
+                            <a href="~/reservation/quickcheckins"><span class="tile-lable tile-light" style="margin-bottom: 10px;">EXP.<br />ARRIVALS</span></a>
+                            <span class="tile-value tile-light"><span style="font-size:12px;"> </span>@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.ExpectedArrivals</span>
+                        </div>
+                    </div>
+
+                    @*  *@
+                    <div class="row">
+                        <div class="col-md-6"></div>
+                        <div class="col-md-6 tile-height" style="background-color:#d0d0d0">
+                            <span class="tile-lable tile-dark">Arrived</span>
+                            <span class="tile-value tile-dark"><span style="font-size:12px;"> </span>@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.ArrivedStayOversDeparted.Arrived</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="col-md-6 tile-height" style="background-color:#d0d0d0; cursor:pointer;" id="btn-reservation-notes">
+                            <span class="tile-lable tile-dark">
+                                Reminders <br />
+                                <span id="reservation_notes" class="tile-value" style="padding-top: 0.5em;"></span>
+                            </span>
+                        </div>
+                        <div class="col-md-6  tile-height flip" style="background-color:#34495e" data-order="2">
+                            <a href="~/reservation/roomavailability/roomavailabilitygrid"><span class="tile-lable tile-light">Occupancy</span></a>
+                            <span class="tile-value tile-light">@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.OccupancyInt<span style="font-size:24px;">.@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.OccupancyFloating</span><span style="font-size:24px;">%</span> </span>
+                        </div>
+                        @*<div class="col-md-6  tile-height" style="background-color:#e67e22">
+                                <a href="~/reservation/reservations/schedule"><span class="tile-lable tile-light">Reservation<br />Chart</span></a>
+                            </div>*@
+                        <div class="col-md-6  tile-height flip" style="background-color:#e67e22" data-order="1">
+                            <a href=""><span class="tile-lable tile-light">Out Of Order</span></a>
+                            <span class="tile-value tile-light"><span style="font-size:12px;"> </span>@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.TodayOOORooms</span>
+                        </div>
+                        <div class="col-md-6  tile-height" style="background-color:#95a5a6">
+                            <a href="~/housekeeping/hkchange/index"><span class="tile-lable tile-light">Housekeeping<br />Status</span></a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 tile-height" style="background-color:#d0d0d0">
+                            <a href="~/cashieringandposting/posting/landing/inhouse"><span class="tile-lable tile-dark">Inhouse<br />Posting</span></a>
+                        </div>
+                        <div class="col-md-6  tile-height flip" style="background-color:#34495e" data-order="3">
+                            <a href="~/reservation/inhousereservationlist/list/inhouse"> <span class="tile-lable tile-light">Inhouse</span></a>
+                            <span class="tile-value tile-light"><span style="font-size:12px;"> </span>@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.InHouseReservationCount</span>
+                        </div>
+
+                        @*<div class="col-md-6  tile-height flip" style="background-color:#34495e" data-order="3">
+            <a href="~/administration/changestay/index"> <span class="tile-lable tile-light">Stay Change Request</span></a>
+            <span class="tile-value tile-light"><span style="font-size:12px;"> </span>@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.GuestPortal_StayChangeRequestCount</span>
+        </div>
+
+        <div class="col-md-6  tile-height flip" style="background-color:#808080" data-order="3">
+            <a href="~/administration/preference/index"> <span class="tile-lable tile-light">Preferences</span></a>
+            <span class="tile-value tile-light"><span style="font-size:12px;"> </span>@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.GuestPortal_PreferencesCount</span>
+        </div>*@
+
+                        <div class="col-md-6  tile-height" style="background-color:#e67e22">
+                            <a href="~/cashieringandposting/advancedpayment/landing/inhouse"><span class="tile-lable tile-light">Advance<br />Payment</span></a>
+                        </div>
+
+
+                        @*<div class="col-md-6  tile-height" style="background-color:#bdc3c7" ; cursor:pointer;" id="btn-Trace-Reminders">
+            <span class="tile-lable tile-dark">
+                Trace  <br /> Reminders
+                <span id="Trace_Reminders" class="tile-value" style="padding-top: 0.5em;"></span>
+            </span>
+        </div>*@
+
+
+                        <div class="col-md-6  tile-height" style="background-color:#d0d0d0">
+                            <a href="~/cashieringandposting/foliomanagement/managefolio"><span class="tile-lable tile-dark">Folio<br />Management</span></a>
+                        </div>
+
+
+
+
+                        <div class="col-md-6  tile-height flip" style="background-color:#34495e" data-order="4">
+                            <span class="tile-lable tile-light">Stay Over</span>
+                            <span class="tile-value tile-light"><span style="font-size:12px;"> </span>@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.ArrivedStayOversDeparted.StayOvers</span>
+                        </div>
+                        <div class="col-md-6 tile-height" style="background-color:#95a5a6">
+                            <span class="tile-lable tile-light">Departed</span>
+                            <span class="tile-value tile-light"><span style="font-size:12px;"> </span>@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.ArrivedStayOversDeparted.Departed</span>
+                        </div>
+
+                        <div class="col-md-6 tile-height" style="background-color:#d0d0d0; cursor:pointer;" id="btn-Trace-Reminders">
+                            <span class="tile-lable tile-dark">
+                                Trace  <br />Reminders
+                                <span id="Trace_Reminders" class="tile-value" style="padding-top: 0.5em;"></span>
+                            </span>
+                        </div>
+                        <div class="col-md-6 tile-height" style="background-color:#e67e22">
+                            <a href="~/administration/roomrates"><span class="tile-lable tile-light">Rate<br />Pallet</span></a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right" style="padding-right: 0;">
+            <footer class="footer">
+                    <p class="text-muted">v2.5.1</p>
+            </footer>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+@if (Model.Message != null)
+{
+    <script>
+        $(document).ready(function () {
+            ShowWarningMessage($('#warningMessage').val());
+            setTimeout(function () { $('#message-warning-model').modal('hide'); }, 4000);
+            $('#warningMessage').val("");
+        });
+        Model.Message = "";
+    </script>
+}
+
+<script>
+    $(document).ready(function () {
+        $('.flip').each(function (index, item) {
+            setInterval(function () {
+                $(item).find('.tile-light').fadeOut('slow');
+            }, (8000 * (index + 1)));
+
+            setInterval(function () {
+                $(item).find('.tile-light').fadeIn('slow');
+            }, (2500 * (index + 1)));
+        });
+        // ReservationNotesFor();
+    });
+</script>
+
+
+<script>
+
+
+    //$('body').on('click', '.btn_ReservationNote_ChangeStatus', function (e) {
+    //    var reservationNo = $(this).attr('data-reservation-no');
+    //    var reservationHeaderId =  $(this).attr('data-reservation-header-id');
+    //    var reminderId = $(this).attr('data-reminder-id');
+    //    var title = 'Change Remider Status ' + reservationNo;
+    //    var urlToOpen = '/Reservation/Reservations/LoadReminderStatusChange?reminderId=' + reminderId + '&reservationHeaderId=' + reservationHeaderId + '&reservationNo=' + reservationNo
+
+
+    //    //01
+    //    //CallDetailModelSimple(title, urlToOpen, 500);
+
+
+    //    //02
+    //    //$.ajax({
+    //    //    url: urlToOpen,
+    //    //    dataType: 'html',
+    //    //    method: 'POST',
+    //    //    beforeSend: function () {
+    //    //        $(this).html('Please wait...');
+    //    //    },
+    //    //    complete : function() {
+    //    //        $(this).val('Change Status');
+    //    //    },
+    //    //    success: function (data){
+    //    //        $('#grid-record-detail-model #grid-record-detail-header').html(title;
+    //    //        $('#grid-record-detail-model #grid-record-detail-body').html(data);
+    //    //        $('#grid-record-detail-model').modal({
+    //    //            show: true,
+    //    //            keyboard: false,
+    //    //            backdrop: 'static'
+    //    //        });
+    //    //    },
+    //    //    error: function ()
+    //    //    {
+    //    //        ShowWarningMessage('Sorry, There is an error.');
+    //    //    }
+
+    //    //});
+
+
+
+
+    //});
+
+
+
+
+
+
+
+    ////////
+
+    $('body').on('submit', '#reservationReminderStatus', function (e) {
+
+
+        e.preventDefault();
+
+        var reservationReminder = {
+            __RequestVerificationToken: $('__RequestVerificationToken').val(),
+            ReservationReminderStatusId: $('#ddlReminderStatusID').val(),
+            ReservationReminderStatusName: $("#ddlReminderStatusID option:selected").text(),
+            ReservationReminderStatusRemark: $('#txtRemarks').val(),
+            ReservationHeaderId: $('#ReservationHeaderId').val(),
+            Id: $('#Id').val(),
+        };
+
+        var bb = $('#ReservationHeaderId').val();
+
+        // alert(bb);
+
+        $.ajax({
+            url: '/Reservation/Reservations/SaveReservationReminderStatus',
+            dataType: 'json',
+            data: reservationReminder,
+            method: 'POST',
+            success: function (response) {
+                if (response == "OK") {
+                    ShowSuccessMessage('Record has been saved successfully.');
+                } else {
+                    ShowWarningMessage(response);
+                }
+                setTimeout(function () { window.location.reload(); }, 2000);
+                // FillGrid();
+            },
+            error: function () {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+
+        });
+
+
+
+
+
+    });
+
+
+
+
+
+    $('body').off('click', '#btn-reservation-notes').on('click', '#btn-reservation-notes', function () {
+
+        $.ajax({
+            url: '/Reservation/Reservations/ReservationNotesForCurrentDate',
+            dataType: 'Json',
+            method: 'GET',
+            beforeSend: function () {
+                $("#grid-record-detail-body").html('');
+            },
+            success: function (data) {
+                var string1 = '<table class="table table-striped" id="reservation_notescurrent"><tr><th>Reservation No</th><th>Type</th><th>Guest Details</th><th>Note Type</th><th>Note</th><th style="text-align:right">Advance</th> <th style="text-align:right">Change Status</th> </tr>';
+                $.each(data, function (i, item) {
+                    var title = 'Change Remider Status ' + item.ReservationNum;
+                    var urlToOpen = '/Reservation/Reservations/LoadReminderStatusChange?reminderId=' + item.Id + '&reservationHeaderId=' + item.ReservationHeaderId + '&reservationNo=' + item.ReservationNum
+
+                    string1 = string1 + '<tr>' +
+                        '<td style="width:120px">' + item.ReservationNum + '</td>' +
+                        '<td style="width:120px">' + item.Type + '</td>' +
+                        '<td style="width:120px">' + item.FirstName + '' + item.LastName + '</td>' +
+                        '<td >' + item.Name + '</td>' +
+                        '<td>' + item.Note + '</td>' +
+                        '<td style="text-align:right;width:120px">' + item.AdvancePercentage + '%' + '</td>' +
+
+                        '<td style="text-align:right;width:120px">' +
+                        //'<input type="submit" data-reservation-no="' + item.ReservationNum + '" data-reservation-header-id = "' + item.ReservationHeaderId + '" data-reminder-id ="' + item.Id + '" value="Change Status" class="dt-button buttons-copy buttons-html5 btn_ReservationNote_ChangeStatus">' + '</td>' +
+                        '<input type="submit" data-title="' + title + '" data-href="' + urlToOpen + '" value="Change Status" class="call-popup-model dt-button buttons-copy buttons-html5 btn_ReservationNote_ChangeStatus">' + '</td>' +
+
+                        '</tr>';
+                });
+
+                string1 = string1 + '</table>';
+                $(string1).appendTo($("#grid-record-detail-body"));
+
+                $('#grid-record-detail-model .modal-dialog').css("width", 800);
+                $('#grid-record-detail-model #grid-record-detail-header').html('Reservation Notes');
+
+                $('#grid-record-detail-model').modal({
+                    show: true,
+                    keyboard: false,
+                    backdrop: 'static'
+                });
+            },
+            error: function () {
+                ShowWarningMessage('Sorry, There is an error.');
+            }
+
+        });
+    });
+
+    function ReservationNotesFor() {
+
+        $.ajax({
+            url: '/Reservation/Reservations/ReservationNotesForCurrentDate',
+            dataType: 'Json',
+            method: 'GET',
+            success: function (data) {
+
+                var reservationNote = data.length;
+                if (reservationNote < 10) {
+                    reservationNote = "0" + reservationNote;
+                }
+                $('#reservation_notes').html(reservationNote);
+            },
+
+            error: function () {
+                ShowWarningMessage('Sorry, There is an error.');
+            }
+
+        });
+    };
+
+    
+
+</script>

@@ -1,0 +1,70 @@
+﻿@model Scienter.HotelERP.FrontOffice.WebUIMvc.Areas.Administration.Models.RoomWiseInventoryItemViewModel
+
+<style>
+
+</style>
+<div class="row" style="margin-left:1px;">
+    @foreach (var item in Model.InventoryItems)
+    {
+        <div class="col-md-4 margin-botton-10">
+            @if (@Model.RoomWiseInventoryItems.Count(x => x.InventoryItemId == item.Id) > 0)
+                {
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group checkbox">
+                            <label>
+                                <input type="checkbox" value="@item.Id" name="SelectedInventoryItemIds" checked id="SelectedInventoryItemIds" class="checkbox" /> @item.Name
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <input type="number" value="@Model.RoomWiseInventoryItems.FirstOrDefault(x=>x.InventoryItemId==item.Id).Quantity" min="0" max="100" name="SelectedInventoryItemQuantity" id="SelectedInventoryItemQuantity" class="form-control qtyInventoryItems" />
+
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="form-group checkbox">
+                            <label>
+                                <input type="checkbox" value="@item.Id" name="SelectedInventoryItemIds" id="SelectedInventoryItemIds" class="checkbox" /> @item.Name
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <input type="number" value="0" min="0" max="100" name="SelectedInventoryItemQuantity" id="SelectedInventoryItemQuantity" class="form-control qtyInventoryItems" />
+
+                    </div>
+                    <div class="col-md-2">
+
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<script>
+    $('.qtyInventoryItems').on('change', function () {
+
+        if ($(this).val() > 0) {
+            $(this).closest('.input-group').find('input[type=checkbox]').prop('checked', true);
+        } else {
+            $(this).val(0);
+            $(this).closest('.input-group').find('input[type=checkbox]').prop('checked', false);
+        }
+    });
+
+    $('.checkbox').change(function () {
+
+        if ($(this).prop('checked')) {
+            $(this).closest('.input-group').find('input[type=number]').val(1);
+        } else {
+            $(this).closest('.input-group').find('input[type=number]').val(0);
+        }
+    });
+</script>

@@ -1,0 +1,131 @@
+﻿@model Scienter.HotelERP.Common.Domain.RoomStatus
+@using Scienter.HotelERP.FrontOffice.WebUIMvc.Areas.Administration.Controllers
+
+@{
+    ViewBag.Title = "Create / Edit";
+}
+<style>
+    .input-group-addon,
+    .input-group-btn {
+        width: 0% !important;
+    }
+  .input-group .input-group-addon {
+    border: 1px !important;
+    padding: 6px 15px 0px;
+    }
+
+
+
+</style>
+
+<div class="col-md-12">
+
+    <form id="roomStatus">
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <input type="hidden" value="@Model.Id" name="Id" id="hiddenId" />
+            <input type="hidden" value="@Model.ColorName" name="CNId" id="hiddenColor" />
+            <input type="hidden" value="@Model.ColorValue" name="CVId" id="hiddenColorId" />
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group label-floating">
+                        @Html.LabelFor(x => x.Name, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control font-size-16px" } })
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group label-floating">
+                        @Html.LabelFor(model => model.RoomStatusCategoryId,"Room Status Category", htmlAttributes: new { @class = "control-label" })
+                        @{Html.RenderAction("RoomStatusCategoryCombo", "RoomStatusCategory", new { name = "RoomStatusCategoryId", requiered = true, value = Model?.RoomStatusCategoryId });}
+                        @Html.ValidationMessageFor(model => model.RoomStatusCategoryId, "", new { @class = "text-danger" })
+                    </div>
+                    @*<div class="form-group label-floating">
+                        @Html.LabelFor(model => model.Color, "Color", htmlAttributes: new { @class = "control-label" })
+                        @{Html.RenderAction("ColorsCombo", "Colors", new { area = "Administration", name = "Color", requiered = true, value = Model?.Color });}
+                        @Html.ValidationMessageFor(model => model.Color, "", new { @class = "text-danger" })
+                    </div>*@
+
+                    @*<div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row col-md-12">*@
+                                    <div class="form-group dropdown">
+                                        <button class="btn btn-default dropdown-toggle color-picker-btn" id="clrbtn" type="button" data-toggle="dropdown" style="height:30px;">
+                                            Pick Color
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul id="cmb-color-in-roomstatus" class="dropdown-menu" style="overflow-y:scroll; height:212px"></ul>
+                                    </div>
+                                @*</div>
+                            </div>
+                        </div>
+                    </div>*@
+
+                    <div class="form-group checkbox" style="margin-top:27px;">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsActive)
+                            @*<input type="checkbox" checked name="IsActive" value="True" />*@ Is Active
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                        &nbsp;
+                        <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+</div>
+
+<script>
+    $(document).ready(function () {     
+        FillColorCombo();       
+    });
+
+    $('body').on('click', '.cmb-color-in-roomstatus', function () {
+       
+        var clickedRadioButton = $(this);
+        var colorVal = $(this).prop('id');
+        var colorName = $(this).parents().eq(1).find('.color-name').text();
+        ChangeColor(clickedRadioButton, colorVal, colorName);
+    });
+
+    function ChangeColor(radioButton, colorVal, colorName) {
+       
+        $(radioButton).parents().eq(4).find('.btn').css('background-color', colorVal, 'important');
+        $(radioButton).parents().eq(4).find('.btn').text($(radioButton).parents().eq(1).find('.color-name').text()).append($('<span class="caret"></span>'));
+    }
+
+    function FillColorCombo() {
+       
+        $.ajax({
+            url: '/Administration/Colors/FillColors',
+            dataType: 'json',
+            success: function(data){
+               
+                $('#cmb-color-in-roomstatus').find('option').not(':first-child').remove();
+                $.each(data, function (index, color) {  
+                    $('<li> <div class="input-group margin-botton-10">'
+                        + '<span style="background-color:' + color.Code + '"class="input-group-addon"><input type="radio"  Id="' + color.Name + '" value="' + color.Code + '" name="color-combo"  class="radio cmb-color-in-roomstatus" style="font-size:9px;"/></span><span class="input-group-addon color-name" style="padding-bottom:12px;">' + color.Name + '</span></div></li>').appendTo($('#cmb-color-in-roomstatus'));
+                })
+                FillColorEdit();
+            },
+
+        });
+    }
+
+    function FillColorEdit()
+    {                      
+        var colorName = '#'+$('#hiddenColor').val();
+        $('#cmb-color-in-roomstatus').find('#'+$('#hiddenColor').val()).prop('checked', true);
+        ChangeColor($(".cmb-color-in-roomstatus:checked"), $('#hiddenColorId').val(), $('#hiddenColor').val())
+    }    
+</script>
+

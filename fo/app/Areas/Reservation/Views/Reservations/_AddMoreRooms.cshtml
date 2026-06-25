@@ -1,0 +1,366 @@
+﻿<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+</style>
+
+<form id="addNewRoomForm">
+    <input type="hidden" id="groupReservationNo" name="groupReservationNo" value="@ViewBag.GroupReservationNo" required />
+    <input type="hidden" id="reservationHeaderId" name="reservationHeaderId" value="@ViewBag.ReservationHeaderId" required />
+
+    <input type="hidden" id="existRoomCategory" name="existRoomCategory" value="@ViewBag.RoomCategoryId" required />
+    <input type="hidden" id="existRoomType" name="existRoomType" value="@ViewBag.RoomTypeId" required />
+    <input type="hidden" id="existMealPlan" name="existMealPlan" value="@ViewBag.MealPlanId" required />
+    <input type="hidden" id="isDormitory" name="isDormitory" value="@ViewBag.IsDormitory" required />
+    <input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+    <input type="hidden" name="Arrival" id="Arrival" value="@ViewBag.Arrival" />
+    <input type="hidden" name="Departure" id="Departure" value="@ViewBag.Departure" />
+
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group label-floating">
+                @*<label class="required control-label">Room Category</label>
+        @{Html.RenderAction("RoomCategoryCombo", "RoomCategories", new { area = "Administration", name = "NewRoomCategory", required = "true" });}*@
+                <label class="required control-label">Status</label>
+                @{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { area = "Administration", name = "ReservatonStatusId", requiered = true, });}
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group label-floating">
+                @*<label class="required control-label">Room Category</label>
+                @{Html.RenderAction("RoomCategoryCombo", "RoomCategories", new { area = "Administration", name = "NewRoomCategory", required = "true" });}*@
+                <label class="required control-label">Room Category</label>
+                <select name="NewRoomCategory" id="NewRoomCategory" class="select2 form-control" required>
+                    <option value="-1">Select Res Type</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group  label-floating">
+                @*<label class="required control-label">Room Type</label>
+                @{Html.RenderAction("RoomTypeCombo", "RoomTypes", new { area = "Administration", name = "NewRoomType", required = "true" });}*@
+                <label class="required control-label">Room Type</label>
+                <select name="NewRoomType" id="NewRoomType" class="select2 form-control" required>
+                    <option value="-1">Select Res Type</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group  label-floating">
+                @*<label class="required control-label">Meal Plan</label>
+                @{Html.RenderAction("MealPlanCombo", "MealPlans", new { area = "Administration", name = "NewMealPlan", required = "true" });}*@
+                <label class="required control-label">Meal Plan</label>
+                <select name="NewMealPlan" id="NewMealPlan" class="select2 form-control" required>
+                    <option></option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group  label-floating">
+                <label class="required control-label">No Of Rooms</label>
+                <input type="number" class="form-control NewNoOfRooms" min="1" max="" required />
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <input type="button" id="btnAddRecord" value="Add" class="btn btn-primary" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="loading-area">
+                <table class="table font-size-12px" id="selectedRecords">
+                    <tr>
+                        <th>Room Cat</th>
+                        <th>Room Type</th>
+                        <th>Meal Plan</th>
+                        <th class="text-right col-sm-2">No Of Rooms</th>
+                        <th class="col-sm-2"></th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary btnSaveRoom"> Save</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    var selectedRecords = [];
+    $(document).ready(function () {
+        //2023-08-16--------------------------------------------------------------------------
+        $('#CancellationReasonId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+
+        selectedRecords = [];
+        LoadMealPlan();
+        LoadRoomCategory();
+        LoadRoomType();
+    });
+
+    //$('body').off('submit').on('submit', '#addNewRoomForm', function (e) {
+    //    e.preventDefault();
+
+    //    if (ValidateNewRoom()) {
+    //        var groupResNo = $('#groupReservationNo').val();
+    //        var reservationHeaderId = $('#reservationHeaderId').val();
+    //        var roomCategoryId = $("select[name='NewRoomCategory']").val();
+    //        //var roomTypeId = $("select[name='NewRoomType']").val();
+    //        var roomTypeId = $('#NewRoomType').val();
+    //        var mealPlanId = $("select[name='NewMealPlan']").val();
+    //        var noOfRooms = $('.NewNoOfRooms').val();
+
+    //        $.ajax({
+    //            url: '/reservation/reservations/addnewroom',
+    //            dataType: 'json',
+    //            method: 'POST',
+    //            data: { groupReservationNo: groupResNo, roomCategoryId: roomCategoryId, roomTypeId: roomTypeId, mealPlanId: mealPlanId, noOfRooms: noOfRooms, reservationHeaderId: reservationHeaderId },
+    //            success: function (response) {
+    //                if (response == "OK") {
+    //                    $("input[type='submit']").attr('disabled', true);
+    //                    $('.NewNoOfRooms').val('');
+    //                    $("select[name='NewMealPlan']").val('');
+    //                    $("select[name='NewRoomType']").val('');
+    //                    $("select[name='NewRoomCategory']").val('');
+    //                    $('#groupReservationNo').val('');
+    //                    ShowSuccessMessage('Room added to the reservation.');
+    //                    FillGrid();
+    //                } else {
+    //                    ShowWarningMessage(response);
+    //                }
+
+    //            },
+    //            //error: function (error) {
+    //            //    ShowSuccessMessage('Error in adding new room to reservation.');
+    //            //},
+    //            complete: function () {
+    //                $("input[type='submit']").attr('disabled', false);
+    //                $('#grid-record-detail-model').modal("hide");
+    //            }
+    //        });
+    //    } else {
+    //        ShowWarningMessage('All fields are mandatory!');
+    //    }
+    //});
+    $('body').off('submit').on('submit', '#addNewRoomForm', function (e) {
+        debugger;
+        e.preventDefault();
+        var newRoomDetails = [];
+        var obj = {};
+
+        var groupResNo = $('#groupReservationNo').val();
+        var reservationHeaderId = $('#reservationHeaderId').val();
+        var reservationStatus = $('#ReservatonStatusId').val();
+
+        $('.selected-list').each(function (index, item) {
+            obj = {
+                RoomCategoryId: $($(item).find('.btn-delete')).attr('data-roomCatId'),
+                RoomTypeId: $($(item).find('.btn-delete')).attr('data-roomTypeId'),
+                MealPlanId: $($(item).find('.btn-delete')).attr('date-mealPlanId'),
+                NoOfRooms: $($(item).find('.btn-delete')).attr('data-roomCount'),
+                StatusId: reservationStatus
+            }
+            newRoomDetails.push(obj);
+        });
+        if (newRoomDetails.length <= 0) {
+            ShowWarningMessage('Add at least one record to continue.');
+            return false;
+        }
+        console.log(newRoomDetails);
+        $.ajax({
+            url: '/reservation/reservations/addnewroom',
+            dataType: 'json',
+            method: 'POST',
+            data: { groupReservationNo: groupResNo, reservationHeaderId: reservationHeaderId, roomDetails: newRoomDetails },
+            success: function (response) {
+                if (response == "OK") {
+                    $("input[type='submit']").attr('disabled', true);
+                    $('.NewNoOfRooms').val('');
+                    $("select[name='NewMealPlan']").val('');
+                    $("select[name='NewRoomType']").val('');
+                    $("select[name='NewRoomCategory']").val('');
+                    $('#groupReservationNo').val('');
+                    ShowSuccessMessage('Room(s) added to the reservation.');
+                    setTimeout(function () {
+                        //Update Uuid
+                        window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+                        console.log("Uuid");
+                    }, 2000);
+                } else {
+                    ShowWarningMessage(response);
+
+                }
+
+            },
+            //error: function (error) {
+            //    ShowSuccessMessage('Error in adding new room to reservation.');
+            //},
+            complete: function () {
+                $("input[type='submit']").attr('disabled', false);
+                $('#grid-record-detail-model').modal("hide");
+            }
+        });
+    });
+
+    function ValidateNewRoom() {
+        var isValid = true;
+        if ($("select[name='NewRoomCategory']").val() == '') {
+            $('#NewRoomCategory').focus();
+            isValid = false;
+        }
+        if ($("select[name='NewRoomType']").val() == '') {
+            $('#NewRoomType').focus();
+            isValid = false;
+        }
+        if ($("select[name='NewMealPlan']").val() == '') {
+            $('#NewMealPlan').focus();
+            isValid = false;
+        }
+        if ($('.NewNoOfRooms').val() == '') {
+            $('.NewNoOfRooms').focus();
+            isValid = false;
+        }
+        return isValid;
+    }
+
+
+    function LoadRoomCategory() {
+        $.ajax({
+            url: '/Administration/RoomCategories/SelectRoomCategoryForAddRoom?isDormitory=' + $('#isDormitory').val(),
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $('#NewRoomCategory option').remove();
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.Id + '">' + item.Name + '</optoin>').appendTo($('#NewRoomCategory'));
+                });
+            },
+            complete: function () {
+                available = $('#NewRoomCategory').find(':selected').attr('date-available');
+            }
+        });
+    }
+
+    function LoadRoomType() {
+        $.ajax({
+            url: '/Administration/RoomTypes/SelectRoomTypesForAddRoom?isDormitory=' + $('#isDormitory').val(),
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $('#NewRoomType option').remove();
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#NewRoomType'));
+                });
+            }
+        });
+    }
+
+    function LoadMealPlan() {
+        $.ajax({
+            url: '/Administration/MealPlans/SelectMealPlanForAddRoom?isDormitory=' + $('#isDormitory').val(),
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $('#NewMealPlan option').remove();
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#NewMealPlan'));
+                });
+            }
+        });
+    }
+
+    var record = {};
+    $('body').off('click', '#btnAddRecord').on('click', '#btnAddRecord', function (e) {
+        selectedRecords = [];
+        record = {
+            RoomCategory: $("#NewRoomCategory option:selected").text(),
+            RoomType: $("#NewRoomType option:selected").text(),
+            MealPlan: $("#NewMealPlan option:selected").text(),
+            NoOfRooms: $('.NewNoOfRooms').val(),
+            RoomCategoryId: $("select[name='NewRoomCategory']").val(),
+            RoomTypeId: $('#NewRoomType').val(),
+            MealPlanId: $("select[name='NewMealPlan']").val()
+        }
+        selectedRecords.push(record);
+        LoadSelectedRecords(selectedRecords);
+    });
+
+    function LoadSelectedRecords(selectedRecords) {
+        $.each(selectedRecords, function (index, item) {
+            $('<tr class="selected-list">' +
+                '<td>' + item.RoomCategory + '</td>' +
+                '<td>' + item.RoomType + '</td>' +
+                '<td>' + item.MealPlan + '</td>' +
+                '<td class="text-right">' + item.NoOfRooms + '</td>' +
+                '<td class="text-right">' +
+                '<a href="#" class="btn btn-sm btn-danger btn-delete" date-mealPlanId="' + item.MealPlanId + '" data-roomCatId="' + item.RoomCategoryId + '" data-roomTypeId="' + item.RoomTypeId + '" data-roomCount="' + item.NoOfRooms + '" title="Delete" data-toggle="tooltip">' +
+                '<span class="glyphicon glyphicon-trash"></span>' +
+                '</a>' +
+                '</td > ' +
+                '</tr>').appendTo($('#selectedRecords'));
+        });
+    }
+
+    $('body').off('click', '.btn-delete').on('click', '.btn-delete', function (e) {
+        $(this).closest('tr').remove();
+    });
+
+</script>
+
+

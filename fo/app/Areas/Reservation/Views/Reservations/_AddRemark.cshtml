@@ -1,0 +1,192 @@
+﻿@*@model Scienter.HotelERP.Common.Domain.ViewModels.HotelConfirmationView*@
+<style>
+    .equal-height {
+        display: flex;
+    }
+
+        .equal-height > [class*='col-'] {
+            display: flex;
+            flex-direction: column;
+        }
+
+    .form-group {
+        padding-bottom: 10px;
+        margin: 0 !important;
+    }
+
+    .table-header {
+        font-weight: bold !important;
+        width: 20%;
+    }
+</style>
+
+@*<input type="hidden" id="resHeadId" value="@ViewBag.ResheaderId" />
+    <input type="hidden" id="ReservationType" value="@ViewBag.ReservationType" />
+    <input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />*@
+
+@*<textarea class="form-control label-data" style="height:145px; margin-top:-30px; padding:10px;" name="ReservationRemark" id="ReservationRemarkId" value="@Model.BookingRemark"> @Model.BookingRemark</textarea>*@
+<div class="row" style="margin-right:-25px;">
+    <div class="col-md-12">
+
+
+        <fieldset class="the-fieldset padding-margin-bottom-override">
+            <legend class="the-legend">Add remark</legend>
+
+
+            <div class="row equal-height">
+                <div class="col-md-6">
+                    <label for="remarkSelectDropdown" class="required">Remark Type</label>
+                    <select name="RemarkType" id="remarkSelectDropdown" class="form-control" required style="padding:0;">
+                        <option value="0" disabled>--Select Remark Type--</option>
+
+                    </select>
+
+                </div>
+                <div class="col-md-6">
+                    <textarea type="text" maxlength="1000" rows="2" id="remarkText" name="Remark" class="form-control label-data" value=""></textarea>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 text-right" style="padding-right:15px;">
+                    <a class="btn btn-primary btn-sm" id="addMoreRemarkBtn" style="width:15%; margin-bottom:20px;">Add</a>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset class="the-fieldset padding-margin-bottom-override" style="margin:10px 0;">
+            <legend class="the-legend">Existing remarks</legend>
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-borderless table-sm" id="remarkLoadingGrid">
+                        <thead>
+                            <tr>
+                                <th class="table-header">Remark Type</th>
+                                <th class="table-header">Remark</th>
+                            </tr>
+                        </thead>
+
+                        <tbody></tbody>
+
+                    </table>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
+
+<script>
+
+    var remarkJSONArray = [];
+    var mainRemark = $('#RemarkId').val();
+
+    $(document).ready(function () {
+        $.ajax({
+            url: '/reservation/reservations/SelectRemarkTypes',
+            dataType: 'json',
+            success: function (response) {
+                console.log(response);
+                var dropdownSelect = '';
+                $(response).each(function (index, item) {
+                    dropdownSelect += '<option value="' + item.Id + '">' + item.RemarkTypes + '</option>';
+                });
+                $('#remarkSelectDropdown').append(dropdownSelect);
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr, status, error);
+            },
+            complete: function () {
+                if (mainRemark.length > 0) {
+                    $('#remarkSelectDropdown').val('1');
+                    $('#remarkText').val(mainRemark);
+
+                    var remarkType = $('#remarkSelectDropdown').val();
+                    var remarkTypeText = $('#remarkSelectDropdown option:selected').text();
+                    var remarkText = $('#remarkText').val();
+
+                    remarkJSONArray.push({
+                        remarkType: remarkType,
+                        remarkTypeText: remarkTypeText,
+                        remarkText: remarkText
+                    });
+                    Drawtable();
+                }
+            }
+        });
+
+
+        $('#remarkSelectDropdown').addClass('select2');
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 10);
+
+    });
+
+    $('#addMoreRemarkBtn').click(function () {
+        var remarkType = $('#remarkSelectDropdown').val();
+        var remarkTypeText = $('#remarkSelectDropdown option:selected').text();
+        var remarkText = $('#remarkText').val();
+
+        var existingIndex = remarkJSONArray.findIndex(function (item) {
+            return item.remarkType === remarkType;
+        });
+
+        if (existingIndex !== -1) {
+            remarkJSONArray[existingIndex].remarkTypeText = remarkTypeText;
+            remarkJSONArray[existingIndex].remarkText = remarkText;
+        } else {
+            remarkJSONArray.push({
+                remarkType: remarkType,
+                remarkTypeText: remarkTypeText,
+                remarkText: remarkText,
+                RemarkTypeId: remarkType,
+                Remark: remarkText
+            });
+        }
+
+        Drawtable();
+    });
+
+
+    $('#remarkSelectDropdown').on('#remarkSelectDropdown').change(function () {
+        var remarkType = $('#remarkSelectDropdown').val();
+        $('#remarkText').val('');
+        $(remarkJSONArray).each(function (index, item) {
+            if (remarkType === item.remarkType) {
+                $('#remarkText').val(item.remarkText);
+            }
+        });
+    });
+
+    function Drawtable() {
+        $('#remarkLoadingGrid tbody').empty();
+        $(remarkJSONArray).each(function (index, item) {
+            $(
+                '<tr id="' + item.remarkType + '">' +
+                '<td>' + item.remarkTypeText + '</td>' +
+                '<td>' + item.remarkText + '</td>' +
+                '</tr>'
+            ).appendTo('#remarkLoadingGrid tbody');
+        });
+        console.log(remarkJSONArray);
+
+        var RR = null;
+
+        var match = $.grep(remarkJSONArray, function (r) {
+            return r.RemarkTypeId === '1';
+        })[0];
+
+        if (match) {
+            RR = match.remarkText;
+        }
+
+        $('#RemarkId').val(RR);
+    }
+
+
+</script>

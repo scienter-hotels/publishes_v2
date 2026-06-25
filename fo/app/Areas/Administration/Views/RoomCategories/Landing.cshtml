@@ -1,0 +1,162 @@
+﻿
+@{
+    ViewBag.Title = "Room Categories";
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+         // form load --------------------------------
+        $(document).ready(function () {
+            FillGrid();
+        });
+
+        // show form --------------------------------
+        $('body').on('click', '.showForm', function (e) {
+            $.ajax({
+                url: '/administration/roomcategories/form',
+                dataType: 'html',
+                method: 'POST',
+                success: function (response) {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+               
+            });
+        });
+
+        // show grid --------------------------------
+
+        $('body').on('click', '.showGrid', function (e) {
+            FillGrid();
+        });
+
+
+        // save --------------------------------------
+    $('body').on('submit', '#roomCategory', function (e) {
+        debugger;
+            e.preventDefault();
+
+            var checkedroomtypes = [];
+
+            $('.checkBoxRoom:checked').each(function (index, item) {
+                checkedroomtypes.push({
+                    Id: $(item).val()
+                });
+
+            });
+
+            var roomcategories = {
+                __RequestVerificationToken: $('__RequestVerificationToken').val(),
+                Id: $('#Id').val(),
+                Description: $('#Description').val(),
+                Name: $('#Name').val(),
+                OrderId: $('#OrderId').val(),
+                Prefix: $('#Prefix').val(),
+                IsActive: $('#IsActive').prop("checked"),
+                IsDometry: $('.IsDormitory').prop("checked"),
+                IsApplicableForIBE: $('#IsApplicableForIBE').prop("checked"),
+                IsFullVillaCategory: $('#IsFullVillaCategory').prop("checked"),
+                IsVillaCategory: $('#IsVillaCategory').prop("checked"),
+                IndexId: $('#OrderID').val(),
+                Properties: "",
+                Rank: $('#Rank').val(),
+                Image: $('#docBytes').val(),
+                PostingTypeId: $('#PostingTypeId').val(),
+                AvailableRoomTypes: checkedroomtypes,
+                ColorId: $('#ColorID').val()
+            };
+
+          
+
+            //if (selectedProperties.length > 0) {
+                $.ajax({
+                    url: '/administration/roomcategories/save',
+                    dataType: 'json',
+                    data: roomcategories,
+                    method: 'POST',
+                    success: function (response) {
+                        if (response == "OK") {
+                            ShowSuccessMessage('Record has been saved successfully.');
+                        } else {
+                            ShowWarningMessage(response);
+                        }                    
+                        setTimeout(function () { window.location.reload(); }, 2000);
+                       // FillGrid();
+                    },
+                    error: function () {
+                        ShowErrorMessage('Sorry, There is an error.');
+                    }
+               
+                });
+            //}
+            //else {
+            //    ShowErrorMessage('Please select at least one property to continue.');
+            //}
+        });
+
+
+        // fill grid -----------------------------------
+        function FillGrid() {
+            var gridId = "#existingRoomCategoryGrid"; // change this - relevent grid id
+            var paginations = {
+                PageIndex: $(gridId).attr('data-page-index'),
+                PageSize: $(gridId).attr('data-page-size'),
+                FilterType: $(gridId).attr('data-filter-type'),
+                SearchKeyword: $(gridId).attr('data-search-keyword')
+            }
+            $.ajax({
+                url: '/administration/roomcategories/selectforgrid',
+                dataType: 'html',
+                data: paginations,
+                method: 'POST',
+                success: function (response) {
+                    if ($('.grid-container').length > 0) {
+                        $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                        $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                    } else {
+                        $('#contentLoadingArea #content').html('').fadeOut();
+                        $('#contentLoadingArea #content').html(response).fadeIn();
+                    }
+                    GridFunctionalities();
+                }
+              
+            });
+        }
+
+</script>
+
+

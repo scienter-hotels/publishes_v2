@@ -1,0 +1,180 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.PostingCategory>
+
+<div id="postsettingArea" class="postDetail">
+
+    <fieldset class="the-fieldset col-md-12" style="padding:0px; background-color:#fffdfc">
+
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 postSet">
+                <div class="form-group label-floating">
+                    <div class="catHeadId checkbox">
+                        <label>
+                            <input type="checkbox" name="" class="form-group checkbox posting-types" value="@item.Id"/>
+                            @item.Name
+                        </label>
+                    </div>
+                </div>
+            </div>
+        }
+    </fieldset>
+
+    <div class="col-md-12 checkbox " style="text-align:right">
+        <label>
+            Select All
+            <input type="checkbox" id="chkSelectAll" class="form-group checkbox" />
+        </label>
+    </div>
+    <hr>
+    <div class="row" style="">
+        <div class="col-md-6 checkbox">
+            <label>
+                Precentage
+                <input type="checkbox" id="chkPrecentage" class="form-group checkbox" />
+            </label>
+            <label>
+                Value
+                <input type="checkbox" id="chkValue" class="form-group checkbox" />
+            </label>
+
+        </div>
+    </div>
+    <br>
+    <div class="row" style="">
+        <div class="col-md-6">
+            <div class="form-group label-floating margin-top-10px">
+                <label class="control-label">
+                    Amount
+                </label>
+                <input type="number" class="form-control formatNumber" name="txtAmount" value="" id="txtAmount" />
+            </div>
+        </div>
+    </div>
+    <div class="row" style="">
+        <div class="col-md-12">
+            <div class="form-group label-floating margin-top-10px">
+                <label class="control-label">
+                    Description
+                </label>
+                <input type="text" class="form-control formatNumber" name="txtDesc" value="" id="txtDesc" />
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top:30px;">
+
+        <div class="col-md-12 text-right ">
+           <button id="btnDiscountSave" class="btn theme-bg-color-1 ">Save</button>
+           <button id="btnDiscountClear" class="btn theme-bg-color-1 ">Clear</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var ResheaderId = $('.reservation-header-id').val();
+    var RoomId = $('.reservation-room-id').val();
+    var FolioNo = $('#folio-no').val()
+
+
+    $('#chkSelectAll').on('click',function(){
+      
+        if ($('#chkSelectAll').is(':Checked')) {
+            $('.posting-types').prop('checked', true)
+
+        } else if (!$('#chkSelectAll').is(':Checked')) {
+
+            $('.posting-types').prop('checked', false)
+        }
+   
+    })
+
+    //chkPrecentage
+    $('#chkPrecentage').on('click', function () {
+
+        if ($('#chkPrecentage').is(':Checked')) {
+            $('#chkValue').prop('checked', false)
+        }
+    })
+
+    //chkValue
+    $('#chkValue').on('click', function () {
+
+        if ($('#chkValue').is(':Checked')) {
+            $('#chkPrecentage').prop('checked', false)
+        }
+    })
+
+
+
+    // save click
+    $('#btnDiscountSave').on('click', function () {
+
+        // Get all Selected Posting Types
+        var PostingCategoryArray = []
+
+        $('.posting-types').each(function (index, item) {
+
+            if ($(this).is(':Checked')) {
+                PostingCategory = {
+                    Id:$(this).val()
+                }
+                PostingCategoryArray.push(PostingCategory)
+            }
+        })
+        //------
+
+        var folioDiscount = {
+            Amount: $('#txtAmount').val(),
+            isPrecentage: $('#chkPrecentage').is(':Checked') ? true : false,
+            isValue: $('#chkValue').is(':Checked') ? true : false,
+            Description: $('#txtDesc').val(),
+            lstpostingTypes: PostingCategoryArray
+        }
+
+        var isTotalDiscount=0
+        if($('#chkSelectAll').is(':Checked',true))
+        {
+             isTotalDiscount = 1
+        }
+        
+        //save function
+        
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/FolioDiscountSave',
+            dataType: 'json',
+            data: { ReservationHeaderId: ResheaderId, FolioNo: FolioNo, isTotalDiscount:isTotalDiscount,  folioDiscount: folioDiscount },
+            method: 'POST',
+            success: function (data) {
+                
+            }
+        });
+
+    })
+
+
+ 
+    $(document).ready(function () {
+        
+       
+        //
+        //$.ajax({
+        //    url: '/CashieringAndPosting/FolioManagement/CalculateBillTotal',
+        //    dataType: 'json',
+        //    data: { ReservationHeaderId: $('#hdnResNo').val(), FolioNo: $('#hdnFolioNo').val() },
+        //    method: 'GET',
+        //    success: function (data) {
+        //        Billtotal = data.GrandTotal.toFixed(2)
+        //        $('#BillTotal').text(Billtotal).digits();
+        //        $('#Balance').val(Number(data.GrandTotal).toFixed(2));
+
+
+        //        
+        //    },
+        //    error: function (xhr, status, error) {
+        //        ShowErrorMessage('Sorry, There is an error.');
+        //    }
+        //});
+
+    })
+    </script>
+
+

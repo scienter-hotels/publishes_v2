@@ -1,0 +1,52 @@
+﻿@model  List<Scienter.HotelERP.Common.Domain.ApplicablePromotionAndDiscount>
+@{
+    Layout = null;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <div id="BookingDetail">
+                <table id="PromotionsGrid" style="width:100%" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-primary" width="200px">
+                                Reservation Date
+                            </th>
+                            <th class="text-primary">
+                                Currency
+                            </th>
+                            <th class="text-primary text-right">
+                                Contract Rate
+                            </th>
+                            <th class="text-primary text-right">
+                                Rate Before Promotion
+                            </th>
+                            <th class="text-primary text-right">
+                                Rate After Promotion
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                        <tr>
+                            <td>@Convert.ToDateTime(item.ReservationDate).ToString("dd/MM/yyyy")</td>
+                            <td>@item.CurrencyCode</td>
+                            <td class="text-right number">@Convert.ToDecimal(item.ContractRate).ToString("#,##0.00")</td>
+                            <td class="text-right number">@Convert.ToDecimal(item.RateBeforePromotion).ToString("#,##0.00")</td>
+                            <td class="text-right number">@Convert.ToDecimal(item.RateAfterPromotion).ToString("#,##0.00")</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 text-right">
+        <button class="btn btn-primary closeModel" id="SavePromotionDiscounts"> CONFIRM</button>
+    </div>
+</div>
+

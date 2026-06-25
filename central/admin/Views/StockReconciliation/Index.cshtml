@@ -1,0 +1,133 @@
+﻿<head>
+    <style>
+        legend {
+            font-size: 10px;
+            margin-bottom: 0px
+        }
+
+            legend.scheduler-border {
+                width: inherit; /* Or auto */
+                padding: 0 10px; /* To give a bit of padding on the left and right */
+                border-bottom: none;
+            }
+    </style>
+</head>
+
+<div class="card">
+    <div class="card-header" data-background-color="purple">
+        <div class="row">
+            <h4 class="title">
+                @ViewBag.Title
+                <hr class="visible-print" />
+            </h4>
+        </div>
+    </div>
+    <div class="card-content" id="contentLoadingArea" style="overflow-y:no-display;">
+        <form id="form" class="form" enctype="multipart/form-data">
+
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="well">
+                        <div class="row">
+                            <div class="form-group label-floating">
+                                <label class="control-label" for="email">Doc No</label>
+                                <input type="text" class="form-control" disabled id="DocNo" name="DocNo">
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="form-group label-floating">
+                                <label class="control-label" for="email">Date</label>
+                                <input type="text" class="form-control" disabled id="Date" name="Date">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Location</label>
+                                <select id="locationCombo" class="locationCombo data-combo form-control @*font-size-16px*@" required>
+                                  
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Template</label>
+                                <select id="templateCombo" class="templateCombo data-combo form-control @*font-size-16px*@" required>
+                                  
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group label-floating">
+                                <label class="control-label" for="email">Remark</label>
+                                <input type="text" class="form-control" id="Remark" name="Remark">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <div class="row">
+                        <div class="col-md-12  newRawItemDiv">
+
+                            <div class="col-md-3 form-group label-floating">
+                                <label class="control-label" for="email">Item</label>
+                                <select id="rawItem" class="form-control @*font-size-16px*@">
+                                  
+                                </select>
+                            </div>
+                            <div class="col-md-4 form-group label-floating">
+                                <label class="control-label" for="email">Unit</label>
+                                <select id="rawItemUnit" class="form-control @*font-size-16px*@" disabled>
+                                  
+                                </select>
+                            </div>
+                            <div class="col-md-4 form-group label-floating">
+                                <label class="control-label" for="email">Quantity</label>
+                                <input type="text" id="rawItemQty" min="0" class="rawItemQty number rateValue form-control">
+                            </div>
+
+                            <div class="col-md-1 text-right">
+                                <button class="btn btn-success btn-sm btnAdd" title="Add" data-toggle="tooltip">
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row grid">
+                        <div class="table-responsive" style="height:340px; margin-left:15px; margin-right:15px; overflow-y:scroll;">
+                            <table class="table table-striped" id="grid" style="display:none;">
+                                <tr>
+                                    <th class="">Item Code</th>
+                                    <th class="">Name</th>
+                                    <th class="col-md-2">Unit</th>
+                                    <th class="col-md-2">Quantity</th>
+                                    <th class="col-md-1"></th>
+                                </tr>
+                                <tr class="no-record">
+                                    <td colspan="4">No Records Found.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 text-right">
+                    <button type="submit" class="btn btn-success btn-width-100px" id="btnSubmit">
+                        Save
+                    </button>
+                    <button type="reset" class="btn btn-default btn-width-100px btn-shadow clearbtn" onclick="ClearForm()">
+                        Clear
+                    </button>
+                    <a href="" id="printBtn" class="btn btn-success btn-width-100px btn-shadow reportViewBtn disabled" target="_blank">Print</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script src="~/scripts/UI/Scienter.StockReconciliation.js"></script>

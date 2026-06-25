@@ -1,0 +1,61 @@
+﻿@model Scienter.HotelERP.Common.Domain.RoomCleaningScedule
+
+@{
+    ViewBag.Title = "Create / Edit";
+}
+
+<div class="col-md-12">
+
+    <form id="bedTypes">
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="form-group label-floating">
+                        @Html.LabelFor(model => model.RoomInspectionId, htmlAttributes: new { @class = "control-label" })
+                        @{Html.RenderAction("RoomDetailCombo", "RoomDetails", new { area = "Administration", name = "RoomInspectionId", value = Model?.RoomInspectionId }); }
+                        @Html.ValidationMessageFor(model => model.RoomInspectionId, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group label-floating">
+                        @Html.LabelFor(model => model.RoomBoyId, htmlAttributes: new { @class = "control-label" })
+                        @{Html.RenderAction("RoomDetailCombo", "RoomDetails", new { area = "Administration", name = "RoomId", value = Model?.RoomBoyId }); }
+                        @Html.ValidationMessageFor(model => model.RoomBoyId, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group label-floating">
+                        @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label" })
+                        <div id="fromDateContainer" class='input-group date'>
+                            @Html.TextBoxFor(model => model.Date, new { @class = "form-control", value = Model?.Date })
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                        &nbsp;
+                        <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                    </div>
+                </div>
+
+                @*<div class="col-md-1"></div>
+                <div class="col-md-6">
+                    @{Html.RenderAction("ListVertical", "Properties", new { selectedPoperties = Model.Properties }); }
+                </div>*@
+            </div>
+        </div>
+    </form>
+
+
+</div>
+
+
+
+

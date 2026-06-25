@@ -1,0 +1,252 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ReservationHeader>
+
+@{
+    ViewBag.Title = "Landing";
+}
+@using Scienter.HotelERP.FrontOffice.Service;
+@using Scienter.HotelERP.Common.Domain;
+@{
+    ViewBag.TitleInHouse = "Bill Posting-In House";
+    ViewBag.TitleWalkIn = "Bill Posting Walk-In";
+    ViewBag.Rebate = "Rebate";
+}
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script src="~/Scripts/jquery.easyPaginate.js"></script>
+<script src="~/Scripts/ui/common/Scienter.Common.TimeFormat.js"></script>
+
+<style>
+    .searchdiv .form-group {
+        margin: 0px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.TitleName
+                            <hr class="visible-print">
+                        </h4>
+                    </div>                    
+                </div>
+            </div>
+          
+            <input type="hidden" id="CRDR" value="@ViewBag.CRDR" /> 
+
+            <form id="CreditAndDebitNotes">
+                <div class="card-content" id="contentLoadingArea">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <fieldset class="the-fieldset" style="height:484px;">
+                                <legend class="the-legend"><font size="2">Reservation No</font> </legend>
+                                <div class="input-group searchdiv">
+                                    <input type="text" class="form-control text-box single-line" placeholder="Search Res#" onkeyup="searchResNo()" id="txtSearch" />
+                                </div>
+                                <div class="col-md-12" id="ReservationNoLoadingArea" style="height: 360px; overflow-y: auto;margin-top:10px">
+                                    <ul id="myUL">
+                                        @foreach (var item in Model)
+                                        {
+                                            <li>
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" class="checkBoxGroup" reservation-no="@item.ReservationNo" name="@item.ReservationNo" value="@item.Id" />@item.ReservationNo
+                                                    </label>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <div class="col-md-3 hidden-print">
+                            <fieldset class="the-fieldset" style="height: 475px;  margin-top: 8px; padding-left: 35px; padding-top: 0px;">
+                                                                   <div class="col-md-12">
+                                        @*<fieldset class="the-fieldset" style="min-height:475px; margin-top: 9px;">*@
+                                        @Html.Partial("_Form", new Scienter.HotelERP.Common.Domain.Posting())
+                                        @*</fieldset>*@
+                                    </div>
+
+                               
+                            </fieldset>
+                        </div>
+
+                        <div class="col-md-7">
+                            <fieldset class="the-fieldset" >
+                                <legend class="the-legend"><font size="2"></font> @ViewBag.LegendTitle </legend>
+                                <div id="ExistingCreditDebitNoteGrid" style="height:420px; overflow-x:hidden; overflow-y:scroll;">
+                                    <table class="table table-striped table-hover" id="ExistingCreditDebitNote" cellspacing="5">
+                                        <tr>
+                                            <th class="text-primary ">
+                                                Currency
+                                            </th>
+                                            <th class="text-primary ">
+                                                Charge Type
+                                            </th>
+                                            <th class="text-primary ">
+                                                Folio Text
+                                            </th>
+                                            <th class="text-primary " style="text-align: right;">
+                                                Amount
+                                            </th>
+                                            <th>
+
+                                            </th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" value="" id="invoicerptNo" />
+<input type="hidden" value="" id="hdnAllowCreditPosting" />
+<input type="hidden" id="ReservationNo" value="@ViewBag.ReservationNo" />
+
+<script>
+    $('body').off('click', '.checkBoxGroup').on('click', '.checkBoxGroup', function () {
+        $('.checkBoxGroup').not(this).prop('checked', false);
+       LoadExistingNoteGrid();
+    });
+
+    function LoadExistingNoteGrid () {
+        var reservationHeaderId = $('.checkBoxGroup:checked').val();
+        var drcr = $('#CRDR').val();
+        if (reservationHeaderId > 0) {
+            $.ajax({
+                url: '/CashieringAndPosting/CreditOrDebitNotes/SelectExistingCreditAndDebitNotesForGrid?reservationHeaderId=' + reservationHeaderId + '&drcr=' + drcr,
+                dataType: 'json',
+                method: 'get',
+                beforeSend: function () {
+                    $('#ExistingCreditDebitNote tr').not(':first-child').remove();
+                    $('#CurrencyId').val('');
+                    $('#BillTypeId').val('');
+                    $('#FolioText').val('');
+                    $('#CreditAmount').val('');
+                    $('#Remarks').val('');
+                },
+                success: function (data) {
+                    console.log(data);
+                    $.each(data, function (index, item) {
+                        $('<tr class="data-single-filteration">' +
+                            '<td>' +
+                            item.ISOCode +
+                            '</td>' +
+                            '<td>' +
+                            item.PostingBillTypeName +
+                            '</td>' +
+                            '<td>' +
+                            item.FolioText +
+                            '</td>' +
+                            '<td class="formatNumber">' +
+                            item.ChargeAmount +
+                            '</td>' +
+                            '</tr>').appendTo("#ExistingCreditDebitNote");
+                    });
+                },
+            });
+        }
+        else {
+            $('#ExistingCreditDebitNote tr').not(':first-child').remove();
+        }
+
+    }
+
+    $('body').off('submit', '#CreditAndDebitNotes').on('submit', '#CreditAndDebitNotes', function (e) {
+        e.preventDefault();
+
+        CallPasswordModel(function (e) {
+           
+            if ($('.checkBoxGroup:checked').length > 0) {
+                var ReservationHeaderId = $('.checkBoxGroup:checked').val();
+                var CurrencyId = $('#CurrencyId').val();
+                var PostingBillType = $('#BillTypeId').val();
+                var FolioText = $('#FolioText').val();
+                var ChargeAmount = $('#CreditAmount').val().replace(',', '');
+                var Remarks = $('#Remarks').val();
+                var DRCR = $('#CRDR').val();
+                var obj = {
+                    ReservationHeaderId: ReservationHeaderId,
+                    CurrencyId: CurrencyId,
+                    PostingBillType: PostingBillType,
+                    FolioText: FolioText,
+                    ChargeAmount: ChargeAmount,
+                    Remarks: Remarks,
+                    DRCR: DRCR
+                };
+                $.ajax({
+                    url: '/CashieringAndPosting/CreditOrDebitNotes/InsertExistingDebitAndCreditNote',
+                    dataType: 'json',
+                    data: obj,
+                    method: 'POST',
+                    success: function (response) {
+                        if (response == "Success") {
+                            ShowSuccessMessage('Record has been saved successfully.');
+                            LoadExistingNoteGrid()
+                        } else {
+                            ShowWarningMessage(response);
+                        }
+                    }
+                });
+            }
+            else {
+                ShowWarningMessage("Please select a reservation to continue.")
+            }
+        });
+
+    });
+
+    function searchResNo() {
+
+        var input, filter, count, tt, b, i, li;
+
+        input = document.getElementById("txtSearch");
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("myUL");
+        li = ul.getElementsByTagName("li");
+
+        for (i = 0; i < li.length; i++) {
+            b = li[i].getElementsByTagName("label")[0];
+            if (b.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+
+            }
+        }
+    }
+
+    $('body').on('change', '#CurrencyId', function () {
+
+        var selectedCurrencyId = $("#CurrencyId option:selected").val();
+
+        $.ajax({
+            url: '/CashieringAndPosting/PostingBillType/PostingBillTypeCombo',
+            dataType: 'html',
+            data: {
+                name: "BillTypeId",
+                required: true,
+                currencyId: selectedCurrencyId,
+                cndn:true
+            },
+            method: 'POST',
+            success: function (data) {
+
+                $('#PostingBillTypeComboContainer').html("");
+                $('#PostingBillTypeComboContainer').html(data);
+            },
+        });
+    });
+</script>

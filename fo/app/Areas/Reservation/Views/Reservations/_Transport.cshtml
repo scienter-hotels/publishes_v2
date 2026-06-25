@@ -1,0 +1,283 @@
+﻿
+
+@{
+    ViewBag.Title = " Transport";
+}
+
+@*<style>
+.row-eq-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+.table {
+  background-color: #eee;
+  height: 100%;
+  margin-bottom: 0;
+}
+.table-responsive {
+  height: 100%;
+}*@
+
+
+@*</style>*@
+
+<div class="row">
+    <div class="col-md-12">
+        <form id="Transport">
+            <div class="row">
+                <div class="col-md-1">
+                    <div>
+                        <label>Res.No</label>
+                    </div>
+                    <div>
+                        <label>Guest</label>
+                    </div>
+                    <div>
+                        <label>Traf.Type</label>
+                    </div>
+                    <div>
+                        <label>Req.Date</label>
+                    </div>
+                    <div>
+                        <label>Req.Time</label>
+                    </div>
+                    <div>
+                        <label>Traf.Mode</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div>
+                        <select id="" name="">
+                            <option value="" selected="selected">R017024</option>
+                            <option value="test "></option>
+                            <option value="test"></option>
+                            <option value="test"> </option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="" name="">
+                            <option value="" selected="selected">Mr.JUNG STEPHAN</option>
+                            <option value="test "></option>
+                            <option value="test"></option>
+                            <option value="test"> </option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="" name="">
+                            <option value="" selected="selected">Transf typ</option>
+                            <option value="test "></option>
+                            <option value="test"></option>
+                            <option value="test"> </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <input id="date" type="date">
+                    </div>
+
+                    <div>
+                        <input id="time" type="time" value="12.00.00 AM">
+                    </div>
+
+                    <div>
+                        <select id="" name="">
+                            <option value="" selected="selected">TransMode </option>
+                            <option value="test "></option>
+                            <option value="test"></option>
+                            <option value="test"> </option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="col-md-1">
+                    <div>
+                        <label>Refer.No</label>
+                    </div>
+                    <div>
+                        <label>Fro.Locat</label>
+                    </div>
+                    <div>
+                        <label>To.Locat</label>
+                    </div>
+                    <div>
+                        <label>Remarks</label>
+                    </div>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <div>
+                        <input type="text" name="" size="25">
+                    </div>
+                    <div>
+                        <input type="text" name="" size="25">
+                    </div>
+                    <div>
+                        <input type="text" name="" size="25">
+                    </div>
+                    <div>
+                        <textarea maxlength="80" rows="4" cols="25"> </textarea>
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-1">
+                    <div>
+                        <label>Doc.No</label>
+                    </div>
+                    <div>
+                        <label>Meal Time</label>
+                    </div>
+                    <div>
+                        <label>In.Fli.No</label>
+                    </div>
+                    <div>
+                        <label>In.Fli.Time</label>
+                    </div>
+                    <div>
+                        <label>Room</label>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+
+                    <div>
+                        <input type="text" name="" size="25">
+                    </div>
+                    <div>
+                        <input id="Time" type="time" value="12.00.00 AM">
+                    </div>
+
+                    <div>
+                        <input type="text" name="" size="25">
+                    </div>
+                    <div>
+                        <input id="time" type="time" value="12.00.00 AM">
+                    </div>
+                    <div>
+                        <select id="" name="">
+                            <option value="" selected="selected">Room</option>
+                            <option value="test "></option>
+                            <option value="test"></option>
+                            <option value="test"> </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:30px;">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <colgroup span="4"></colgroup>
+                        <tr>
+                            <th>Date</th>
+                            <th>Reference#</th>
+                            <th>ResNo</th>
+                            <th>Transfer</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Room</th>
+                            <th>Reference No</th>
+                        </tr>
+                        <tr>
+                            <td>USA</td>
+                            <td>Washington D.C.</td>
+                            <td>309 million</td>
+                            <td>English</td>
+                            <td>USA</td>
+                            <td>Washington D.C.</td>
+                            <td>309 million</td>
+                            <td>English</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row"></div>
+            <div class="row"></div>
+            <div class="row"></div>
+            <div class="row"></div>
+            <div class="row"></div>
+
+            <div class="row" style="margin-top:150px;">
+                <div class="col-md-1">
+                    <p><button>New</button></p>
+                </div>
+                <div class="col-md-1">
+                    <p><button>Exit</button></p>
+                </div>
+                <div class="col-md-1">
+                    <p><button>Delete</button></p>
+                </div>
+                <div class="col-md-1">
+                    <p><button>Save</button></p>
+                </div>
+                <div class="col-md-1">
+                    <p><button>Cancle</button></p>
+                </div>
+                <div class="col-md-6">
+
+                </div>
+                <div class="col-md-1">
+                    <p><button>close</button></p>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top:20px;">
+                <div class="col-md-1">
+                    <div>
+                        <label>Res.By</label>
+                    </div>
+
+                </div>
+                <div class="col-md-2">
+                    <div>
+                        <input type="text" name="" size="20">
+                    </div>
+
+                </div>
+                <div class="col-md-1">
+                    <div>
+                        <label>Date</label>
+                    </div>
+
+                </div>
+                <div class="col-md-2">
+                    <div>
+                        <input id="date" type="date">
+                    </div>
+                </div>
+
+                <div class="col-md-1">
+                    <div>
+                        <label>Modi.By</label>
+                    </div>
+
+                </div>
+                <div class="col-md-2">
+                    <div>
+                        <input type="text" name="" size="20">
+                    </div>
+
+                </div>
+                <div class="col-md-1">
+                    <div>
+                        <label>Date.Modi</label>
+                    </div>
+
+                </div>
+                <div class="col-md-2">
+                    <div>
+                        <input id="date" type="date">
+                    </div>
+                </div>
+            </div>
+         </form>
+     </div>
+</div>
+
+

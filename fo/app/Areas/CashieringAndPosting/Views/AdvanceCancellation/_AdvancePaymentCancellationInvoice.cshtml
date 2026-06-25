@@ -1,0 +1,435 @@
+﻿@using Scienter.HotelERP.Common.Domain
+<style>
+    .easyPaginateNav a {
+        padding: 5px;
+        /*background-color:#fff!important;*/
+    }
+
+        .easyPaginateNav a.current {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+    .invoiceBox {
+        margin-top: 9px;
+    }
+
+    #ReportLoadingArea hr {
+        margin-bottom: 10px !important;
+        margin-top: 10px !important;
+    }
+
+    #ReportLoadingArea tr {
+        background-color: #fff !important;
+    }
+</style>
+
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("IsDirectPrint")" name="" id="IsDirectPrint" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+
+<input type="hidden" value="@ViewBag.GResNo" name="" id="gresNo_AP" />
+<input type="hidden" value="@ViewBag.ResNo" name="" id="resNo_AP" />
+<input type="hidden" value="@ViewBag.GuestName" name="" id="guestName_AP" />
+<input type="hidden" value="@ViewBag.RoomNo" name="" id="roomNo_AP" />
+<input type="hidden" value="@ViewBag.RoomId" name="" id="roomId_AP" />
+<input type="hidden" value="@ViewBag.GuestProfileId" name="" id="guestProf_AP" />
+<input type="hidden" value="@ViewBag.advanceAmount" name="" id="hdnadvanceAmount" />
+<input type="hidden" value="@ViewBag.RefDocNo" name="" id="hdnRefdocNo" />
+
+@if (@ViewBag.fromReservationScreen != null)
+{
+    <input type="hidden" value="fromRes" name="" id="advancePaymentVia" />
+}
+else
+{
+    <input type="hidden" value="Other" name="" id="advancePaymentVia" />
+}
+
+
+<link href="~/Content/ConerRibbon.css" rel="stylesheet" />
+
+<fieldset class="the-fieldset ribbonbox " style="min-height:484px; margin-top:8px;">
+    <div class="pritableArea">
+        <div class="ribbon hidden-print"><span>Bill Preview</span></div>
+        <div id="ReportLoadingArea" class="col-md-12" style="min-height:300px;">
+            <div id="ReportHeader">
+                <table class="col-md-12" style="width:100%; margin-bottom:10px!important; margin-top:10px!important;">
+                    <tr style="padding-bottom:20px;">
+                        <th style="text-align:center; font-weight:bold; font-size:16px;" colspan="5">ADVANCE REFUND RECEIPT</th>
+                    </tr>
+                </table>
+                <hr />
+                <table id="Advancedpayment-billheader" style="width:100%"></table>
+
+            </div>
+            <hr />
+
+            <div id="AdvancePaymentReportBody" style="width:100%">
+                <table class="col-md-12" id="itemtable" style="width:100%">
+                    <tr class="" style="width:100%">
+                        <th style="width:75%; padding-left:10px;">@*Payment Type*@</th>
+                        <th style="width:25%; text-align:right">@*Amount*@</th>
+                    </tr>
+                    <tr></tr>
+                    <tr>
+                        <td style="width:75%; padding-left:10px;">Advance Amount</td>
+                        <td style="width:25%; text-align:right">
+                            <input type="text" disabled id="AdvancedPayAmount" value="" style="border-style: solid; border-color:#e0e0e0; border-width: 0px 0px 1px 0px; text-align:right" />
+                            <input type="hidden" value="" class="hidden-originalAmount" />
+                        </td>
+                    </tr>
+                </table>
+                <div class="row">
+                    <div class="form-group col-md-12" style="margin-top:10px;">
+                        <label class="control-label" style="padding-left:10px;">
+                            Remarks:
+                        </label>
+                        <textarea maxlength="150" name="Message" id="AdvancedPayRemark" class="form-control" style="width:100%; font-size:12px; margin-left:10px; text-align:left; overflow:hidden;"></textarea>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="from-group col-md-6" style="margin-top:10px;">
+                        <label class="control-label" style="color:black!important;padding-left:10px;"> Select Payment Type</label>
+                        <select class="form-control" id="PaymentTypes" required style="margin-top:-35px;padding-left:10px;">
+                            <option value=""></option>
+                            <option value="41">AMEX IPG - LKR - System</option>
+                            <option value="42">AMEX IPG - USD - System</option>
+                            <option value="43">HNB IPG - Foreign Cards - System</option>
+                            <option value="44">HNB IPG - Local Card - System</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div id="ReportTaxCalCulationArea" style="width:100%;">
+                <div class="row" style="margin-top:10px;">
+                    <div class="col-md-5"></div>
+                    <div class="col-md-7 report-width60perc report-float-right">
+                        <table class="table hidden" id="paymentTable" style="width:100%">
+                            <tr></tr>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        @if (ViewBag.fromReservationScreen != null)
+        {
+            <div id="billPayment" class="billpaymentClass" style="display:none;">
+                @Html.Partial("_BillPayment")
+            </div>
+        }
+        <div id="ReportFooter" style="height:100px; margin-top:5px;">
+            <div class="row col-md-12 report-width100perc">
+
+                <span class="currencyTc  report-width100perc"> * All currency amounts are in @SessionObjects.LocalCurrency.Name (@SessionObjects.LocalCurrency.ISOCode)</span>  @*Bangaladesh Modification*@
+
+            </div>
+            <div class="row" style="padding-top:30px; width:100%;">
+                <div class="col-md-12">
+                    <table style="width:100%" class="report-width100perc">
+                        <tr>
+                            <td>
+                                <div class="col-md-4" style="padding-right:10px; ">
+                                </div>
+                            </td>
+                            <td style="padding-right:20px;width:35%;">
+                                <hr />
+                            </td>
+                            <td style="padding-right:20px;width:35%;">
+                                <hr />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="">
+                                <div style="padding-right:10px;"></div>
+                            </td>
+                            <td class="report-width30px" style="width:33.3%">
+
+                                <div style="padding-right:10px;text-align:center;">Prepared By</div>
+
+                            </td>
+                            <td>
+                                <div style="padding-right:10px;text-align:center;">Guest Signature</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+
+                    @if (ViewBag.fromReservationScreen == null)
+                    {
+                        <button class="btn  btn-primary disabled hidden-print" id="btnSaveCancelAdvance" data-title="Advance-Payment">
+                            Save
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary disabled hidden-print" id="btnbillpaymentforreservation">
+                            Settle Now
+                        </button>
+                    }
+
+                    &nbsp;
+                    @if (Scienter.HotelERP.Common.Utility.Configs.GetAppSettingBoolValue("IsDirectPrint"))
+                    {
+                        <button id="btnprint" class="btn btn-primary disabled hidden-print" target="">
+                            <span class="glyphicon glyphicon-print"></span>
+                        </button>
+                    }
+                    else
+                    {
+                        <a id="btnprint" class="btn btn-primary disabled hidden-print" target="">
+                            <span class="glyphicon glyphicon-print"></span>
+                        </a>
+                    }
+                    @*<a id="btnprint" class="btn btn-primary disabled hidden-print" target="_blank">
+                        <span class="glyphicon glyphicon-print"></span>
+                    </a>*@
+
+                    <input type="hidden" value="" name="" id="Ad_pTaxId" />
+                    <input type="hidden" value="" name="" id="Ad_pPostingCatgId" />
+                    <input type="hidden" value="" name="" id="Ad_pChargeCodeId" />
+                    <input type="hidden" value="" name="" id="Ad_pPostingTypeId" />
+                    <input type="hidden" value="" name="" id="Ad_Name" />
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>
+<script>
+
+    //$("#AdvancedPayRemark").keypress(function (event) {
+
+    //    if (event.which == 13) {
+
+    //        //alert("Function is Called on Enter");
+
+    //        event.preventDefault(); //Add this line to your code
+
+    //    }
+
+    //});
+
+    $(document).ready(function () {
+        //LoadAdvancepayment();
+        $('#btnbillpayment').removeClass('disabled');
+        if ($('#advancePaymentVia').val() == "fromRes") {
+            LoadGuestDetail();
+        }
+        LoadPaymentypes();
+    });
+
+    function LoadPaymentypes()
+    {
+
+        $.ajax({
+            url: '/CashieringAndPosting/AdvanceCancellation/PaymentMethods',
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+
+                //$('#PaymentTypes option').not(':first-child').remove();
+                $.each(data, function (index, item) {
+                    $('#PaymentTypes').append('<option value="' + item.Id + '">' + item.Name + '</option>');
+                })
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+    //function LoadAdvancepayment() {
+    //    alert('add');
+    //    $.ajax({
+    //        url: '/CashieringAndPosting/AdvancedPayment/GetAdvancedPaymentDetails',
+    //        dataType: 'json',
+    //        method: 'GET',
+    //        success: function (response) {
+
+    //            $('#Ad_pTaxId').val(response.AdpTaxId);
+    //            $('#Ad_pPostingCatgId').val(response.AdpPostingCatgId);
+    //            $('#Ad_pChargeCodeId').val(response.AdpChargeCodeId);
+    //            $('#Ad_pPostingTypeId').val(response.AdpPostingTypeId);
+    //            $('#paymode').text(response.Name);
+    //            $('#Ad_Name').val(response.Name);
+    //            $('#hdnRefdocNo')
+    //        },
+    //        error: function (error) {
+
+    //        }
+    //    });
+    //}
+
+    //thisura---------------
+    function LoadGuestDetail() {
+
+        var resNo = $('#resNo_AP').val();
+        var roomNo = $('#roomNo_AP').val();
+        var gName = $('#guestName_AP').val();
+        $('#Advancedpayment-billheader').html('');
+        var elements = '<tr>' +
+                           '<td class="report-width75perc" style="width:60%" >' +
+                                '<div class="row" style="padding-left:20px">  <b>Room:&nbsp</b>' + roomNo + '</div>' +
+                                '<div class="row" style="padding-left:20px"><b>Name:&nbsp</b>' + gName + '</div>' +
+                           '</td>' +
+                           '<td class="report-width25perc" style="width:40%">' +
+                           '<div class="row" style="padding-left:10px">  <b>Res#:&nbsp</b>' + resNo + '</div>' +
+                               '<div class="row docNoforPrint" id="docNoforPrint" style="padding-left:10px"><b>Receipt#:&nbsp </b> </div>' +
+                               '<div class="row" style="padding-left:10px">  <b>Date:&nbsp</b>@DateTime.Now.AddMinutes(55).ToString("dd' / 'MM' / 'yyyy HH:mm:ss")</div>' +
+                           '</td>' +
+                           '</tr>';
+        $(elements).appendTo($('#Advancedpayment-billheader'));
+    }
+
+    ////thisura---------------
+    //$('#AdvancedPayAmount').focusout(function () {
+    //
+    //    var Amount = parseFloat($('#AdvancedPayAmount').val().trim().replace(/,/g, '')).toFixed(2);
+    //    if (Amount.toString() == "NaN") {
+    //        $('#AdvancedPayAmount').val('0.00');
+    //    }
+    //    else {
+    //        var amountCommasepVal = Number(parseFloat(Amount).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 });
+    //        $('#AdvancedPayAmount').val(amountCommasepVal);
+    //    }
+    //});
+
+    $('body').on('change', '#AdvancedPayAmount', function () {
+
+        var originalAmount = parseFloat($('.hidden-originalAmount').val());
+        var changedAmount = parseFloat($(this).val());
+
+        if (changedAmount > originalAmount) {
+            ShowWarningMessage('Refund amount cannot exceed original advance amount.');
+            $(this).val(originalAmount.toFixed(2));
+        } else {
+            $(this).val(changedAmount.toFixed(2));
+        }
+
+    })
+
+    //reservation advanced payment -- thisura
+    $('#btnbillpaymentforreservation').click(function () {
+
+        $('#billPayment').show();
+        $('#ReportLoadingArea').hide();
+        $('#ReportFooter').hide();
+        $('.ribbon').hide();
+
+        $('#Balance').val(Billtotal);
+        $('#PaymentAmount').val(Billtotal);
+        $('#BillTotal').text(Billtotal).digits();
+        $('#btnbillpaymentforreservation').prop('hidden',true);
+
+        billpaymentArray = [];
+    });
+
+    //reservation advanced payment -- thisura
+
+    //$('#btnprint').on('click', function (e) {
+    $('body').off('click', '#btnprint').on('click', '#btnprint', function (e) {
+
+        
+        var postingtype = $('#PosringTypehdn').val();
+    
+        if ($('#IsDirectPrint').val() == 1) {
+            e.preventDefault();
+            $("#btnprint").attr('target', '');
+            var docType = "REF";
+            var docno = "";
+            var propertyId = $('#PropertyId').val();
+            var userId = $('#UserId').val();
+            var printURL = $('#DirectPrintURL').val();
+
+            if ($('#advancePaymentVia').val() == "fromRes") {
+
+                docno = $('#ReportHeader #Advancedpayment-billheader tr td:nth-child(2) div:nth-child(1)').text().split(' ')[2];
+
+            } else {
+                if (postingtype == "inhouse") {
+                    type = 'I';
+                    /docno = $('#ReportHeader .table-posting td .RptinvoiceNo').text().replace('Receipt#:', '').trim();
+                }
+                else {
+                    type = 'W'
+                    docno = $('#ReportHeader #Advancedpayment-billheader td .RptinvoiceNo').text().replace('Receipt#:', '').trim();
+                }
+            }
+
+            var ajaxUrl = printURL + 'PRT/' + docType + '/' + docno + '/' + propertyId + '/' + userId + '/';
+            ReportDirectPrintRequest(ajaxUrl);
+            //$.ajax({
+            //    url: ajaxUrl,
+            //    method: 'POST',
+            //    beforeSend: function () {
+            //        $('#btnprint').val('Please wait');
+            //        $('#btnprint').prop('disabled', true);
+            //    },
+            //    complete: function () {
+            //        $('#btnprint').val('Print');
+            //        $('#btnprint').prop('disabled', false);
+            //    },
+            //    success: function (data) {
+            //       
+            //        if (data.HttpCode == "200") {
+            //            ShowSuccessMessage('Receipt printed.');
+            //            ;
+            //        } else {
+            //            ShowErrorMessage(data.HttpDescription);
+            //        }
+            //    },
+            //    error: function (data) {
+            //        ShowErrorMessage('Sorry there is an error in printing the receipt.');
+            //    }
+            //});
+
+        } else {
+            if ($('#advancePaymentVia').val() == "fromRes") {
+                //invoiceNo = $('#ReportHeader .table-posting td .RptinvoiceNo').text().replace('Receipt#:', '').trim();
+
+                invoiceNo = $('#ReportHeader #Advancedpayment-billheader tr td:nth-child(2) div:nth-child(1)').text().split(' ')[2]
+
+                // $('#btnprint').attr('href', '/reporting/Posting/AdvancePayment?DocNo=' + invoiceNo);
+                var reportName = 'AdvancePaymentReciept';
+                $('#btnprint').attr("href", '/Reporting/Report/ViewReport?ReportName=' + reportName + '&DocNo=' + invoiceNo + '');
+
+            } else {
+                var reportName = 'AdvancePaymentReciept';
+                //$('#ReportHeader .table-posting td .RptinvoiceNo').text().replace('Receipt No:','').trim()
+                var type = "";
+                var invoiceNo = "";
+                if (postingtype == "inhouse") {
+                    type = 'I';
+                    invoiceNo = $('#ReportHeader .table-posting td .RptinvoiceNo').text().replace('Receipt#:', '').trim();
+                }
+                else {
+                    type = 'W'
+                    invoiceNo = $('#ReportHeader #Advancedpayment-billheader td .RptinvoiceNo').text().replace('Receipt#:', '').trim();
+                }
+
+
+                //$('#btnBillPreview').attr('width', '1000px')
+                // $('#btnprint').attr('href', '/reporting/Posting/AdvancePayment?DocNo=' + invoiceNo + '&Type=' + type);
+               // $('#btnprint').attr('href', '/reporting/Posting/AdvancePayment?DocNo=' + invoiceNo);
+                $('#btnprint').attr("href", '/Reporting/Report/ViewReport?ReportName=' + reportName + '&DocNo=' + invoiceNo + '');
+
+                //} else {
+                //     ShowWarningMessage("Select a Folio to Preview")
+                //}
+                //Then claculate tax in Invoice view.
+            }
+        }
+
+    });
+</script>
+
+

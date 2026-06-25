@@ -1,0 +1,47 @@
+﻿@model List<Scienter.DestinityHorizon.Common.Domain.Central_MenuItems>
+
+@{
+    Layout = null;
+}
+
+@*<div class="card">
+    <div class="card-body">
+        <div class="col-12 table-responsive table-striped">
+            <div id="order-listing_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">*@
+                <div class="row grid">
+                    <div class="col-sm-12">
+                        <table id="order-listing" class="table" role="grid" aria-describedby="order-listing_info">
+                            <thead>
+                                <tr role="row">
+                                    <th class="sorting_asc col-md-2" tabindex="0" aria-controls="order-listing" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Order #: activate to sort column descending" style="width: 50px;">Name</th>
+                                    <th class="sorting col-md-1" tabindex="0" aria-controls="order-listing" rowspan="1" colspan="1" aria-label="Purchased On: activate to sort column ascending" style="width: 93px;">Active</th>
+                                    <th class="sorting" tabindex="0" aria-controls="order-listing" rowspan="1" colspan="1" aria-label="Purchased On: activate to sort column ascending" style="width: 93px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                <tr role="row" class="odd">
+                                    <td class="sorting_1">@item.Name</td>
+                                    <td class="sorting_1">@item.URL</td>
+                                    <td class="sorting_1"><input type="checkbox" checked="@item.IsActive" disabled></td>
+                                    @*<td style="text-align:right;">
+                                        <button type="button" class="btn btn-icons btn-inverse-secondary hvr-bounce-out bg-color-edit" id="data-club-editbtn-id" data-club-id="@item.Id" style="background-color:#094F70;"><i class="icon-pencil" title="Edit"></i></button>
+                                        <button type="button" class="btn btn-icons btn-inverse-secondary hvr-bounce-out bg-color-dlt" id="data-club-deletebtn-id" data-club-id="@item.Id" style="background-color:#F44336;"><i class="icon-trash" title="Delete"></i></button>
+                                        <button type="button" class="btn btn-icons btn-inverse-secondary hvr-bounce-out bg-color-notify data-club-historybtn-id" id="data-club-historybtn-id" style="background-color:#e67e22;" data-club-id="@item.Id" title="History" data-toggle="modal" data-target="#common-popup" data-whatever=""><i class="icon-bell"></i></button>
+                                        @*<a href="/audittrail/selecttablerecordchanges?tid=7&rid=@item.Id" data-href="" class="call-popup-model btn btn-icons btn-inverse-secondary" data-title="Record History" data-width="600" title="View History" data-toggle="tooltip">
+                <span class="icon-bell"></span>
+            </a>*@
+                                   
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @*</div>*@
+        @*</div>
+
+    </div>
+</div>*@
+

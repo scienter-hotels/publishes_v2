@@ -1,0 +1,42 @@
+﻿@model Scienter.HotelERP.FrontOffice.WebUIMvc.Areas.Administration.Models.RatePaletViewModel
+<form id="baseRateSetup" data-category-cls="@ViewBag.CategoryId">
+    <div class="row">
+        <div class="col-md-12 text-left" style="margin-bottom:10px;">
+            <p>These rates will apply as room rate (<i class="fa fa-bed"></i>) without considering meal plan. You may add child rates as suppliments.</p>
+        </div>
+    </div>
+    <div class="row">
+        @foreach (var RType in Model.RoomTypes)
+        {
+            <div class="col-md-3 baseRateSetupCtrl" style="margin-bottom:15px;" data-pax-count="@RType.MaxHeadCount" data-roomtype="@RType.Id">
+                <div class="form-group label-floating">
+                    <label class="control-label">@RType.Name</label>
+                    <input autocomplete="off" class="form-control text-box single-line number" type="text" required>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-left" style="margin-bottom:10px;">
+            <p>The rates below are per person, based on the specified basis, and will be added to the room rates above as per the room type pax count.</p>
+        </div>
+    </div>
+    <div class="row">
+        @foreach (var MPlan in Model.MealPlans)
+        {
+            <div class="col-md-3 baseRateSetupCtrlMeal" style="margin-bottom:15px;" data-mealPlan="@MPlan.Id">
+                <div class="form-group label-floating">
+                    <label class="control-label">@MPlan.Prefix</label>
+                    <input autocomplete="off" class="form-control text-box single-line mealamount" type="text" required>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-left">
+            <button type="submit" class="btn btn-primary">Apply</button>
+        </div>
+    </div>
+</form>
+

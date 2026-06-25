@@ -1,0 +1,28 @@
+﻿@using Scienter.HotelERP.Common.Domain
+@model List<Scienter.HotelERP.Common.Domain.Property>
+
+@{
+    string loggedPrefix = SessionObjects.LoggedUser.LoggedProperty.Prefix;
+    string isActive = "";
+}
+
+@foreach (var item in Model)
+{
+    isActive = "";
+    if (item.Prefix == loggedPrefix)
+    {
+        isActive = "checked";
+    }
+
+    <div class="well temp-well @isActive" style="padding: 10px 10px;">        
+        <div class="form-group checkbox" style="margin-top:0px; margin-bottom:0px;padding-bottom:0px;">
+            @*<img src="@item.Logo" style="width:30px; height:30px;" />*@
+
+            <label class="lbl-temp-well-checkbox">
+                <input type="checkbox" value="@item.Prefix" @isActive class="data-property-check-box" /> @item.Name
+            </label>
+            <img src="@item.Logo" style="width:30px; height:30px;margin-right: 0.5em; margin-top: -0.9em;" />
+        </div>
+    </div>
+
+}

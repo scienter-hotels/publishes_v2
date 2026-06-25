@@ -1,0 +1,416 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.GuestPortal_Feedback>
+@{
+    ViewBag.Title = "Feedback";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .tile-height {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            @*<div class="card-header" data-background-color="purple">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="title">
+                                @ViewBag.Title
+                                <hr class="visible-print" />
+                            </h4>
+                        </div>
+
+                    </div>
+                </div>*@
+
+            <div class="card-content">
+
+                @*<div class="row">
+                    <div class="col-md-1"></div>
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-md-2">
+
+                            <div class="card tile-height" style="background-color: @item.Color; cursor: pointer;">
+
+                                <div class="row">
+                                    <div class="col-md-4" style="display: inline-block; text-align: left;">
+                                        <img src="~/Images/icons/track-of-time.png" width="30" alt="Card Icon" style="margin: 25px 15px;" />
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="row" style="margin: 15px -15px;">
+                                            <div class="col-md-12">
+                                                <span class="tile-label tile-dark" style="color:white;">
+                                                    @item.Name <br />
+
+                                                </span>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <span style="font-size:30px; color:white;">
+                                                    @item.Count
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>*@
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="card" id="feedbackBarChart">
+                            <div class="card-header" data-background-color="purple">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h4 class="title">
+                                            Feedbacks
+                                            <hr class="visible-print" />
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <canvas id="barChart" width="100" height="60"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            $(document).ready(function () {
+                                $.ajax({
+                                    url: '/GuestPortal/Feedback/SelectBarChart',
+                                    method: 'POST',
+                                    success: function (response) {
+
+                                        if (response.length === 0) {
+                                            // Show a message that there's no data to display
+                                            $("#barChart").replaceWith("<p>No data available</p>");
+                                            $('#barChart').css("max-height", '100px');
+                                            return;
+                                        } else {
+                                            var colours = [];
+                                            var labels = [];
+                                            var data = [];
+                                            var ids = [];
+                                            $(response).each(function (index, item) {
+                                                var color = item.Color;
+                                                colours.push(color);
+
+                                                var label = item.Label;
+                                                labels.push(label);
+
+                                                var count = item.Count;
+                                                data.push(count);
+
+                                                var id = item.Id;
+                                                ids.push(id);
+                                            });
+
+
+                                            var colours = ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'];
+                                            var ctx = document.getElementById('barChart').getContext('2d');
+                                            var myChart = new Chart(ctx, {
+                                                type: 'bar',
+                                                data: {
+                                                    labels: labels,
+                                                    datasets: [{
+                                                        label: 'Month Wise',
+                                                        data: data,
+                                                        ids: ids
+                                                        //backgroundColor: colours
+                                                    }]
+                                                },
+                                                options: {
+                                                    scales: {
+                                                        y: {
+                                                            beginAtZero: true
+                                                        }
+                                                    },
+                                                    plugins: {
+                                                        legend: {
+                                                            display: true,
+                                                            position: 'right',
+                                                        },
+                                                        title: {
+                                                            display: false,
+                                                            position: 'top',
+                                                            text: 'Bar Chart'
+                                                        }
+                                                    },
+                                                    onClick: function (event, elements) {
+                                                        if (elements.length > 0) {
+                                                            var index = elements[0].index;
+                                                            var label = labels[index];
+                                                            var count = data[index];
+                                                            var id = ids[index];
+
+                                                            //window.location.href = '/GuestPortal/Complaint/Index?id=' + id;
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                        }
+
+                                        
+                                    }
+                                });
+                            });
+
+
+                        </script>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="card" id="feedbackPieChart">
+                            <div class="card-header" data-background-color="purple">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h4 class="title">
+                                            Feedback Bar Chart
+                                            <hr class="visible-print" />
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <canvas id="pieChart" class="" width="200" height="60" style="margin:10px 0;min-height:319px; max-height:320px;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            $(document).ready(function () {
+                                $.ajax({
+                                    url: '/GuestPortal/Feedback/SelectPieChart',
+                                    method: 'POST',
+                                    success: function (response) {
+
+                                        if (response.length === 0) {
+                                            // Show a message that there's no data to display
+                                            $("#pieChart").replaceWith("<p>No data available</p>");
+                                            $('#pieChart').css("max-height", '100px');
+                                            return;
+                                        } else {
+                                            var colours = [];
+                                            var labels = [];
+                                            var data = [];
+                                            var ids = [];
+                                            $(response).each(function (index, item) {
+                                                var color = item.Color;
+                                                colours.push(color);
+
+                                                var label = item.Label;
+                                                labels.push(label);
+
+                                                var percentage = item.Percentage;
+                                                data.push(percentage);
+
+                                                var id = item.Id;
+                                                ids.push(id);
+                                            });
+
+                                            var labelsFromDatabase = ['Label 1', 'Label 2', 'Label 3', 'Label 4', 'Label 5'];
+                                            var dataFromDatabase = [20, 30, 25, 15, 10];
+                                            //var colors = ['red', 'blue', 'yellow', 'green', 'purple'];
+                                            var colors = ['#FF0000', '#2471A3', '#F1C40F', '#2ECC71', '#AF7AC5'];
+
+                                            var colours = ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'];
+
+                                            var ctx = document.getElementById('pieChart').getContext('2d');
+                                            var myPieChart = new Chart(ctx, {
+                                                type: 'pie',
+                                                data: {
+                                                    labels: labels,
+                                                    datasets: [{
+                                                        label: 'Month Wise Compalint Types',
+                                                        data: data,
+                                                        ids: ids
+                                                        //backgroundColor: colours
+                                                    }]
+                                                },
+                                                options: {
+                                                    responsive: true,
+                                                    plugins: {
+                                                        legend: {
+                                                            position: 'right',
+                                                        },
+                                                        title: {
+                                                            display: false,
+                                                            position: 'top',
+                                                            text: 'Pie Chart'
+                                                        }
+                                                    },
+                                                    onClick: function (event, elements) {
+                                                        if (elements.length > 0) {
+                                                            var index = elements[0].index;
+                                                            var label = labels[index];
+                                                            var count = data[index];
+                                                            var id = ids[index];
+
+                                                            //window.location.href = '/GuestPortal/Complaint/Index?id=' + id;
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                        }
+
+                                        
+                                    }
+                                });
+                            });
+
+                        </script>
+                    </div>
+
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header" data-background-color="purple">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h4 class="title">
+                                            Month Wise Feedbacks
+                                            <hr class="visible-print" />
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row doughnutChart"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        setTimeout(() => {
+
+
+        let barChartHeight = $('#feedbackBarChart').height();
+        let pieChartHeight = $('#feedbackBarChart').height();
+
+        var higherCardHeight = Math.max(barChartHeight, pieChartHeight);
+
+        $('#feedbackBarChart').height(higherCardHeight);
+        $('#feedbackPieChart').height(higherCardHeight);
+
+            setTimeout(() => {
+            $('#pieChart').css('margin', '50px 0');
+        },800);
+
+        },1000);
+
+        $.ajax({
+            url: '/GuestPortal/Feedback/SelectDoughnutChart',
+            method: 'POST',
+            success: function (response) {
+                var colour = [];
+                var labels = [];
+                var data = [];
+
+                $(response).each(function (index, item) {
+                    //console.log(item.lstComplaint);
+
+                    //if (item.ResultJson === null) {
+                        //    $(".doughnutChart").replaceWith("<p>No data available</p>");
+                        //    return;
+                        //}
+
+                    var month = item.MonthName;
+                    var year = item.Year;
+                    var name = month + ' ' + year;
+
+                    var className = "data-doughnutChart-" + index;
+                    $(item.lstFeedback).each(function (index1, item1) {
+                        var color = item1.Color;
+                        colour.push(color);
+
+                        var label = item1.Label;
+                        labels.push(label);
+
+                        var count = item1.Percentage;
+                        data.push(count);
+                    });
+
+                    $('<div class="col-md-3">' +
+                        '<canvas class="' + className + '" ></canvas>' +
+                        '</div>').appendTo('.doughnutChart');
+
+                    DoughnutChart(colour, labels, data, className, name);
+                    colour = [];
+                    labels = [];
+                    data = [];
+                });
+            }
+        });
+    });
+
+    function DoughnutChart(colour, labels, data, className, name) {
+        //console.log(data);
+        var charts = document.getElementsByClassName(className);
+        var colour = ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'];
+
+        for (var i = 0; i < charts.length; i++) {
+            var ctx = charts[i].getContext('2d');
+            var myDoughnutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Month Wise Complaints',
+                        data: data,
+                        //backgroundColor: colour,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    cutout: '60%',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right'
+                            //align:'start'
+                        },
+                        title: {
+                            display: true,
+                            position: 'top',
+                            text: name
+                        }
+                    }
+                }
+            });
+
+        }
+    }
+
+</script>
+

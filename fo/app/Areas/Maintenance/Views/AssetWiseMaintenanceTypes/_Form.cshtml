@@ -1,0 +1,93 @@
+﻿
+@model Scienter.HotelERP.Common.Domain.AssetWiseMaintenanceType
+
+<style>
+    .fieldset-overide {
+        padding-top: 0px;
+        padding-bottom: 0px;    
+    }
+</style>
+
+@{
+    ViewBag.Title = "Create / Edit";
+}
+
+<div class="col-md-12">
+
+    <form id="assetWiseMaintenance">
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @*<input type="hidden" value="@Model.Id" name="Id" id="Id" />*@
+
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group label-floating">
+                    <label class="control-label">Asset *</label>
+                    @{Html.RenderAction("AssetsCombo", "Assets", new { name = "AssetId", requiered = true, value = Model?.AssetId });}
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5">
+                <div class="form-group label-floating">
+                    <label class="control-label">Frequency In Dates *</label>
+                    <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="FrequencyInDates" name="FrequencyInDates" type="text" value="@Model.FrequencyInDates" required>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-12">
+                <fieldset class="the-fieldset fieldset-overide">
+                    <legend class="the-legend"> Maintenance Type</legend>
+                        <div id="companyWiseMarketsContainer">
+                            @{Html.RenderAction("LoadAssetWiseMaintenanceType", "AssetWiseMaintenanceTypes", new { assetId = 0 });}
+                        </div>
+                </fieldset>
+
+            </div>
+        </div>
+
+        <div class="form-group checkbox">
+            <label>
+                @Html.CheckBoxFor(model => model.IsActive)
+                @*<input type="checkbox" checked name="IsActive" value="True" />*@ IsActive
+            </label>
+            @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+        <div class="form-group" style="margin-top:0px;">
+            <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+            &nbsp;
+            <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+        </div>
+
+    </form>
+
+
+</div>
+
+
+@* Select Index change in combo box*@
+
+<script>
+    $('#AssetId').change(function () {
+        if ($(this).val() > 0) {
+
+            $.ajax({
+                url: '/Maintenance/AssetWiseMaintenanceTypes/LoadAssetWiseMaintenanceType?assetId=' + $(this).val(),
+                dataType: 'html',
+                success: function (data) {
+                    $('#companyWiseMarketsContainer').html(data);
+
+                },
+
+            });
+        } else {
+            $('input:checkbox').removeAttr('checked');
+        }
+    });
+</script>

@@ -1,0 +1,137 @@
+﻿
+@{
+    ViewBag.Title = "Service";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @*@Html.Partial("_Loading")*@
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        FillGrid();
+    });
+   
+
+    // show form --------------------------------
+    $('body').on('click', '.showForm', function (e) {
+        $.ajax({
+            url: '/GuestPortal/Service/ServiceAdminForm',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+
+        });
+    });
+
+    $('body').on('click', '.showGrid', function (e) {
+        FillGrid();
+    });
+
+    function FillGrid() {
+        var gridId = "#guestPortalFeedback"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/GuestPortal/Service/ServiceAdminGrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+                GridFunctionalities();
+            }
+
+        });
+    }
+
+    $('body').on('submit', '#guestPortalService', function (e) {
+        e.preventDefault();
+
+        $('.checkBoxRoom:checked').each(function (index, item) {
+            checkedroomtypes.push({
+                Id: $(item).val()
+            });
+
+        });
+
+        var service = {
+            Id: $('#Id').val(),
+            Name: $('#Name').val(),
+            Code: $('#Code').val(),
+            Description: $('#Description').val(),
+            DisplayOrder: $('#DisplayOrder').val(),
+            IsActive: $('#IsActive').prop("checked"),
+            Icon: $('#Icon').val(),
+        };
+
+        $.ajax({
+            url: '/GuestPortal/Service/Save',
+            dataType: 'json',
+            data: service,
+            method: 'POST',
+            success: function (response) {
+                if (response == "OK") {
+                    ShowSuccessMessage('Record has been saved successfully.');
+                } else {
+                    ShowWarningMessage(response);
+                }
+                setTimeout(function () { window.location.reload(); }, 2000);
+                // FillGrid();
+            },
+            error: function () {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+
+        });
+
+    });
+
+</script>
+

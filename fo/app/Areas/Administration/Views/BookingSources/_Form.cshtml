@@ -1,0 +1,43 @@
+﻿@model Scienter.HotelERP.Common.Domain.BookingSource
+
+@{
+    ViewBag.Title = "Create / Edit";
+}
+
+<div class="col-md-12">
+
+    <form id="bookingSources">
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Name *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Name" name="Name" type="text" value="@Model.Name" required>
+                    </div>
+
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsActive)
+                            @*<input type="checkbox" checked name="IsActive" value="True" />*@ Is Active
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                        &nbsp;
+                        <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+</div>
+

@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.FrontOfficeRoomStatus>
+
+<style>
+    .font-size {
+        font-size:10px;    
+    }
+</style>
+
+@foreach (var item in Model)
+{
+    string[] clsStrArr;
+    string cls = ".";
+    clsStrArr = item.Name.ToLower().Split(' ');
+
+    for (int i = 0; i < clsStrArr.Length; i++)
+    {
+        if (i != (clsStrArr.Length - 1))
+        {
+            cls = cls + clsStrArr[i] + "-";
+        }
+        else
+        {
+            cls = cls +  clsStrArr[i];
+        }
+
+    }
+
+    <div class="form-group override-from-group-margin font-size">
+        <input type="hidden" value="@item.Id" class="room-status-type-hidden"/>
+        <input type="checkbox" id="status-type" class="status-typs-checkbox" data-filter-value="@cls"/>
+        <label class="filter-each-text" style="color:black; font-size:10px;"> @item.Name </label>
+    </div>
+}
+
+
+<script>
+
+</script>

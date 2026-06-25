@@ -1,0 +1,124 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.GuestPortal_Complaint>
+@{
+
+
+    ViewBag.Title = "Guest Portal Complaints";
+}
+@*<input type="hidden" name="text" id="type" value="@ViewBag.Type" />*@
+
+<div class="table-responsive">
+    <table class="table table-striped" id="guestPortalComplaint">
+        @*2022-10-20*@
+        <thead>
+            <tr>
+                <th class="col-md-1 text-primary">
+                    Res / No
+                </th>
+                <th class="col-md-1 text-primary">
+                    Complaint
+                </th>
+                <th class="col-md-1 text-primary">
+                    Note
+                </th>
+                <th class="col-md-1 text-primary">
+                    Status
+                </th>
+                <th class="col-md-1 text-primary">
+
+                </th>
+                <th class="col-md-1 text-primary">
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr style="height: 36px !important;">
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReservationNo)
+                    <input type="hidden" name="text" id="guestPoratlComplaintsReservationHeaderId" value="@item.ReservationHeaderId" />
+                    <input type="hidden" name="text" id="complaintId" value="@item.ComplaintId" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Complaint)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AdditionalNotes)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ActionName)
+                </td>
+                <td class="hidden-print text-right" style="text-align:right !important;">
+                    <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="activityLog" data-guestPoratlComplaintsReservationHeaderId="@item.ReservationHeaderId" data-ActionTypeId="@item.ActionTypeId" data-id="@item.ComplaintId" data-title="Reservation Activity Log" data-href="" title="Activity Log" data-toggle="modal" data-target="" data-width="500">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </a>
+                </td>
+                <td class="hidden-print text-right" style="text-align:right !important;">
+                    <a class="btn btn-theme-color-2 btn-sm call-popup-model viewactivityLog" data-guestPoratlComplaintsReservationHeaderId="@item.ReservationHeaderId" data-id="@item.ComplaintId" id="viewactivityLog" data-title="Reservation Activity Log" data-href="" title="View Activity" data-toggle="modal" data-target="" data-width="500">
+                        <span class="glyphicon glyphicon-tags"></span>
+                    </a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+        $('#guestPortalComplaint').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ],
+                scrollY: '58vh',
+            });
+    });
+
+    $('body').on('click', '#activityLog', function () {
+        debugger;
+        var code = "C";
+        $(".guestportal-action-model").modal('show');
+        $('#code').val(code);
+        //$('#hdnreservationHeaderId').val($('#reservationHeaderId').val());
+        $('#hdnreservationHeaderId').val($(this).attr('data-guestPoratlComplaintsReservationHeaderId'));
+        $('#requestId').val($(this).attr('data-Id'));
+        $('#hdnlabel').val("Complaint Status");
+        $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+        LoadActionType(code);
+    });
+
+    //$('body').on('click', '#viewactivityLog', function () {
+    //    debugger;
+    //    var code = "C";
+    //    $(".guestportal-activitylog-model").modal('show');
+    //});
+
+    $('body').on('click', '.viewactivityLog', function (e) {
+        debugger;
+        var code = "C";
+        var requestId = $(this).attr('data-id');
+        //var reservationHeaderId = $('#reservationHeaderId').val();
+        var reservationHeaderId = $(this).attr('data-guestPoratlComplaintsReservationHeaderId');
+        var GuestPortalActivityLogURL = '/GuestPortal/Action/ActivityLog?code=' + code + '&requestId=' + requestId + '&reservationHeaderId=' + reservationHeaderId;
+        var title = 'Complaint Status Activity Log ';
+
+        //'&guestName=' + guestName + '&guestProfileId=' + GuestProfileId + '&Uuid=' + ResUuid + '';
+
+        CallDetailModelSimple(title, GuestPortalActivityLogURL, 800);
+    });
+
+</script>

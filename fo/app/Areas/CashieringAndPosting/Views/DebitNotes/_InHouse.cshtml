@@ -1,0 +1,67 @@
+﻿
+
+@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.InHouseRoomView>
+
+@{
+    ViewBag.Title = "Bill Posting -In House";
+}
+
+<style>
+    .searchdiv .form-group {
+        margin: 0px;
+    }
+</style>
+<div class="row">
+
+
+    <div class="row">
+        <div class="col-md-12 hidden-print">
+            <fieldset class="the-fieldset" style="height:484px;">
+                @if ((ViewBag.postingType == "inhouse") || (ViewBag.postingType == "rebate"))
+                {
+                    <legend class="the-legend"><font size="2">Select Reservaion No</font> </legend>
+                    <div class="input-group searchdiv">
+                        <input type="text" class="form-control text-box single-line" placeholder="Search Reservations" onkeyup="searchRoom()" id="txtSearch" />
+                    </div>
+
+                    <div class="col-md-12" id="RoomLoadingArea" style="height: 360px; overflow-y: auto;margin-top:10px">
+                        <ul id="myUL">
+                            @foreach (var item in Model)
+                            {
+                                <li>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" class="checkBoxGroup" reservation-no="@item.ReservationNo" Guest-Id="@item.GuestId" roomId="@item.RoomId" room-code="@item.RoomCode.Trim()" name="@item.Name" value="@item.RoomCode.Trim()" />@item.ReservationNo
+                                        </label>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </fieldset>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    debugger
+    $(document).ready(function () {
+        $('.checkBoxGroup').each(function (index, element) {
+            if ($(element).attr('reservation-no') == $('#resvnno').val()) {
+                $(element).prop('checked', true);
+                $('.checkBoxGroup').attr('disabled', true);
+                $(this).attr('disabled', false);
+                return false;
+            }
+
+        });
+        //$('.checkBoxGroup').each(function () {
+        //    if (!$(this).is(':checked')) {
+        //        $(this).prop('disabled', true);
+        //    }
+        //});
+    });
+
+</script>

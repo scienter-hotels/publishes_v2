@@ -1,0 +1,216 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.ViewModels.HotelConfirmationView>
+
+@{
+    ViewBag.Title = "Booking Confirmation";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title hidden-print">
+                            @ViewBag.Title
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" class="hidden-stringify-json-sGuest" />
+            <div class="margin-top-15px col-md-10 col-md-offset-1" id="bookingConfirmationContainer">
+                @{Html.RenderPartial("_BookingConfirmation", Model);}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>      
+    //$('.btnaddRoom').click(function () {
+    //    var target = $(this).closest('.reservationDetailsLoop').find('.panel-collapse');
+    //    $(target).collapse('toggle');
+    //});
+    $(document).ready(function () {
+        $('#btnStep02Next').hide();
+    });
+
+    $('body').on('click', '.btnSaveRoom', function () {
+        
+
+        if (ValidateNewRoom()) {
+
+            var groupResNo = $('.GroupResNo').val();
+            var roomCategoryId = $("select[name='NewRoomCategory']").val();
+            var roomTypeId = $("select[name='NewRoomType']").val();
+            var mealPlanId = $("select[name='NewMealPlan']").val();
+            var noOfRooms = $('.NewNoOfRooms').val();
+
+            $.ajax({
+                url: '/reservation/reservations/AddNewRoom',
+                dataType: 'html',
+                method: 'POST',
+                data: { groupReservationNo: groupResNo, roomCategoryId: roomCategoryId, roomTypeId: roomTypeId, mealPlanId: mealPlanId, noOfRooms: noOfRooms },
+                success: function (response) {
+                    $('#bookingConfirmationContainer').html('');
+                    $('#bookingConfirmationContainer').html(response).fadeIn('fast');
+                    ShowSuccessMessage('Room added to the reservation.')
+                },
+                error: function (error) {
+                }
+            });
+        } else {
+            ShowWarningMessage('All fields are mandatory!');
+        }
+
+    });
+
+    //New Room Validate-------------------------------------------
+    function ValidateNewRoom() {
+        var isValid = true;
+        if ($("select[name='NewRoomCategory']").val() == '') {
+            $('#NewRoomCategory').focus();
+            isValid = false;
+        }
+        if ($("select[name='NewRoomType']").val() == '') {
+            $('#NewRoomType').focus();
+            isValid = false;
+        }
+        if ($("select[name='NewMealPlan']").val() == '') {
+            $('#NewMealPlan').focus();
+            isValid = false;
+        }
+        if ($('.NewNoOfRooms').val() == '') {
+            $('.NewNoOfRooms').focus();
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    //Guest Search and Create ------------------------------------------------------
+    $('body').on('click', '#btnCreateGuest', function () {
+        $('.guest-checkBox').each(function (index, element) {
+            $(element).prop('checked', false);
+        });
+        FillGuestDetail();
+    });
+
+    function FillGuestDetail() {
+        if (ValidateGuest()) {
+            ShowSuccessMessage('New Guest Created successfully, click Add finish.');
+        } else {
+            ShowWarningMessage('All fields are mandatory!');
+        }
+    }
+
+    function ValidateGuest() {
+        var isValid = true;
+        if ($('#SalutationId').val() == '') {
+            $('#SalutationId').focus();
+            isValid = false;
+        }
+        if ($('#FirstName').val() == '') {
+            $('#FirstName').focus();
+            isValid = false;
+        }
+        if ($('#LastName').val() == '') {
+            $('#LastName').focus();
+            isValid = false;
+        }
+        if ($('#NICPassport').val() == '') {
+            $('#NICPassport').focus();
+            isValid = false;
+        }
+
+        if ($('#CountryId').val() == '') {
+            $('#CountryId').focus();
+            isValid = false;
+        }
+        if ($('#NationalityId').val() == '') {
+            $('#NationalityId').focus();
+            isValid = false;
+        }
+
+        if ($('#Email').val() == '') {
+            $('#Email').focus();
+            isValid = false;
+        }
+        if ($('#ContactNo').val() == '') {
+            $('#ContactNo').focus();
+            isValid = false;
+        }
+
+        if (isValid) {
+            var guestId = -1;
+            $('.guest-checkBox').each(function (index, element) {
+                if ($(element).prop('checked')) {
+                    guestId = $(element).val();
+                    return false;
+                }
+            });
+
+            var SelectedGuest = {
+                Id: guestId,
+                SalutationId: $('#SalutationId').val(),
+                FirstName: $('#FirstName').val(),
+                LastName: $('#LastName').val(),
+                NICPassport: $('#NICPassport').val(),
+                CountryId: $('#CountryId').val(),
+                NationalityId: $('#NationalityId').val(),
+                Email: $('#Email').val(),
+                ContactNo: $('#ContactNo').val(),
+                ReservationNo : $('#resNo').val()
+            }
+            
+            $('.hidden-stringify-json-sGuest').val(JSON.stringify(SelectedGuest));
+        }
+        else {
+            ShowWarningMessage('You have missed some mandatory fields.');
+        }
+        
+        return isValid;
+    }
+
+    //New Guest Add to Confirm-------------------------------------------------------------
+
+    $('body').on('click', '.btnNewGuest', function (e) {
+        
+        if (ValidateGuest()) {
+            SaveGuest();
+        } else {
+            ShowWarningMessage('Please select a guest to proceed.');
+        }
+    });
+
+    function SaveGuest() {
+
+        var GuestDetails = JSON.parse($('.hidden-stringify-json-sGuest').val());
+
+        NewGuest = {
+
+            Id: GuestDetails.Id,
+            FirstName: GuestDetails.FirstName,
+            LastName: GuestDetails.LastName,
+            Email: GuestDetails.Email,
+            ContactNo: GuestDetails.ContactNo,
+            NICPassport: GuestDetails.NICPassport,
+            SalutationId: GuestDetails.SalutationId,
+            CountryId: GuestDetails.CountryId,
+            NationalityId: GuestDetails.NationalityId,
+            ReservationNo: GuestDetails.ReservationNo
+        }
+    
+        $.ajax({
+            url: '/reservation/reservations/AddNewGuest',
+            dataType: 'html',
+            method: 'POST',
+            data: { SelectedGuest: NewGuest },
+            success: function (response) {
+                $('#bookingConfirmationContainer').html('');
+                $('#bookingConfirmationContainer').html(response).fadeIn('fast');
+                ShowSuccessMessage('New Guest added to the reservation.')
+            },
+            error: function (error) {
+                ShowWarningMessage('Create New Guest or Select Existing Guest to Add.')
+            }
+        });
+    }
+</script>

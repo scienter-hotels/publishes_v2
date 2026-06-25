@@ -1,0 +1,231 @@
+﻿@media print {
+
+    .body{
+          visibility:hidden !important;
+    }
+    
+    .card 
+    {
+        visibility:hidden !important;
+        height: 1200px !important;      
+    }
+
+    .card .card-content{
+        overflow-y:visible !important;
+     
+    }
+
+    .pritableArea{
+        visibility:visible !important;
+        margin-top:20px !important;
+      
+    }
+      .body{overflow:hidden !important;}
+    
+      /*.invoice-height{
+        max-height:600px !important;
+    }*/
+    
+    .the-fieldset{
+        border:none!important;
+    }
+    .report-height90prec {
+       height:90% !important;
+    }
+    .report-height80prec {
+       height:80% !important;
+    }
+    .report-height70prec {
+       height:70% !important;
+    }
+    .report-height60prec {
+       height:60% !important;
+    }
+    .report-height50prec {
+       height:50% !important;
+    }
+
+.summary-container {
+    background-color: #ff8000 !important;     
+}
+
+.summary-heading
+{
+font-size:20px !important;
+color:white
+}
+.summary-Amount{
+font-size:40px !important;
+color:white
+}
+    #report-container {
+        width:100% !important;
+        display: block !important;
+        /*overflow-y: hidden;*/       
+    }
+
+    /*body, * {
+        font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif !important;
+    }*/
+
+
+    /*#report-container h1, #report-container h2, #report-container h3, #report-container th, #report-container td, #report-container p {
+        font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif !important;
+    }*/
+
+    #report-container h1 {
+        font-size: 16px !important;
+        font-weight: bold !important;
+        margin-bottom: 15px !important;
+    }
+
+    #report-container h2 {
+        font-size: 14px !important;
+        font-weight: bold !important;
+    }
+
+    #report-container h3 {
+        font-size: 12px !important;
+        font-weight: bold !important;
+    }
+
+    #report-container table th {
+        font-weight: 500 !important;
+        border-top: 1px solid #8c8b8b;
+        font-size: 12px !important;
+    }
+
+    #report-container .report-header {
+        margin-bottom: 10px !important;
+    }
+
+    #report-container table td {
+        line-height: 20px !important;
+        font-size: 12px !important;
+    }
+
+    .report-float-right {
+        float: right !important;
+    }
+
+    .report-float-left {
+        float: left !important;
+    }
+
+   r .report-text-right {
+        text-align: right !important;
+    }
+
+    .report-text-left {
+        text-align: left !important;
+    }
+
+     .report-text-center {
+        text-align: center !important;
+    }
+
+    .report-text-justify {
+        text-align: justify !important;
+    }
+
+    .report-width100perc {
+        width: 100% !important;
+    }
+     .report-width60perc {
+        width: 60% !important;
+    }
+      .report-width40perc {
+        width: 40% !important;
+    }
+
+   .report-width75perc {
+        width: 75% !important;
+    }
+   .report-width80perc {
+        width: 80% !important;
+    }
+   .report-width20perc {
+        width: 20% !important;
+    }
+
+   .report-width25perc {
+        width: 25% !important;
+    }
+
+   .report-width20px {
+        width: 20px !important;
+    }
+
+    #report-container .report-width30px {
+        width: 30px !important;
+    }
+
+    #report-container .report-width50px {
+        width: 50px !important;
+    }
+
+    #report-container .report-width100px {
+        width: 100px !important;
+    }
+
+    #report-container .report-width200px {
+        width: 200px !important;
+    }
+
+    #report-container .report-width300px {
+        width: 300px !important;
+    }
+    /*new content for sales report*/
+    td-noborder {
+        border-style: none !important;
+    }
+
+    .dashed-border {
+        border-bottom: 1px dashed #dddddd !important;
+    }
+
+    .solid-border {
+        border-top: 1px solid #dddddd !important;
+    }
+
+    .solid-border-left {
+        border-left: 1px solid #dddddd !important;
+    }
+
+    .solid-border-right {
+        border-right: 1px solid #dddddd !important;
+    }
+
+    .none {
+        border-style: none;
+    }
+
+    .hidden {
+        border-style: hidden;
+    }
+
+    #grid-sales table td {
+        height: 20px !important;
+    }
+    /*section {page-break-before: always;}
+     section {page-break-after: always;}
+     h1 {page-break-before: always;}
+      p {page-break-inside: avoid;}*/
+
+}
+
+
+@page {
+    margin: 1cm;
+    size: A4 auto;
+}
+
+/*@page:left {
+  margin-left: 3cm;
+  margin-right: 2cm;
+}
+
+@page :right {
+  margin-left: 2cm;
+  margin-right: 3cm;
+}*/

@@ -1,0 +1,252 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.MealReservationView>
+<style>
+    .border-margin {
+        border: 1px solid white;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12" id="main-grid-content">
+        <div class="table-responsive">
+            <table class="table font-size-12px" id="MealReservationGrid">
+                <thead>
+                    <tr>
+                        <th class="text-primary">
+                            Arrival
+                        </th>
+                        <th class="text-primary">
+                            Res No
+                        </th>
+                        <th class="text-primary">
+                            Guest
+                        </th>
+                        <th class="text-primary">
+                            Agent
+                        </th>
+                        <th class="text-primary">
+                            Market
+                        </th>
+                        <th class="text-primary">
+                            Meal Type
+                        </th>
+                        <th class="text-primary">
+                            Pax
+                        </th>
+                        <th class="text-primary">
+                            Status
+                        </th>
+                        <th class="text-primary">
+                            Job Status
+                        </th>
+                        <th class="text-primary">
+
+                        </th>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr value="@item.Id">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ExpectedArrivalDateAndTime)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ReservationNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+
+                            @Html.DisplayFor(modelItem => item.AgentName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MarketName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MealName)
+                        </td>
+                        <td class="number">
+                            @Html.DisplayFor(modelItem => item.NoOfPax)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MealReservationStatus)
+                        </td>
+
+                        @if (item.IsActive == 1)
+                        {
+                            <td>
+                                Pending
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                Completed
+                            </td>
+                        }
+
+                        <td>
+                            <div class="form-group checkbox">
+                                <label>
+                                    <input class="mealRes-checkBox" type="checkbox" value="@item.Id" mealResNo="@item.ReservationNo" Data-IsBillToAgent="@item.IsBillToAgent" />
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                    </tbody>
+
+            </table>
+        </div>
+    </div>
+
+    <div id="side-buttons" class="hidden">
+        <div class="row row-padding0px">
+            <div class="border-margin col-md-6 btn-right-padding5px">
+                <button style="background-color:#c21b1b !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override" id="btnMealEdit">
+                    <span class="glyphicon glyphicon-cutlery"></span>
+                    <br />
+                    Change Meal<br />Res. Details
+                </button>
+            </div>
+
+            <div class="border-margin col-md-6 btn-right-padding5px">
+                <button style="background-color:#940191 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override call-popup-model" id="btnAdvance">
+                    <span class="glyphicon glyphicon-credit-card"></span>
+                    <br />
+                    Advance<br />Payments
+                </button>
+            </div>
+        </div>
+
+        <div class="row row-padding0px">
+            <div class="border-margin col-md-6 btn-right-padding5px">
+                <button style="background-color:#b45200 !important;" class="btn btn-default attachToGroupClass btn-theme-color-2 full-width-100perc btn-padding-override"  id="btnConfirmation">
+                    <br />
+                    <span class="glyphicon glyphicon-info-sign"></span>
+                    <br />
+                  CONFIRMATION 
+                </button>
+            </div>
+
+            <div class="border-margin col-md-6 btn-right-padding5px">
+                <button style="background-color:#e84118 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override inhouse-detail" id="btnInvoice">
+                    <br />
+                    <span class="glyphicon glyphicon-list-alt"></span>
+                    <br />
+                    INVOICE 
+                </button>
+            </div>
+        </div>
+
+        <div class="row row-padding0px">
+            <div class="border-margin col-md-6 btn-right-padding5px">
+                <a style="background-color:#2f9b04 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override" id="btnCompanyContacts">
+                    <br />
+                    <span class="glyphicon glyphicon-download-alt"></span>
+                    <br />
+                    POSTING 
+                </a>
+            </div>
+
+            <div class="border-margin col-md-6 btn-right-padding5px">
+                <button style="background-color:#e49c09 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override inhouse-detail" id="btnProforma">
+                    <br />
+                    <span class="glyphicon glyphicon-signal"></span>
+                    <br />
+                    PROFORMA
+                </button>
+            </div>
+        </div>
+
+        <div class="row row-padding0px">
+            <div class="border-margin col-md-6 btn-right-padding5px">
+                <button style="background-color:#008890 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override call-popup-model" id="btnRequestAdvance">
+                    <span class="glyphicon glyphicon-send"></span><br />
+                    REQUEST<br />  ADVANCE<br />
+                </button>
+
+
+            </div>
+
+
+            <div class="border-margin col-md-6 btn-right-padding5px">
+                <button style="background-color:#0652DD !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override call-popup-model" id="btnCompelete">
+                    <br />
+                    <span class="glyphicon glyphicon-ok"></span>
+                    <br />
+                    COMPLETE
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#MealReservationGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: false,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ],
+                scrollY: '58vh',
+            });
+    }); 
+
+    $("#btnRequestAdvance").on("click", function () {
+        var MealResId = $("input:checkbox:checked").val();
+        var MealResNo = $("input:checkbox:checked").attr("mealResNo");
+        $('#btnRequestAdvance').attr('data-href', '/MealReservation/MealReservation/AdvanceRequest?ReservationHeaderId=' + MealResId);
+        $('#btnRequestAdvance').attr('data-title', 'Request Details For - ' + MealResNo + '');
+    });
+
+    $('#btnProforma').on('click', function () {
+        var MealResNo = $("input:checkbox:checked").attr("mealResNo");
+        window.open('/reporting/report/ViewReport?ReportName=MealReservationProformaInvoice&ResNo=' + MealResNo, '_blank');
+    });
+
+    $('#btnConfirmation').on('click', function () {
+        var MealResNo = $("input:checkbox:checked").attr("mealResNo");
+        window.open('/reporting/report/ViewReport?ReportName=MealReservationConfirmation&ResNo=' + MealResNo, '_blank');
+    });
+
+
+    $('#btnInvoice').on('click', function () {
+        var MealResNo = $("input:checkbox:checked").attr("mealResNo");
+        window.open('/reporting/report/ViewReport?ReportName=MealReservationInvoice&ResNo=' + MealResNo, '_blank');
+    });
+
+
+    $('#btnCompelete').on('click', function () {
+        var MealResId = $("input:checkbox:checked").val();
+        var MealResNo = $("input:checkbox:checked").attr("mealResNo");
+        var mealComplete = '/MealReservation/MealReservation/ReservationComplete?MResId=' + MealResId
+        $(this).attr('data-href', mealComplete);
+        $(this).attr('data-title', "Complete For: " + MealResNo);
+    });
+
+    $('#btnAdvance').on('click', function () {
+        var MealResId = $("input:checkbox:checked").val();
+        var isBillToAgent = $("input:checkbox:checked").attr("data-isbilltoagent");
+        var MealResNo = $("input:checkbox:checked").attr("mealResNo");
+        var mealAdvancePay = '/MealReservation/MealReservation/AdvancePaymentDetails?MResId=' + MealResId + "&IsBillToAgent=" + isBillToAgent
+        $(this).attr('data-href', mealAdvancePay);
+        $(this).attr('data-title', "Advance Payments For: " + MealResNo);
+    });
+</script>

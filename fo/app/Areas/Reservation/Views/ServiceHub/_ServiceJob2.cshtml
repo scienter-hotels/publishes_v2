@@ -1,0 +1,139 @@
+﻿@*@model Scienter.HotelERP.Common.Domain.ServiceJob
+
+@{
+    ViewBag.Title = "Create / Edit";
+}
+
+<div class="col-md-12 serviceJobForm">
+
+    <form id="serviceJob">
+        <div class="">
+
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+            <input type="hidden" value="@Model.ServiceCategoryId" name="hdnServiceCategoryId" id="hdnServiceCategoryId" />
+            <input type="hidden" value="@Model.ServiceLocationId" name="hdnServiceLocationId" id="hdnServiceLocationId" />
+            <input type="hidden" value="@Model.ServiceActionId" name="hdnServiceActionId" id="hdnServiceActionId" />
+            <input type="hidden" value="@Model.ServiceTypeId" name="hdnServiceTypeId" id="hdnServiceTypeId" />
+            <input type="hidden" value="@Model.AssignToDepartmentId" name="hdnAssignToDepartmentId" id="hdnAssignToDepartmentId" />
+            <input type="hidden" value="@Model.AssignToEmployeeId" name="hdnAssignToEmployeeId" id="hdnAssignToEmployeeId" />
+
+            <div class="row">
+                <div class="col-md-5">
+                    <div style="padding:25px; border:1px solid #ccc; border-radius:5px;" class="border-container-1">
+                        <div class="row" id="serviceCategory">
+
+                        </div>
+                        <div class="row">
+                            <div class="form-group label-floating col-md-4">
+                                <label class="control-label">Type *</label>
+                                <select name="serviceType" id="serviceType" class="form-control "></select>
+                            </div>
+
+                            <div class="form-group label-floating col-md-4">
+                                <label class="control-label">Action *</label>
+                                <select name="serviceAction" id="serviceAction" class="form-control "></select>
+                            </div>
+
+                            <div class="form-group label-floating col-md-4">
+                                <label class="control-label">Location *</label>
+                                <select name="serviceLocation" id="serviceLocation" class="form-control "></select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group label-floating col-md-5">
+                                <label class="control-label">Ref No *</label>
+                                <input autocomplete="off" class="form-control text-box single-line" id="RefNo" name="RefNo" type="text" value="@Model.ReferenceNo" required>
+                            </div>
+                            <div class="form-group label-floating col-md-7">
+                                <label class="control-label">Remark </label>
+                                <textarea autocomplete="off" class="form-control text-box" id="Remark" name="Remark">
+    @Model.Remark
+                                    </textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group label-floating col-md-6">
+                                <label class="control-label">Assignee Department *</label>
+                                <select name="asgDepartment" id="asgDepartment" class="form-control "></select>
+                            </div>
+                            <div class="form-group label-floating col-md-6">
+                                <label class="control-label">Assignee *</label>
+                                <select name="assignee" id="assignee" class="form-control "></select>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-md-7">
+                    <div style="padding:25px; border:1px solid #ccc; border-radius:5px;" class="border-container-2">
+
+                        <div class="row">
+
+                            <div class="form-group label-floating col-md-6">
+                                <label class="control-label">Reservation No *</label>
+                                <input type="text" class="form-control" id="reservationNo" value="@Model.ReservationNo" name="reservationNo" />
+                            </div>
+                            <div class="form-group label-floating col-md-6">
+                                <button type="button" id="btnSearch" class="btn btn-primary">   Search  </button>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="form-group label-floating col-md-6">
+                                <label class="control-label">Room No </label>
+                                <input type="number" class="form-control" id="roomNo" name="roomNo" value="@Model.RoomNo" readonly />
+                            </div>
+
+                            <div class="form-group label-floating col-md-6">
+                                <label class="control-label">Guest </label>
+                                <input type="text" class="form-control" id="guest" name="guest" value="@Model.GuestName" readonly />
+                            </div>
+                        </div>
+
+
+                        <div class="row reservationDetails">
+                            <div style="padding:22px; border:1px solid #ccc; border-radius:5px;" class="border-container-2">
+                                <div class="col-md-12">
+                                    <div style="min-height:100px;">
+                                        <table class="table table-stripped" width="100%" id="tblReservationDetails">
+                                            <tr>
+                                                <th>Res. No</th>
+                                                <th>Arrival</th>
+                                                <th>Departure</th>
+                                                <th>Room No</th>
+                                                <th>Guest</th>
+                                            </tr>
+
+                                        </table>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+            <div class="col-md-12">
+
+                <div class="row">
+                    <div class="form-group">
+                        <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                        &nbsp;
+                        <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+</div>
+<script src="~/Scripts/ui/servicehub/servicehubjob.js"></script>*@

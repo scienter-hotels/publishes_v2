@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.Floor>
+
+<div class="form-group override-from-group-margin">
+    <div class="form-group override-from-group-margin font-size">
+        <div class="form-group checkbox" style="margin-right: 0px;margin-left: 11px;">
+            <label>
+                <input type="checkbox" id="floor-number" class="floor-number-checkbox-all" data-filter-value="*" />
+                All
+            </label>
+        </div>
+    </div>
+</div>
+@foreach (var item in Model)
+{
+    string[] clsStrArr;
+    string cls = ".";
+    clsStrArr = item.Name.ToLower().Split(' ');
+
+    for (int i = 0; i < clsStrArr.Length; i++)
+    {
+        if (i != (clsStrArr.Length - 1))
+        {
+            cls = cls + clsStrArr[i] + "-";
+        }
+        else
+        {
+            cls = cls + clsStrArr[i];
+        }
+
+    }
+
+    @*<div class="form-group override-from-group-margin">
+            <input type="hidden" value="@item.Id" class="floor-number-hidden" />
+            <input type="checkbox" id="floor-number" class="floor-number-checkbox" data-filter-value="@cls" />
+            <label style="color:#fff;font-size: 0.8em;"> @item.Name </label>
+        </div>*@
+    <div class="form-group override-from-group-margin">
+        <div class="form-group override-from-group-margin font-size">
+            <div class="form-group checkbox" style="margin-right: 0px;margin-left: 11px;">
+                <label>
+                    <input type="checkbox" id="floor-number" class="floor-number-checkbox" data-filter-value="@cls" />
+                    @item.Name
+                </label>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(function () {                                                
+        $('.floor-number-checkbox-all').prop('checked', true);         
+        $('.floor-number-checkbox-all').change();
+    })
+</script>

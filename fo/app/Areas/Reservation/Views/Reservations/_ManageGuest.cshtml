@@ -1,0 +1,412 @@
+﻿
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+    .form-group {
+        margin-top: 15px;
+    }
+</style>
+
+<input type="hidden" id="ReservationNumber" value="@ViewBag.reservationNumber" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+<input type="hidden" id="roomNo" value="@ViewBag.roomNo" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+<input type="hidden" id="Path" class="Path" value="@ViewBag.Path" />
+
+<div class="row">
+    <div class="col-md-12">
+        <fieldset class="the-fieldset padding-margin-bottom-override" style="padding-top:0px; padding-bottom:0px;">
+            <legend class="the-legend">
+                Guests Details
+            </legend>
+            <div class="col-md-12">
+                <button type="button" id="AddToggle" data-toggle="collapse" data-target="#addGuestDiv" class="btn btn-sm theme-bg-color-2 pull-right">
+                    <span class="glyphicon glyphicon-plus"></span> Add New Guest
+                </button>
+                <div id="ExistingGuestProfiles">
+                    @Html.Partial("_Loading")
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
+
+<div class="row collapse" id="addGuestDiv">
+
+    <div class="col-md-12">
+        <input type="hidden" class="reservationNo" id="reservationNo" value="@ViewBag.reservationHeaderId" />
+        <div class="col-md-12">
+            @{Html.RenderAction("GuestProfile", "Reservations");}
+        </div>
+    </div>
+
+    <div class="col-md-6 col-md-offset-4">
+        <div class="form-group label-floating">
+            <label class="control-label">Guest Profile Type</label>
+            @{Html.RenderAction("GuestProfileTypesCombo", "GuestProfileType", new { area = "Administration", name = "GuestProfileTypeId", requiered = true });}
+        </div>
+    </div>
+
+    <div class="text-right col-md-2" style="padding-top:10px;">
+        <button type="button" id="btnNewGuest" class="btn btn-primary btnNewGuest"> Add</button>
+    </div>
+</div>
+
+<div class="collapse" id="editGuestDiv">
+    <div class="row">
+        <div class="col-md-12">
+            <fieldset class="the-fieldset padding-margin-bottom-override" style="padding-top:0px; padding-bottom:0px;">
+                <legend class="the-legend">Edit Guest Profile</legend>
+                <div id="guestProfileContainer">
+                    @Html.Partial("_Loading")
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+        //2023-08-16--------------------------------------------------------------------------
+
+        $('#GuestProfileTypeId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+
+        //-------------------------------------------------------------------------------------------
+
+        $('.btnStep02Next').hide();
+        $('.addGuestDiv').hide();
+        $('.div-scroll').css('height', 290);
+        LoadExistingGuests();
+
+    });
+
+    function FillGrid() {
+        LoadExistingGuests();
+    }
+    //AddToggle
+
+    $('body').off('click', '#AddToggle').on('click', '#AddToggle', function (e) {
+        if ($('#editGuestDiv').hasClass('in')) {
+            $('#editGuestDiv').collapse('hide');
+        }
+        setTimeout(function () { PopupModalScrollTo(".SearchWindow"); }, 1000)
+
+    });
+
+
+    //Add new Existing Guest----------------------------------------------------------------------
+    $('body').off('click', '#btnNewGuest').on('click', '#btnNewGuest', function (e) {
+        if ($('#editGuestDiv').hasClass('in')) {
+            $('#editGuestDiv').collapse('hide');
+        }
+
+        AddGuest(e);
+    });
+
+    //Create new Guest----------------------------------------------------------------------
+    $('body').off('click', '#btnCreateGuest').on('click', '#btnCreateGuest', function () {
+        $('.guest-checkBox').each(function (index, element) {
+            $(element).prop('checked', false);
+        });
+        AddGuest();
+    });
+
+    $('body').on('click', '#AddToggle', function () {
+        $(this).closest('.modal-dialog').css('margin-top', 0);
+    });
+
+    function AddGuest(e) {
+        //alert("inhouse");
+        var isValid = true;
+        if ($('#SalutationId').val() == '') {
+            $('#SalutationId').focus();
+            isValid = false;
+            ShowWarningMessage('Salutation required.');
+        }
+        else if ($('#FirstName').val() == '') {
+            $('#FirstName').focus();
+            isValid = false;
+            ShowWarningMessage('First Name required.');
+        }
+        else if ($('#LastName').val() == '') {
+            $('#LastName').focus();
+            isValid = false;
+            ShowWarningMessage('Last Name required.');
+        }
+        else if ($('#NICPassport').val() == '') {
+            $('#NICPassport').focus();
+            isValid = false;
+            ShowWarningMessage('Nic / Passport required.');
+        }
+
+        else if ($('#CountryId').val() == '') {
+            $('#CountryId').focus();
+            isValid = false;
+            ShowWarningMessage('Country required.');
+        }
+        else if ($('#NationalityId').val() == '') {
+            $('#NationalityId').focus();
+            isValid = false;
+            ShowWarningMessage('Nationality required.');
+        }
+
+        //else if ($('#Email').val() == '') {
+        //    $('#Email').focus();
+        //    isValid = false;
+        //    ShowWarningMessage('Email required.');
+        //}
+        //else  if ($('#ContactNo').val() == '') {
+        //    $('#ContactNo').focus();
+        //    isValid = false;
+        //    ShowWarningMessage('Contact No required.');
+        //}
+
+        if (isValid) {
+            var guestId = -1;
+            $('.guest-checkBox').each(function (index, element) {
+                if ($(element).prop('checked')) {
+                    guestId = $(element).val();
+                    return false;
+                }
+            });
+
+            if ($('#GuestProfileTypeId').val() == '') {
+                ShowWarningMessage('Please select guest profile type.');
+                return false;
+            }
+
+            var email = '';
+            var contactNo = '';
+
+            email = $('#Email').val();
+            contactNo = $('#ContactNo').val();
+
+            var SelectedGuest = {
+                Id: guestId,
+                SalutationId: $('#SalutationId').val(),
+                FirstName: $('#FirstName').val(),
+                LastName: $('#LastName').val(),
+                NICPassport: $('#NICPassport').val(),
+                NicPassport2: $('#NICPassport').val(),
+                CountryId: $('#CountryId').val(),
+                NationalityId: $('#NationalityId').val(),
+                Email: email,
+                ContactNo: contactNo,
+                ReservationHeaderId: $('#reservationNo').val(),
+                GuestProfileTypeId: $('#GuestProfileTypeId').val()
+            }
+
+            var guestExists = false;
+
+            //$('.guestDetails').each(function () {
+            //    if ($(this).find('#btnEditGuest').attr('data-id') == guestId) {
+            //        guestExists = true;
+            //        return false;
+            //    }
+            //});
+            debugger;
+            console.log(SelectedGuest);
+            if (guestExists) {
+                ShowWarningMessage('Guest already exists.');
+            } else {
+                $.ajax({
+                    url: '/reservation/reservations/AddNewGuest',
+                    dataType: 'json',
+                    method: 'POST',
+                    data: { SelectedGuest: SelectedGuest },
+                    //data: {SelectedGuest },
+                    success: function (data) {
+                       // alert("1");
+                        var Type = $('#resType').val();
+                        if (data.startsWith('300-')) {
+                            ShowErrorMessage(data.replace("300-", ""));
+
+                        } else {
+                            //$('#addGuestDiv').collapse('hide');
+                            ShowSuccessMessage(data);
+                            //var EventCode = "GC";
+                            //var ReservationNo = $('#ReservationNumber').val();
+                            //var propertyId = $('#PropertyId').val();
+                            //var userId = $('#UserId').val();
+                            //var printURL = $('#DirectPrintURL').val();
+                            //var FromRoom = $('#roomNo').val();
+                            //var ToRoom = "-1";
+                            //var GuestName = $('#FirstName').val() + ' '+$('#LastName').val();
+                            //var ajaxUrl = printURL + 'PABX/' + EventCode + '/' + ReservationNo + '/' + propertyId + '/' + userId + '/' + FromRoom + '/' + ToRoom + '/' + GuestName + '/'
+                            //console.log(ajaxUrl);
+                            //PABXAjaxRequest(ajaxUrl);
+                            //FillGrid();
+
+                            LoadExistingGuests();
+                            //LoadInhouseReservationGrid();
+                            
+
+                            
+                            setTimeout(function () {
+                                if (Type == "reservation") {
+                                    //alert("1212");
+
+                                    
+                                    LoadInhouseReservationGrid(); // Load new inhouse reservation grid
+                                    //Update Uuid
+                                   // window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+                                } else {
+
+                                    LoadInhouseReservationGrid();
+                                    //location.reload()
+
+                                   
+                                }
+
+                            }, 2500);
+
+                            
+
+                        }
+                    },
+                    error: function (error) {
+                        ShowErrorMessage('There is an error in saving this record.')
+
+                    }
+                });
+            }
+        }
+        return isValid;
+    }
+
+    function LoadExistingGuests() {
+        $.ajax({
+            url: '/reservation/reservations/LoadExistingGuests?reservationHeaderId=' + $('#reservationNo').val(),
+            dataType: 'html',
+            method: 'POST',
+            success: function (data) {
+                $('#ExistingGuestProfiles').html('');
+                $('#ExistingGuestProfiles').html(data);
+            },
+            error: function (error) {
+                ShowErrorMessage('There is an error in loading existing guests.')
+            }
+        });
+    }
+
+    //----------------------------------------------------------------------------------------------
+    //$('.success-popup-ok').closest('.modal').on('hide.bs.modal', function (e) {
+    //    location.reload();
+    //});
+
+    $('body').off('click', '#btnEditGuest').on('click', '#btnEditGuest', function () {
+
+        if ($('#addGuestDiv').hasClass('in')) {
+            $('#addGuestDiv').collapse('hide');
+        }
+
+        // $('#editGuestDiv').toggle();
+        // $('.addGuestDiv').hide();
+        $(this).closest('.modal-dialog').css('margin-top', 0);
+        var profileType = $(this).attr('data-profiletype');
+        $.ajax({
+            url: '/reservation/reservations/GuestUpdateProfileSelect?guestProfileId=' + $(this).attr('data-id') + '&reservationNumber=' + $('#ReservationNumber').val() + '&roomNo=' + $('#roomNo').val() + '&Uuid=' + $('#hidden-Uuid').val(),
+            dataType: 'html',
+            method: 'POST',
+            success: function (data) {
+
+                $('#guestProfileContainer').html('');
+                $('#guestProfileContainer').html(data);
+                $('.GuestProfileTypeId').val(profileType);
+            },
+            error: function (error) {
+                ShowErrorMessage('There is an error in loading this record.')
+            },
+            complete: function () {
+            }
+        });
+    });
+
+
+    //$('body').off('click', '#AddToggle').on('click', '#AddToggle', function () {
+    //    $('.guestDetails .gPTypeId').each(function (index, element) {
+    //        if ($(element).val(1)){
+    //            $("#GuestProfileTypeId option[value='1']").remove();
+    //        }
+    //    });
+    //});
+
+
+    $('#DOB').daterangepicker({
+        "showDropdowns": true,
+        "showWeekNumbers": true,
+        "showISOWeekNumbers": true,
+        "singleDatePicker": true,
+        "minDate": new Date('1900-01-01'),
+        //'Custom Range': 'custom',
+        //"yearRange": '1980:2018',
+        "changeYear": true,
+        "changeMonth": true,
+        "opens": "right",
+        "applyClass": "btn-primary",
+        "dateLimit": {
+            "days": false
+        },
+        locale: {
+            format: 'DD/MM/YYYY'
+        }
+    });
+
+
+</script>

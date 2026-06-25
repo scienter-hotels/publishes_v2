@@ -1,0 +1,22 @@
+﻿@model  Scienter.HotelERP.Common.Domain.ViewModels.RoomAllocationAttributeViewModel
+
+<div class="col-md-12">
+        <div class="row">
+            @foreach (var item in Model.RoomAttributes)
+            {
+                if (Model.SelectedRoomAttributes.Where(x => x.Id == item.Id).Count() > 0)
+                {
+                    <div class="col-md-12" style="padding-left: 0px;">
+                        <input class="room-allocation-attribute" checked type="checkbox" id="roomAllocationAttributeId" name="roomAllocationAttributeId" value="@item.Id" /> @item.Name
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-12" style="padding-left: 0px;">
+                        <input class="room-allocation-attribute" type="checkbox" id="roomAllocationAttributeId" name="roomAllocationAttributeId" value="@item.Id" /> @item.Name
+                    </div>
+                }
+
+            }
+        </div>
+</div>

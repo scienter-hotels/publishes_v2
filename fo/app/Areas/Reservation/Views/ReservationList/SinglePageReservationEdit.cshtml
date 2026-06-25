@@ -1,0 +1,706 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.HotelConfirmationView
+<style>
+    .single-page-edit .disabled {
+        cursor: not-allowed;
+    }
+
+    .single-page-edit .dataTables_filter {
+        width: 29% !important;
+        float: left !important;
+    }
+
+    .single-page-edit .dt-buttons {
+        width: 70% !important;
+    }
+
+    .single-page-edit .superscript {
+        font-size: 0.8em;
+    }
+
+    .single-page-edit .form-group {
+        margin-top: 5px;
+    }
+
+    .single-page-edit .table .radio, .single-page-edit .table .checkbox {
+        margin-right: 10px;
+    }
+
+    .single-page-edit #guestGroupGrid {
+        font-size: 12px !important;
+    }
+
+        .single-page-edit #guestGroupGrid input, select {
+            font-size: 12px !important;
+        }
+
+    .single-page-edit .control-label,
+    .single-page-edit .label-data {
+        font-size: 11px !important;
+    }
+
+    .single-page-edit .area-two,
+    .single-page-edit .area-one,
+    .single-page-edit .area-three {
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        padding: 10px;
+    }
+
+    .single-page-edit .area-one {
+        margin-right: 15px
+    }
+
+    .single-page-edit .the-legend {
+        font-size: 10px
+    }
+    .select2{
+        width: 165px;
+        margin-top: 10px;
+        font-size: 11px;
+        margin-top:5px;
+    }
+
+    #tableLoadingArea .form-group{
+        padding-bottom:0px !important;
+    }
+
+
+
+    .single-page-edit .form-group.label-static label.control-label,
+    .single-page-edit .form-group.label-floating.is-focused label.control-label,
+    .single-page-edit .form-group.label-floating:not(.is-empty) label.control-label {
+        top: -22px;
+        /* left: 0; */
+        font-size: 10px !important;
+        line-height: 1.07143;
+    }
+
+
+
+    .the-fieldset {
+        border-radius: 3px !important;
+    }
+
+    /*2023-08-15---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label{
+        z-index:1 !important;
+    }
+
+    .select2-container{
+        width:100% !important;
+    }
+
+    .guest-select-all-checkBox:checked {
+        background-color: red; /* Checked background color */
+    }
+
+        /* Styling for the check mark */
+        .guest-select-all-checkBox:checked::after {
+            content: '\2713'; /* Unicode check mark character */
+            color: yellow; /* Check mark color */
+            font-size: 14px; /* Adjust the font size as needed */
+            margin: -5px 0 0 -5px; /* Adjust the margin to position the check mark */
+        }
+    /*-------------------------------------------------------------------------------*/
+
+
+    label .checkbox .checkbox-material .check {
+        position: relative;
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 1px solid #b6ff00;
+        overflow: hidden;
+        z-index: 1;
+        border-radius: 0px;
+    }
+
+    .guest-select-all-checkBox {
+    border:6px solid #0ff000;
+    }
+
+</style>
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+@*-----------Hidden fields for reservation update-----------------*@
+<input type="hidden" id="GuestName" value="@ViewBag.GuestName" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+<input type="hidden" id="ReservationType" value="@ViewBag.ReservationType" />
+<input type="hidden" id="resHeadId" value="@ViewBag.ResheaderId" />
+<input type="hidden" class="ReseNo" value="@Model.ReservationNo" />
+<input type="hidden" class="segmentId-hidden" value="@Model.SegmentId" />
+<input type="hidden" class="rateCodeId-hidden" value="@Model.RateCodeHeaderId" />
+<input type="hidden" class="marketId-hidden" value="@Model.MarketId" />
+<input type="hidden" class="reservation-country" value="@Model.CountryID" />
+<input type="hidden" class="reservation-status" value="@Model.StatusId" />
+<input type="hidden" class="reservation-bookingSource" value="@Model.BookingSourceId" />
+<input type="hidden" class="reservation-company" value="@Model.AgentId" />
+<input type="hidden" class="reservation-rateCode" value="@Model.RateCodeHeaderId" />
+<input type="hidden" class="reservation-segment" value="@Model.SegmentId" />
+<input type="hidden" class="reservation-market" value="@Model.MarketId" />
+<input type="hidden" id="ExistingVisitPurposeId" value="@Model.VisitPurposeId" />
+<input type="hidden" class="reservation-packageHeaderId" value="@Model.PackageHeaderId" />
+<input type="hidden" class="reservation-guestPaymentModeId" value="@Model.GuestPaymentMode" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+<input type="hidden" id="hidden-SalesPersonId" value="@ViewBag.SalesPersonId" />
+
+<input type="hidden" class="meal-arrivalForId" value="@Model.ArrivalForId" />
+<input type="hidden" class="meal-leaveAfterId" value="@Model.LeaveAfterId" />
+@*--------Hidden fields for reservation update end----------*@
+
+@*----------Hidden fields for stay change------------------*@
+<input type="hidden" id="roomCategoryId" value="@ViewBag.RoomCategoryId" />
+<input type="hidden" id="ViewRateCodeHeaderId" value="@ViewBag.RateCodeHeaderId" />
+<input type="hidden" id="ViewMealPlanId" value="@ViewBag.MealPlanId" />
+<input type="hidden" id="ViewRoomTypeId" value="@ViewBag.RoomTypeId" />
+<input type="hidden" id="IsChangeRoom" value="@ViewBag.IsChangeRoom" />
+<input type="hidden" id="CurrentDate" value="@ViewBag.CurrentDate" />
+<input type="hidden" id="ViewCompanyId" value="@ViewBag.CompanyId" />
+<input type="hidden" id="ViewCountryId" value="@ViewBag.CountryId" />
+<input type="hidden" id="isDormitory" name="isDormitory" value="@ViewBag.IsDormitory" required />
+@*----------Hidden fields for stay change end--------------*@
+@*-----------Hidden fields for guest update------------------*@
+<input type="hidden" id="groupReservationNo" value="@ViewBag.GroupReservationNo" />
+@*-----------------------------------------------------------*@
+
+@if (Convert.ToDateTime(Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.HotelDate).ToShortDateString() == Convert.ToDateTime(Model.Arrival).ToShortDateString())
+{
+    <input type="hidden" id="IsEnableArrivalFor" value="true" />
+}
+else
+{
+    <input type="hidden" id="IsEnableArrivalFor" value="false" />
+}
+
+    <div class="row single-page-edit">
+        <ul class="nav nav-tabs" style="width: 25%;float: right;position: absolute;margin-left: 941px;margin-top: -66.5px;">
+            <li class="res-Change active"><a data-toggle="tab" href="#res-Change">Reservation Change</a></li>
+            <li class="guest-Update guest-update-tab"><a data-toggle="tab" href="#guest-Update">Guest Update</a></li>
+        </ul>
+        <div class="col-md-12">
+            <div class="tab-content">
+                <div id="res-Change" class="tab-pane fade in active">
+                    <br />
+                    <div class="row">
+                        <div class="col-md-2">
+                            <fieldset class="the-fieldset" style="padding:3px; height:475px;overflow-y:scroll;margin-top: -23px;">
+                                <legend class="the-legend">Reservation No</legend>
+                                <div class="col-md-12 label-data" id="reservationNumbersLoadingArea"></div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-10" style="padding:0; margin-top:-14px;overflow:hidden">
+                            <div class="area-one">
+                                <div class="row">
+
+                                    <div class="col-md-8">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="required control-label">Status</label>
+                                                    <select name="StatusId" id="StatusId" class="select2 form-control label-data" required>
+                                                        <option value="0" class="label-data">N/A</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="required control-label">Guest payment mode</label>
+                                                    <select name="GuestPaymentModeId" id="GuestPaymentModeId" class="select2 form-control label-data" required>
+                                                        <option value="0">N/A</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="required control-label">Rate Code</label>
+                                                    <select name="RateCodeId" id="RateCodeId" class="select2 form-control  label-data" required>
+                                                        <option value="0">N/A</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="required control-label">Market</label>
+                                                    <select name="MarketId" id="MarketId" class="select2 form-control  label-data" required>
+                                                        <option value="0">N/A</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="required control-label">Sales Person</label>
+                                                    <select name="SalesPersonId" id="SalesPersonId" class="select2 form-control label-data" required>
+                                                        @*<option value="0">N/A</option>*@
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="control-label">S.Person Contact</label>
+                                                    <input type="text" name="SalesPersonContact" id="SalesPersonContact" class="form-control label-data" value="@Model.SalesPersonContactNo" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="control-label">Voucher No</label>
+                                                    <input type="text" name="VoucherNo" id="VoucherNo" class="form-control label-data" value="@Model.VoucherNo" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="control-label">Tour No</label>
+                                                    <input type="text" name="TourNo" id="TourNo" class="form-control label-data" value="@Model.TourNo" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="required control-label">Booking Source</label>
+                                                    <select name="BookingSourceId" id="BookingSourceId" class="select2 form-control  label-data" required>
+                                                        <option value="0">N/A</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="required control-label">Segment</label>
+                                                    <select name="SegmentId" id="SegmentId" class="select2 form-control  label-data" required>
+                                                        <option value="0">N/A</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="required control-label">Visit Purpose</label>
+                                                    <select name="VisitPurposeId" id="VisitPurposeId" class="select2 form-control label-data" required>
+                                                        <option value="0">N/A</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="required control-label">Package</label>
+                                                    <select name="PackageId" id="PackageId" class="select2 form-control label-data" required>
+                                                        <option value="0">N/A</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="control-label">Internal Remark</label>
+                                                    <textarea name="Remark" id="RemarkId" maxlength="500" rows="5" class="form-control label-data" value="@Model.BookingRemark" style="height:87px !important;">@Model.BookingRemark</textarea>
+                                                    <div id="charCount" style="color: rgb(102, 102, 102);font-size: 10px;text-align: right;">0/500</div>
+                                                    @*<input type="text" name="Remark" id="RemarkId" maxlength="500" class="form-control label-data" value="@Model.BookingRemark" />*@
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+
+                                            <div class="col-md-7">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="required control-label">Company</label>
+                                                    <select name="CompanyId" id="CompanyId" class="select2 form-control" required>
+                                                        <option value="0">N/A</option>
+                                                    </select>
+
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-5">
+                                                <div class="checkbox" title="Invoice settlement from LKR for SSCL tax calculation.">
+                                                    <label style="font-size: 9px;">
+                                                        <input type="checkbox" class="checkbox isBillPaymentFromLKR" value="">
+                                                        LKR Pay.
+                                                    </label>
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-md-5" style="margin-top:15px;">
+                                    <div class="area-two" style="height:277px;">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group  label-floating change-departure-container" style="margin-top:5px;">
+                                                    <label class="control-label">Reason</label>
+                                                    <div id="StayChangeReasonComboContainer">
+                                                        <select name="StayChangeReasonId" id="StayChangeReasonId" class="select2 form-control label-data" required style="font-size:10px !important">
+                                                            <option class="label-data"> </option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="control-label">Arrival*</label>
+                                                    @if (ViewBag.ReservationType == "reservation")
+                                                    {
+                                                        <input type="text" name="From" id="StayChange-ArrivalDate" class="form-control label-data dateSelect start-date-picker ArrivalDate1" value="@Convert.ToDateTime(ViewBag.arrivalDate).ToShortDateString()" />
+
+                                                    }
+                                                    @*else // Removed by Stehani
+                                                    {
+                                                        <input type="text" name="From" id="StayChange-ArrivalDate" class="form-control label-data dateSelect ArrivalDate1 disabled" value="@Convert.ToDateTime(ViewBag.arrivalDate).ToShortDateString()" />
+
+                                                    }*@
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="control-label">Departure*</label>
+                                                    <input type="text" name="To" id="StayChange-DepartureDate" class="form-control label-data dateSelect end-date-picker DepartureDate1" value="@Convert.ToDateTime(ViewBag.departureDate).ToShortDateString()" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group form-group-margin-override label-floating resArrivalTime" id="ExpectedArrivalTimeId">
+                                                    <label class="required control-label">Expected Arrival Time</label>
+                                                    <input type="hidden" class="timeArrival label-data" value="@Model.ExpectedArrivalTime" />
+                                                    @{Html.RenderPartial("_TimeRange");}
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group form-group-margin-override label-floating resDepartureTime" id="ExpectedDepartureTimeId">
+                                                    <input type="hidden" class="timeDeparture" value="@Model.ExpectedDepartureTime" />
+                                                    <label class="required control-label">Expected Departure Time</label>
+                                                    @{Html.RenderPartial("_TimeRange");}
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="control-label">Meal Plan</label>
+                                                    <select name="MealPlanId" id="MealPlanId" class="select2 form-control label-data" required>
+                                                        <option value="0">N/A</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="control-label">Arrive For</label>
+                                                    <select name="ArriveMealPlanId" id="ArriveMealPlanId" class="form-control label-data" required>
+                                                        <option value="0">N/A</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="control-label">Leave After</label>
+                                                    <select name="LeaveMealPlanId" id="LeaveMealPlanId" class="form-control label-data" required>
+                                                        <option value="0">N/A</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="control-label">No Of Adults</label>
+                                                    <input type="number" name="NoOfAdults" id="NoOfAdults" class="form-control label-data" value="@Model.NoOfAdults" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="control-label">No Of Kids</label>
+                                                    <input type="number" name="NoOfKids" id="NoOfKids" class="form-control label-data" value="@Model.NoOfKids" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group form-group-margin-override label-floating">
+                                                    <label class="control-label">No Of Infants</label>
+                                                    <input type="number" name="Infants" id="Infants" class="form-control label-data" value="@Model.Infants" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group label-floating" style="margin-top:5px;">
+                                                    <label class="control-label">Stay change remark</label>
+                                                    <textarea maxlength="1000" rows="1" id="StayChange-Remark" name="StayChange-Remark" class="form-control label-data"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-7 area-three" style="margin-top:15px; height:277.28px; width:46vw; overflow-y:auto;">
+                                    <div class="table-responsive" id="tableLoadingArea">
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row" style="margin-top:10px;">
+                                <div class="col-md-2 col-md-offset-9">
+                                    <button type="button" class="btn btn-primary pull-right" id="new-reservation-update">
+                                        Update Reservation  <span class="glyphicon "></span>
+                                    </button>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-primary pull-right" id="" data-dismiss="modal" style="margin-right: 11px;">
+                                        <span class="glyphicon glyphicon-floppy-remove"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="guest-Update" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <fieldset class="the-fieldset">
+                                <legend class="the-legend">Guest Update</legend>
+
+                                <div class="manage-group">
+                                    <div class="table-responsive">
+                                        <form id="guestGroup">
+                                            <table class="table table-striped table-hover" id="guestGroupGrid" cellspacing="5">
+
+                                                    @*2024-02-12 Anuradha---------------------------------------------------------------------- add new <th> s*@
+                                                <tr>
+                                                    <th width="50px" style="margin-right:0.2em" title="Select All">
+                                                        <div class="form-group checkbox check-all">
+                                                            <label>
+                                                                <input type="checkbox" />
+                                                            </label>
+                                                        </div>
+                                                    </th>
+                                                    <th class="text-primary " input type="text" width="100px">
+                                                        Res.No
+                                                    </th>
+                                                    <th class="text-primary " input type="text" width="80px">
+                                                        Room
+                                                    </th>
+                                                    <th class="text-primary " width="80px">
+                                                        Salutation
+                                                    </th>
+                                                    <th width="50px"></th>
+                                                    <th class="text-primary " width="100px">
+                                                        First Name
+                                                    </th>
+                                                    <th class="text-primary " width="100px">
+                                                        Last Name
+                                                    </th>
+                                                    <th class="text-primary " width="150px">
+                                                        Email
+                                                    </th>
+                                                    <th width="50px"></th>
+                                                    <th class="text-primary " width="100px">
+                                                        ContactNo
+                                                    </th>
+                                                    <th width="50px"></th>
+                                                    <th class="text-primary " width="120px">
+                                                        DOB
+                                                    </th>
+                                                    <th class="text-primary " width="120px">
+                                                        Country
+                                                    </th>
+                                                    <th width="50px"></th>
+                                                    <th class="text-primary " width="120px">
+                                                        Nationality
+                                                    </th>
+                                                    <th width="50px"></th>
+                                                </tr>
+                                                    @*-----------------------------------------------------------------------------------------*@
+
+                                            </table>
+                                            <div class="form-group text-right">
+                                                <input type="submit" id="btnUpdate" disabled="disabled" value="Update" class="btn btn-primary " />
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@if (Model.IsBillPaymentFromLKR)
+{
+    <input type="hidden" class="IsBillPaymentFromLKR" value="True" />
+}
+else
+{
+    <input type="hidden" class="IsBillPaymentFromLKR" value="False" />
+}
+
+<script src="~/Scripts/ui/scienter.frontoffice.layout.js"></script>
+<script src="~/Scripts/ui/reservation-list/side-buttons/single-page-reservation-edit.js"></script>
+
+<input type="hidden" id="SinglePageReservationEditPage" value="1" />
+
+<script>
+    var countryId = 0;
+    var maxChars = 500;
+
+    $(document).ready(function () {
+        var charCount = $('#RemarkId').val().length;
+        $('#charCount').text(charCount + '/' + maxChars);
+        //2023-08-10--------------------------------------------------------------------------
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display','none');
+            $('#select2-DocNo-container').css({ 'margin-top':'-1px', 'cursor':'auto'});
+        }, 100);
+        //-------------------------------------------------------------------------------------------
+
+        isCategoryGridLoaded = false;
+        isReservationListLoaded = false;
+
+        document.getElementById('StayChange-Remark').addEventListener('input', function () {
+            var userInput = this.value;
+            this.setAttribute('title', userInput)
+        })
+
+        $('#RoomCategory').attr("disabled", true);
+        $('#RoomType').attr("disabled", true);
+
+        timeArrival = $('.timeArrival').val();
+        $('.resArrivalTime .time-range').val(timeArrival);
+
+        timeDeparture = $('.timeDeparture').val();
+        $('.resDepartureTime .time-range').val(timeDeparture);
+
+        $('#ArrivalDate').prop("disabled", true);
+        $('#DepartureDate').prop("disabled", true);
+
+        setInterval(function () {
+            if (isCategoryGridLoaded == true && isReservationListLoaded == true && isNoOfRoomsLoaded == false) {
+                isNoOfRoomsLoaded = true;
+                PushSelectedReservationList();
+            }
+        }, 1000)
+
+        var IsBillPaymentFromLKR = $('.IsBillPaymentFromLKR').val();
+
+        if (IsBillPaymentFromLKR == "True") {
+            $('.isBillPaymentFromLKR').prop('checked', true);
+        } else {
+            $('.isBillPaymentFromLKR').prop('checked', false);
+        }
+    });
+
+    $('#RemarkId').on('input', function () {
+        var charCount = $(this).val().length;
+        $('#charCount').text(charCount + '/' + maxChars);
+
+        if (charCount > maxChars) {
+            $('#charCount').css('color', 'red');
+        } else {
+            $('#charCount').css('color', '#666');
+        }
+    });
+
+    $('body').off('change', '.isBillPaymentFromLKR').on('change', '.isBillPaymentFromLKR', function (e) {
+        if (confirm('Selecting this will mark folios settled from LKR. This will enable SSCL tax calculation for invoices. Are you sure you want to proceed?')) {
+          
+        } else {
+            if ($(this).prop('checked')) {
+                $(this).prop('checked', false);
+            } else {
+                $(this).prop('checked', true);
+            }
+        }
+    });
+
+    $('body').off('change', '.ArrivalDate1').on('change', '.ArrivalDate1', function (e) {
+        isCategoryGridLoaded = false;
+        LoadAvailabilityGridInReservationEdit();  //---------------------------------------------
+    });
+
+    $('body').off('change', '.DepartureDate1').on('change', '.DepartureDate1', function (e) {
+        isCategoryGridLoaded = false;
+        LoadAvailabilityGridInReservationEdit();  //---------------------------------------------
+    })
+
+    $('body').off('click', '#new-reservation-update').on('click', '#new-reservation-update', function (e) {
+        if (confirm("Are you sure you want to proceed with updating all selected reservations?")) {
+            UpdateReservationInReservationEdit();
+        }
+    });
+
+    $('body').off('change', '.checbox-item').on('change', '.checbox-item', function (e) {
+        PushSelectedReservationList();
+    });
+
+    var selectedReservationsArr = [];
+    var reservationObj = {};
+
+    $('#grid-record-detail-model-close').on('click', function (evt) {
+        closeFullContent();
+        LoadReservationGrid();
+    });
+
+    $('body').off('change', '.room-count').on('change', '.room-count', function (e) {
+        var datamaxadultcount = $(this).attr('data-max-adult-count');
+        var datamaxchildcount = $(this).attr('data-max-child-count');
+        var datamaxInfantcount = $(this).attr('data-max-Infant-count');
+
+        $('#NoOfAdults').val(datamaxadultcount);
+        //$('#NoOfKids').val(datamaxchildcount);
+        //$('#Infants').val(datamaxInfantcount);
+    });
+
+</script>

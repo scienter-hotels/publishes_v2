@@ -1,0 +1,114 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.RoomDetailView>
+
+    @{
+        ViewBag.Title = "Exising Room Details";
+    }
+
+    <div class="table-responsive">
+        <table id="existingRoomDetailsGrid" class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="text-primary">
+                         Code
+                    </th>
+                    <th class="text-primary">
+                       RoomType
+                    </th>
+                    <th class="text-primary">
+                        Room Catagory
+                    <th class="text-primary">
+                        Room Floor
+                    </th>
+                    <th class="text-primary">
+                        Bed Type
+                    </th>
+                    <th class="text-primary">
+                        Extention
+                    </th>
+                    <th class="col-md-1 text-primary">
+                      Active
+                    </th>
+                    <th class="col-md-1 hidden-print"></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RoomCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RoomTypeName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RoomCatagoryName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RoomFloorName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BedTypeName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ExtentionName)
+                    </td>
+                    <td class="text-right">
+                        <div class="form-group checkbox">
+                            <label>
+                                @Html.DisplayFor(modelItem => item.IsActive)
+                                <span class="hidden">
+                                    @if (item.IsActive)
+                                    {
+                                        @:Active
+                                    }
+                                    else
+                                    {
+                                        @:Inactive
+                                    }
+                                </span>
+                            </label>
+                        </div>
+                    </td>
+                    <td class="hidden-print text-right">
+                        @*<a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Bed Type - @item.Name"  data-href="/administration/bedtypes/print/@item.Id">
+                <span class="glyphicon glyphicon-print"></span>
+            </a>*@
+
+                        <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/roomDetails/edit/@item.Id">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+
+                        <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/administration/roomDetails/delete/@item.Id">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+
+    <script>
+    $(document).ready(function () {
+        $('#existingRoomDetailsGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+    </script>

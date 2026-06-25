@@ -1,0 +1,416 @@
+﻿
+@model Scienter.HotelERP.Common.Domain.GuestProfile
+
+@{
+    ViewBag.Title = "Create / Edit";
+    string isEdit = "";
+    if (Model.Id > 0)
+    {
+        //isEdit = "disabled";
+    }
+}
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        overflow-x: hidden;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+    .form-group {
+        margin: 20px 0 0 0;
+    }
+</style>
+
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("FilesUploadTo")" name="" id="FilesUploadTo" />
+
+<div class="col-md-12">
+
+    <form id="guestProfiles">
+        @Html.AntiForgeryToken()
+        <div class="">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+
+            <div class="row">
+
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group label-floating">
+                                <label class="control-label">FirstName *</label>
+                                <input autocomplete="off" @isEdit class="form-control text-box single-line" maxlength="100" id="FirstName" name="FirstName" type="text" value="@Model.FirstName" required>
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">MiddleName </label>
+                                <input autocomplete="off" @isEdit class="form-control text-box single-line" maxlength="100" id="MiddleName" name="MiddleName" type="text" value="@Model.MiddleName">
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">LastName </label>
+                                <input autocomplete="off" @isEdit class="form-control text-box single-line" maxlength="100" id="LastName" name="LastName" type="text" value="@Model.LastName">
+                            </div>
+                            <div class="form-group label-floating">
+                                <label class="control-label">HomeAddress </label>
+                                <textarea id="HomeAddress" name="HomeAddress" class="form-control">@Model.HomeAddress</textarea>
+                            </div>
+                            <div class="form-group label-floating">
+                                <label class="control-label">BillingAddress * </label>
+                                <textarea id="BillingAddress" name="BillingAddress" class="form-control">@Model.BillingAddress</textarea>
+                            </div>
+                            <div class="form-group label-floating">
+                                <label class="control-label">Gender </label>
+                                @{Html.RenderAction("GenderCombo", "Genders", new { name = "GenderId", requiered = true, value = Model?.GenderId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Salutation *</label>
+                                @{Html.RenderAction("SalutationCombo", "Salutations", new { name = "SalutationId", requiered = true, value = Model?.SalutationId });}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Designation  </label>
+                                @{Html.RenderAction("DesignationCombo", "Designations", new { name = "DesignationId", requiered = false, value = Model?.DesignationId });}
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.DOB, htmlAttributes: new { @class = "control-label" })
+                                <div id="dobContainerInGuestProfiles" class='input-group date'>
+                                    @Html.TextBoxFor(model => model.DOB, new { @class = "form-control" })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Profile Status * </label>
+                                @{Html.RenderAction("ProfileStatusCombo", "ProfileStatuses", new { name = "ProfileStatusId", requiered = true, value = Model?.ProfileStatusId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Country * </label>
+                                @{Html.RenderAction("CountriesCombo", "Countries", new { name = "CountryId", requiered = true, value = Model?.CountryId });}
+
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">VIP Levels  </label>
+                                @{Html.RenderAction("VIPLevelCombo", "VIPLevels", new { name = "VipLevelId", requiered = false, value = Model?.VipLevelId });}
+                                @Html.ValidationMessageFor(model => model.VipLevelId, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Languages </label>
+                                @{Html.RenderAction("LanguageCombo", "Languages", new { name = "LanguageId", requiered = false, value = Model?.LanguageId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Segments  </label>
+                                @{Html.RenderAction("SegmentCombo", "Segments", new { name = "SegmentId", requiered = false, value = Model?.SegmentId });}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="col-md-10">
+
+
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">ID No </label>
+                                <input autocomplete="off" class="form-control text-box single-line" maxlength="15" id="IdNum" name="IdNum" type="text" value="@Model.IdNum">
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">PassportNo  </label>
+                                <input autocomplete="off" class="form-control text-box single-line" maxlength="30" id="PassportNo" name="PassportNo" type="text" value="@Model.PassportNo">
+                            </div>
+
+                            <div class="form-group col-md-12">
+                                @Html.LabelFor(model => model.PassportExpDate, htmlAttributes: new { @class = "control-label" })
+                                <div id="passportContainerInGuestProfiles" class='input-group date'>
+                                    @Html.TextBoxFor(model => model.PassportExpDate, new { @class = "form-control" })
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Company  </label>
+                                @{Html.RenderAction("CompaniesCombo", "Companies", new { name = "CompanyId", requiered = false, value = Model?.CompanyId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label required">Select Nationality</label>
+                                @{Html.RenderAction("NationalityCombo", "Nationalities", new { area = "Administration", name = "NationalityId", requiered = true, value = Model?.NationalityId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Preferred Room  </label>
+                                @{Html.RenderAction("RoomDetailCombo", "RoomDetails", new { name = "PreferredRoomId", requiered = false, value = Model?.PreferredRoomId });}
+
+                            </div>
+                            <div class="form-group label-floating">
+                                <label class="control-label">Preferred Room Category  </label>
+                                @{Html.RenderAction("RoomCategoryCombo", "RoomCategories", new { name = "PreferredRoomCategoryId", requiered = false, value = Model?.PreferredRoomCategoryId });}
+                            </div>
+
+                            @*<div class="form-group label-floating">
+                                    <label class="control-label required">Select Nationality</label>
+                                    @{Html.RenderAction("NationalityCombo", "Nationalities", new { area = "Administration", name = "NationalityId", requiered = true, value = Model?.NationalityId });}
+                                </div>*@
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="col-md-10">
+
+
+
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Default Rate Code  </label>
+                                @{Html.RenderAction("RateCodeHeadersCombo", "RateCodeHeaders", new { name = "DefaultRateCodeId", requiered = false, value = Model?.DefaultRateCodeId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Laundry Patterns  </label>
+                                @{Html.RenderAction("LaundryPatternCombo", "LaundryPatterns", new { name = "LaundryPatternId", requiered = false, value = Model?.LaundryPatternId });}
+                            </div>
+
+                            @if (@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("FilesUploadTo") == "AzureBlobStorage")
+                            {
+                                <div class="form-group">
+                                    @{
+                                        string imageUrl = Model.GuestImage;
+                                        if (Model.GuestImage.Contains("windows.net"))
+                                        {
+                                            imageUrl = Model.GuestImage;
+                                        }
+                                    }
+                                    Image *
+                                    @{
+                                        if (Model != null)
+                                        {
+                                            <img id="GImg1" src="@imageUrl" style="height:70px; width:90px;" name="GuestProfileImage" />
+                                            <input type="hidden" name="GuestImage" id="GuestImage" />
+                                        }
+
+                                        else
+                                        {
+                                            <img id="blah" src="~/Images/no-image.png" style="height:80px; width:90px;" name="GuestProfileImage" />
+                                            <input type="hidden" name="GuestImage" id="GuestImage" />
+
+                                        }
+
+                                    }
+                                    <input type="file" name="fileGuestProfileImage" id="fileGuestProfileImage" accept=".jpg, .png, .gif, .jpeg" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-group">
+                                    Image *
+                                    @{
+                                        if (Model != null)
+                                        {
+                                            <img id="GImg1" src="@Model.GuestImage" style="height:70px; width:90px;" name="GuestProfileImage" />
+                                            <input type="hidden" name="GuestImage" id="GuestImage" />
+                                        }
+
+                                        else
+                                        {
+                                            <img id="blah" src="~/Images/no-image.png" style="height:80px; width:90px;" name="GuestProfileImage" />
+                                            <input type="hidden" name="GuestImage" id="GuestImage" />
+
+                                        }
+
+                                    }
+                                    <input type="file" name="fileGuestProfileImage" id="fileGuestProfileImage" accept=".jpg, .png, .gif, .jpeg" />
+                                </div>
+                            }
+
+                            
+                            <div class="form-group checkbox">
+                                <label>
+                                    @Html.CheckBoxFor(model => model.IsActive)
+                                    @*<input type="checkbox" checked name="IsActive" value="True" />*@ Active
+                                </label>
+                                @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+
+                            </div>
+
+                            <div class="form-group">
+                                <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                                &nbsp;
+                                <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        //2023-08-16--------------------------------------------------------------------------
+        $('#GenderId').addClass('select2');
+        $('#SalutationId').addClass('select2');
+        $('#DesignationId').addClass('select2');
+        $('#ProfileStatusId').addClass('select2');
+        $('#CountryId').addClass('select2');
+        $('#VipLevelId').addClass('select2');
+        $('#LanguageId').addClass('select2');
+        $('#SegmentId').addClass('select2');
+        $('#CompanyId').addClass('select2');
+        $('#NationalityId').addClass('select2');
+        $('#PreferredRoomId').addClass('select2');
+        $('#PreferredRoomCategoryId').addClass('select2');
+        $('#DefaultRateCodeId').addClass('select2');
+        $('#LaundryPatternId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+
+        $("#fileGuestProfileImage").change(function () {
+            readURL(this);
+        });
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#GImg1').attr('src', e.target.result);
+                    $('#GuestImage').val(e.target.result);
+                    console.log(e.target.result);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $('#DOB').daterangepicker({
+            "showDropdowns": true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "singleDatePicker": true,
+            "minDate": new Date('1900-01-01'),
+            //'Custom Range': 'custom',
+            //"yearRange": '1980:2018',
+            "changeYear": true,
+            "changeMonth": true,
+            "opens": "right",
+            "applyClass": "btn-primary",
+            "dateLimit": {
+                "days": false
+            },
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        });
+        $('#PassportExpDate').daterangepicker({
+            "showDropdowns": true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "singleDatePicker": true,
+            "minDate": new Date('1980-01-01'),
+            //'Custom Range': 'custom',
+            //"yearRange": '1980:2018',
+            "changeYear": true,
+            "changeMonth": true,
+            "opens": "right",
+            "applyClass": "btn-primary",
+            "dateLimit": {
+                "days": false
+            },
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+            //}, function (start, end, label) {
+            //    $('input[name="From"]').val(start.format('YYYY-MM-DD'));
+            //    $('input[name="To"]').val(end.format('YYYY-MM-DD'));
+        });
+    });
+
+
+    //$(document).ready(function () {
+
+    //    //}, function (start, end, label) {
+    //    //    $('input[name="From"]').val(start.format('YYYY-MM-DD'));
+    //    //    $('input[name="To"]').val(end.format('YYYY-MM-DD'));
+
+
+
+
+    //    //$('.dobContainerInEmployee').val("");
+
+    //});
+
+</script>

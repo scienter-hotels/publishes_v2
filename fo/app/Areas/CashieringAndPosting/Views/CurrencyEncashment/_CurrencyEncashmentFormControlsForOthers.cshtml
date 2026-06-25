@@ -1,0 +1,156 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.CurrencyEncashmentViewModel
+
+<div class="col-md-12">
+    <div class="row" style="margin-right: -30px;">
+        <div class="guest">
+            <input class="transport-header-id" type="hidden" id="transport-header-id" />
+        </div>
+        <div class="col-md-12">
+            @*<div class="row">*@
+            @*<div class="walkin-Name form-group label-floating">*@
+            <div class="form-group label-floating">
+                @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control font-size-16px" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+
+
+            @*<div class="walkin-passportNo form-group label-floating">*@
+            <div class="form-group label-floating">
+                @Html.LabelFor(model => model.PassportNo, "Passport No", htmlAttributes: new { @class = "control-label" })
+                @Html.EditorFor(model => model.PassportNo, new { htmlAttributes = new { @class = "form-control font-size-16px" } })
+                @Html.ValidationMessageFor(model => model.PassportNo, "", new { @class = "text-danger" })
+            </div>
+            @*</div>*@
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="room-combo form-group label-floating">
+                        @Html.LabelFor(model => model.RoomId, "Room Code", htmlAttributes: new { @class = "control-label" })
+                        @{Html.RenderAction("GetInHouseRooms", "RoomDetails", new { area = "Administration", name = "RoomId", requiered = true, value = Model?.RoomId });}
+                        @Html.ValidationMessageFor(model => model.RoomId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="guestname-combo form-group label-floating">
+                        @Html.LabelFor(model => model.GuestId, "Guest Name", htmlAttributes: new { @class = "control-label" })
+                        @{Html.RenderAction("GuestProfileCombo", "GuestProfiles", new { area = "Administration", name = "GuestId", requiered = true, value = Model?.GuestId });}
+                        @Html.ValidationMessageFor(model => model.GuestId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group label-floating">
+                @Html.LabelFor(model => model.CountryId, "Country", htmlAttributes: new { @class = "control-label" })
+                @{Html.RenderAction("CountriesCombo", "Countries", new { area = "Administration", name = "CountryId", requiered = true, value = Model?.CountryId });}
+                @Html.ValidationMessageFor(model => model.CountryId, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group label-floating">
+                @Html.LabelFor(model => model.CurrencyId, "Currency", htmlAttributes: new { @class = "control-label" })
+                @{Html.RenderAction("SelectedCurrenciesCombo", "Currencies", new { area = "Administration", name = "CurrencyId", requiered = true, value = Model?.CurrencyId });}
+                @Html.ValidationMessageFor(model => model.CurrencyId, "", new { @class = "text-danger" })
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        @Html.LabelFor(model => model.Rate, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.Rate, new { htmlAttributes = new { @class = "form-control font-size-16px", @readonly = "readonly" } })
+                        @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control font-size-16px", min = 0 } })
+                        @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" id="convertionType">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group label-floating">
+                                <input type="radio" id="convertionType1" name="contact" value="C" checked>
+                                <label for="convertionType1">Currency</label>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-6">
+                            <div class="form-group label-floating">
+                                @Html.LabelFor(model => model.ReferenceNo, "Reference No", htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.ReferenceNo, new { htmlAttributes = new { @class = "form-control font-size-16px", min = 0 } })
+                                @Html.ValidationMessageFor(model => model.ReferenceNo, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="row">
+                    <div class="col-md-4">
+                        <input type="radio" id="convertionType2" name="contact" value="T">
+                        <label for="convertionType2">TT</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="radio" id="convertionType3" name="contact" value="O">
+                        <label for="convertionType3">Other</label>
+                    </div>
+                </div>*@
+
+                </div>
+            </div>
+
+            @*<div class="form-group label-floating">
+                @Html.LabelFor(model => model.ReferenceNo, htmlAttributes: new { @class = "control-label" })
+                @Html.EditorFor(model => model.ReferenceNo, new { htmlAttributes = new { @class = "form-control font-size-16px", min = 0 } })
+                @Html.ValidationMessageFor(model => model.ReferenceNo, "", new { @class = "text-danger" })
+            </div>*@
+
+            <div class="form-group label-floating">
+                @Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "control-label" })
+                <textarea id="Remarks" class="form-control"></textarea>
+                @Html.ValidationMessageFor(model => model.Remarks, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+</div>
+@*<div class="row">
+    <div class="col-md-2"></div>
+    <div class="form-group col-md-10">
+        <input type="button" id="btnAdd" value="Add" class="btn btn-primary" disabled />
+        &nbsp;
+        <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+    </div>
+</div>*@
+
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8" style="margin-top: 2em;backface-visibility: hidden;margin-left: 1.3em;">
+        @*btn btn-primary btn-block*@
+        <button type="button" id="btnAdd" value="Add" class="button-onBlueFor" disabled>Add</button> &nbsp;
+        @*btn for Clear for the data*@
+        <button type="reset" id="btnClear" value="Clear" class="button-onRedFor">Clear</button>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+
+<script>
+    $(function () {
+        $('.required-date').daterangepicker({
+            locale: {
+                format: 'DD/MM/YYYY'
+            },
+            "showDropdowns": true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "singleDatePicker": true,
+            "opens": "right",
+            "applyClass": "btn-primary",
+            "minDate": $('#hotelDate').val()
+        });
+    })
+</script>
+

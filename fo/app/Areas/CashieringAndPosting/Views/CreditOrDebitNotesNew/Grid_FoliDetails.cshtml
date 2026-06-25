@@ -1,0 +1,268 @@
+﻿
+@{
+    Layout = null;
+    decimal TotalAmount = 0;
+}
+<div id="FolioDetailTB" class="the-fieldset">
+
+    <div class="table-responsive">
+        <table class="table" id="tblFolioDetails" style="border:1px;">
+            <tr>
+                <th class="hidden"></th>
+                <th><div><div class="form-group checkbox"><label><input type="checkbox" id="isAll" class="isAll" /></label></div></div></th>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th class="style-data" style="">Adjustable Amount</th>
+                <th></th>
+            </tr>
+
+            @{ foreach (var item in Model)
+                {
+
+                    TotalAmount = TotalAmount + item.FullAmount;
+            <tr class="con-items">
+                <td class="hidden">
+                    <input type="text" name="TaxGroupID" data-value="@item.TaxGroupID" id="TaxGroupID" />
+                </td>
+
+                @*<td class="hidden">
+                    <input type="text" name="InvoiceNo" data-value="@ViewBag.InvoiceNo" id="InvoiceNo" />
+                </td>*@
+                <td width="50px">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" data-FolioDetailsId="@item.FolioDetailId" id="Item-Checkbox" class="form-group Item-Checkbox">
+                        </label>
+                    </div>
+                </td>
+                <td>@item.ChargeDate.ToString("yyy/MM/dd")</td>
+                <td>@item.FolioText</td>
+                <td style=""> <span class="number"> @item.FullAmount.ToString("##,#.00")</span></td>
+                <td style="">
+                    <form>
+                        <input type="number" required disabled name="AdjustableAmount" id="AdjustableAmountTxn" value="0" data-FolioDetailsId="@item.FolioDetailId" data-Invoice="" class="form-control AdjustableAmountTxn" style="width: 153px;">
+                    </form>
+                </td>
+            </tr>
+                }
+            }
+            <tr style="border-bottom:2px solid #ccc;">
+                <td colspan="3" style="text-align:right;">Total : </td>
+                <td colspan="1" class="FormatNumber">
+                    <b style="font-weight:bold !important;">@TotalAmount.ToString("##,#.00")</b>
+                </td>
+                <td id="totalAmountTxn" class="totalAmountTxn" style="font-weight:bold !important;">
+                    <input id="totalAmountTxn2" disabled type="number" name="name" value="" class="form-control" style="border:none"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="">
+    <input type="button" id="CreditNote" value="CreditNote" class="btn btn-primary" data-Name="CR">
+    <input type="button" id="DebitNote" value="DebitNote" class="btn btn-primary" data-Name="DR">
+    &nbsp;
+    @if (Scienter.HotelERP.Common.Utility.Configs.GetAppSettingBoolValue("IsDirectPrint"))
+    {
+        <a id="btnprint" class="btn btn-primary disabled hidden-print" target="">
+            <span class="glyphicon glyphicon-print"></span>
+        </a>
+    }
+    else
+    {
+        <a id="btnprint" class="btn btn-primary disabled hidden-print" target="">
+            <span class="glyphicon glyphicon-print"></span>
+        </a>
+    }
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.AdjustableAmountTxn').attr('disabled', 'disabled');
+    });
+
+    $('body').off('click', '#isAll').on('click', '#isAll', function () {
+        //debugger;
+        if ($('#isAll').is(':checked')) {
+            $('.Item-Checkbox').not(':disabled').prop('checked', true);
+            $('.AdjustableAmountTxn').prop('disabled', false);
+
+        } else {
+            $('.Item-Checkbox').prop('checked', false);
+            $('.AdjustableAmountTxn').prop('disabled', true);
+            $('.AdjustableAmountTxn').val('0');
+        }
+        CalcAdjustableAmount();
+    });
+
+    //Disable text box change event for tot change
+    $('body').off('change', '.AdjustableAmountTxn').on('change', '.AdjustableAmountTxn', function () {
+        //debugger;
+        CalcAdjustableAmount();
+    });
+
+    //Select row amount Totale get
+    $('body').off('change', '.Item-Checkbox').on('change', '.Item-Checkbox', function () {
+        //debugger;
+        if ($(this).prop('checked')) {
+            $(this).closest('.con-items').find('.AdjustableAmountTxn').prop('disabled', false);
+
+        }
+        else {
+            $(this).closest('.con-items').find('.AdjustableAmountTxn').prop('disabled', true);
+            $(this).closest('.con-items').find('.AdjustableAmountTxn').val('0');
+        }
+        CalcAdjustableAmount();
+        $('#isAll').prop('checked', false);
+    });
+
+    var totalAdjustableAmount = 0;
+    var selectedAmount = 0;
+
+    //Calculate Total
+    function CalcAdjustableAmount() {
+        //debugger;
+        totalAdjustableAmount = 0;
+        $('.Item-Checkbox').each(function (index, item) {
+            if ($(this).prop('checked')) {
+                selectedAmount = $(this).closest('.con-items').find('.AdjustableAmountTxn').val();
+                totalAdjustableAmount = totalAdjustableAmount + Number(selectedAmount);
+            }
+        });
+        if (totalAdjustableAmount < 0) {
+            totalAdjustableAmount = 0;
+        }
+        $('#totalAmountTxn').html(totalAdjustableAmount.toFixed(2));
+
+        console.log(totalAdjustableAmount);
+    }
+    // -------------------------------------------Step03 Save-------------------------------------------
+    var reportName = "";
+    $('body').off('click', '#CreditNote').on('click', '#CreditNote', function () {
+        var CreditOrDebit = $(this).attr('data-Name');
+        $('#CreditNote').addClass('disabled');
+        $('#DebitNote').addClass('disabled');
+        //$('#CreditNote').prop('disabled', true);
+        //$('#DebitNote').prop('disabled', true);
+        reportName = "CreditNoteReport";
+        //alert("credit");
+        Save(CreditOrDebit);
+        
+    });
+
+    $('body').off('click', '#DebitNote').on('click', '#DebitNote', function () {
+        var CreditOrDebit = $(this).attr('data-Name');
+        $('#CreditNote').addClass('disabled');
+        $('#DebitNote').addClass('disabled');
+        reportName = "DebitNoteReport";
+        //alert("debit");
+        Save(CreditOrDebit);
+        
+    });
+
+    var DocumentNo = "";
+    var PropertyId = "";
+    var Type = "";
+    //Save function
+    function Save(CreditOrDebit) {
+        debugger;
+        var FolioDetailsArray = [];
+        var isRecordSelected = false;
+        var isvalue = false;
+
+        $('.con-items').each(function (index, item) {
+           // debugger;
+            if ($($(item).find('.Item-Checkbox')).prop('checked')) {
+                isRecordSelected = true;
+                return false;
+                console.log(isRecordSelected);
+
+            }
+        });
+
+        debugger;
+        if (isRecordSelected == false) {
+            ShowWarningMessage('Please select at least one row or enter Adjustable Amount...!!');
+
+        } else
+        {
+            $('.con-items').each(function (index, item) {
+                var obj = {};
+                var ischecked = $($(item).find('.Item-Checkbox')).prop('checked');
+                var Amount = $(this).closest('.con-items').find('.AdjustableAmountTxn').val();
+                if ((ischecked == true)) {
+                    debugger;
+                    if (Amount == '0') {
+                        ShowWarningMessage('Enter Value greater than 0..!');
+                    }
+                    else {
+                        debugger;
+                        //alert('Value gather than 0');
+                        obj = {
+                            FolioDetailId: $($(item).find('.Item-Checkbox')).attr('data-FolioDetailsId'),
+                            AdjustableAmount: $($(item).find('.AdjustableAmountTxn')).val(),
+                            CreditOrDebit: CreditOrDebit,
+                            TaxGroupID: $($(item).find('#TaxGroupID')).attr('data-value')
+                            //InvoiceNo: $($(item).find('#InvoiceNo')).attr('data-value'),
+                        }
+                        FolioDetailsArray.push(obj);
+
+                        $.ajax({
+                            dataType: 'JSON',
+                            method: "POST",
+                            url: '/CashieringAndPosting/CreditOrDebitNotesNew/Save_FolioDetails',
+                            data: { FolioDetailsJson: FolioDetailsArray },
+                            success: function (response) {
+                                console.log(response);
+                                debugger;
+                                if (response.toString().startsWith('ERR')) {
+                                    ShowWarningMessage(response.replace("ERR-", ""));
+                                    $('#CreditNote').removeClass('disabled');
+                                    $('#DebitNote').removeClass('disabled');
+                                } else {
+                                    ShowSuccessMessage('Saved successfully.');
+                                    //$('#CreditNote').addClass('disabled');
+                                    //$('#DebitNote').addClass('disabled');
+                                    $('#btnprint').removeClass('disabled');
+                                    DocumentNo = response.DocumentNo;
+                                    PropertyId = response.PropertyId;
+                                    //alert(DocumentNo);
+                                    //alert(PropertyId);
+
+                                    //setTimeout(function () {
+                                    //    window.location.reload();
+                                    //}, 3000);
+                                }
+                            },
+                            error: function () {
+                            },
+                            complete: function (data) {
+                                debugger;
+                                //$('.con-items').each(function (index, item) {
+                                    //$($(item).find('.Item-Checkbox')).prop('checked', false);
+                                    //$($(item).find('.AdjustableAmountTxn')).val('0');
+                                //});
+                                //$('.totalAmountTxn').val(0);
+                                $('#CreditNote').removeClass('disabled');
+                                $('#DebitNote').removeClass('disabled');
+                                setInterval(function () {
+                                    $('.Item-Checkbox').prop('checked', false);
+                                    $('.AdjustableAmountTxn').val('0');
+                                    $('#totalAmountTxn2').val('0');
+                                }, 2000);                                  
+                            },
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    $('body').off('click', '#btnprint').on('click', '#btnprint', function (e) {
+        $("#btnprint").attr('target', '');
+        $('#btnprint').attr('href', '/Reporting/Report/ViewReport?ReportName=' + reportName + '&DocNo=' + DocumentNo + '&PropertyId=' + PropertyId);
+    });
+</script>
+

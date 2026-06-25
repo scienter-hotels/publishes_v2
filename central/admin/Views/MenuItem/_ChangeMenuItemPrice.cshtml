@@ -1,0 +1,123 @@
+﻿@model Scienter.DestinityHorizon.Common.Domain.MainMenu
+@{
+    ViewBag.Title = "MenuItem Price Change";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="title">
+                            @ViewBag.Name
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="row">
+                    <div class="col-md-12 master-file-form">
+                        <form id="menuItemPriceChange" class="form" enctype="multipart/form-data">
+                            <input type="hidden" id="ID" name="ID" value="@Model.Id" />
+                            <input type="hidden" id="MainMenuCode" name="MainMenuCodes" value="@Model.ItemCode" />
+                            @if (Model != null)
+                            {
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="row">
+                                                    <div class="form-group col-md-10">
+                                                        <labe>Current Dine In Price</labe><br />
+                                                        <input type="text" value="@Math.Round(Model.Price,2)" id="CurrentPrice" class="form-control" disabled><br />
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+
+                                                    <div class="form-group col-md-10">
+                                                        <labe>New Dine In Price</labe><br />
+                                                        <input type="text" id="NewPrice" class="form-control NewPriceTxt NumberTxt " title="Only numbers are allowed" required><br />
+                                                    </div>
+                                                </div>                                            
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="row">
+
+                                                <div class="form-group col-md-10">
+                                                    <labe>Current Delivery Price</labe><br />
+                                                    <input type="text" value="@Math.Round(Model.DelivaryPrice,2)" id="CurDeliveryPrice" pattern="[0-9]+([\.,][0-9]+)?"  class="form-control" disabled><br />
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-md-10">
+                                                    <labe>New Delivery Price</labe><br />
+                                                    <input type="text" id="NewDeliveryPrice" class="form-control NewPriceTxt NumberTxt" pattern="[0-9]+([\.,][0-9]+)?" title="Only numbers are allowed" required><br />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="row">
+
+                                                <div class="form-group col-md-10">
+                                                    <labe>Current Take away Price</labe><br />
+                                                    <input type="text" value="@Math.Round(Model.PackingCharge,2)" id="CurTakeAwayPrice" pattern="[0-9]+([\.,][0-9]+)?"  class="form-control NumberTxt" disabled><br />
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-md-10">
+                                                    <labe>New Take away Price</labe><br />
+                                                    <input type="text" id="NewTakeAwayPrice" class="form-control NewPriceTxt NumberTxt" pattern="[0-9]+([\.,][0-9]+)?"  title="Only numbers are allowed" required><br />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="row">
+                                                <div class="form-group col-md-10">
+                                                    <labe>Current Executive Price</labe><br />
+                                                    <input type="text" value="@Math.Round(Model.ExecutivePrice,2)" id="CurExecutivePrice" pattern="[0-9]+([\.,][0-9]+)?"  class="form-control NumberTxt" disabled><br />
+                                                </div>
+                                            </div>
+                                            <div class="row">
+
+                                                <div class="form-group col-md-10">
+                                                    <labe>New Executive Price</labe><br />
+                                                    <input type="text" id="NewExecutivePrice" class="form-control NewPriceTxt NumberTxt" pattern="[0-9]+([\.,][0-9]+)?"  title="Only numbers are allowed" required><br />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="form-group col-md-2">
+                                            <div class="checkbox">
+                                                Effective From &nbsp;&nbsp;
+                                                <label><input type="checkbox" class="" id="Eff-Price-Change" /></label>
+                                            </div>
+                                            <input type="text" id="EffectiveDate" class="form-control datePicker">
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input type="submit" value="Save" class="btn btn-success btn-width-100px" id="btnChangePriceSave" />
+                            </div>
+                        </div>
+                    }
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+
+        <script src="~/scripts/scienter.common.datatimepicker.js"></script>
+        <script src="~/scripts/UI/Scienter.MeniItemPrice.js"></script>

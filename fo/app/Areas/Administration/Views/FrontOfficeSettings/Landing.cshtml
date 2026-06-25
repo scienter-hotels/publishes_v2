@@ -1,0 +1,108 @@
+﻿
+@{
+    ViewBag.Title = "Front Office Settings";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        @*<button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+
+                            <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                                <span class="glyphicon glyphicon-th-list"></span>
+                            </button>*@
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        ShowForm();
+    });
+
+    // show form -----------------------------------
+    $('body').on('click', '.showForm', function (e) {
+        ShowForm();
+    });
+
+    function ShowForm()
+    {
+        $.ajax({
+            url: '/administration/frontofficesettings/form',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+        });
+    }
+
+
+    // save --------------------------------------
+    $('body').on('submit', '#frontofficesettings', function (e) {
+
+        e.preventDefault();
+
+        var frontOfficeSeting = {
+            __RequestVerificationToken: $('__RequestVerificationToken').val(),
+            BaseCurrencyISO: $('#BaseCurrencyISO').val(),
+            BaseName: $('#BaseCurrencyISO option:selected').data('currency-code'),
+            CurrentDate: $('#CurrentDate').val(),
+            CommissionPercentage: $('#CommissionPercentage').val(),
+            BillToRoomId: $('#BillToRoomId').val(),
+            AdvancedPostingName: $('#AdvancedPostingName').val(),
+            AdvancedPayment_taxtGroupId: $('#AdvancedPayment_taxtGroupId').val(),
+            AdvancedPayment_PostingCatgId: $('#AdvancedPayment_PostingCatgId').val(),
+            AdvancedPayment_ChargeCodeId: $('#AdvancedPayment_ChargeCodeId').val(),
+            AdvancedPayment_PostingTypeId: $('#AdvancedPayment_PostingTypeId').val(),
+            ComplainCreateStatusId: $('#ComplainCreateStatusId').val(),
+            ComplainPendingStatusId: $('#ComplainPendingStatusId').val(),
+            ComplainTakenStatusId: $('#ComplainTakenStatusId').val(),
+            ComplainCloseStatusId: $('#ComplainCloseStatusId').val(),
+            HouseKeepingStatusCategoryId: $('#HouseKeepingStatusCategoryId').val(),
+            FlightNumber: $('#FlightNumber').val(),
+            FlightDate: $('#FlightDate').val(),
+            FlightTime: $('#FlightTime').val(),
+            AirportPickupCodeId: $('#AirportPickupCodeId').val(),
+            AirportDropOffCodeId: $('#AirportDropOffCodeId').val()
+        };
+       
+        $.ajax({
+            url: '/administration/frontofficesettings/SaveSettings',
+            dataType: 'html',
+            data: frontOfficeSeting,
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+        });
+    });
+</script>
+

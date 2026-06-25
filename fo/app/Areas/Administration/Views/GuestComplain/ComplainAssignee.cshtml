@@ -1,0 +1,145 @@
+﻿@model Scienter.HotelERP.Common.Domain.GuestComplainWiseAssignees
+
+@{
+    ViewBag.Title = "Assignees";
+}
+
+<form id="complainassignees">
+    @*@Html.AntiForgeryToken()*@
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+   
+
+    <div class="row">
+        <input type="hidden" value="@Model.Id" id="Id" />
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group label-floating">
+                    <label>
+                        Complain
+                    </label>
+                    <input type="text" id="complain" class="form-control" value="@ViewBag.ComplainId" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group label-floating">
+                    <label> Assign By</label>
+                    @{Html.RenderAction("StaffDetailsCombo", "StaffDetails", new { name = "EmployeeId", required = true, value = Model?.EmployeeId });}
+                    @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group label-floating">
+                    @Html.LabelFor(model => model.AssingnedDate, htmlAttributes: new { @class = "control-label" })
+                    <div id="toDateContainer" class='input-group date'>
+                        @Html.TextBoxFor(model => model.AssingnedDate, new { @class = "form-control", value = Model?.AssingnedDate })
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.AssingnedDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group label-floating">
+                    @Html.LabelFor(model => model.ExpectedDate, htmlAttributes: new { @class = "control-label" })
+                    <div id="toDateContainer" class='input-group date'>
+                        @Html.TextBoxFor(model => model.ExpectedDate, new { @class = "form-control", value = Model?.ExpectedDate })
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.ExpectedDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group label-floating">
+                    @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label" })
+                    @Html.EditorFor(model => model.Remark, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                @*<div class="col-md-offset-1 col-md-10">*@
+                <input type="submit" value="Save" class="btn btn-primary" id="btnassigneessave" />
+                <input type="reset" value="Clear" class="btn btn-default" />
+                @*</div>*@
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        GetcomplainDetails();
+        $(function () {
+            $('#AssignDate, #ExpectedDate').daterangepicker({
+                locale: {
+                    format: 'DD/MM/YYYY'
+                },
+                "showISOWeekNumbers": true,
+                "singleDatePicker": true,
+                "minDate": new Date(),
+                "changeYear": true,
+                "changeMonth": true,
+                "opens": "right",
+                "applyClass": "btn-primary",
+                "dateLimit": {
+                 "days": false
+                }
+            });
+        });
+    });
+
+    function GetcomplainDetails()
+    {
+        var complainId = $('#complain').val();
+        $.ajax({
+            url: '/Administration/GuestComplain/Selectcomplainbyid',
+            dataType: 'json',
+            method: 'GET',
+            data: { complainid: complainId },
+            success: function (data) {
+                $('#complain').val(data.Description);
+            }
+        })
+    }
+
+    $('body').on('submit', '#complainassignees', function (e) {
+
+        e.preventDefault();
+        var bedType = {
+            __RequestVerificationToken: $('__RequestVerificationToken').val(),
+            Id: $('#Id').val(),
+            ComplainId: $('#complain').val(),
+            EmployeeId: $('#EmployeeId').val(),
+            AssingnedDate: $('#AssingnedDate').val(),
+            ExpectedDate: $('#ExpectedDate').val(),
+            Remark: $('#Remark').val(),
+        };
+
+            $.ajax({
+                url: '/administration/GuestComplain/SaveComplainWiseAssignees',
+                dataType: 'html',
+                data: bedType,
+                method: 'POST',
+                success: function (response) {
+                    ShowSuccessMessage('Record has been saved successfully.');
+                }
+            });
+    });
+
+</script>
+
+
+
+
+

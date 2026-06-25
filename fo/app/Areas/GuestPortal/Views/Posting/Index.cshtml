@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model  IEnumerable<Scienter.HotelERP.Common.Domain.GuestPortal_Posting>
+@{
+
+
+    ViewBag.Title = "Guest Portal Posting";
+}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @*@Html.Partial("_Loading")*@
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        debugger;
+        FillGrid();
+    });
+    //fill grid -----------------------------------
+    function FillGrid() {
+        debugger;
+        var gridId = "#GuestPortalPosting"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        debugger;
+        $.ajax({
+            url: '/GuestPortal/Posting/Select_ForGrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+            }
+
+        });
+    }
+
+</script>
+
+
+

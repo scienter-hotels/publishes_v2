@@ -1,0 +1,25 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.HouseKeepingStatusUpdateLogView>
+
+<table class="table categorywise-room-detail-list">
+    <tr>
+        <th class="col-md-6">
+            Date
+        </th>
+        <th class="col-md-6">
+            Status
+        </th>
+    </tr>
+
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.txnChangeShowDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RoomStatusName)
+            </td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,244 @@
+﻿@model Scienter.HotelERP.Common.Domain.PostingType
+@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.FrontOffice.Service
+
+@{
+    ViewBag.Title = "Create / Edit";
+}
+
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        overflow-x: hidden;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+</style>
+<div class="col-md-12">
+    @{
+        List<AccountCodes> ac = new List<AccountCodes>();
+
+        ac = new PostingTypeService().SelectAccountCodes();
+
+    }
+
+    <form id="postingTypes">
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Name *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Name" name="Name" type="text" value="@Model.Name" required>
+                    </div>
+                    <div class="form-group label-floating">
+                        <label class="control-label">Posting Category *</label>
+                        @{Html.RenderAction("PostingCategoryCombo", "PostingCategories", new { name = "PostingCategoryId", requiered = true, value = Model?.PostingCategoryId });}
+                    </div>
+                    <div class="form-group label-floating">
+                        <label class="control-label">Charge Code *</label>
+                        @{Html.RenderAction("ChargeCodeCombo", "ChargeCodes", new { name = "ChargeCodeId", requiered = true, value = Model?.ChargeCodeId });}
+                    </div>
+                    <div class="form-group label-floating">
+                        <label class="control-label">Tax Group *</label>
+                        @{Html.RenderAction("TaxGroupCombo", "TaxGroups", new { name = "TaxGroupId", requiered = true, value = Model?.TaxGroupId });}
+                    </div>
+                    <div class="form-group label-floating">
+                        <label class="control-label">Department *</label>
+                        @{Html.RenderAction("DepartmentCombo", "Departments", new { name = "DepartmentId", requiered = true, value = Model?.DepartmentId });}
+                    </div>
+                    <div class="form-group label-floating">
+                        <label class="control-label">Price *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Price" name="Price" type="number" value="@Model.Price" required>
+                    </div>
+                    <div class="form-group label-floating">
+                        <label class="control-label">Commission *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Commission" name="Commission" type="number" value="@Model.Commission" required>
+                    </div>
+
+                </div>
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group form-group-marging">
+                        <label>Account Code *</label>
+                        <select id="AccountCode" name="AccountCode" required class="select2 Status-combo form-control">
+                            @foreach (var item in ac)
+                            {
+                                if (Model.AccountCode == item.acc)
+                                {
+                                    <option value="@item.acc" selected>@item.subaccname</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.acc">@item.subaccname</option>
+                                }
+
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsActive)
+                            Is Active
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsFixedrate)
+                            Is Fixed Rate
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsFixedrate, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsTaxInclusive)
+                            Is Tax Inclusive
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsTaxInclusive, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.Ispecialposting)
+                            Ispecial Posting
+                        </label>
+                        @Html.ValidationMessageFor(model => model.Ispecialposting, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsDisplayTaxSeperatlyInWalkinReport)
+                            Is Display Tax Seperatly (Walk-in)
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsDisplayTaxSeperatlyInWalkinReport, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Currency *</label>
+                                <div style="width:150px;">
+                                    @{Html.RenderAction("CurrenciesCombo", "Currencies", new { name = "Currency", requiered = true, value = Model?.Id });}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Default Amount *</label>
+                                <input autocomplete="off" class="form-control text-box single-line NumberTxt number" id="DefaultAmount" name="DefaultAmount" type="text" value="" style="width:140px;" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <input type="button" id="btnAdd" value="Add" class="btn btn-primary" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-right: 15px;margin-left: -30px;">
+                        <div class="col-md-10">
+                            <div id="tableDiv">
+                                <table class="table table-striped" id="tblCurrencies">
+                                    <tr>
+                                        <th></th>
+                                        <th>Currency</th>
+                                        <th style="text-align: right;">Default Amount</th>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-3" style="display:none">
+                    @{Html.RenderAction("ListVertical", "Properties", new { selectedPoperties = Model.Properties }); }
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                        &nbsp;
+                        <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        //2023-08-16--------------------------------------------------------------------------
+        $('#DepartmentId').addClass('select2');
+        $('#TaxGroupId').addClass('select2');
+        $('#ChargeCodeId').addClass('select2');
+        $('#PostingCategoryId').addClass('select2');
+        $('#Currency').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+        LoadCancellationPolicyCombo();
+    });
+</script>
+
+

@@ -1,0 +1,67 @@
+﻿@{ 
+    Layout = null;
+}
+
+@model List<Scienter.HotelERP.Common.Domain.ViewModels.ReservationTraces> 
+ 
+<table class="table table-stripped" width="100%">
+    <tr>
+        <th width="120px">Reservation No</th>
+        <th width="120px">Room No</th>
+        <th width="120px">Date</th>
+        <th width="150px">Department</th>
+        <th>Trace</th>
+        <th>Remark</th>
+        <th>Dep. Remark</th>
+        @if (Model != null && Model.Count > 0 && Model.FirstOrDefault().TraceStatus == 1)
+        {
+            <th>Completed User</th>
+            <th>Status Updated</th>
+        }
+        else
+        {
+            <th></th>
+            <th></th>
+        }
+        <td width="100px;"></td>
+        <td width="100px;"></td>
+    </tr>
+    @foreach (var item in Model)
+    {
+    <tr>
+        <td>@item.ReservationNo</td>
+        <td>@item.RoomNo</td>
+        <td>@item.Date</td>
+        <td>@item.DepartmentName</td>
+        <td>@item.TraceName</td>
+        <td>@item.Remark</td>
+        <td>@item.DateRemark</td>
+        @*<td>@item.Username</td>*@
+        @if (item.TraceStatus == 1)
+        {
+            <td>@item.Username</td>
+            <td>@item.StatusUpdatedOn.ToString("dd/MM/yyyy")</td>
+        }
+        else
+        {
+            <td></td>
+            <td></td>
+        }
+
+        <td>
+            <button class="btn btn-info btn-sm call-popup-model" data-res-trace-id="@item.Id" data-href="/Reservation/ReservationTraces/addremark?id=@item.Id&remark=@item.DateRemark&rdtId=@item.ReservationDateWiseTraceId" data-width="500" data-title="Add remark for @item.TraceName (@item.ReservationNo)" data-trace-date="@item.Date" data-trace-status="0" id="btnAddRemark">Add Remark</button>
+        </td>
+        <td>
+            @if (item.TraceStatus == 0)
+            {
+                <button class="btn btn-success btn-sm" data-res-trace-id="@item.Id" data-department-id="@item.TraceDepartmentId" data-trace-date="@item.Date" data-trace-status="1" id="btnMarkTraceAsComplete">Mark Complete</button>
+            }
+            else
+            {
+                <button class="btn btn-danger btn-sm" data-res-trace-id="@item.Id" data-department-id="@item.TraceDepartmentId" data-trace-date="@item.Date" data-trace-status="0" id="btnReInstateTrace">Reinstate Trace</button>
+            }
+
+        </td>
+    </tr>
+    }
+</table>

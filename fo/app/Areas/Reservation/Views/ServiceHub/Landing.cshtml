@@ -1,0 +1,285 @@
+﻿@using Scienter.HotelERP.Common.Domain
+
+<style>
+    .form-group {
+        padding-bottom: 10px;
+        margin: 18px 0 0 0 !important;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            Service Jobs
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm" id="btnForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid" id="btnGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+                    <div class="card card-bordered card-full form-container">
+                        <div class="card-inner">
+                            <form id="serviceJob">
+                                <div class="">
+
+                                    <input type="hidden" name="hdnId" id="hdnId" />
+                                    <input type="hidden" name="hdnResNo" id="hdnResNo" value="0"/>
+                                    @*<input type="hidden" value="@Model.ServiceCategoryId" name="hdnServiceCategoryId" id="hdnServiceCategoryId" />
+        <input type="hidden" value="@Model.ServiceLocationId" name="hdnServiceLocationId" id="hdnServiceLocationId" />
+        <input type="hidden" value="@Model.ServiceActionId" name="hdnServiceActionId" id="hdnServiceActionId" />
+        <input type="hidden" value="@Model.ServiceTypeId" name="hdnServiceTypeId" id="hdnServiceTypeId" />
+        <input type="hidden" value="@Model.AssignToDepartmentId" name="hdnAssignToDepartmentId" id="hdnAssignToDepartmentId" />
+        <input type="hidden" value="@Model.AssignToEmployeeId" name="hdnAssignToEmployeeId" id="hdnAssignToEmployeeId" />*@
+
+                                    <div class="row">
+                                        <div class="col-md-7">
+                                            <div style="padding:25px; border:1px solid #ccc; border-radius:5px;" class="border-container-1">
+
+                                                @*<div class="row" id="serviceCategory">
+
+                    </div>*@
+                                                <div class="row">
+                                                    <div class="form-group label-floating col-md-4">
+                                                        <label class="control-label">Category *</label>
+                                                        <select name="serviceCategory" id="serviceCategory" class="form-control "></select>
+                                                    </div>
+                                                    <div class="form-group label-floating col-md-4">
+                                                        <label class="control-label">Type *</label>
+                                                        <select name="serviceType" id="serviceType" class="form-control "></select>
+                                                    </div>
+
+                                                    <div class="form-group label-floating col-md-4">
+                                                        <label class="control-label">Action *</label>
+                                                        <select name="serviceAction" id="serviceAction" class="form-control "></select>
+                                                    </div>
+
+
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="form-group label-floating col-md-6">
+                                                        <label class="control-label">Location *</label>
+                                                        <select name="serviceLocation" id="serviceLocation" class="form-control "></select>
+                                                    </div>
+                                                    <div class="form-group label-floating col-md-6">
+                                                        <label class="control-label">Assignee Department *</label>
+                                                        <select name="asgDepartment" id="asgDepartment" class="form-control "></select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    @*<div class="form-group col-md-6">
+                                                                        <label class="control-label" for="isAssignToEmployee">
+                            Is Assign for Employee
+                        </label>
+                        <input type="checkbox" id="isAssignToEmployee" class="form-check-input" />
+                                                                    </div>*@
+                                                    <div class="form-group checkbox col-md-6" style="margin: 22px 0 0;">
+                                                        <label><input type="checkbox" id="isAssignToEmployee" name="isAssignToEmployee" />Is Assign for Employee</label>
+                                                    </div>
+
+
+                                                    <div class="form-group label-floating col-md-6" id="assigneeCombo">
+                                                        <label class="control-label">Assignee</label>
+                                                        <select name="assignee" id="assignee" class="form-control "></select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="form-group label-floating col-md-5">
+                                                        <label class="control-label">Ref No *</label>
+                                                        <input autocomplete="off" class="form-control text-box single-line" id="RefNo" name="RefNo" type="text" required>
+                                                    </div>
+                                                    <div class="form-group label-floating col-md-7">
+                                                        <label class="control-label">Remark </label>
+                                                        <textarea autocomplete="off" class="form-control text-box" id="Remark" name="Remark">
+                                    </textarea>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-5 needToAttachReservation">
+                                            <div style="padding:25px; border:1px solid #ccc; border-radius:5px;" class="border-container-2">
+
+                                                <div class="row">
+
+                                                    <div class="form-group label-floating col-md-4">
+                                                        <label class="control-label">Reservation Level *</label>
+                                                        <select name="reservationLevel" id="reservationLevel" class="form-control">
+                                                            <option value="R">Reservation</option>
+                                                            <option value="I">Inhouse</option>
+                                                            <option value="C">CheckedOut</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group label-floating col-md-4">
+                                                        <label class="control-label">Reservation No *</label>
+                                                        <select name="reservationNo" id="reservationNo" class="form-control "></select>
+                                                    </div>
+                                                    @*<div class="form-group label-floating col-md-4">
+                            <button type="button" id="btnReservationSearch" class="btn btn-primary">   Select  </button>
+                        </div>*@
+
+                                                </div>
+                                                <div class="row">
+                                                    <div class="form-group label-floating col-md-6">
+                                                        <label class="control-label">Room No </label>
+                                                        <input type="number" class="form-control" id="roomNo" name="roomNo" readonly />
+                                                    </div>
+
+                                                    <div class="form-group label-floating col-md-6">
+                                                        <label class="control-label">Guest </label>
+                                                        <input type="text" class="form-control" id="guest" name="guest" readonly />
+                                                    </div>
+                                                </div>
+
+
+                                                @*<div class="row reservationDetails">
+                        <div style="padding:22px; border:1px solid #ccc; border-radius:5px;" class="border-container-2">
+                            <div class="col-md-12">
+                                <div style="min-height:100px;">
+                                    <table class="table table-stripped" width="100%" id="tblReservationDetails">
+                                        <tr>
+                                            <th>Res. No</th>
+                                            <th>Arrival</th>
+                                            <th>Departure</th>
+                                            <th>Room No</th>
+                                            <th>Guest</th>
+                                        </tr>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>*@
+
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-12">
+
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                                                &nbsp;
+                                                <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </form>
+
+
+
+                        </div>
+                    </div><!-- .card -->
+
+                    <div class="card card-bordered card-full grid-container" id="serviceJobGrid">
+                        <div class="filteredGrid">
+                            <div class="row">
+                                <div class="form-group label-floating col-md-8">
+                                    <label class="control-label">Job Status</label>
+                                    <select name="jobStatus" id="jobStatus" class="form-control do-not-clear">
+                                        <option value="A" selected>ALL</option>
+                                        <option value="P">Pending</option>
+                                        <option value="C">Completed</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group label-floating col-md-8">
+                                    <input class="form-control" type="text" id="searchby" placeholder="Search by any colomn" title="Search by any colomn">
+                                </div>
+                                <div class="form-group label-floating col-md-4">
+                                    <button type="button" id="btnGridSearch" class="btn btn-primary"> <span class="glyphicon glyphicon-search"></span>  Search  </button>
+                                </div>
+                            </div>
+
+                            <table class="table table-striped"
+                                   id="existingServiceHubJobGrid">
+                                <thead>
+                                    <tr>
+                                        <th class="  text-primary">
+                                            Ref. No
+                                        </th>
+                                        <th class="  text-primary">
+                                            Res. No
+                                        </th>
+                                        <th class="  text-primary">
+                                            Service Cat.
+                                        </th>
+                                        <th class="  text-primary">
+                                            Service Type
+                                        </th>
+                                        <th class="  text-primary">
+                                            Service Location
+                                        </th>
+                                        @*<th class="  text-primary">
+            Pre.Service Action
+        </th>*@
+                                        @*<th class="  text-primary">
+            Cur.Service Action
+        </th>*@
+                                        <th class="  text-primary">
+                                            Service Action
+                                        </th>
+                                        <th class="  text-primary">
+                                            Assign Dep.
+                                        </th>
+                                        <th class="  text-primary">
+                                            Assign Emp.
+                                        </th>
+                                        <th class="  text-primary">
+                                            Room #
+                                        </th>
+                                        <th class="  text-primary">
+                                            Guest
+                                        </th>
+                                        <th class="hidden-print"></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Scripts/ui/servicehub/servicehubjob.js"></script>
+
+
+
+
+
+
+
+

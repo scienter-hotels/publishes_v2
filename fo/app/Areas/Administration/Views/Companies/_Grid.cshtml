@@ -1,0 +1,420 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.CompanyView>
+
+@{
+    ViewBag.Title = "Existing Alert Types";
+}
+
+<style>
+    .btn-padding-override {
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-bottom: 0px !important;
+        font-size: 10.5px !important;
+    }
+
+    .btn-right-padding5px {
+        padding: 0px;
+        padding-right: 5px;
+    }
+
+    .row-padding0px {
+        padding: 0px;
+    }
+
+    .dataTables_filter {
+        width: 30% !important;
+        float: left !important;
+    }
+
+    .dt-buttons {
+        width: 70% !important;
+    }
+
+    .border-margin {
+        border: 1px solid white;
+    }
+
+</style>
+
+<div class="col-md-12">
+    <div class="row">
+        <div id="main-grid-content" class="col-md-12">
+            <div class="table-responsive">
+                <table class="table font-size-12px" id="existingCompanyGrid">
+                    <thead>
+                        <tr>
+                            <th class="col-sm-3 text-primary">
+                                @Html.DisplayNameFor(model => model.Name)
+                            </th>
+                            <th class="col-sm-3 text-primary">
+                                Country
+                            </th>
+                            <th class="col-sm-3 text-primary">
+                                Company Profile Type
+                            </th>
+                            <th class="col-sm-1 text-primary">
+                                @Html.DisplayNameFor(model => model.IsActive)
+                            </th>
+                            <th class="col-sm-2 hidden-print"></th>
+                            <th class="col-sm-1"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CountryName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CompanyProfileTypeName)
+                                </td>
+                                <td class="text-right">
+                                    <div class="form-group checkbox">
+                                        <label>
+                                            @Html.DisplayFor(modelItem => item.IsActive)
+                                            <span class="hidden">
+                                                @if (item.IsActive)
+                                                {
+                                                    @:Active
+                                                }
+                                                else
+                                                {
+                                                    @:Inactive
+                                                }
+                                            </span>
+                                        </label>
+                                    </div>
+                                </td>
+                                @*<td class="text-right">
+                                        <div class="form-group checkbox">
+                                            <label>
+                                                @Html.DisplayFor(modelItem => item.IsForeignCurrencyBillRequested)
+                                                <span class="hidden">
+                                                    @if (item.IsForeignCurrencyBillRequested)
+                                                    {
+                                                        @:Active
+                                                    }
+                                                    else
+                                                    {
+                                                        @:Inactive
+                                                    }
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </td>*@
+                                <td class="hidden-print text-right">
+
+                                    @*<a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Company - @item.Name" data-href="/administration/companies/print/@item.Id">
+                                            <span class="glyphicon glyphicon-print"></span>
+                                        </a>*@
+
+                                    <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="" data-title="Company Activity Log" data-href="/Administration/Companies/CompaniesActivityLog/@item.Id" title="Activity Log" data-toggle="tooltip" data-width="500">
+                                        <span class="glyphicon glyphicon-tags"></span>
+                                    </a>
+
+
+                                    <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/companies/edit/@item.Id">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>
+
+                                    <a class="btn btn-danger btn-sm" id="btnDelete" data-comId="@item.Id">@* call-popup-model-delete  data-href="/administration/companies/delete/@item.Id">*@
+                                        <span class="glyphicon glyphicon-trash"></span>                                  
+                                    </a>
+
+
+                                </td>
+
+                                <td>
+                                    <div class="form-group checkbox">
+                                        <label>
+                                            <input class="company-checkBox" type="checkbox" value="@item.Id" />
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="side-buttons" class="hidden">
+            <div class="row row-padding0px">
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#c21b1b !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override" id="btnMarket">
+                        <span class="glyphicon glyphicon-shopping-cart"></span>
+                        <br />
+                        Manage<br />Markets
+                    </button>
+                </div>
+
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#940191 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override inhouse-detail" id="btnRate">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                        <br />
+                        Manage<br />Rate Code
+                    </button>
+                </div>
+            </div>
+
+            <div class="row row-padding0px">
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#b45200 !important;" class="btn btn-default attachToGroupClass btn-theme-color-2 full-width-100perc btn-padding-override" id="btnSegments">
+                        <span class="glyphicon glyphicon-import"></span>
+                        <br />
+                        Manage<br />Segments
+                    </button>
+                </div>
+
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#e84118 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override inhouse-detail" id="btnRate">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                        <br />
+                        Add<br />Notes
+                    </button>
+                </div>
+            </div>
+
+            <div class="row row-padding0px">
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <a style="background-color:#2f9b04 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override" id="btnCompanyContacts">
+                        <span class="glyphicon glyphicon-shopping-cart"></span>
+                        <br />
+                        Company<br />Contacts
+                    </a>
+                </div>
+
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#e49c09 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override inhouse-detail" id="btnRate">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                        <br />
+                        Future<br />Reservations
+                    </button>
+                </div>
+            </div>
+
+            <div class="row row-padding0px">
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#0652DD !important;" class="btn btn-default attachToGroupClass btn-theme-color-2 full-width-100perc btn-padding-override" id="btnSegments">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                        <br />
+                        Cancelations <br />
+                        No Show
+                    </button>
+                </div>
+
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#ff4757 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override inhouse-detail" id="btnRate">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                        <br />
+                        Reservation<br />History
+                    </button>
+                </div>
+            </div>
+
+            <div class="row row-padding0px">
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#8c7ae6 !important;" class="btn btn-default attachToGroupClass btn-theme-color-2 full-width-100perc btn-padding-override" id="btnSegments">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                        <br />
+                        Guest <br /> Profiles
+                    </button>
+                </div>
+
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#b45200 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override inhouse-detail" id="btnRate">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                        <br />
+                        Activity <br /> Log
+                    </button>
+                </div>
+            </div>
+
+            <div class="row row-padding0px">
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#eb3b5a !important;" class="btn btn-default attachToGroupClass btn-theme-color-2 full-width-100perc btn-padding-override" id="btnSegments">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                        <br />
+                        Print <br />Company List
+                    </button>
+                </div>
+
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#45aaf2 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override inhouse-detail" id="btnRate">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                        <br />
+                        Company <br /> Statistics
+                    </button>
+                </div>
+            </div>
+
+            <div class="row row-padding0px">
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#26de81 !important;" class="btn btn-default attachToGroupClass btn-theme-color-2 full-width-100perc btn-padding-override" id="btnSegments">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                        <br />
+                        Company <br /> Production
+                    </button>
+                </div>
+
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#4b6584 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override inhouse-detail" id="btnRate">
+                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                        <br />
+                        Revenue <br /> Analysis
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<script>
+    $('body').on('click', '#btnDelete', function (e) {
+        //debugger;
+
+        if (confirm('Do you want to delete this row?')) {
+            
+            var comId = $(this).attr('data-comId');
+            $.ajax({
+                url: '/administration/companies/delete',
+                method: 'POST',
+                data: { id: comId },
+                success: function () {
+                    //debugger;
+                    alert('Data Successfully Deleted');
+                    //var id = $('#Id').val(); // add for banquet company update 2022-12-02
+                    //if (id < 1000) {
+                    //    //ShowWarningMessage
+                    //    alert('You should also delete this Company in the Banquet');
+                    //}
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 2000);
+                   
+                },
+            });
+        }
+    });
+    $(document).ready(function () {
+
+        //Company Wise Market Select
+
+        $('#btnMarket').click(function () {
+
+            var cid = $('#existingCompanyGrid').find('.company-checkBox:checked').val();
+            window.location.href = '/administration/companywisemarkets?companyId=' + cid;
+
+        })
+
+
+        //Company Wise Rate Code Select
+
+        $('#btnRate').click(function () {
+            var cid = $('#existingCompanyGrid').find('.company-checkBox:checked').val();
+            window.location.href = '/administration/companywiseratecodes?companyId=' + cid;
+
+        })
+
+        //Company Wise Segments
+
+        $('#btnSegments').click(function () {
+            var cid = $('#existingCompanyGrid').find('.company-checkBox:checked').val();
+            window.location.href = '/administration/companywisesegments?companyId=' + cid;
+
+        })
+        // Company Wise Contacts
+        $('#btnCompanyContacts').click(function () {
+            var cid = $('#existingCompanyGrid').find('.company-checkBox:checked').val();
+            //window.location.href = '/administration/CompanyWiseContacts?CompanyId=' + cid;
+            //window.location.href = '/administration/CompanyWiseContacts/edit?id=' + cid;
+            window.location.href = '/administration/CompanyWiseContacts/ContactView?id=' + cid;
+        })
+
+
+        $('#existingCompanyGrid tr').on('click', function () {
+            var check = $(this).find('input.company-checkBox').prop('checked');
+            if (check) {
+                $(this).find('input.company-checkBox').prop('checked', false);
+                if (!$('#main-grid-content').hasClass('col-md-12')) {
+                    $('#main-grid-content').removeClass('col-md-10').fadeIn();
+                    $('#main-grid-content').addClass('col-md-12');
+                    $('#side-buttons').addClass('hidden').removeClass('col-md-2').fadeIn();
+                    $('input.company-checkBox:checked').closest('tr').removeClass('selectdRecord');
+                }
+
+            } else {
+                $(this).find('input.company-checkBox').prop('checked', true);
+                if (!$('#main-grid-content').hasClass('col-md-10')) {
+                    $('#main-grid-content').removeClass('col-md-12').fadeOut();
+                    $('#main-grid-content').addClass('col-md-10').fadeIn();
+                    $('#side-buttons').removeClass('hidden').addClass('col-md-2').fadeIn();
+                }
+
+            }
+            $('#existingCompanyGrid tr').not(this).find('input.company-checkBox').prop('checked', false);
+            $('#existingCompanyGrid tr').not(this).closest('tr').removeClass('selectdRecord');
+            $(this).addClass('selectdRecord');
+        });
+
+
+        $('input.company-checkBox').on('change', function () {
+            ;
+            $('input.company-checkBox').not(this).prop('checked', false);
+            $('input.company-checkBox').not(this).closest('tr').removeClass('selectdRecord');
+            $('input.company-checkBox:checked').closest('tr').addClass('selectdRecord');
+
+            if ($('input.company-checkBox:checked').length > 0) {
+                if (!$('#main-grid-content').hasClass('col-md-10')) {
+                    $('#main-grid-content').removeClass('col-md-12').fadeOut();
+                    $('#main-grid-content').addClass('col-md-10').fadeIn();
+                    $('#side-buttons').removeClass('hidden').addClass('col-md-2').fadeIn();
+                }
+
+
+            }
+            else {
+                if (!$('#main-grid-content').hasClass('col-md-12')) {
+                    $('#main-grid-content').removeClass('col-md-10').fadeIn();
+                    $('#main-grid-content').addClass('col-md-12');
+                    $('#side-buttons').addClass('hidden').removeClass('col-md-2').fadeIn();
+                    $('input.company-checkBox:checked').closest('tr').removeClass('selectdRecord');
+                }
+            }
+
+
+        });
+
+
+
+    });
+
+    $(document).ready(function () {
+        $('#existingCompanyGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ],
+                scrollY: '58vh',
+            });
+    });
+</script>

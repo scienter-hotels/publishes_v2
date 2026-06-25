@@ -1,0 +1,109 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.CancellationPolicy>
+
+@{
+    ViewBag.Title = "Existing Cancellation Policies";
+}
+
+<div class="table-responsive">
+       <table class="table table-striped" id="existingCancellationPolicyGrid">
+           <thead>
+               <tr>
+                   <th class="text-primary">
+                       Name
+                   </th>
+                   <th class="text-primary">
+                       Description
+                   </th>
+                   <th class="col-md-1 text-primary">
+                       IBE Confirm.
+                   </th>
+                   <th class="col-md-1 text-primary">
+                       IsActive
+                   </th>
+                   <th class="col-md-1 hidden-print"></th>
+               </tr>
+           </thead>
+
+           <tbody>
+               @foreach (var item in Model)
+               {
+               <tr>
+                   <td>
+                       @item.Name
+                   </td>
+                   <td>
+                       @Html.Raw(item.Description)
+                   </td>
+                   <td class="col-md-1">
+                       <div class="form-group checkbox">
+                           <label>
+                               <span>
+                                   @if (item.IsShowInIBEConfirmation)
+                                   {
+                                       <text>Yes</text>
+                                   }
+                                   else
+                                   {
+                                       <text>No</text>
+                                   }
+                               </span>
+                           </label>
+                       </div>
+                   </td>
+                   <td class="col-md-1">
+                       <div class="form-group checkbox">
+                           <label>
+                               <span>
+                                   @if (item.IsActive)
+                                   {
+                                       <text>Yes</text>
+                                   }
+                                   else
+                                   {
+                                       <text>No</text>
+                                   }
+                               </span>
+                           </label>
+                       </div>
+                   </td>
+                   <td class="hidden-print text-right">
+                       @*<a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Cancellation Policy - @item.Name" data-href="/administration/cancellationpolicies/print/@item.Id">
+                <span class="glyphicon glyphicon-print"></span>
+            </a>*@
+
+                       <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/cancellationpolicies/edit/@item.Id">
+                           <span class="glyphicon glyphicon-pencil"></span>
+                       </a>
+
+                       <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/administration/cancellationpolicies/delete/@item.Id">
+                           <span class="glyphicon glyphicon-trash"></span>
+                       </a>
+                   </td>
+               </tr>
+               }
+           </tbody>
+
+</table>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#existingCancellationPolicyGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+    $('.summernote').summernote();
+</script>

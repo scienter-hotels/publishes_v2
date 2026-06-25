@@ -1,0 +1,36 @@
+﻿
+@using Scienter.HotelERP.FrontOffice.WebUIMvc.Models
+@using Scienter.HotelERP.Common.Domain.ViewModels
+@using Scienter.HotelERP.Common.Utility
+@using Scienter.HotelERP.Common.Domain
+@model ComboBoxViewModel<DefaultMarketView>
+
+@{
+    string required = "";
+    if (Model.Required) { required = "required"; }
+}
+@if (Model.SelectedValue == null || Model.SelectedValue == "")
+{
+    Model.SelectedValue = SessionObjects.FOSettings.DefaultSegment.ToString();
+}
+
+@if (Model.Options.FirstOrDefault()?.DefaultMarketId > 0)
+{
+    Model.SelectedValue = Model.Options.FirstOrDefault()?.DefaultMarketId.ToString();
+}
+<select id="@Model.Id" name="@Model.Name" @required class="form-control">
+    @*<option value="@ComboBoxes.DefaultOptionValue">@ComboBoxes.DefaultOptionMessage</option>*@
+
+    @foreach (var option in Model.Options)
+    {
+        if (option.Id.ToString() == Model.SelectedValue)
+        {
+            <option value="@option.Id" selected>@option.Name</option>
+        }
+        else
+        {
+            <option value="@option.Id">@option.Name</option>
+        }
+    }
+</select>
+

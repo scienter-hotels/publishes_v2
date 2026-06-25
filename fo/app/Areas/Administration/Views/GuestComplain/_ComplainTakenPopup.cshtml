@@ -1,0 +1,44 @@
+﻿@model Scienter.HotelERP.Common.Domain.Complain
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="row">
+
+            @Model.ComplainCode
+        </div>
+        <div class="row">
+            <label>Created By :</label>
+            @Model.ComplainLogs.FirstOrDefault().User
+        </div>
+        <div class="row">
+            <label>Created On :</label>
+            @Model.CreatedDateTime
+        </div>
+    </div>
+    <div class="com-md-6">
+        <table class="table table-striped">
+            <tr>
+                <th class="col-md-2">Assignees</th>
+                <td>
+                    <ul style="list-style:none; padding-left:0px;">
+                        @foreach (var item in Model.Assignees)
+                        {
+                            <li>
+                                <span class="glyphicon glyphicon-user"></span> @item.Name
+                            </li>
+                        }
+                    </ul>
+                </td>
+            </tr>
+        </table>
+        @*<div class="row">
+            <label>Status : TAKEN</label>
+        </div>*@
+    </div>
+    <div class="col-md-7">
+        <div class="row">
+            <label>Status : TAKEN</label>
+        </div>
+    </div>
+    @* ggggg *@
+</div>

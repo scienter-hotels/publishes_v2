@@ -1,0 +1,293 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.ReservationSchedulerView
+
+@{
+    ViewBag.Title = "Room Reservation Schedule";
+}
+
+<script src="~/Scripts/daypilot-all.js"></script>
+
+<style type="text/css">
+    .main {
+        padding: 10px;
+    }
+
+    .scheduler_default_scrollable, .scheduler_default_rowheader_scroll {
+        max-height: 500px !important;
+        height: 500px !important;
+    }
+
+    .scheduler_default_main, .scheduler_default_divider, .scheduler_default_splitter {
+        max-height: 530px !important;
+        height: 530px !important;
+    }
+
+    .scheduler_default_divider, .scheduler_default_splitter {
+        border: 2px solid #76004c;
+    }
+
+    .scheduler_default_timeheadergroup_inner scheduler_default_timeheader_cell_inner {
+        font-weight: bold !important;
+    }
+
+    .navigator_8_main {
+        font-family: Segoe UI Light,Segoe UI,Arial,Helvetica,Verdana,Sans Serif;
+    }
+
+
+    .navigator_8_main {
+        border-left: 1px solid #A0A0A0;
+        border-right: 1px solid #A0A0A0;
+        border-bottom: 1px solid #A0A0A0;
+        background-color: white;
+        color: #000000;
+    }
+
+    .navigator_8_month {
+        font-size: 8pt;
+        /*border: 1px solid black;*/
+    }
+
+    .navigator_8_day {
+        color: black;
+        /*background-color: white;*/
+    }
+
+    .navigator_8_weekend {
+        background-color: #f0f0f0;
+    }
+
+    .navigator_8_dayheader {
+        color: black;
+    }
+
+    .navigator_8_line {
+        border-bottom: 1px solid #A0A0A0;
+    }
+
+    .navigator_8_dayother {
+        color: gray;
+    }
+
+    .navigator_8_todaybox {
+        border: 1px solid red;
+    }
+
+    .navigator_8_select {
+        background-color: #FFE794;
+    }
+
+    .navigator_8_title, .navigator_8_titleleft, .navigator_8_titleright {
+        border-top: 1px solid #A0A0A0;
+        color: #ffffff;
+        background: #646464;
+        -ms-transition: background-color .3s linear;
+        -moz-transition: background-color .3s linear;
+        -webkit-transition: background-color .3s linear;
+        transition: background-color .3s linear;
+    }
+
+    .navigator_8_busy {
+        font-weight: bold;
+    }
+</style>
+
+
+<div class="card">
+    <div class="card-header" data-background-color="purple">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="title">
+                    @ViewBag.Title
+                    <hr class="visible-print" />
+                </h4>
+            </div>
+            <div class="col-md-4 text-right hidden-print">
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-2" style="float:left; padding-top:10px; padding-left:40px;">                                  
+                <div class="row">
+                    <div id="nav">
+
+                    </div>
+                </div>
+            </div>
+            <div class="main col-md-10" style="padding-right:40px;">
+                <div id="dp">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+@*<script src="~/Scripts/daypilotWithCal-all.min.js"></script>*@
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    var rooms = [];
+    var reservationList = [];
+    var reservationLinks = [];
+    $(document).ready(function () {
+        setTimeout(function () {
+            removeName();
+            FillRooms();
+        }, 1000);
+
+
+    });
+    $('#RoomCategoryId').change(function () {
+        FillRooms();
+    });
+    function removeName() {
+        $('.scheduler_default_corner').text('');
+        //$('.scheduler_default_event_bar_inner').css("background-color", "yellow");
+        //$('.scheduler_default_corner').html(' <button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-chevron-left"></span> Jan</button>')
+    }
+    function FillRooms() {
+        
+        roomCategory = {
+           
+            RoomCategoryId: $('#RoomCategoryId').val()
+        }
+        $.ajax({
+            url: '/Administration/RoomDetails/SelectRoomsByCategoryForSchedule',
+            dataType: 'json',
+            data:roomCategory,
+            method: 'POST',
+            success: function (data) {
+                
+                $.each(data, function (index, room) {
+                    rooms.push(
+                         { name: room.RoomCode, id: room.Id }
+                        );
+                });
+                LoadReservations();
+            },
+        });
+    }
+
+    function LoadReservations() {
+
+    $.ajax({
+        url: '/Reservation/Reservations/SelectReservationForScheduleJson',
+        dataType: 'json',
+        method: 'POST',
+        success: function (data) {
+            $.each(data, function (index, reservation) {
+                reservationList.push({
+                    "id": reservation.Id, //ReservationDetailId
+                    "resource": reservation.RoomId, //Reserved room Id
+                    "start": reservation.RoomStayStart, //ArrivalDate
+                    "end": reservation.RoomStayEnd, //DepartureDate
+                    "text": reservation.ReservationNo + "," + " " + reservation.Name + "," + " " + reservation.RoomCode, //GuestName,
+                    "bubbleHtml": '<span class="glyphicon glyphicon-user"></span>' + ' ' + reservation.Name + '</br>' + '<hr style="margin:2px;">' + '<span class="glyphicon glyphicon-book"></span>' + ' ' + 'Res.No :' + ' ' + reservation.ReservationNo + '</br>' + '<span class="glyphicon glyphicon-home"></span>' + ' ' + 'Room :' + ' ' + reservation.RoomCode + '</br>' + '<span class="glyphicon glyphicon-calendar"></span>' + ' ' + 'Room Stay :' + ' ' + reservation.RoomStayStart + ' / ' + reservation.RoomStayEnd + '</br>' + '<span class="glyphicon glyphicon-calendar"></span> Res. Stay :' + ' ' + reservation.Arrival + ' / ' + reservation.Departure + '</br>' + '<span class="glyphicon glyphicon-comment" style="color:' + reservation.Colour + ' "></span>' + ' ' + reservation.StatusName,
+                    "barColor": reservation.Colour
+                });
+
+                
+                var previousLinkId = reservation.Id;
+                $.each(data, function (i, item) {
+                    if (data.filter(x => x.ReservationNo == item.ReservationNo).length > 1) {
+                        if (reservation.ReservationNo == item.ReservationNo && reservation.Id < item.Id) {
+                            reservationLinks.push({
+                                from: previousLinkId,
+                                to: item.Id,
+                                color: reservation.Colour
+                            });
+                            previousLinkId = item.Id;
+                        }
+                    }
+                });
+
+            });
+
+            FillSchduler();
+        },
+    });
+    }
+    var dp;
+    function FillSchduler() {
+        dp = new DayPilot.Scheduler("dp", {
+            locale: "en-us",
+            cellWidthSpec: "Fixed",
+            cellWidth: 40,
+            crosshairType: "Header",
+            timeHeaders: [{ "groupBy": "Month" }, { "groupBy": "Day", "format": "d" }],
+            scale: "Day",
+            days: DayPilot.Date.today().daysInMonth(),
+            startDate: DayPilot.Date.today().firstDayOfMonth(),
+            showNonBusiness: true,
+            businessWeekends: false,
+            floatingEvents: true,
+            eventHeight: 30,
+            onEventDeleted: "Disabled",
+            eventMovingStartEndEnabled: false,
+            eventResizingStartEndEnabled: false,
+            timeRangeSelectingStartEndEnabled: false,
+            groupConcurrentEvents: false,
+            deleteDisabled: true,
+            eventStackingLineHeight: 100,
+            allowEventOverlap: true,
+            timeRangeSelectedHandling: "Disabled",
+            onTimeRangeSelected: function (args) {
+                var dp = this;
+                DayPilot.Modal.prompt("Create a new event:", "Event 1").then(function (modal) {
+                    dp.clearSelection();
+                    if (!modal.result) { return; }
+                    dp.events.add(new DayPilot.Event({
+                        start: args.start,
+                        end: args.end,
+                        id: DayPilot.guid(),
+                        resource: args.resource,
+                        text: modal.result,
+                    }));
+                });
+            },
+            eventMoveHandling: "Disabled",
+            eventHoverHandling: "Bubble",
+            eventResizeHandling: "Disabled",
+            eventDeleteHandling: "Disabled",
+
+            eventClickHandling: "Disabled",
+
+        });
+
+        //Room List
+        dp.resources = rooms;
+        // Add events
+        dp.events.list = reservationList;
+        //Add Link Between Events
+        dp.links.list = reservationLinks;
+
+        dp.init();
+        var nav = new DayPilot.Navigator("nav");
+        nav.cssClassPrefix = "navigator_8";
+        nav.showMonths = 3;
+        nav.selectMode = "month";
+        nav.onTimeRangeSelected = function (args) {
+            dp.startDate = args.start;
+            dp.days = args.days;
+            // load event to dp.events.list from the server
+            dp.update();
+        };
+        nav.init();
+    }
+
+</script>
+
+
+<script type="text/javascript">
+
+
+</script>
+

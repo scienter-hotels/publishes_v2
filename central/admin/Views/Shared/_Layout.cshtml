@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Scienter Restaurant Team | SNK">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>@ViewBag.Title - Central Access Module</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/bootstrap-datetimepicker.js"></script>
+    <script src="~/scripts/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/jquery-editable-select.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/mega-menu/css/reset.css" rel="stylesheet" />
+    <link href="~/Content/mega-menu/css/style.css" rel="stylesheet" />
+    <link href="~/Content/material-dashboard.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/Theme.css" rel="stylesheet" />
+    <link href="~/Content/FaIcons/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/w3.css" rel="stylesheet" />
+    <link href="~/Content/jquery-editable-select.css" rel="stylesheet" />
+    <link rel='stylesheet' href='~/Content/ColorPicker/spectrum.css' />
+    <link href="~/Content/screen-customize.css" rel="stylesheet" />
+
+    <script>
+        var selectedProperties = [];
+        var Billtotal;
+        var billpaymentArray = [];
+    </script>
+    @if (Scienter.DestinityHorizon.Common.Utility.Configs.GetAppSettingValue("ThemeColor") == "blue")
+    {
+        <link href="~/Content/scienter.theme.blue.css" rel="stylesheet" />
+    }
+
+    @*2024-02-01---------------------------------------------------------------------*@
+
+    <link href="~/Select2/css/select2.css" rel="stylesheet" />
+
+
+    <style>
+
+        .select2-results {
+            line-height: 12px !important;
+            font-size: 12px !important;
+        }
+
+            .select2-results ul li {
+                color: black !important;
+                font-family: 'Roboto', sans-serif !important;
+                font-weight: 200 !important;
+                cursor: auto;
+            }
+
+        .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+            background-color: #0078D4 !important;
+            color: white !important;
+        }
+
+        .select2-selection__rendered {
+            color: #0a1324;
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            height: 26px;
+            font-size: 14px;
+        }
+
+        .select2-container--default .select2-results > .select2-results__options {
+            overflow-x: hidden;
+        }
+
+        .control-label {
+            z-index: 1 !important;
+        }
+
+        .select2-container {
+            width: 100% !important;
+        }
+
+            .select2-container .select2-selection--single .select2-selection__rendered {
+                display: block;
+                padding-left: 0px;
+                padding-right: 20px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #444;
+            line-height: 27px;
+        }
+    @*</style>*@
+
+    @*-------------------------------------------------------------------------------*@
+
+    @*<style>*@
+        .card .card-header {
+            border-radius: 0px;
+        }
+
+        .card {
+            border-radius: 0px;
+        }
+
+        .btn, .navbar .navbar-nav > li > a.btn {
+            border-radius: 0px
+        }
+
+        .cd-header-buttons{
+            right:3em;
+            top:0;
+        }
+    </style>
+
+</head>
+<body>
+    <header class="cd-main-header hidden-print">
+        <div class="theme-bg-color-1" style="height:46px;">
+
+            <a class="cd-logo" href="~/dashboard/landing" style="padding-top:5px;">
+                <img src="~/Images/destinity-horizon-logo.png" alt="Logo">
+
+                @if (@Scienter.DestinityHorizon.Common.Domain.SessionObjects.LoggedUser != null)
+                {
+                    <label style="color:white; font-size:9px;">
+                        @Scienter.DestinityHorizon.Common.Domain.SessionObjects.LoggedUser.PropertyName
+                    </label>
+
+                }
+            </a>
+
+
+
+
+
+            @*
+                <div>
+                    <span style="padding-bottom: 0px;
+                    color: white;
+                    font-size: 12px;
+                    text-align: right;
+                    margin-top: 0px;
+                    display: block;">
+                        @if (@Scienter.DestinityHorizon.Common.Domain.SessionObjects.LoggedProperty != null)
+                        {
+                            @Scienter.DestinityHorizon.Common.Domain.SessionObjects.LoggedProperty.Name
+
+                        }
+                    </span>
+                </div>*@
+
+            @*<span class="properetyLogo">
+                    <img class="logimage" src=" @Scienter.DestinityHorizon.Common.Domain.SessionObjects.LoggedProperty.LogoURL" style="height:100px;width:50px" />
+                </span>*@
+            <ul class="cd-header-buttons">
+                <li>
+                    <a class="cd-logout-btn" href="@Scienter.DestinityHorizon.Common.Utility.Configs.GetAppSettingValue("LoginPortalUrl")/modules/index" title="Change Module" data-toggle="tooltip" data-placement="bottom">
+                        <img src="~/Images/property-change-icon.png" style="width:25px; margin-left:10px;" />
+                    </a>
+                </li>
+                <li><a class="cd-logout-btn" href="@Scienter.DestinityHorizon.Common.Utility.Configs.GetAppSettingValue("LoginPortalUrl")/properties/Index" title="Change Property" data-toggle="tooltip" data-placement="bottom"><span class="glyphicon glyphicon-retweet"></span></a></li>
+                <li><a class="cd-logout-btn" href="/login/logout" title="Logout" data-toggle="tooltip" data-placement="bottom"><span class="glyphicon glyphicon-off"></span></a></li>
+            </ul> <!-- cd-header-buttons -->
+        </div>
+
+    </header>
+
+    <main class="cd-main-content">
+        <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="leftMenu">
+            <button onclick="closeLeftMenu()" class="w3-bar-item w3-button w3-large">Close &times;</button>
+            <div class="col-md-12 left-menu-content-area">
+            </div>
+        </div>
+
+        <div class="w3-sidebar w3-bar-block w3-card w3-animate-right" style="display:none;right:0;" id="rightMenu">
+            <button onclick="closeRightMenu()" class="w3-bar-item w3-button w3-large close-right">Close &times;</button>
+            <div class="col-md-12 right-menu-content-area">
+            </div>
+        </div>
+
+        <div class="messagealert" id="alert_container"></div>
+        <div>
+            <div class="container w3-container">
+                <div id="viewLoadingArea" style="padding-top:10px;">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </main>
+    @if (!Request.Url.ToString().Contains("/outlet/OutletsWindow"))
+    {
+        <div class="hidden-print">
+            @Html.Partial("_NavigationAjax")
+        </div>
+    }
+
+    <!-- DATA TABLES -->
+    <script src="~/datatable/jquery.dataTables.min.js"></script>
+    <script src="~/datatable/dataTables.buttons.min.js"></script>
+    <script src="~/datatable/buttons.flash.min.js"></script>
+    <script src="~/datatable/jszip.min.js"></script>
+    <script src="~/datatable/pdfmake.min.js"></script>
+    <script src="~/datatable/vfs_fonts.js"></script>
+    <script src="~/datatable/buttons.html5.min.js"></script>
+    <script src="~/datatable/buttons.print.min.js"></script>
+    <script src="~/datatable/scienter.datatables.js"></script>
+    <!-- END OF DATA TABLES -->
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Content/mega-menu/js/main.js"></script>
+    <script src="~/Scripts/material.min.js"></script>
+
+    <script src="~/Scripts/arrive.min.js"></script>
+    <script src="~/Scripts/perfect-scrollbar.jquery.min.js"></script>
+    <script src="~/Scripts/bootstrap-notify.js"></script>
+    <script src="~/Scripts/material-dashboard.js"></script>
+    <script src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/Scripts/bootstrap-daterangepicker.js"></script>
+    <script src="~/Scripts/scienter.common.datatimepicker.js"></script>
+    <script src="~/scripts/scienter.simpleadmin.common.js"></script>
+    <!-- Modal For details -->
+    <div id="grid-record-detail-model" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content" id="grid-detail-popup-container">
+                <div class="modal-body">
+                    <div data-dismiss="modal" style="float: right;margin-top: -35px;margin-right: -35px;background-color: #fff;border-radius: 50px;padding: 4px; cursor:pointer;" id="grid-record-detail-model-close">
+                        <img src="~/Images/close-btn.png" class="hidden-print" style="width:28px;" />
+                    </div>
+                    <div class="model-popup-title">
+                        <h4 id="grid-record-detail-header" class="hidden-print" style="margin-bottom:10px;"></h4>
+                    </div>
+                    <div id="grid-record-detail-body">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-new-record-window-model" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-md">
+            <!-- Modal content-->
+            <div class="modal-content" id="add-new-record-window-container">
+                <div class="modal-body">
+                    <div data-dismiss="modal" style="float: right;margin-top: -35px;margin-right: -35px;background-color: #fff;border-radius: 50px;padding: 4px; cursor:pointer;">
+                        <img src="~/Images/close-btn.png" style="width:28px;" />
+                    </div>
+                    <div class="model-popup-title">
+                        <h4 id="add-new-record-window-header" style="margin-bottom:10px;"></h4>
+                        <hr />
+                    </div>
+                    <div id="add-new-record-window-body">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="grid-record-delete-model" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content" id="grid-delete-popup-container">
+                <div class="modal-body">
+                    <div data-dismiss="modal" class="model-popup-close-btn">
+                        <img src="~/Images/close-btn.png" />
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2 icon-holder">
+                            <img src="~/Images/question-icon.png" />
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="model-popup-title">
+                                <h4>Are you sure ?</h4>
+                            </div>
+                            <div>
+                                <input type="hidden" id="grid-record-delete-model-href" />
+                                <p style="font-size:14px;"> This record will delete permanently from the system. Are you sure you need to delete this record?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-right">
+                        <button type="button" class="btn grid-record-delete-yes-btn theme-bg-color-1">
+                            <span class="glyphicon glyphicon-trash"></span> Yes
+                        </button>
+                        <button type="button" class="btn rid-record-delete-no-btn btn-clear theme-bg-color-2" data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove-circle"></span> No
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="message-success-model" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div data-dismiss="modal" class="success-popup-ok model-popup-close-btn">
+                        <img src="~/Images/close-btn.png" />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-2 icon-holder">
+                            <img src="~/Images/success-icon.png" />
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="model-popup-title">
+                                <h4>Success !</h4>
+                            </div>
+                            <div>
+                                <p style="font-size:14px;" id="message-success-model-msg"></p>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="message-error-model" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div data-dismiss="modal" class="error-popup-ok  model-popup-close-btn">
+                        <img src="~/Images/close-btn.png" />
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2 icon-holder">
+                            <img src="~/Images/error-icon.png" />
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="model-popup-title">
+                                <h4>Error !</h4>
+                            </div>
+                            <div>
+                                <p style="font-size:14px;" id="message-error-model-msg"></p>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="message-warning-model" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div data-dismiss="modal" class="model-popup-close-btn">
+                        <img src="~/Images/close-btn.png" />
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2 icon-holder">
+                            <img src="~/Images/waring-icon.png" />
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="model-popup-title">
+                                <h4>Warning !</h4>
+                            </div>
+                            <div>
+                                <p style="font-size:14px;" id="message-warning-model-msg"></p>
+                                <br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--chiraj-->
+    <div class="modal fade" id="myModal" role="dialog" tabindex="-1">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                    <img src="~/Content/Images/Sync-data.gif" />
+                </div>
+                <div class="modal-footer hidden">
+                    <label>Sync Completed</label>
+                    <button type="button" class="btn btn-default closebtn" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--chiraj-->
+
+    <script>
+        /*2024-02-01---------------------------------------------------------------------*/
+
+        $(document).ready(function () {
+            setTimeout(function () {
+            $('.select2').on('mouseenter', function () {
+                $(this).select2();
+
+                $('.select2.select2-container').addClass('form-control');
+                $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+                $('.select2-selection__arrow').css('display', 'none');
+                $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+            });
+            }, 4000);
+
+        });
+        /*-------------------------------------------------------------------------------*/
+
+        function openLeftMenu() {
+            document.getElementById("leftMenu").style.display = "block";
+        }
+        function closeLeftMenu() {
+            document.getElementById("leftMenu").style.display = "none";
+        }
+
+        function openRightMenu() {
+            document.getElementById("rightMenu").style.display = "block";
+        }
+        function closeRightMenu() {
+            document.getElementById("rightMenu").style.display = "none";
+        }
+
+        //$(document).ready(function () {
+        //    $('.card .card-content').css('min-height', ($(window).height() - 125));
+        //    $('.card .card-content').css('height', ($(window).height() - 125));
+        $('.card .card-content').css('overflow-y', 'scroll');
+        //    $('.card .card-content').css('min-width', ($(window).width() - 700));
+        //});
+
+        setInterval(function () {
+            $('.label-floating').each(function (index, item) {
+                if ($(item).find('input[type="email"]').length > 0) {
+
+                    if ($(item).find('input[type="email"]').val().length > 0) {
+                        $(item).removeClass('is-empty');
+                    } else {
+                        $(item).addClass('is-empty');
+                    }
+                }
+
+                if ($(item).find('input[type="tel"]').length > 0) {
+                    if ($(item).find('input[type="tel"]').val().length > 0) {
+                        $(item).removeClass('is-empty');
+                    } else {
+                        $(item).addClass('is-empty');
+                    }
+                }
+
+            });
+        }, 1000);
+
+    </script>
+    <script src="~/Select2/js/select2.full.js"></script>
+    <script src="~/Scripts/scienter.number.formatting.js"></script>
+    <script src="~/Scripts/scienter.lablefloating.override.js"></script>
+    <script src="~/Scripts/UI/Scienter.Common.Checkbox.js"></script>
+    <script src="~/Scripts/UI/Scienter.Common.Combo.js"></script>
+
+
+    <iframe src="#" id="iframeFiscalPrinter" style="width:2px !important; height:2px !important;"></iframe>
+</body>
+</html>
+

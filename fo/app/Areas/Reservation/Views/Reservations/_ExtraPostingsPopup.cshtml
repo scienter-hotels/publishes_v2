@@ -1,0 +1,199 @@
+﻿<input type="hidden" name="ExtraPostingRatecodeheaderId" id="ExtraPostingRatecodeheaderId" value="@ViewBag.ratecodeheaderId" />
+
+<style>
+
+    #applicablePostingsTable th {
+        font-weight: bold;
+        padding: 3px 8px;
+    }
+
+    #applicablePostingsTable td {
+        padding: 3px 8px;
+    }
+
+    #extrasPopup {
+        margin-right: -25px;
+    }
+
+        #extrasPopup label {
+            color: #000;
+        }
+
+        #extrasPopup .form-group {
+            padding-bottom: 10px;
+            margin: -10px 0;
+        }
+
+            #extrasPopup .form-group input, .form-group select {
+                font-size: 12px;
+            }
+
+        #extrasPopup .the-fieldset {
+            padding-bottom: 15px;
+        }
+
+        #extrasPopup .btn.btn-sm {
+            padding: 2px 8px;
+            font-size: 11px;
+        }
+</style>
+
+<div class="row" id="extrasPopup">
+    <div class="col-md-12">
+
+        <div class="row" style="margin-bottom: 15px;">
+            <div class="col-md-12">
+                <fieldset class="the-fieldset">
+                    <legend class="the-legend">Add Extras</legend>
+                    <div class="row" style="margin-top:-30px;">
+
+                        <div class="col-md-4">
+                            <label class="control-label">
+                                Extra Posting
+                            </label>
+                            <select name="ExtraPostingTypeId" id="ExtraPostingTypeId" class="select2 form-control" required>
+                                <option value="0" selected>--Select--</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">
+                                Amount
+                            </label>
+                            <input type="number" class="form-control" name="ExtraAmount" value="" id="ExtraAmount" step="any" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">
+                                Quantity
+                            </label>
+                            <input type="number" class="form-control" name="ExtraQuantity" value="" id="ExtraQuantity" step="any" />
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary" id="addToExtrasGrid" style="margin-top: 15px;">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+
+                </fieldset>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <fieldset class="the-fieldset">
+                    <legend class="the-legend">Added Postings</legend>
+                    <div class="table-responsive" style="max-height:450px; overflow:auto;">
+                        <table class="table table-striped table-sm" id="applicablePostingsTable">
+                            <thead>
+                                <tr>
+                                    <th>Posting</th>
+                                    <th class="text-right">Qty</th>
+                                    <th class="text-right">Amount</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <button class="btn btn-success closeModel" id="applyExtras" disabled> Apply Selected Posting(s)</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var appliedExtrasStr = '';
+
+    $(document).ready(function () {
+        var ratecodeHeaderId = $('#ExtraPostingRatecodeheaderId').val();
+        LoadPostingTypes(ratecodeHeaderId);
+    });
+
+    function LoadPostingTypes(ratecodeHeaderId) {
+        $.ajax({
+            url: '/Reservation/Reservations/SelectPostingTypesForMakeReservation?ratecodeHeaderId=' + ratecodeHeaderId,
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $.each(data, function (index, type) {
+                    $(' <option value="' + type.Id + '" data-amount="' + type.Price+'"> ' + type.Name + ' </option>').appendTo($('#ExtraPostingTypeId'));
+                });
+            }
+        });
+    }
+
+    $(document).off('change', '#ExtraPostingTypeId').on('change', '#ExtraPostingTypeId', function () {
+        var amount = $(this).find(':selected').data('amount');
+        $('#ExtraAmount').val(amount);
+    });
+
+    $(document).off('click', '#addToExtrasGrid').on('click', '#addToExtrasGrid', function () {
+        var postingId = $('#ExtraPostingTypeId').find(':selected').val();
+        var posting = $('#ExtraPostingTypeId').find(':selected').text();
+        var postingAmount = $('#ExtraAmount').val();
+        var postingquantity = $('#ExtraQuantity').val();
+
+        if (postingId <= 0) {
+            alert('Select a posting...');
+        } else if (postingquantity <= 0) {
+            alert('Enter the quantity...');
+        }
+        else if (postingAmount <= 0) {
+            alert('Enter the amount...');
+        }
+        else {
+
+            $(`
+               <tr class="added-postings">
+                   <td class="extra-posting-posting-id hidden">${postingId}</td>
+                   <td class="extra-posting-posting">${posting}</td>
+                   <td class="text-right extra-posting-quantity">${postingquantity}</td>
+                   <td class="text-right extra-posting-amount">${postingAmount}</td>
+                   <td class="text-right"><button class="btn btn-danger btn-sm delete-extra-posting"><span class="glyphicon glyphicon-trash"></button></td>
+               </tr>
+            `).appendTo('#applicablePostingsTable tbody');
+
+            $('#addToGrid').prop('disabled', true);
+        }
+    });
+
+    $(document).off('click', '.delete-extra-posting').on('click', '.delete-extra-posting', function () {
+        $(this).closest('tr').remove();
+
+        $('#ExtraAmount').val('');
+        $('#ExtraQuantity').val('');
+        $('#ExtraPostingTypeId').val('0');
+    });
+
+    $(document).off('click', '#applyExtras').on('click', '#applyExtras', function () {
+        appliedExtrasArray = [];
+
+        $('#applicablePostingsTable .added-postings').each(function (index, item) {
+            var ExtraPostingId = $(item).find('.extra-posting-posting-id').text();
+            var Quantity = $(item).find('.extra-posting-quantity').text();
+            var Amount = $(item).find('.extra-posting-amount').text();
+            var Remark = $(item).find('.extra-posting-posting').text();
+
+            var pst = {
+                ExtraPostingId: ExtraPostingId,
+                Quantity: Quantity,
+                Amount: Amount,
+                Remark: Remark
+            }
+            appliedExtrasArray.push(pst);
+        });
+
+        appliedExtrasStr = JSON.stringify(appliedExtrasArray);
+
+        ShowSuccessMessage('Extras Added Successfully.');
+        
+        $('#grid-record-detail-model-close').click();
+    });
+</script>

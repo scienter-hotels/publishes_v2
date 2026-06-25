@@ -1,0 +1,213 @@
+﻿@*<div class=""></div>*@
+
+
+<div class="GuestReservationGridDiv">
+    <div class="row">
+        <div class="col-md-12" style="max-height:200px; overflow-y:auto;">
+            <h6>Future Reservation</h6>
+            <table class="table table-striped" id="FutureReservationsGrid">
+                <tr>
+                    <th class="">Res#</th>
+                    <th class="">Arrival</th>
+                    <th class="">Departure</th>
+                    <th class="">Adults</th>
+                    <th class="">Child</th>
+                    <th class="">Status</th>
+                </tr>
+                <tr class="no-record">
+                    <td colspan="10">No Records Found.</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12" style="max-height:200px; overflow-y:scroll;">
+            <h6>Cancellations/No Show</h6>
+                <table class="table table-striped" id="CancellationGrid">
+                    <tr>
+                        <th class="">Res#</th>
+                        <th class="">Arrival</th>
+                        <th class="">Departure</th>
+                        <th class="">Adults</th>
+                        <th class="">Child</th>
+                    </tr>
+                    <tr class="no-record">
+                        <td colspan="7">No Records Found.</td>
+                    </tr>
+                </table>
+        </div>
+    </div>
+    <div class="row">    
+        <div class="col-md-12"style="max-height:200px; overflow-y:scroll;">
+            <h6>Inhouse/Checked-Out</h6>
+            <table class="table table-striped" id="InhouseCheckoutGrid" >
+                <tr>
+                    <th class="">Res#</th>
+                    <th class="">Arrival</th>
+                    <th class="">Departure</th>
+                    <th class="">Adults</th>
+                    <th class="">Child</th>
+                </tr>
+                <tr class="no-record">
+                    <td colspan="7">No Records Found.</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12"style="max-height:200px; overflow-y:auto;">
+            <h6>Folio</h6>
+            <table class="table table-striped" id="FolioGrid">
+                <tr>
+                    @*<th class="">Info</th>*@
+                    <th class="">Room</th>
+                    <th class="">Charge Date</th>
+                    <th class="">Description</th>
+                    <th class="">Amount</th>
+                    <th class="">Folio</th>
+                    <th class="">Invoice No</th>
+                    @*<th class="">Print</th>*@
+                </tr>
+                <tr class="no-record">
+                    <td colspan="9">No Records Found.</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<input type="hidden" value="@ViewBag.guestID" id="hdnGuestId" />
+
+
+<script>
+    $(document).ready(function () {
+        FillFutureGrid(); 
+        FillFolioGrid();
+    });
+
+    function FillFutureGrid() {
+        var guestId = $('#hdnGuestId').val();
+        $.ajax({
+            url: '/GuestProfiles/SelectFutureReservationByGuest',
+            dataType: 'json',
+            data: { guestId: guestId },
+            method: 'GET',
+            success: function (data) {
+                ;
+                if (data.length > 0) {
+                    $("#FutureReservationsGrid tr:nth-child(2)").remove();
+                }
+                $.each(data, function (index, item) {
+                    ;
+                    $('<tr>' +
+                        '<td>' + item.ReservationNo + '</td>' +
+                        '<td>' + item.Arrival + '</td>' +
+                        '<td>' + item.Departure + '</td>' +
+                        '<td>' + item.NoOfAdults + '</td>' +
+                        '<td>' + item.NoOfKids + '</td>' +
+                        '<td>' + item.Status + '</td>' +
+
+                        '</tr>'
+                    ).appendTo($('#FutureReservationsGrid'));
+                });
+
+                FillCancelGrid();
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+    function FillCancelGrid() {
+        var guestId = $('#hdnGuestId').val();
+        $.ajax({
+            url: '/GuestProfiles/SelectCancelledReservationByGuest',
+            dataType: 'json',
+            data: { guestId: guestId },
+            method: 'GET',
+            success: function (data) {
+                ;
+                if (data.length > 0) {
+                    $("#CancellationGrid tr:nth-child(2)").remove();
+                }
+                $.each(data, function (index, item) {
+                    ;
+                    $('<tr>' +
+                        '<td>' + item.ReservationNo + '</td>' +
+                        '<td>' + item.Arrival + '</td>' +
+                        '<td>' + item.Departure + '</td>' +
+                        '<td>' + item.NoOfAdults + '</td>' +
+                        '<td>' + item.NoOfKids + '</td>' +
+                        '</tr>'
+                    ).appendTo($('#CancellationGrid'));
+                });
+
+                FillInHouseGrid(); 
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+    function FillInHouseGrid() {
+        var guestId = $('#hdnGuestId').val();
+        $.ajax({
+            url: '/GuestProfiles/SelectInHouseAndCheckOutReservationByGuest',
+            dataType: 'json',
+            data: { guestId: guestId },
+            method: 'GET',
+            success: function (data) {
+                ;
+                if (data.length > 0) {
+                    $("#InhouseCheckoutGrid tr:nth-child(2)").remove();
+                }
+                $.each(data, function (index, item) {
+                    ;
+                    $('<tr>' +
+                        '<td>' + item.ReservationNo + '</td>' +
+                        '<td>' + item.Arrival + '</td>' +
+                        '<td>' + item.Departure + '</td>' +
+                        '<td>' + item.NoOfAdults + '</td>' +
+                        '<td>' + item.NoOfKids + '</td>' +
+                        '</tr>'
+                    ).appendTo($('#InhouseCheckoutGrid'));
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+    function FillFolioGrid() {
+
+        var guestId = $('#hdnGuestId').val();
+        $.ajax({
+            url: '/GuestProfiles/SelectFolioDetailsByGuest',
+            dataType: 'json',
+            data: { guestId: guestId },
+            method: 'GET',
+            success: function (data) {
+                ;
+                if (data.length > 0) {
+                    $("#FolioGrid tr:nth-child(2)").remove();
+                }
+                $.each(data, function (index, item) {
+                    ;
+                    $('<tr>' +
+                        //'<td>' + item.Info + '</td>' +
+                        '<td>' + item.Room + '</td>' +
+                        '<td>' + item.ChargeDate + '</td>' +
+                        '<td>' + item.FolioText + '</td>' +
+                        '<td>' + item.ChargeAmount + '</td>' +
+                        '<td>' + item.FolioHeaderID + '</td>' +
+                        '<td>' + item.InvoiceNo + '</td>' +
+                        '</tr>'
+                    ).appendTo($('#FolioGrid'));
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
+</script>

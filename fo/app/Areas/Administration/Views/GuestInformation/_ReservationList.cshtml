@@ -1,0 +1,254 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.ReservationHeaderView>
+
+@{
+    ViewBag.Title = "Reservation List";
+}
+<style>
+    .dataTables_filter {
+        width: 29% !important;
+        float: left !important;
+    }
+
+    .dt-buttons {
+        width: 70% !important;
+    }
+
+    .superscript {
+        font-size: 0.8em;
+    }
+</style>
+
+<div class="">
+    <table class="table font-size-12px" id="existingGuestReservationGrid">
+        <thead>
+            <tr>
+                <th class="text-primary hide">
+                    Id
+                </th>
+
+                @*<th class="text-primary ">
+            Arrival
+        </th>
+
+        <th class="text-primary ">
+            Departure
+        </th>*@
+
+                <th class="text-primary ">
+                    Res.#
+                </th>
+
+                <th class="text-primary">
+                    First Name
+                </th>
+                <th class="text-primary">
+                    Last Name
+                </th>
+
+                <th class="text-primary">
+                    Company
+                </th>
+                <th class="text-primary">
+                    Country
+                </th>
+                @*<th class="text-primary " style="text-align:center;">
+            Voucher#
+        </th>*@
+
+                @*<th class="text-primary">
+            Cat.
+        </th>
+        <th class="text-primary ">
+            Type
+        </th>*@
+                @*<th class="text-primary ">
+            Meal Plan
+        </th>
+        <th class="text-primary ">
+            Room Rate
+        </th>*@
+                <th class="text-primary ">
+                    Room
+                </th>
+                @*<th class="text-primary ">
+            Group#
+        </th>*@
+                <th class="text-primary col-md-1" style="text-align:center;">
+                    Status
+                </th>
+                @*<th class="text-primary">
+            <span class="glyphicon glyphicon-wrench " style="font-size:15px;" data-toggle="tooltip" title="Traces"></span>
+            Traces
+        </th>
+        <th class="text-primary">
+            <span class="glyphicon glyphicon-bell " style="font-size:15px;" data-toggle="tooltip" title="Alerts"></span>
+            Alert
+        </th>
+        <th class="text-primary">
+            <span class="glyphicon glyphicon-plane " style="font-size:15px;" data-toggle="tooltip" title="Transport"></span>
+            Transport
+        </th>*@
+                <th style="width:60px;">
+
+                </th>
+
+                <th style="width:30px;">
+                </th>
+                <th></th>
+                <th class="hidden"></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td class="Id hide">
+                    @item.Id
+                </td>
+                @*<td class="arrival-date">
+            @item.ArrivalDate
+        </td>
+
+        <td class="depature-date">
+            @item.DepartureDate
+        </td>*@
+
+                <td class="res-no">
+                    @item.ResNo
+                </td>
+
+                <td class="guest-name" data-guestProfileId="@item.GuestProfileId">
+                    @item.FirstName
+                </td>
+                <td class="guest-name" data-guestProfileId="@item.GuestProfileId">
+                    @item.LastName
+                </td>
+                <td>
+                    @item.AgentName
+                </td>
+                <td>
+                    @item.CountriesName
+                </td>
+                @*<td style="text-align:center;">
+            @item.VoucherNo
+        </td>*@
+                @*<td>
+            @item.RoomCat
+        </td>
+        <td>
+            @for (int i = 0; i < item.MaxHeadCount; i++)
+            {
+                <span class="glyphicon glyphicon-user display-inline font-size-18" data-toggle="tooltip"></span>
+            }
+            <span class="hidden">@item.RoomType</span>
+        </td>
+        <td class="room-no" data-roomId="@item.RoomId">
+            @item.MealPlanName
+        </td>
+        <td class="room-no">
+            @item.RoomRate<sup class="superscript">@item.Currency</sup>
+        </td>*@
+                <td class="room-no" data-roomId="@item.RoomId">
+                    @item.RoomNo
+                </td>
+
+                @*<td class="group-res-no">
+            @item.GResNo
+        </td>*@
+
+                <td class="res-status" style="text-align:center;">
+                    @item.ReservationStatus
+                </td>
+
+                <td style="text-align:left;">
+
+               
+
+                </td>
+
+                <td class="hidden-print text-right" style="text-align:right !important;">
+                    <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="" data-title="Reservation Activity Log" data-href="/Reservation/Reservations/ReservationActivityLog/@item.Id" title="Activity Log" data-toggle="tooltip" data-width="500">
+                        <span class="glyphicon glyphicon-tags"></span>
+                    </a>
+                </td>
+
+                <td>
+                    <div class="form-group checkbox">
+                        <label>
+                            <input type="checkbox" class="data-reservation-no" data-AdvanceAmount="@item.AdvanceAmount" data-HasAdvancePaymentRecord="@item.HasAdvancePaymentRecord" data-item-uuid="@item.ResUuid" data-rateCodeHeaderId="@item.RateCodeHeaderId" data-mealPlanId="@item.MealPlanId" data-roomTypeId="@item.RoomTypeId" data-roomCategoryName="@item.RoomCat" guestId="@item.GuestProfileId" guestName="@item.GuestName" group-resNo="@item.GResNo" arrival-date=@item.Arrival departure-date="@item.Departure" room-id="@item.RoomId" room-code="@item.RoomNo" resNo="@item.ResNo" value="@item.Id" res-Uuid="@item.ResUuid" roomCategoryId="@item.RoomCategoryId" data-isLocalRate="@item.IsLocalRate" data-isAllowedToCancel="@item.IsAllowedToCancel" data-isAllowedToCheckIn="@item.IsAllowedToCheckIn" data-isAllowedToAllocateRoom="@item.IsAllocationRequired" />
+                        </label>
+                    </div>
+
+
+                </td>
+                <td class="hidden">
+                    Active
+                </td>
+
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<input type="hidden" id="new-reservation" value="@ViewBag.Uuid" />
+
+<script src="~/Scripts/moment.min.js"></script>
+<script>
+    function SelectRecent() {
+        $('.data-reservation-no').each(function (index, item) {
+            if ($(item).attr('data-item-uuid') == $('#new-reservation').val()) {
+                $(item).prop('checked', true);
+                $(item).closest('tr').addClass('selectdRecord');
+
+                if ($('input.data-reservation-no:checked').length > 0) {
+                    setUrlToRelevetReservation($('#existingGuestReservationGrid tr.selectdRecord'));
+                    $('#reservationGrid').fadeIn().removeClass('col-md-12').addClass('col-md-10');
+                    $('#reservationOptions').fadeIn();
+                }
+                else {
+                    $('#reservationGrid').removeClass('col-md-10').hide().addClass('col-md-12').fadeIn();
+                    $('#reservationOptions').hide();
+                }
+                return false;
+            }
+        });
+    }
+
+    $(document).ready(function () {
+
+        $('#existingGuestReservationGrid').DataTable(
+            {
+                searching: true,
+                ordering: false,
+                "lengthMenu": [[14, 10, 25, 50, -1], [15, 10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            }).order([0, 'asc']).search('').draw(false);
+
+
+        if ($('#new-reservation').val() === '') {
+            ShowResult()
+        } else {
+            setTimeout(function () {
+                SelectRecent();
+            }, 2000);
+
+        }
+
+        $('<button class="dropdown-item dt-button buttons-html5 pull-left data-filter-option" id="clearbtn" type="button" style="margin-top:10px; backgroud">Clear</button>').appendTo('.dt-buttons');
+
+
+
+
+    });
+
+</script>

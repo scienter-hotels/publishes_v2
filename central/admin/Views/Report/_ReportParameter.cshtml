@@ -1,0 +1,410 @@
+@using System;
+@using Scienter.DestinityHorizon.Common.Domain
+@using Scienter.DestinityHorizon.Common.Service
+@using Scienter.DestinityHorizon.Common.Utility
+@using Scienter.DestinityHorizon.Common.Domain.ViewModels
+
+<link href="~/Select2/css/select2.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.js"></script>
+
+<style>
+
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        overflow-x: hidden;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+
+    .reportcontainer {
+        border-color: #D9434C;
+        border-width: 0.5px;
+    }
+
+    button {
+        border-radius: 5px !important;
+        background-color: #D9434C;
+        width: 100px;
+        border: none;
+    }
+
+    .form-group-marging-central {
+        margin-top: 35px;
+    }
+    
+    .sub-label {
+    font-size: 0.9em; /* Adjust the size as needed */
+    font-style: italic;
+    color: #6c757d; /* Optional: Add a light color for better emphasis */
+}
+    
+</style>
+
+@{
+    ReportDetails rd = new ReportDetails();
+    rd = new ReportService().SelectReportParamaters(ViewBag.ReportName);
+}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading active">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" class="view-accordion report-param-title" data-parent="#accordion" href="#collapseOne">
+                            Report Parameters
+                        </a>
+                    </h4>
+                </div>
+                @if (rd.ParamOperation)
+                {
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Generate Using *</label>
+                            <select class="form-control " id="generateUsing select2">
+                                <option value="1">Reservation date</option>
+                                <option value="0">Booked date</option>
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamFromDate)
+                {
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging form-group-marging-central input-group date">
+                            <label>From Date*</label>
+                            @*<input type="text" class="effective-to form-control start-date-picker text-box single-line FromDate" id="FromDate" name="FromDate" value="" autocomplete="off" />
+        <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+        </span>*@
+                            <input autocomplete="off" class="form-control start-date-picker datePicker text-box single-line" maxlength="100" id="FromDate" name="FromDate" type="text" required>
+                           
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamToDate)
+                {
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging form-group-marging-central input-group date">
+                            <label>To Date*</label>
+                            @*<input type="text" class="effective-to form-control end-date-picker text-box single-line ToDate" id="ToDate" name="ToDate" value="" autocomplete="off" />
+        <span class="input-group-addon">
+            <span class="glyphicon glyphicon-calendar"></span>
+        </span>*@
+                            <input autocomplete="off" class="form-control start-date-picker datePicker text-box single-line" maxlength="100" id="ToDate" name="ToDate" type="text" required>
+                            
+                        </div>
+                    </div>
+                }
+
+                @if (rd.ParamReportType)
+                {
+                    <input type="hidden" id="ReportType" name="ReportType" value="@rd.ParamReportTypeValue" />
+                    <input type="hidden" id="ReportSubTitle" name="ReportSubTitle" value="@rd.ReportSubTitle" />
+                }
+                @if (rd.ParamUserId)
+                {
+                    List<Central_Users> UserDetails = new List<Central_Users>();
+                    UserDetails = new Central_UsersService().Select(SelectType.All).ToList();
+
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging-central">
+                            <label>User Name*</label>
+                            <select id="User" name="User" required class="User-combo form-control select2">
+                                <option value="-1">ALL</option>
+                                @foreach (var item in UserDetails)
+                                {
+                                    <option value="@item.Id">@item.UserName - @item.EmpNumber</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamPropertyId)
+                {
+                    List<Central_Properties> PropertyDetails = new List<Central_Properties>();
+                    PropertyDetails = new Central_PropertiesService().Select(SelectType.ActiveOnly).ToList();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging-central">
+                            <label>Property*</label>
+                            <select id="property" name="property" required class="Property-combo form-control select2">
+                                @if (rd.ReportName=="PropertyWiseUserDetails")
+                                {
+                                    <option value="0">All</option>
+                                }   
+                                @foreach (var item in PropertyDetails)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamModuleId)
+                {
+                    List<Central_Modules> ModuleDetails = new List<Central_Modules>();
+                    ModuleDetails = new Central_ModulesService().Select(SelectType.ActiveOnly).ToList();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging-central">
+                            <label>Module*</label>
+                            <select id="module" name="module" required class="Module-combo form-control select2">
+                                @foreach (var item in ModuleDetails)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamAuditTrailModuleId)
+                {
+                    List<AuditTrail_Modules> ModuleDetails = new List<AuditTrail_Modules>();
+                    ModuleDetails = new Central_ModulesService().SelectAuditTrailModules();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging-central">
+                            <label>Audit Trail Module*</label>
+                            <select id="audittrailmodule" name="audittrailmodule" required class="Audit-Module-combo form-control select2">
+                                <option value="0">ALL</option>
+                                @foreach (var item in ModuleDetails)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamAuditTrailProcessId)
+                {
+                    List<AuditTrail_Processes> processes = new List<AuditTrail_Processes>();
+                    processes = new Central_ModulesService().SelectAuditTrailProcesses();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging-central">
+                            <label>Audit Trail Process*</label>
+                            <select id="audittrailprocesses" name="audittrailprocesses" required class="Process-combo form-control select2">
+                                <option value="0">ALL</option>
+                                @foreach (var item in processes)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamAuditTrailReferenceNo)
+                {
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging form-group-marging-central input-group">
+                            <label>
+                                Audit Reference* 
+                                
+                            </label>
+                            <input type="text" class="form-control" id="referenceno" name="referenceno" value="N/A" autocomplete="off" />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@if (rd.ReportName == "AuditTrailTabularFormat")
+{
+    <div class="row">
+        <div class="col-md-12">
+            <span class="sub-label">(Please search using the exact value of either the Reservation Number, Group Reservation Number, or Room Code as a audit reference.)</span>
+        </div>
+    </div>
+}
+<div class="row">
+    <div class="col-md-12">
+        <a href="" class="pull-right btn btn-success btn-width-100px btn-shadow reportViewBtn" target="_blank">View</a>
+        <a type="reset" class="pull-right btn btn-default btn-width-100px btn-shadow" onclick="ClearForm()"> Clear </a>
+    </div>
+</div>
+<script>
+    $(document).ready(function (e) {
+        $('.report-param-title').html('');
+        $('.report-param-title').html($($($('.checkmark').not(':hidden')).parent('.reportdiv').find('input[type="hidden"]')).attr('data-reportTitle'));
+        //var todayDateFormatted = dateFormatChanger($('.FromDate').val())
+        //$('.ToDate').val(getDateforHeader(parseDate(todayDateFormatted).addDays(30), 'withdash'));
+
+
+        //// Get the current date
+        //var today = new Date();
+
+        //// Format the date as YYYY-MM-DD
+        //var year = today.getFullYear();
+        //var month = ('0' + (today.getMonth() + 1)).slice(-2); // Adding leading zero if needed
+        //var day = ('0' + today.getDate()).slice(-2);          // Adding leading zero if needed
+
+        //// Set the value of the input field to the formatted date
+        //document.getElementById('FromDate').value = `${year}-${day}-${month}`;
+        //document.getElementById('ToDate').value = `${year}-${day}-${month}`;
+
+
+        $('#FromDate').daterangepicker({
+            "showDropdowns": true,
+            "singleDatePicker": true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "opens": "right",
+            "applyClass": "btn-primary",
+            locale: {
+                //format: 'DD/MM/YYYY'
+                //format: 'MM/DD/YYYY'
+                format: 'YYYY-MM-DD'
+            }
+        });
+
+        $('#ToDate').daterangepicker({
+            "showDropdowns": true,
+            "singleDatePicker": true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "opens": "right",
+            "applyClass": "btn-primary",
+            locale: {
+                //format: 'DD/MM/YYYY'
+                //format: 'MM/DD/YYYY'
+                format: 'YYYY-MM-DD'
+            }
+        });
+
+    });
+
+   
+
+    //FromDate
+    //$('.start-date-picker').daterangepicker({
+    //    linkedCalendars: true,
+    //    "showWeekNumbers": true,
+    //    "alwaysShowCalendars": true,
+    //    "minDate": $('#ArrivalDate').val(),
+    //    "maxDate": $('#ArrivalDate').val(),
+    //    singleDatePicker: true,
+    //    locale: {
+    //        //format: 'DD/MM/YYYY'
+    //        format: 'MM/DD/YYYY'
+
+    //    }
+    //}, function (start, end, label) {
+    //    minDate = start.format('MM/DD/YYYY');
+    //    $('#FromDate').val(start.format('MM/DD/YYYY'));
+    //});
+    ////Todate
+    //$('.end-date-picker').daterangepicker({
+    //    linkedCalendars: true,
+    //    "showWeekNumbers": true,
+    //    "alwaysShowCalendars": true,
+    //    singleDatePicker: true,
+    //    locale: {
+    //        format: 'MM/DD/YYYY'
+    //    }
+    //}, function (start, end, label) {
+    //    $('#ToDate').val(end.format('MM/DD/YYYY'));
+    //});
+
+    //$('body').on('change', '.FromDate', function (e) {
+    //    var todayDateFormatted = dateFormatChanger($('.FromDate').val())
+    //    $('.ToDate').val(getDateforHeader(parseDate(todayDateFormatted).addDays(30), 'withdash'));
+    //});
+
+    function parseDate(str) {
+
+        var mdy = str.split('/');
+        return new Date(mdy[2], mdy[0] - 1, mdy[1]);
+    }
+
+    function datediff(first, second) {
+        return Math.round((second - first) / (1000 * 60 * 60 * 24));
+    }
+
+    Date.prototype.addDays = function (days) {
+        var dat = new Date(this.valueOf());
+        dat.setDate(dat.getDate() + days);
+        return dat;
+    }
+
+
+    function getDateforHeader(date, thOrHidden) {
+
+        var weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        var monthsArr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var returnDate;
+        var year, dayName, dayNumStr = '';
+
+        dayName = weekday[date.getDay()];
+
+        var dateVar = new Date(date).getDate();
+
+        if (dateVar.toString().length <= 1) {
+            ;
+            dayNumStr = '0' + dateVar.toString();
+        } else {
+            dayNumStr = dateVar.toString();
+        }
+
+        var month = new Date(date).getMonth() + 1
+        if (month.toString().length <= 1) {
+            month = '0' + month.toString();
+        }
+
+        year = new Date(date).getFullYear().toString();
+
+        if (thOrHidden == 'hid') {
+            returnDate = dayNumStr + '/' + month + '/' + year;
+        } else if (thOrHidden == 'th') {
+            returnDate = dayName + '<br />' + '<p style="font-size:24px">' + dayNumStr + '<p>' + monthsArr[new Date(date).getMonth()] + '/ ' + year;
+        } else if (thOrHidden == 'ywm') {
+            returnDate = monthsArr[new Date(date).getMonth()] + '/ ' + year;
+        } else if (thOrHidden == 'mon') {
+            returnDate = month;
+        } else if (thOrHidden == 'withdash') {
+            returnDate = dateVar + '/' + month + '/' + year;
+        }
+
+        return returnDate;
+    }
+
+    function dateFormatChanger(d) {
+        var splitedDate = d.split('/');
+        var changedDate = splitedDate[1] + "/" + splitedDate[0] + "/" + splitedDate[2];
+        return changedDate;
+    }
+</script>
+

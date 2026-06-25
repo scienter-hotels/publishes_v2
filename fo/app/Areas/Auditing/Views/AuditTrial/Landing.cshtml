@@ -1,0 +1,282 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.AuditTrial>
+@{
+    ViewBag.Title = "Audit Trial";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/scienter.timeline.css" rel="stylesheet" />
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    .the-fieldset .form-group {
+        margin-left: 5px;
+    }
+
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+
+                <div id="content" style="margin-top:10px;">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-4" style="padding-left:50px; ">
+
+                                <fieldset class="the-fieldset" style="padding: 1em; width:250px;">
+                                    <legend class="the-legend">General Search</legend>
+
+                                    <form action="/auditing/audittrial/landing" method="post">
+                                        <div class="row">
+                                            <div class="form-group label-floating col-md-12">
+                                                <label class="control-label">From Date*</label>
+                                                <div id="dobContainerInSeasons" class='input-group date'>
+                                                    <input autocomplete="off" class="form-control datePickerNoRestriction text-box single-line" maxlength="100" id="FromDate" name="FromDate" type="text" value="@ViewBag.FromDate.ToString("dd/MM/yyyy")" required>
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-calendar"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group label-floating col-md-12">
+                                                <label class="control-label">To Date*</label>
+                                                <div id="dobContainerInSeasons" class='input-group date'>
+                                                    <input autocomplete="off" class="form-control datePickerNoRestriction text-box single-line" maxlength="100" id="ToDate" name="ToDate" type="text" value="@ViewBag.ToDate.ToString("dd/MM/yyyy")" required>
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-calendar"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group label-floating col-md-12">
+                                                <label class="control-label">User</label>
+                                                <select class="form-control select2" name="UserId">
+                                                    <option value="-1">All Users</option>
+                                                    @foreach (var item in ((List<Scienter.HotelERP.Common.Domain.User>)ViewBag.Users))
+                                                    {
+                                                        if (Convert.ToInt32(ViewBag.UserId) == item.Id)
+                                                        {
+                                                            <option value="@item.Id" selected>@item.Username</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.Id">@item.Username</option>
+                                                        }
+
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group label-floating col-md-12">
+                                                <label class="control-label">Process</label>
+                                                <select class="form-control select2" name="ProcessCode">
+                                                    <option value="ALL">All Processes</option>
+                                                    @foreach (var item in ((List<Scienter.HotelERP.Common.Domain.AuditTrialCommon>)ViewBag.Processes))
+                                                    {
+                                                        if (ViewBag.ProcessCode == item.Code)
+                                                        {
+                                                            <option value="@item.Code" selected>@item.Name</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.Code">@item.Name</option>
+                                                        }
+
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button type="submit" class="btn btn-primary" style="width:102%">Search</button>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                </fieldset>
+
+
+                                <br />
+                                <fieldset class="the-fieldset" style="padding: 1em;  width:250px;">
+                                    <legend class="the-legend">Wildcard Search</legend>
+
+                                    <form action="/auditing/audittrial/landing" method="post">
+                                        <div class="row">
+                                            <div class="form-group label-floating col-md-12" style="margin-top:15px;">
+                                                <label class="control-label">Keyword*</label>
+                                                <input autocomplete="off" class="form-control" maxlength="100" name="Keyword" type="text" value="@ViewBag.Keyword" required width="100%">
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button type="submit" class="btn btn-primary" style="width:102%">Search</button>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                </fieldset>
+
+
+                            </div>
+                            <div class="col-md-8">
+
+                                <div class="qa-message-list" id="wallmessages" style="max-width:700px;">
+                                    @foreach (var item in Model)
+                                    {
+                                        <div class="message-item" id="@item.TrailID">
+                                            <div class="message-inner" style="border-bottom: 5px solid @item.ActionColor !important;">
+                                                <div class="message-head clearfix">
+                                                    <div class="avatar pull-left">
+                                                        <a><img src="~/Images/avatar_2x.png"></a>
+                                                    </div>
+                                                    <div class="user-detail">
+                                                        <h5 class="handle" style="text-transform:capitalize;">@item.ProcessName</h5>
+                                                        <h6>
+                                                            @if (!string.IsNullOrEmpty(item.Reference02))
+                                                            {
+                                                                @item.Reference02 <text>|</text>
+                                                            }
+
+                                                            @if (!string.IsNullOrEmpty(item.Reference03))
+                                                            {
+                                                                @item.Reference03 <text>|</text>
+                                                            }
+
+                                                            @if (!string.IsNullOrEmpty(item.Reference04))
+                                                            {
+                                                                @item.Reference04 <text>|</text>
+                                                            }
+
+                                                            @if (!string.IsNullOrEmpty(item.Reference05))
+                                                            {
+                                                                @item.Reference05
+                                                            }
+
+                                                        </h6>
+                                                        <div class="post-meta">
+                                                            <div class="asker-meta">
+                                                                <span class="qa-message-what"></span>
+                                                                <span class="qa-message-when">
+                                                                    <span class="qa-message-when-data">@item.LogDate</span>
+                                                                </span>
+                                                                <span class="qa-message-who">
+                                                                    <span class="qa-message-who-pad">by </span>
+                                                                    <span class="qa-message-who-data"><a>@item.Username</a></span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="qa-message-content" style="font-size:13px;">
+                                                    @if (item.Changes.Count > 0)
+                                                    {
+                                                        <table class="table table-striped" style="max-width:600px !important;">
+                                                            <tr>
+                                                                <th>Change</th>
+                                                                <th>Prev. Value</th>
+                                                                <th>New Value</th>
+                                                            </tr>
+
+
+
+                                                            @foreach (var change in item.Changes)
+                                                            {
+                                                                <tr>
+                                                                    <td>@change.DisplayName</td>
+                                                                    <td>@change.OldValue</td>
+                                                                    <td>@change.NewValue</td>
+                                                                </tr>
+                                                            }
+                                                        </table>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @if (Model.Count == 0)
+                                    {
+                                        <p>No log details found.</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+    });
+</script>
+

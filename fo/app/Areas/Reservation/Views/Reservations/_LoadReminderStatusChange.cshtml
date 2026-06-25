@@ -1,0 +1,58 @@
+﻿@model Scienter.HotelERP.Common.Domain.ReservationNote
+
+<form id="reservationReminderStatus">
+
+    <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+    <input type="hidden" value="@Model.ReservationHeaderId" name="ReservationHeaderId" id="ReservationHeaderId" />
+
+
+
+
+            <div class="row">
+                <div class="col-md-4 form-group label-floating">
+                    <label class="control-label">Name *</label>
+
+                    <select id="ddlReminderStatusID" name="ddlReminderStatusID" class="form-control" required>
+                        @foreach (var item in Model.ReservationReminderStatuses)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </select>
+
+                </div>
+            </div>
+
+
+
+
+            <div class="row">
+                <div class="col-md-8 form-group label-floating">
+                    <label class="control-label">Remarks </label>
+                    <textarea class="form-control" rows="5" required id="txtRemarks" name="txtRemarks"></textarea>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group">
+
+                        @*<button type="submit" value="Change Reminder Status" class="btn btn-primary"></button>*@
+
+                        <input type="submit" id="btnSave" value="Change Reminder Status" class="btn btn-primary" />
+
+                    </div>
+
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+</form>

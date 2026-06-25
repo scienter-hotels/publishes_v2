@@ -1,0 +1,284 @@
+﻿
+@{
+    ViewBag.Title = "Guest Service";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<script src="~/Scripts/ui/common/scienter.grid2.js"></script>*@
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        FillGrid();
+        //FillSummary();
+    });
+
+    // show form -----------------------------------
+    $('body').on('click', '.showForm', function (e) {
+        $.ajax({
+            url: '/administration/GuestComplain/form',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(response).fadeIn();
+            }
+           
+        });
+    });
+
+    // Edit form -----------------------------------
+    $('body').on('click', '.btn-edit', function (e) {
+        debugger
+        //var id = $(this).closest('tr').find('.hidden-complain').val();
+        //var id = $('#CompainId').val();
+        var id = $(this).attr('data-id');
+        e.preventDefault();
+        $.ajax({
+            url: '/administration/GuestComplain/edit?id=' + id,
+            dataType: 'html',
+            method: 'post',
+            success: function (data) {
+              
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(data).fadeIn();
+            }
+        });
+
+        $.ajax({
+            url: '/administration/GuestComplain/EditComplain?id=' + id,
+            dataType: 'json',
+            method: 'get',
+            data : {id : id },
+            success: function (data) {
+                $('#roomcombo').val(data.RoomId).trigger('change');
+                $('#guestcombo').val(data.GuestProfileId).trigger('change')
+               
+            }
+        });
+    });
+    // ShowDetails form -----------------------------------
+    $('body').on('click', '.btn-show', function (e) {
+        debugger
+        e.preventDefault();
+        $.ajax({
+            url: '/Administration/GuestComplain/show?code=' + $(this).closest('tr').find('.hidden-complain-id').val(),
+            dataType: 'html',
+            method: 'get',
+            success: function (htmlContent) {
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(htmlContent).fadeIn();
+            }
+        });
+    });
+    // Taken button -----------------------------------
+    $('body').on('click', '#btnTaken', function (e) {
+       
+        var code = $(this).attr('data-code');
+        e.preventDefault();
+        $.ajax({
+            url: '/Administration/GuestComplain/Take?ComplainCode=' + code,
+            dataType: 'html',
+            method: 'get',
+            success: function (htmlContent) {
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(htmlContent).fadeIn();
+                ShowSuccessMessage('Complain Taken.');
+            }
+        });
+    });
+    /////////
+
+    // Taken button -----------------------------------
+    $('body').on('click', '#btnComplete', function (e) {
+        
+        e.preventDefault();
+        $.ajax({
+            url: '/Administration/GuestComplain/close?ComplainCode=' + $(this).closest('tr').find('.hidden-complain-id').val(),
+            dataType: 'html',
+            method: 'get',
+            success: function (htmlContent) {
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(htmlContent).fadeIn();
+                ShowSuccessMessage('Complain Closed');
+            }
+        });
+    });
+    // update form------------------------------
+    $('body').on('click', '.btn-Update', function (e) {
+        
+        e.preventDefault();
+        $.ajax({
+            url: '/Administration/GuestComplain/Update?code=' + $('.hidden-complain-id').val(),
+            dataType: 'html',
+            method: 'get',
+            success: function (htmlContent) {
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(htmlContent).fadeIn();
+            }
+        });
+    });
+    //......................serach Reservation..........................
+    function searchReservation() {
+
+        var input, filter, count, tt, b, i, li;
+
+        input = document.getElementById("txtSearch");
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("myUL");
+        li = ul.getElementsByTagName("li");
+
+        for (i = 0; i < li.length; i++) {
+            b = li[i].getElementsByTagName("label")[0];
+            if (b.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+
+            }
+        }
+    }
+  
+    // show grid -----------------------------------
+
+    $('body').on('click', '.showGrid', function (e) {
+        FillGrid();
+        //FillSummary();
+    });
+
+
+    // save --------------------------------------
+    $('body').on('submit', '#complains', function (e) {
+
+            e.preventDefault();
+            var staffsList = [];
+
+            $('.staffs:checked').each(function (index, item) {
+                staffsList.push($(this).val());
+            });
+
+            var Complains = {
+                Id: $('#Id').val(),
+                ComplainCode: $('#ComplainCode').val(),
+                RoomId: $('#roomcombo').val(),
+                ReservationHeaderId: $('.reservationHeader:checked').val(),
+                //GuestProfileId: $('.guest-combo').val(),
+                GuestProfileId: $('#guestcombo').val(),
+                StatusId: $('#StatusId').val(),
+                Subject: $('#Subject').val(),
+                Description: $('#Description').val(),
+                ComplainTypeId: $('#ComplainTypeId').val(),
+                SensitivityLevelId: $('.sensitivity-combo').val(),
+                Remark: $('#Description').val(),
+                DepartmentId: $('#DepartmentId').val(),
+                AssigneesIds: staffsList
+            };
+            
+            $.ajax({
+                url: '/administration/GuestComplain/save',
+                dataType: 'html',
+                data: Complains,
+                method: 'POST',
+                success: function (response) {
+                    $('#contentLoadingArea').html('').fadeOut();
+                    $('#contentLoadingArea').html(response).fadeIn();
+                    ShowSuccessMessage('Record has been saved successfully.');
+                }
+                
+            });
+    });
+
+    // fill grid -----------------------------------
+    function FillGrid() {
+        var gridId = "#existingComplainGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/administration/GuestComplain/selectforgrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(response).fadeIn();
+                GridFunctionalities();
+            }
+           
+        });
+    }
+    //function FillSummary(){
+    //    var tableid = "#tablesummary";
+        
+    //    $.ajax({
+    //        url: '/Administration/GuestComplain/ShowSummary?date=abc&status=abd',
+    //        dataType: 'html',
+    //        method: 'get',
+    //        success: function (response) {
+                
+    //            //$('#contentLoadingArea').html('').fadeOut();
+    //            //$('#contentLoadingArea').html(response).fadeIn();
+    //        }
+    //    });
+    //}
+    // Update Complain Log --------------------------------------
+    $('body').on('submit', '#updatecomplain', function (e) {
+        e.preventDefault();
+
+        var Complains = {
+            Id: $('#Id').val(),
+            StatusId: $('.Status-combo').val(),
+            ComplainTypeId: $('#ComplainTypeId').val(),
+            SensitivityLevelId: $('.sensitivity-combo').val(),
+            Remark: $('#Description').val(), 
+        };
+        
+        $.ajax({
+            url: '/administration/GuestComplain/UpdateComplain',
+            dataType: 'html',
+            data: Complains,
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(response).fadeIn();
+                ShowSuccessMessage('Record has been saved successfully.');
+            }
+        });
+    });
+
+</script>
+
+
+

@@ -1,0 +1,142 @@
+﻿
+<input type="hidden" value="@ViewBag.groupResNo" name="" id="gresNo_Attach" />
+<input type="hidden" value="@ViewBag.reservationHeaderId" name="" id="res_Header_Attach" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+<div class="row">
+    <div class="col-md-12">
+        <div id="GroupReservationListToDetach" style="height:490px; overflow-x:hidden; overflow-y:scroll;">
+            <table class="table table-striped table-hover" id="ReservationListToDetach" cellspacing="5">
+                <tr>
+                    <th class="text-primary " input type="text">
+                        Res.#
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Arrival
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Departure
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Guest
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Status
+                    </th>
+                    <th></th>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row" style="margin-top:-35px;">
+    <div class="form-group col-md-12">
+        <p class="hidden warningMessage" style="color:red">Not a Group Reservation!!!</p>
+        @*<input type="submit" id="btnDeattach" value="Detach" class="btn btn-primary pull-right hidden" />*@
+
+        <input type="submit" id="btnDeattach" value="Detach" class="btn btn-primary hidden" />
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        if ($('#gresNo_Attach').val() == "") {
+            $('.warningMessage').removeClass('hidden');
+        } else {
+            $('#btnDeattach').removeClass('hidden');
+        }
+
+        LoadGroupReservationsToDetach();
+
+    });
+
+    function LoadGroupReservationsToDetach() {
+        var groupReservationNo = $('#gresNo_Attach').val();
+
+        $.ajax({
+            url: '/Reservation/Reservations/SelectGroupReservationsToDetach?groupReservationNo=' + groupReservationNo,
+            dataType: 'json',
+            method: 'POST',
+            beforeSend: function () {
+                $('#ReservationListToDetach tr').not(':first-child').remove();
+            },
+            success: function (data) {
+                $.each(data, function (index, item) {
+                    $('<tr class="data-group-reservations">' +
+                        '<td>' +
+                        item.ReservationNo +
+                        '</td>' +
+                        '<td>' +
+                        item.Arrival +
+                        '</td>' +
+                        '<td>' +
+                        item.Departure +
+                        '</td>' +
+                        '<td>' +
+                        item.GuestName +
+                        '</td>' +
+                        '<td>' +
+                        item.Status +
+                        '</td>' +
+                        '<td style="margin-right:0.2em">' +
+                        '    <div class="form-list checkbox">' +
+                        '        <label>' +
+                        '            <input class="group-reservation-checkBox" type="checkbox" value="' + item.ReservationHeaderId + '"/>' +
+                        '        </label>' +
+                        '    </div>' +
+                        '</td>' +
+                        '</tr>').appendTo("#ReservationListToDetach");
+                });
+            },
+        });
+    }
+
+    $('body').off('click', '#btnDeattach').on('click', '#btnDeattach', function () {
+
+        var groupRes = $('#gresNo_Attach').val()
+        var headerId = $('#res_Header_Attach').val()
+
+        var reservationHeaderIdList = [];
+
+        $('.data-group-reservations').each(function (index, item) {
+            var reservationObj = {};
+            if ($($(item).find('.group-reservation-checkBox')).prop('checked')) {
+                reservationObj = {
+                    ReservationHeaderId: $($(item).find('.group-reservation-checkBox')).val()
+                }
+                reservationHeaderIdList.push(reservationObj);
+            }
+        });
+
+        var reservationHeaderIds = JSON.stringify(reservationHeaderIdList);
+
+        $.ajax({
+            url: '/Reservation/Reservations/DetachSave?reservationHeaderIds=' + reservationHeaderIds + '&resGroupNo=' + groupRes,
+            dataType: 'json',
+            method: 'POST',
+            success: function (response) {
+
+                $('#grid-detail-popup-container').hide();
+
+                if (response.startsWith('ERR-')) {
+                    ShowErrorMessage(response.replace("ERR-", ""));
+                } else {
+                    ShowSuccessMessage('Successfully Detached');
+                    LoadGroupReservationsToDetach();
+                }
+
+                $('.success-popup-ok, .error-popup-ok').closest('.modal').on('hide.bs.modal', function (e) {
+                    //LoadReservationGrid();
+                    LoadInhouseReservationGrid();
+                })
+
+            },
+        });
+
+    });
+</script>
+
+
+

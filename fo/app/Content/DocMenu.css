@@ -1,0 +1,89 @@
+﻿* > #dockContainer {
+    position: fixed;
+}
+
+#dockContainer {
+    position: absolute;
+}
+
+div#dockContainer {
+    position: fixed;
+    bottom: 0px;
+    z-index: 5;
+    background: url(/Images/doc-menu-bg.png) no-repeat right bottom;
+    min-width: 969px;
+}
+
+
+    ul.osx-dock li a img {
+        width: 48px;
+    }
+
+    ul.osx-dock li a {
+        display: block;
+        height: 50px;
+        padding: 0 1px;
+        margin: 0;
+        -webkit-transition: 0.15s linear;
+        -webkit-transition-property: -webkit-transform margin;
+        -webkit-box-reflect: below 5px;
+    }
+
+ul.osx-dock {
+    display: inline-block;
+    height: 140px;  
+    overflow: hidden;
+    margin-bottom: 0px !important;
+
+}
+
+
+        ul.osx-dock li {
+            display: block;
+            position: relative;
+            float: left;
+            width: 70px;
+            margin: 70px 0 4px 0;
+            -webkit-transition: 0.15s linear;
+            -webkit-transition-property: -webkit-transform margin;
+            text-align: center;
+            cursor: pointer;
+        }      
+
+            ul.osx-dock li a img {
+                width: 50px;
+            }
+
+            ul.osx-dock li:hover {
+                margin-left: 9px;
+                margin-right: 9px;
+                z-index: 100;
+            }
+
+                ul.osx-dock li:hover a {
+                    -webkit-transform-origin: center bottom;
+                    -webkit-transform: scale(1.5);
+                }
+
+                ul.osx-dock li:hover b {
+                    -webkit-transform-origin: center bottom;
+                    -webkit-transform: scale(1.5);
+                    font-size:12px; 
+
+                }
+
+            ul.osx-dock li.nearby {
+                margin-left: 6px;
+                margin-right: 6px;
+                z-index: 200;
+            }
+
+                ul.osx-dock li.nearby a {
+                    -webkit-transform-origin: center bottom;
+                    -webkit-transform: scale(1.25);
+                }
+
+       
+
+           
+

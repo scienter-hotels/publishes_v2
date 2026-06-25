@@ -1,0 +1,35 @@
+﻿@model Scienter.HotelERP.Common.Domain.ModuleCategory
+@{
+    ViewBag.Title = "Create / Edit";
+
+}
+
+<input type="hidden" value="@Model.Id" name="Id" id="Id" />
+<form id="modulePosting">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group label-floating">
+                <label class="control-label">Name *</label>
+                <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Name" name="Name" type="text" value="@Model.Name" required>
+            </div>
+            <div class="form-group label-floating">
+                <label class="control-label">Posting Type *</label>
+                @{Html.RenderAction("PostingTypesCombo", "PostingTypes", new { name = "PostingTypeId", requiered = true, value = Model?.PostingTypeId });}
+            </div>
+            <div class="form-group label-floating">
+                <label class="control-label">Commission (%) *</label>
+                <input autocomplete="off" class="form-control text-box single-line" min="0" max="100"  id="Commission" name="Commission" type="number" value="@Model.Commission" required>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                &nbsp;
+                <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+

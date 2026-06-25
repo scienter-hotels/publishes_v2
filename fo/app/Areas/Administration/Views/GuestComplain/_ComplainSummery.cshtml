@@ -1,0 +1,25 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ComplainSummary>
+
+
+    <fieldset class="the-fieldset">
+        <legend class="the-legend" style="font-size:14px;">Summary</legend>
+
+        <table class="table table-summary" id="tablesummary">
+
+            @foreach (var item in Model)
+            {
+                string blinkClass = "";
+                if (item.IsNeedToBlink && Convert.ToInt32(item.ValueFeild) > 0)
+                {
+                    blinkClass = "blink_me";
+                }
+                <tr>
+                    <th><a href="@item.DetailLink" class="@blinkClass"> @item.Remark</a></th>
+                    <td><a href="@item.DetailLink" style="background-color:@item.Color" class="@blinkClass badge">@item.ValueFeild</a></td>
+                </tr>
+            }
+
+        </table>
+    </fieldset>
+
+

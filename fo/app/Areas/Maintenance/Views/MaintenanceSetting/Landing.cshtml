@@ -1,0 +1,83 @@
+﻿
+@{
+    ViewBag.Title = "Maintenance Settings";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        ShowForm();
+    });
+
+    // show form -----------------------------------
+    $('body').on('click', '.showForm', function (e) {
+        ShowForm();
+    });
+
+    function ShowForm()
+    {
+       
+        $.ajax({
+            url: '/maintenance/maintenancesetting/form',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+        });
+    }
+
+
+    // save --------------------------------------
+    $('body').on('submit', '#maintenancesetting', function (e) {
+
+        e.preventDefault();
+
+        var maintenanceSetting = {
+            CreatedStatusId: $('#CreatedStatusId').val(),
+            CompletedStatusId: $('#CompletedStatusId').val(),
+            StartedStatusId: $('#StartedStatusId').val()
+        };
+       
+        $.ajax({
+            url: '/maintenance/MaintenanceSetting/Save',
+            dataType: 'html',
+            data: maintenanceSetting,
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+        });
+    });
+</script>
+

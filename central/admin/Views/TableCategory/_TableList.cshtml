@@ -1,0 +1,84 @@
+﻿
+<style>
+    .form-group-marging {
+        margin-top: 0px;
+    }
+
+    .card {
+        padding: 10px !important;
+    }
+
+    #searchby {
+        border-top: none;
+        border-left: none;
+        border-right: none;
+    }
+</style>
+<div class="row">
+    <div class="card">
+        <div class="card-header" data-background-color="purple">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4 class="title">
+                        @ViewBag.TableCatName
+                        <hr class="visible-print" />
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <div class="card-content" id="contentLoadingArea">
+
+            <div class="row">                
+                <input type="hidden" id="hdnTableCategoryId" name="hdnTableCategoryId" value="@ViewBag.TableCatId" />
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group  label-floating">
+                            <label class="control-label">Name *</label>
+                            <input type="text" class="form-control" id="TableName" value="" autocomplete="off" tabindex="1" />
+                        </div>
+                    </div>
+                    @*<div class="col-md-1">
+                            <div class="form-group  label-floating">
+                                <label class="control-label hidden">Seq *</label>
+                                <input type="number" class="qty form-control hidden" id="Seq" value="" autocomplete="off" readonly />
+
+                            </div>
+                        </div>*@
+                </div>
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="form-group checkbox">
+                            <label><input type="checkbox" id="activechkbox" class="activechkbox" name="is-active"  tabindex="2" checked/>Active</label>
+                        </div>
+                    </div>
+                </div>
+               
+                    <div class="row">
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-success btn-width-100px btn-shadow AddTabletoGrid-btn" style="margin-top:23px;" tabindex="2">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 card" style="max-height:300px; overflow-y:auto;">
+                            <table class="table table-striped" id="TableDetailGrid">
+                                <tr>
+                                    <th></th>
+                                    <th class="">Table Name</th>
+                                    <th class="">Seq</th>
+                                    <th class="">Active</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="~/scripts/UI/Scienter.TableListDetail.js"></script>

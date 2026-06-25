@@ -1,0 +1,613 @@
+﻿@model Scienter.DestinityHorizon.Common.Domain.Central_Users
+@using Scienter.DestinityHorizon.Common.Domain
+
+@{
+    ViewBag.Title = "User Management";
+}
+
+@*<link href="~/Select2/css/select2.css" rel="stylesheet" />
+    <script src="~/Select2/js/select2.full.js"></script>
+
+    <style>
+        /*2023-08-16---------------------------------------------------------------------*/
+        .select2-results {
+            line-height: 12px !important;
+            font-size: 12px !important;
+        }
+
+            .select2-results ul li {
+                color: black !important;
+                font-family: 'Roboto', sans-serif !important;
+                font-weight: 200 !important;
+                cursor: auto;
+            }
+
+        .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+            background-color: #0078D4 !important;
+            color: white !important;
+        }
+
+        .select2-selection__rendered {
+            color: #0a1324;
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            height: 26px;
+            font-size: 14px;
+        }
+
+        .select2-container--default .select2-results > .select2-results__options {
+            overflow-x: hidden;
+        }
+
+        .control-label {
+            z-index: 1 !important;
+        }
+
+        .select2-container {
+            width: 100% !important;
+        }
+         // Chathuni
+        /*-------------------------------------------------------------------------------*/
+    </style>*@
+
+<style>
+    .txtSearch{
+       padding-bottom:11px !important;
+    }
+
+    .mt-11 {
+        margin-top: 16px !important;
+    }
+
+
+</style>
+
+<input type="hidden" id="IsRelatedToOutlet" value="@Scienter.DestinityHorizon.Common.Utility.Configs.GetAppSettingValue("IsRelatedToOutlet")" />
+<div class="card">
+    <div class="card-header" data-background-color="purple">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="title">
+                    @ViewBag.Title
+                    <hr class="visible-print" />
+                </h4>
+            </div>
+            <div class="col-md-4 text-right hidden-print">
+                <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
+
+                <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid" onclick="window.location.reload();">
+                    <span class="glyphicon glyphicon-th-list"></span>
+                </button>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-content form" id="contentLoadingArea">
+        <div class="row form">
+            <div class="col-md-12">
+                <div id="accordion" class="panel-group">
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a href="#panelBodyOne" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion">Users</a>
+                            </h4>
+                        </div>
+                        <div id="panelBodyOne" class="panel-collapse collapse in">
+                            <form id="user-details">
+                                <input autocomplete="off" class="do-not-clear userId" type="hidden" id="userId" value="@SessionObjects.EditUserId" />
+                                <div class="panel-body">
+                                    <div class="row" style="margin-left:-9px;">
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Emp No</label>
+                                                <input autocomplete="off" class="form-control text-box single-line emp-no" maxlength="100" name="empno" type="text" value="" required>
+                                                <input type="hidden" class="user-id do-not-clear" value="0" />
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="margin-left:0px">
+
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group label-floating">
+                                                        <label class="control-label">Full Name</label>
+                                                        <input autocomplete="off" class="form-control text-box single-line full-name" maxlength="100" name="Name" type="text" value="" required>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group label-floating">
+                                                        <label class="control-label">NIC/Passport No</label>
+                                                        <input autocomplete="off" class="form-control text-box single-line nic-no" maxlength="100" name="NIC" type="text" value="">
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group label-floating">
+                                                        <label class="control-label">Email</label>
+                                                        <input autocomplete="off" class="form-control text-box single-line emp-email" maxlength="100" name="email" type="email" value="">
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group label-floating">
+                                                        <label class="control-label">Contact No (Ex: 0118775663)</label>
+                                                        <input autocomplete="off" class="form-control text-box single-line contact-no" placeholder="" maxlength="100" name="phone" pattern="[0]{1}[0-9]{9}" type="tel" value="">
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group label-floating">
+                                                        <label class="control-label">Department</label>
+                                                        <select name="department" id="department" class="form-control active-departments select2">
+                                                            <option value=""> </option>
+                                                        </select>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group label-floating">
+                                                        <label class="control-label">Designation</label>
+                                                        <select name="designation" id="designation" class="form-control active-designations select2">
+                                                            @foreach (Central_Designations designation in ViewBag.Designations)
+                                                            {
+                                                                <option value="@designation.Id"> @designation.Name</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group label-floating">
+                                                        <label class="control-label">Authentication</label>
+                                                        <select name="authentication-method" id="authentication-method" class="form-control active-authentication-methods select2">
+                                                            <option value=""></option>
+                                                        </select>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group label-floating">
+                                                        <label class="control-label">Password Policy</label>
+                                                        <select name="password-policy" id="password-policy" class="form-control active-password-policies select2">
+                                                            <option value=""></option>
+                                                        </select>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group label-floating">
+                                                        <label class="control-label">Username</label>
+
+                                                        <table style="border:0; position:relative; top:-10px;">
+                                                            <tr style="background-color:white;">
+                                                                <td class="usernameUpdate" title="Click here to update username">
+                                                                    <div class="form-group checkbox" style="margin: 22px 0 0;">
+                                                                        <label><input type="checkbox" class="isUsernameUpdate" checked name="isUsernameUpdate" value="True" /></label>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+
+
+                                                                    <input autocomplete="off" class="form-control text-box single-line user-name" maxlength="200" name="uname" type="text" value="" required>
+
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">Remark</label>
+                                                            <textarea class="form-control user-remark" name="user-remark" rows="4" cols="50"></textarea>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="row password-row" id="passwordRow">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">Password</label>
+                                                            <input autocomplete="off" class="form-control text-box single-line password" maxlength="100" name="password" type="password" value="">
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">Repeat Password</label>
+                                                            <input autocomplete="off" class="form-control text-box single-line repeat-password" maxlength="100" name="password" type="password" value="">
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="form-group checkbox" style="margin: 22px 0 0 -8px;">
+                                                    <label>
+                                                        <input type="checkbox" class="isActive" checked name="IsActive" value="True" />Is Active
+                                                    </label>
+                                                </div>
+                                                <div class="form-group" style="margin: 22px 0 0 -8px;">
+                                                    <input type="submit" value="Save" class="btn btn-primary user-save" />
+                                                    &nbsp;
+                                                    <input type="reset" value="Clear" class="btn btn-default user-clear" />
+                                                </div>
+                                            </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a href="#panelBodyTwo" class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">Properties</a>
+                            </h4>
+                        </div>
+                        <div id="panelBodyTwo" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">User</label>
+                                            <select name="User" id="User" disabled class="form-control active-users-properties active-users" required>
+                                                <option value=""> -- Create a user -- </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row active-properties-row"> </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input type="submit" value="Save" class="btn btn-primary user-wise-properties-save" />
+                                            &nbsp;
+                                            <input type="reset" value="Clear" class="btn btn-default user-wise-properties-clear" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel outletPanel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a href="#panelBodySix" class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">Outlets</a>
+                            </h4>
+                        </div>
+                        <div id="panelBodySix" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">User</label>
+                                            <select name="User" id="User" disabled class="form-control active-users-outlets active-users" required>
+                                                <option value="">  </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row active-outlets-row"> </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input type="submit" value="Save" class="btn btn-primary user-wise-outlets-save" />
+                                            &nbsp;
+                                            <input type="reset" value="Clear" class="btn btn-default user-wise-outlets-clear" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a href="#panelBodyThree" class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">Modules</a>
+                            </h4>
+                        </div>
+                        <div id="panelBodyThree" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">User</label>
+                                            <select name="User" id="User" disabled class="form-control active-users-modules active-users" required>
+                                                <option value=""> -- Create a user -- </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row active-modules-row">  </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input type="submit" value="Save" class="btn btn-primary user-wise-modules-save" />
+                                            &nbsp;
+                                            <input type="reset" value="Clear" class="btn btn-default user-wise-modules-clear" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a href="#panelBodyFour" class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">Roles</a>
+                            </h4>
+                        </div>
+                        <div id="panelBodyFour" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">User</label>
+                                            <select name="User" id="User" disabled class="form-control active-users-roles active-users" required>
+                                                <option value=""> -- Create a user -- </option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row active-roles-row">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input type="submit" value="Save" class="btn btn-primary user-wise-roles-save" />
+                                            &nbsp;
+                                            <input type="reset" value="Clear" class="btn btn-default user-wise-roles-clear" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a href="#panelBodyFive" class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">Individual Access</a>
+                                </h4>
+                            </div>
+                            <div id="panelBodyFive" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">User</label>
+                                                <select name="User" id="User" disabled class="form-control active-users-individual-access active-users" required>
+                                                    <option value=""> -- Create a user -- </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Properties</label>
+                                                <select name="Property" id="Property" class="form-control menu-items-active-Properties active-Properties" required>
+                                                    <option value=""> -- Select  -- </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Module</label>
+                                                <select name="Module" id="Module" class="form-control menu-items-active-modules active-modules" required>
+                                                    <option value=""> -- Select  -- </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="row active-menu-items-row">
+
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <input type="submit" value="Save" class="btn btn-primary user-wise-individual-access-save" />
+                                                &nbsp;
+                                                <input type="reset" value="Clear" class="btn btn-default user-wise-individual-access-clear" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row grid">
+        <div class="col-md-12 table-responsive">
+            @*
+                <div class="row">
+                    <div class="col-md-8">
+                        <input class="txtSearch" type="text" id="searchby" placeholder="Search by any Column" title="Search by any Column">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" class="applyBtn btn-primary btn btn-default btn-sm">Search</button>
+                    </div>
+                </div>
+                *@
+            <div class="row">
+                <div class="col-md-5">
+                    <select name="Property" id="PropertyId" class="form-control select2" required>
+                        <option value=""> -- Select  -- </option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <input class="txtSearch" type="text" id="searchby" placeholder="Search by any Column" title="Search by any Column">
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="applyBtn btn-primary btn btn-default btn-sm mt-11">Search</button>
+                </div>
+            </div>
+
+            @*<div id="loading" class="well">
+                </div>*@
+            <div class="" style="max-height:430px; margin:15px 0px; overflow-y:auto;">
+                @*<table class="table table-striped userTable" id="grid">*@
+                <table id="grid" class="table table-striped" style="width:100%">
+
+                    <tr>
+                        <th>Emp No</th>
+                        <th>Full Name</th>
+                        <th>Auth. Method</th>
+                        <th>Email</th>
+                        <th>Contact No</th>
+                        <th>Active</th>
+                        <th style="width: 6em;"></th>
+                    </tr>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/UI/Scienter.User.js"></script>
+
+<input type="hidden" id="RoleBaseOrInduval" value="I" class="do-not-clear" />
+
+@*<script src="~/Scripts/scienter.simpleadmin.common.js"></script>*@
+@*<script src="~/Scripts/scienter.grid.js"></script>*@
+@*<script src="~/datatable/scienter.datatables.js"></script>*@
+
+<script>
+    $(document).ready(function () {
+        LoadProperties();
+        //    $('.select2').select2();
+
+        //    setTimeout(function () {
+        //        $('.select2.select2-container').addClass('form-control');
+        //        $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+        //        $('.select2-selection__arrow').css('display', 'none');
+        //        $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        //    }, 900);
+
+    });
+
+    function LoadProperties() {
+        $.ajax({
+            url: "/CentralUsers/Select_Properties",
+            dataType: "JSON",
+            method: "POST",
+            success: function (data) {
+                if (data.length > 0) {
+                    $('#PropertyId option').not(':first-child').remove();
+                    $.each(data, function (index, item) {
+                        $('#PropertyId').append('<option value="' + item.Id + '">' + item.Name + '</option>');
+                    })
+                } else {
+                    console.log(data);
+                }
+            },
+            error: function (err) {
+                //console.log(err);
+            }
+        });
+    }
+
+    function PropertiesChange() {
+        //debugger;
+        var propertyId = $('#PropertyId').val();
+        $.ajax({
+            url: '/CentralUsers/Select_User_ByProperty',
+            dataType: 'json',
+            method: 'POST',
+            data: { propertyId: propertyId },
+            success: function (modules) {
+                //debugger;
+                console.log(modules);
+                FillGrid2(propertyId);
+            }
+        });
+    }
+
+    $("#PropertyId").change(function () {
+        let propertyId = $('#PropertyId').val();
+        console.log(propertyId);
+        PropertiesChange(propertyId);
+    });
+
+    function FillGrid2(propertyId) {
+        //debugger;
+        if ($('#grid').length > 0) {
+            $('#grid tr').not(':first').remove();
+            $.ajax({
+                url: '/CentralUsers/Select_User_ByProperty?propertyId=' + propertyId,
+                dataType: 'JSON',
+                method: 'POST',
+                success: function (data2) {
+                    if (data2.length === 0) {
+                        $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#grid'));
+                    }
+                    if ($('#grid').length > 0) {
+                        $('#grid tr').not(':first').remove();
+                        $.each(data2, function (index, item2) {
+                            var checked = "";
+
+                            if (item2.IsActive) {
+                                checked = "checked";
+                            }
+
+                            $('<tr>' +
+                                '<td>' + item2.EmpNumber + '</td>' +
+                                '<td>' + item2.FullName + '</td>' +
+                                '<td>' + item2.Email + '</td>' +
+                                '<td>' + item2.MobileNumber + '</td>' +
+                                '<td><input type="checkbox"  disabled="true" ' + checked + '/></td>' +
+                                '<td class="text-right">' +
+                                '<a href="#" data-href="/CentralUsers/Index/' + item2.UserId + '" data-id="' + item2.UserId + '" class="btn btn-sm btn-default btnEdit" title="Edit" data-toggle="tooltip" style="margin-right:5px;">' +
+                                '<span class="glyphicon glyphicon-edit"></span>' +
+                                '</a>' +
+                                '<a href="#"  data-href="/central_users/delete/' + item2.UserId + '" class="btn btn-sm btn-danger call-popup-model-delete btnDelete" title="Delete" data-toggle="tooltip">' +
+                                '<span class="glyphicon glyphicon-trash"></span>' +
+                                '</a>' +
+                                '</td>' +
+                                '</tr>').appendTo($('#grid'));
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    //console.log(error);
+                }
+            });
+        }
+    }
+
+
+    $('body').on('keyup', '.txtSearch', function () {
+        //debugger;
+        searchText = $('.txtSearch').val();
+        FillGrid(searchText);
+    });
+</script>

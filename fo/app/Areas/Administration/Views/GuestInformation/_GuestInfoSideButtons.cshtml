@@ -1,0 +1,158 @@
+﻿
+<style>
+    #buttons .col-md-6, #buttons .col-md-12 {
+        margin: 0 !important;
+        min-height: 65px !important;
+        padding: 0px 0px 0px 0px !important;
+        /*padding-right: 2px !important;
+        padding-left: 2px !important;*/
+    }
+
+        #buttons .col-md-6 button, #buttons .col-md-6 a {
+            height: 65px !important;
+            font-size: 12px !important;
+            padding: 6px;
+            word-wrap: break-word !important;
+            line-height: 13px;
+            text-transform: none !important;
+        }
+
+        #buttons .col-md-12 button, #buttons .col-md-12 a {
+            height: 75px !important;
+            padding: 10px;
+            word-wrap: break-word !important;
+        }
+
+    #buttons .btn {
+        margin-top: 0px !important;
+        margin: 0px !important;
+        border-radius: 0px;
+        cursor: pointer !important;
+    }
+
+        #buttons .btn:hover {
+            background: rgba(98,125,77,1) !important;
+            background: -moz-linear-gradient(top, rgba(98,125,77,1) 0%, rgba(7,122,101,1) 100%) !important;
+            background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(98,125,77,1)), color-stop(100%, rgba(7,122,101,1))) !important;
+            background: -webkit-linear-gradient(top, rgba(98,125,77,1) 0%, rgba(7,122,101,1) 100%) !important;
+            background: -o-linear-gradient(top, rgba(98,125,77,1) 0%, rgba(7,122,101,1) 100%) !important;
+            background: -ms-linear-gradient(top, rgba(98,125,77,1) 0%, rgba(7,122,101,1) 100%) !important;
+            background: linear-gradient(to bottom, rgba(98,125,77,1) 0%, rgba(7,122,101,1) 100%) !important;
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#627d4d', endColorstr='#077a65', GradientType=0 ) !important;
+        }
+</style>
+
+<div id="buttons" class="col-md-12" style="width:195px; margin-left:-15px; margin-bottom:20px; margin-top:28px;">
+
+        <div id="mainOptions">
+            <div class="row">
+                <div class="col-md-12">
+                    <a style="background-color:#e84118 !important;" class="btn btn-default guestReservationClass btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        Reservation Details
+                    </a>
+                </div>
+
+                <div class="col-md-12">
+                    <a style="background-color:#2f9b04 !important;" class="btn btn-default guestReservationgroupgrc btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        Guest Information
+
+                    </a>
+                </div>
+
+                <div class="col-md-12">
+                    <a style="background-color:#008890 !important;" class="btn btn-default guestReservationrategrc btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        Rate Information
+                    </a>
+                </div>
+
+                <div class="col-md-12">
+                    <a style="background-color:#c21b1b !important;" class="btn btn-default guestcomplain btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        Guest Complains
+                    </a>
+                </div>
+
+                @*<div class="col-md-12">
+                    <a style="background-color:#e49c09 !important;" class="btn btn-default guestReservationblankgrc btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        Blank GRC
+                    </a>
+                </div>*@
+            </div>
+        </div>
+    
+</div>
+
+<script>
+
+    $('body').on('click', '#btnOptions', function () {
+        $('#mainOptions').hide();
+        $('#moreOption').fadeIn('slow');
+    });
+
+    $('body').on('click', '#btnHideOptions', function () {
+        $('#moreOption').hide();
+        $('#mainOptions').fadeIn('slow');
+    });
+
+    var reservationHeaderId;
+    $(document).ready(function () {
+
+ 
+    });
+
+    $('body').off('click', '#existingGuestReservationGrid tr').on('click', '#existingGuestReservationGrid tr', function () {
+        if ($(this).find('input.data-reservation-no').prop('checked')) {
+            $(this).find('input.data-reservation-no').prop('checked', false);
+        } else {
+            $(this).find('input.data-reservation-no').prop('checked', true);
+        }
+
+
+        $('#existingGuestReservationGrid tr').not(this).find('input.data-reservation-no').prop('checked', false);
+        $('#existingGuestReservationGrid tr').not(this).closest('tr').removeClass('selectdRecord');
+        $(this).addClass('selectdRecord');
+
+        if ($('input.data-reservation-no:checked').length > 0) {
+            //$('#btnInhouseDetails').removeClass('disabled');
+            setUrlToRelevetReservation(this);
+            $('#reservationGrid').fadeIn().removeClass('col-md-12').addClass('col-md-10');
+            $('#reservationOptions').fadeIn();
+
+        }
+        else {
+            $('#reservationGrid').removeClass('col-md-10').hide().addClass('col-md-12').fadeIn();
+            $('#reservationOptions').hide();
+        }
+
+    });
+
+
+    function setUrlToRelevetReservation(e) {      
+        var resNo = $('input[class="data-reservation-no"]:checked').parents().eq(3).find('.res-no').html().trim();
+
+        var resUrl = '/Administration/GuestInformation/ReservationDetails?reservationno=' + resNo;
+        $('.guestReservationClass').attr('href', resUrl);
+
+        var guestinquiry = '/administration/GuestInquiry/Landing?reservationno=' + resNo;
+        $('.guestReservationrategrc').attr('href', guestinquiry);
+
+        var guestinfor = '/administration/GuestInformation/GuestGeneralInformation?reservationno=' + resNo;
+        $('.guestReservationgroupgrc').attr('href', guestinfor);
+
+        var guestcomplain = '/administration/GuestInformation/GuestComplain?reservationno=' + resNo;
+        $('.guestcomplain').attr('href', guestcomplain);
+
+        
+    }
+</script>
+
+

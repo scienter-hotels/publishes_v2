@@ -1,0 +1,464 @@
+﻿
+@{
+    ViewBag.Title = "Reservation Creation";
+}
+
+<input type="hidden" name="From" id="FromDateId" class="FromDate" />
+<input type="hidden" name="reservationFor" id="reservationFor" />
+<input type="hidden" id="ToDateId" name="To" class="ToDate" />
+<input type="hidden" id="selectedcompanyid" name="companyid" class="selectedcompanyid" value="" />
+<input type="hidden" name="noOfNights" class="noOfNights" />
+<input type="hidden" name="reservation-details" class="hidden-singlepage-stringify-json-reservation" />
+<input type="hidden" name="guest-details" class="hidden-singlepage-stringify-json-guest" />
+<input type="hidden" name="guest-details" class="hidden-singlepage-stringify-json-SelectedStay" />
+<input type="hidden" name="guest-OtherDetails" class="hidden-singlepage-stringify-json-SelectedStay" />
+<input type="hidden" name="guest-rateCode" id="data-ratecode-details" data-rate-code data-room-category data-room-type data-meal-plan data-room-rate value="" />
+
+
+<div class="row">
+    <div class="col-md-12">
+        <fieldset class="the-fieldset" style="height:415px;max-height:416px;min-height:415px;">
+            <legend class="the-legend">Check Availability</legend>
+            <div class="form-group" style="margin-top:10px;">
+                <form id="manageStay">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                @if (Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.IsDormitory)
+                                {
+                                    <div class="col-md-4">
+                                        <label for="ReseFor"> Res For </label>
+                                        <select id="ReseFor" class="select2 form-control @*font-size-16px*@" required>
+                                            <option value="0">Rooms</option>
+                                            <option value="2">Dormitory</option>
+                                            <option value="3">Villas</option>
+                                        </select>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <label for="ReseFor"> Res For </label>
+                                        <select id="ReseFor" class="select2 form-control @*font-size-16px*@" required>
+                                            <option value="0">Rooms</option>
+                                            <option value="3">Apartments</option>
+                                        </select>
+                                    </div>
+                                }
+
+                                    <div class="col-md-4">
+                                        <label for="ReservationType"> Res Type * </label>
+                                        <select name="ReservationType" id="ReservationCreationReservationType" class="select2 form-control" required></select>
+                                    </div>
+                                <div class="col-md-4">
+                                    <label>Status</label>
+                                    @*@{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { area = "Administration", name = "ReservatonStatusId", requiered = true, });}*@
+                                    <select name="ReservationStatus" id="ReservationCreationReservatonStatusId" class="select2 form-control" required></select>
+                                
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class='input-group date'>
+                                        <label>Select arrival and departure</label>
+                                        <input type='text' class="form-control dateRangePickerTwoDays" id="reservationDateRange" required />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4" style="text-align:right;">
+                                    <button type="button" class="btn btn-primary margin-top-20px" id="btnCheckRoomAvailabilityForReservationCreation" style="float:right; width:100%;">
+                                        Check Availability  <span class="glyphicon glyphicon-refresh"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" id="roomAvailabilityContainer" style="margin-top:5px; height:225px; overflow-y:scroll; margin-left:5px">
+                                    @{Html.RenderAction("RoomAvailability", "ReservationCreation");}
+                                </div>
+                            </div>
+                            <div class="row" style="padding-left:15px;">
+                                <div class="col-md-3 col-md-offset-7 text-right">
+                                    <button type="button" id="btnManageHeadCount" class="btn btn-primary" data-toggle="modal" style="float:right; width:100%; display:none;" data-target="#myModal2">Manage Head Count</button>
+                                </div>
+                            </div>
+                            <div id="myModal2" class="modal fade" role="dialog">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header" style="padding-bottom:5px; border-bottom:1px solid #ccc;">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">Manage Room Head Count</h4>
+                                        </div>
+                                        <div class="modal-body" style="padding-top:0px;">
+                                            <div class="row room-count-fieldset">
+                                                <div class="col-md-12">
+                                                    <table class="table table-striped room-wise-counts">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="col-md-1">
+                                                                    Room
+                                                                </th>
+                                                                <th class="col-md-3">
+                                                                    Category
+                                                                </th>
+                                                                <th class="col-md-1">
+                                                                    Type
+                                                                </th>
+                                                                <th class="col-md-1" style="text-align: right;">
+                                                                    Adult
+                                                                </th>
+                                                                <th class="col-md-1" style="text-align: right;">
+                                                                    Children
+                                                                </th>
+                                                                <th class="col-md-1" style="text-align: right;">
+                                                                    Infants
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody></tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="row hidden Cottage-count-fieldset">
+                                                <div class="col-md-12">
+                                                    <table class="table table-striped Cottage-wise-counts">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="col-md-1">
+                                                                    Room
+                                                                </th>
+                                                                <th class="col-md-3">
+                                                                    Category
+                                                                </th>
+                                                                <th class="col-md-1">
+                                                                    Type
+                                                                </th>
+                                                                <th class="col-md-1" style="text-align: right;">
+                                                                    Adult
+                                                                </th>
+                                                                <th class="col-md-1" style="text-align: right;">
+                                                                    Children
+                                                                </th>
+                                                                <th class="col-md-1" style="text-align: right;">
+                                                                    Infants
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody></tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+
+                        </div>
+                    </div>
+                    <input type="hidden" name="From" id="From" value="@DateTime.Now" />
+                    <input type="hidden" name="To" id="To" value="@DateTime.Now.AddDays(1)" />
+                </form>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<div class="row">
+        <div class="col-md-6">
+            <fieldset class="the-fieldset" style="height:415px;max-height:416px;min-height:415px;">
+                <legend class="the-legend">Search  / Create Guest Profile</legend>
+                <div id="dataGuestProfileFormNew">
+                    @{Html.RenderAction("GetGuestDetails", "ReservationCreation", new { id = 0 });}
+                </div>
+            </fieldset>
+        </div>
+        <div class="col-md-6">
+            <fieldset class="the-fieldset" style="max-height:416px;min-height:415px;">
+                <legend class="the-legend">Existing Guest Profiles</legend>
+                <div class="div-scroll" style="min-height:350px !important; height:350px !important;" id="roomAvailabilityContainer">
+                    @{Html.RenderAction("ExistingGuestProfile", "ReservationCreation");}
+                </div>
+            </fieldset>
+        </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <input type="hidden" name="ApproveAsTentative" id="ApproveAsTentative" value="0" />
+        <input type="hidden" name="ApproveVoucherNumberDuplication" id="ApproveVoucherNumberDuplication" value="0" />
+        <form id="reservationDetail" style="margin-left:-5px; margin-right:-5px;">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+
+                            <fieldset class="the-fieldset" style="height:464px;">
+                                <legend class="the-legend">Company Details</legend>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group form-group-margin-override company-container label-floating">
+                                            <label class="required control-label">Company</label>
+                                            <select name="CompanyId" id="ReservationCreationCompanyId" class="select2 form-control" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group form-group-margin-override rate-code-container label-floating">
+                                            <label class="required control-label">Rate code</label>
+                                            <select name="RateCodeHeaderId" id="ReservationCreationRateCodeHeaderId" class="select2 form-control" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group form-group-margin-override label-floating">
+                                            <label class="required control-label">Package</label>
+                                            <select name="PackageHeaderId" id="ReservationCreationPackageHeaderId" class="select2 form-control" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group form-group-margin-override markets-container label-floating" required>
+                                            <label class="required control-label">Market</label>
+                                            <select name="MarketId" id="ReservationCreationMarketId" class="select2 form-control" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group form-group-margin-override segments-container label-floating">
+                                            <label class="required control-label">Segment</label>
+                                            <select name="SegmentId" id="ReservationCreationSegmentId" class="select2 form-control" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group form-group-margin-override BookingSource-container label-floating">
+                                            <label class="required control-label">Booking Sources</label>
+                                            <select name="BookingSourceId" id="ReservationCreationBookingSourceId" class="select2 form-control" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group form-group-margin-override label-floating">
+                                            <label class="required control-label">Sales Person</label>
+                                            <select name="SalesPersonId" id="ReservationCreationSalesPersonId" class="select2 form-control label-data"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group form-group-margin-override label-floating">
+                                            <label class="control-label">Voucher No</label>
+                                            <input type="text" name="VoucherNo" id="ReservationCreationVoucherNo" class="form-control" value="" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group form-group-margin-override label-floating">
+                                            <label class="control-label">Tour No</label>
+                                            <input type="text" name="TourNo" id="ReservationCreationTourNo" class="form-control" value="" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group form-group-margin-override label-floating">
+                                            <label class="required control-label">Guest payment mode</label>
+                                            <select name="GuestPaymentModeId" id="ReservationCreationGuestPaymentModeId" class="select2 form-control label-data"></select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group form-group-margin-override label-floating">
+                                            <label class="required control-label">Visit Purpose</label>
+                                            <select name="VisitPurposeId" id="ReservationCreationVisitPurposeId" class="select2 form-control" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="row">
+                                            @**/------------Bangaladesh Modification*/*@
+                                            <div class="col-md-12 checkbox" style="margin-top: 0px;">
+                                                <label style="font-size: 9px;">
+                                                    <input type="checkbox" class="checkbox isBillPaymentFromLKR" value="">
+                                                    Bill Payment LKR (For SSCL)
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 checkbox" style="margin-top: 0px;">
+                                                <label style="font-size: 9px;">
+                                                    <input type="checkbox" class="checkbox isCreditEnabled" disabled value="">
+                                                    Company Credit Enable
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: 24px;">
+                                    <div class="col-md-9">
+                                        <div class="form-group form-group-margin-override label-floating" style="margin-top:-5px;">
+                                            <label class="control-label">Remark</label>
+                                            <textarea type="text" maxlength="1000" rows="1" id="ReservationCreationRemarkId" name="Remark" class="form-control label-data" value=""></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-6">
+                            <fieldset class="the-fieldset padding-margin-bottom-override">
+                                <legend class="the-legend">Accommodation Details</legend>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group form-group-margin-override label-floating">
+                                            <label class="control-label">Arrival</label>
+                                            <input type="text" name="ArrivalDate" id="ArrivalDate" class="form-control" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group form-group-margin-override label-floating">
+                                            <label class="control-label">Departure</label>
+                                            <input type="text" name="DepartureDate" id="DepartureDate" class="form-control" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group form-group-margin-override label-floating">
+                                            <label class="control-label">No Of Nights</label>
+                                            <input type="text" name="NoOfNights" id="NoOfNights" class="form-control" value="" readonly />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group form-group-margin-override label-floating">
+                                            <label class="required control-label">Meal plan</label>
+                                            <select name="MealPlanId" id="ReservationCreationMealPlanId" class="select2 form-control" required>
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group form-group-margin-override label-floating">
+                                            <label class="control-label">Arrive for</label>
+                                            @*@{Html.RenderAction("MealCombo", "MealPlans", new { area = "Administration", name = "ArriveMeal", requiered = false, value = Model?.ArrivalFor });}*@
+                                            <select name="ArrivalFor" id="ReservationCreationArrivalFor" class="select2 form-control" required>
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group form-group-margin-override label-floating">
+                                            <label class="control-label">Leave after</label>
+                                            @*@{Html.RenderAction("MealCombo", "MealPlans", new { area = "Administration", name = "DeparturePlan", requiered = false, value = Model?.DepartureAfter });}*@
+                                            <select name="DepartureAfter" id="ReservationCreationDepartureAfter" class="select2 form-control" required>
+                                                <option></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group form-group-margin-override label-floating" id="ReservationCreationExpectedArrivalTimeId">
+                                            <label class="required control-label">Expected Arrival Time</label>
+                                            @{Html.RenderPartial("_TimeRange");}
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group form-group-margin-override label-floating" id="ReservationCreationExpectedDepartureTimeId">
+                                            <label class="required control-label">Expected Departure Time</label>
+                                            @{Html.RenderPartial("_TimeRange");}
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="the-fieldset padding-margin-bottom-override" style="height:183px;">
+                                <legend class="the-legend">Allocated Rooms</legend>
+                                <div class="row">
+                                    <div class="col-md-12 reservation-detail-table div-scroll">
+                                        <table class="table table-striped roomCategoryWise-roomTypeWise-details">
+                                            <thead>
+                                                <tr>
+                                                    <th style="font-weight:bold;">Category</th>
+                                                    <th style="font-weight:bold;">Type</th>
+                                                    <th style="font-weight:bold;">Room</th>
+                                                    <th style="font-weight:bold;text-align:center;">Currency</th>
+                                                    <th style="font-weight:bold;text-align:right;width:80px;">Room Rate</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody></tbody>
+                                            @*--------------------------------------------------*@
+                                        </table>
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <div class="row">
+                                <div class="col-md-12 text-right">
+                                    <button type="submit" class="btn theme-bg-color-2" id="CreateNewReservation">
+                                        @*btnStep03Next*@
+                                        Save  <span class="glyphicon glyphicon-arrow-right"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            @*2024 - 03 - 27 - Anuradha-------------------------*@
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="modal fade" id="changeRoomRateModal" tabindex="-1" role="dialog" aria-labelledby="changeRoomRateModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content" style="padding:0 15px 15px 15px;">
+                                                <div class="modal-header" style="padding:15px 3px;">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="closeBtn">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body" style="padding:3px;">
+                                                    When you change Room Rate, this rate will be applied to whole stay of the guest.
+                                                    <br />
+                                                    Do you wish to continue?
+                                                </div>
+                                                <div class="modal-footer" style="padding:3px;">
+                                                    <button type="button" class="btn btn-success" data-dismiss="modal" id="rateCodeChangeYesBtn">Yes</button>
+                                                    <button type="button" class="btn btn-danger" data-dismiss="modal" id="rateCodeChangeNoBtn">No</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*--------------------------------------------------*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script src="~/Scripts/ui/reservation-creation/reservation-creation.js"></script>
+
+<script>
+    $(document).ready(function () {
+        LoadCompaniesForReservationCreation();
+        LoadRateCodeHeadersForReservationCreation();
+        LoadPackagesForReservationCreation();
+        LoadMarketsForReservationCreation();
+        LoadSegmentsForReservationCreation();
+        LoadBookingSourcesForReservationCreation();
+        LoadSalesPersonsForReservationCreation();
+        LoadGuestPaymentModesForReservationCreation();
+        LoadVisitPurposesForReservationCreation();
+        LoadMealPlansForReservationCreation();
+        LoadArrivalMealsForReservationCreation();
+        LoadDepartureMealsForReservationCreation();
+        LoadReservationTypesForReservationCreation();
+        LoadReservatonStatusesForReservationCreation();
+    });
+</script>

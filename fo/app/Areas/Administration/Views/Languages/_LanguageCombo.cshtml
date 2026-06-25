@@ -1,0 +1,26 @@
+﻿
+@using Scienter.HotelERP.FrontOffice.WebUIMvc.Models
+@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.Common.Utility
+
+@model ComboBoxViewModel<Language>
+@{
+    string required = "";
+    if (Model.Required) { required = "required"; }
+}
+
+<select id="@Model.Id" name="@Model.Name" @required class="form-control">
+    <option value="@ComboBoxes.DefaultOptionValue">@ComboBoxes.DefaultOptionMessage</option>
+
+    @foreach (var option in Model.Options)
+    {
+        if (option.Id.ToString() == Model.SelectedValue)
+        {
+            <option value="@option.Id" selected>@option.Name</option>
+        }
+        else
+        {
+            <option value="@option.Id">@option.Name</option>
+        }
+    }
+</select>

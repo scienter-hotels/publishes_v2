@@ -1,0 +1,405 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.BillPaymentView
+<form id="BillPaymentLoadingView2">
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("IsDirectPrint")" name="" id="IsDirectPrint" />
+
+    <input type="hidden" value="" name="DocNo" id="DocNo" />
+
+    @if (ViewBag.IsFolioScreen == "1")
+    {
+        <input type="hidden" value="1" id="IsFolioScreen" />
+    }
+
+    <input type="hidden" value="@Model.GrandTotal" id="hdnBillTotal" />
+    <input type="hidden" value="@Model.AllowCreditPosting.ToString()" id="hdnAllowCreditPosting" />
+
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row" style="margin-right:10px;">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    @*<h3>Profit Center</h3>*@
+
+                                    <div class="form-group label-floating">
+                                        <label class="control-label">Select PaymentType *</label>
+                                        <select class="form-control" id="PaymentTypeId" required>
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+
+                                    <div class="hidden" id="alertId">
+                                        <label style="color:red">Cash Payment Type can be Selected only once</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group  col-md-6">
+                                    <label class="control-label text-right">Amount</label>
+                                    <input autocomplete="off" class="form-control text-box single-line number number-only" id="PaymentAmount" name="Amount" required type="text" value="" style="text-align:right !important;">
+                                    <div class="hidden" id="ErralertId">
+                                        <label style="color:red">Payment Amount is greater Than Total/Balance Amount</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label class="control-label text-right">Balance</label>
+                                    <input autocomplete="off" readonly="readonly" class="form-control text-box single-line number number-only" id="Balance" name="Balance" required type="text" value="" style="text-align:right !important;">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group label-floating">
+                                        <label class="control-label">Remarks</label>
+                                        <input autocomplete="off" class="form-control text-box single-line" maxlength="150" required id="PaymentRemark" name="Remarks" type="text" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row" style="margin-bottom:10px;">
+                                <div class="col-md-12" style="text-align:right">
+                                    <label class="control-label" style="font-size:16px;color:#555; font-weight:bold; margin-bottom:10px !important;"> Bill Total</label>
+                                    <br />
+                                    <b id="BillTotal" style="font-size:35px;"></b>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-striped" id="billSettleTable" style="width:100%">
+                                        <tr>
+                                            <th>Payment Type</th>
+                                            <th>Remarks</th>
+                                            <th style="text-align:right">Amount</th>
+
+                                            <th style="text-align:right"></th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <input type="submit" id="btnAddPaymentToGrid" value="Add" class="btn btn-primary" />
+            <input type="button" value="Settle" id="Completebtn" class="btn btn-primary disabled" />
+            <input type="button" value="City Ledger" id="CityLedger" class="btn hidden" style="background-color:#b11a3d" />
+
+            @if (Scienter.HotelERP.Common.Utility.Configs.GetAppSettingBoolValue("IsDirectPrint"))
+            {
+                <button id="BtnPrintBill" class="btn btn-primary hidden hidden-print" target="">
+                    <span class="glyphicon glyphicon-print"></span>
+                </button>
+            }
+            else
+            {
+                <a id="BtnPrintBill" class="btn btn-primary hidden hidden-print" target="_blank">
+                    <span class="glyphicon glyphicon-print"></span>
+                    <div class="ripple-container"></div>
+                </a>
+            }
+            @*<button id="BtnLKRBill" class="btn btn-primary hidden hidden-print" style="background-color:#2f9b04 !important;" target="_blank">
+                    <span class="glyphicon glyphicon-tasks"></span>
+                    <div class="ripple-container"></div>
+                </button>*@
+            <a id="BtnLKRBill" class="btn btn-primary hidden hidden-print" style="background-color:#2f9b04 !important;" target="_blank">
+                LKR Bill
+            </a>
+
+        </div>
+    </div>
+
+</form>
+
+<script>
+
+    $(document).ready(function () {
+        loadPaymentTypeCombo();
+        RemarkRequiredVerificationByPaymentType();
+        //Load Payment details for the Folio Management
+        if ($('#IsFolioScreen').val() == "1") {
+
+            if ($('#hdnAllowCreditPosting').val() == "True") {
+                $('#CityLedger').removeClass('hidden');
+            }
+
+
+            Billtotal = parseFloat($('#hdnBillTotal').val().toString().trim().replace(/,/g, '')).toFixed(2)
+            $('#Balance').val(Billtotal);
+            $('#PaymentAmount').val(Billtotal);
+            $('#BillTotal').text(Billtotal).digits();
+
+        }
+        if (AllowCreditPostingInWalkingPosting == 'True') {
+            $('#CityLedger').removeClass('hidden');
+        }
+        if (Billtotal == 0) {
+            setTimeout(function () {
+                $('#PaymentTypeId').val(4);
+            }, 1000);
+        }
+
+        $('#Balance').val(Billtotal);
+        $('#PaymentAmount').val(Billtotal);
+        $('#BillTotal').text(Billtotal).digits();
+
+        billpaymentArray = [];
+
+        if ($('#PrintingMethod').val() == 'F') {
+            $('#btnprint').addClass('hidden');
+        } 
+    });
+
+    var balance = 0;
+    var payTotAmount = 0;
+
+    function loadPaymentTypeCombo() {
+        debugger;
+        $.ajax({
+            url: '/CashieringAndPosting/ProfitCenter/Select_payementmood',
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+                $("#PaymentTypeId").html('');
+                $.each(data, function (index, item) {
+                    $("#PaymentTypeId").append('<option value="' + item.Id + '"  required-remarks ="' + item.IsRemarkRequired + '">' + item.Name + '</option>');
+                });
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+        });
+    }
+
+    $('#PaymentTypeId').change(function () {
+        RemarkRequiredVerificationByPaymentType();
+    });
+
+    function RemarkRequiredVerificationByPaymentType() {
+
+        if ($('#PaymentTypeId option:selected').attr('required-remarks') == "true") {
+
+            $('#PaymentRemark').prop('required', true);
+        }
+        else {
+            $('#PaymentRemark').prop('required', false);
+        }
+    }
+
+    $("#PaymentAmount").focusout(function () {
+       // debugger;
+        if (Number(parseFloat($('#Balance').val().trim().replace(/,/g, '')).toFixed(2)) < Number(parseFloat($('#PaymentAmount').val().trim().replace(/,/g, '')).toFixed(2))) {
+
+            $('#ErralertId').removeClass('hidden');
+            $('#btnAddPaymentToGrid').addClass('disabled');
+        }
+        else {
+            $('#btnAddPaymentToGrid').removeClass('disabled');
+            $('#ErralertId').addClass('hidden');
+        }
+    });
+
+    $('body').on('click', '#btnAddPaymentToGrid', function (e) {
+
+        if (Number(parseFloat($('#Balance').val().trim().replace(/,/g, '')).toFixed(2)) < Number(parseFloat($('#PaymentAmount').val().trim().replace(/,/g, '')).toFixed(2))) {
+            $('#ErralertId').removeClass('hidden');
+
+            $('#btnAddPaymentToGrid').addClass('disabled');
+        }
+        else {
+        }
+
+    });
+
+    $('#CityLedger').click(function () {
+
+        if (Number(parseFloat($('#PaymentAmount').val().trim().replace(/,/g, '')).toFixed(2)) == Number(parseFloat(Billtotal.trim().replace(/,/g, '')).toFixed(2))) {
+            $('#btnAddPaymentToGrid').prop('disabled', true);
+            $('#PaymentRemark').val("Company Settlement");
+            $.ajax({
+                url: '/Administration/PaymentModes/SelectPayCodeForCompanySettlement',
+                dataType: 'json',
+                method: 'GET',
+                async: false,
+                success: function (response) {
+                    if (response.toString().startsWith('ERR-')) {
+                        ShowErrorMessage("Sorry, There is an error.");
+                    } else {
+                        $('#PaymentTypeId option:selected').text(response.Name);
+                        $('#PaymentTypeId option:selected').val(response.Id)
+                    }
+                },
+                error: function (xhr, status, error) {
+                    ShowErrorMessage('Sorry, There is an error.');
+                }
+            });
+
+            FillSettlementTable();
+            GetBalance();
+            $('#Completebtn').removeClass('disabled');
+            $('#CityLedger').prop('disabled', true);
+            $('#btnAddPaymentToGrid').addClass('disabled');
+        }
+        else {
+            ShowErrorMessage("Selltel  Bill as " + "Company Settlement" + "The Amount should be same as Bill Total");
+        }
+
+    });
+
+    //$('body').off("submit", "#BillPaymentLoadingView");-- also working    this will avoid multiple submits
+    //Reference: https://stackoverflow.com/questions/30505375/form-submitted-multiple-times?rq=1
+
+    $('body').off('submit').on('submit', '#BillPaymentLoadingView2', function (e) {
+
+        e.preventDefault();
+        FillSettlementTable();
+        GetBalance();
+        $('#PaymentRemark').val("");
+        changeButtonStatus();
+    });
+
+    function FillSettlementTable() {
+
+        var a = $('#PaymentTypeId option:selected').text();
+        if (a == 'Cash' && $('#billSettleTable td:contains(' + a + ')').length) {
+
+            $('#alertId').removeClass('hidden');
+        }
+        //if ($('#billSettleTable td:contains(' + a + ')').length) {
+
+        // $('#alertId').removeClass('hidden')
+        // }
+        else {
+            $('#alertId').addClass('hidden')
+            billpaymentArray.push({
+                PaymentTypeId: $('#PaymentTypeId option:selected').val(),
+                PaymentTypeName: $('#PaymentTypeId option:selected').text(),
+                Amount: parseFloat($('#PaymentAmount').val().trim().replace(/,/g, '')).toFixed(2),
+                Remarks: $('#PaymentRemark').val() == "" ? 'Settle By' + $("#PaymentTypeId option:selected").text() : $('#PaymentRemark').val()
+            });
+            $('<tr>' +
+                '<td>' + $('#PaymentTypeId option:selected').text() + '</td>' +
+                '<td>' + $('#PaymentRemark').val() + '</td>' +
+                '<td id="payAmount" class="payAmount formatNumber">' + $('#PaymentAmount').val() + '</td>' +
+                '<td style="text-align:right"><button type="button" class="btn btn-danger btn-sm rowPaymentDelbtncls" id="rowPaymentDelbtn"> <span class="glyphicon glyphicon-minus"></span>  </button></td>' +
+                '</tr>').appendTo('#billSettleTable');
+        }
+    }
+
+    function GetBalance() {
+
+        var gridTotal = 0;
+        $('.payAmount').each(function (index, element) {
+            $('.payAmount').removeClass('formatNumber');
+            gridTotal = gridTotal + parseFloat($(element).text().replace(/,/g, ''))
+            $('.payAmount').addClass('formatNumber');
+        });
+        balance = parseFloat(Billtotal.trim().replace(/,/g, '')).toFixed(2) - gridTotal.toFixed(2);
+        $('#Balance').val(Number(parseFloat(balance).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 }));
+        $('#PaymentAmount').val(Number(parseFloat(balance).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 }));
+
+    }
+
+    $('#billSettleTable').on('click', '#rowPaymentDelbtn', function () {
+        // erase from array
+
+        var i = 0;
+        i = $(this).closest('tr').index()
+        if (i == 0) {
+            billpaymentArray.splice(i, 1);
+        }
+        else {
+            billpaymentArray.splice(i - 1, 1);
+        }
+
+        // delete row
+        $(this).closest('tr').remove();
+        GetBalance();
+        changeButtonStatus();
+        $('#PaymentRemark').val("");
+        $('#alertId').addClass('hidden');
+        $('#CityLedger').prop('disabled', false);
+        loadPaymentTypeCombo();
+        RemarkRequiredVerificationByPaymentType();
+    });
+
+    $('#Completebtn').click(function () {
+        debugger;
+        //var DocumentNo = $('#DocNo').val();
+       
+        if ($('#PrintingMethod').val() == 'F') {
+            $('#btnprint').addClass('hidden');
+        } else {
+            setTimeout(function () {
+                $('#btnprint').removeClass('disabled');
+            }, 1000);
+
+        }  
+
+        SaveBillProfitCenter();
+
+        $('#paid_tampseal').removeClass('hidden');
+        $('#btnbillpayment').addClass('disabled');
+        $('#btnSave').removeClass('disabled');
+
+        //$('#AdvancedPayAmount').addClass('disabled');
+        if ($('#IsFolioScreen').val() == "1") {
+            $('#BtnPrintBill').removeClass('hidden');
+            $('#BtnLKRBill').removeClass('hidden');
+            $('#Completebtn').addClass('disabled');
+        } else if ($('#advancePaymentVia').val() == "fromRes") {
+
+        } else {
+            $('#grid-record-detail-model').modal('hide');
+        }//-------------------------------
+        $('#btnprint').removeClass('disabled');
+        $('#Save').addClass('disabled');
+        $('.ribbon').addClass('hidden');
+        $('#paymentTable1').removeClass('hidden');
+        $('#btnAdd').addClass('disabled');
+        $.each(billpaymentArray, function (index, element) {
+            $('<tr><td style="width:75%;">' + element.PaymentTypeName + '</td><td style="width:25%; text-align:right">' + Number(element.Amount).toLocaleString('en', { minimumFractionDigits: 2 }) + '</td> </tr>').appendTo('#paymentTable1');
+
+            payTotAmount = payTotAmount + Number(element.Amount)
+        })
+
+        $('<tr><td style="font-weight:bold; font-size:15Px;width:75%;">' + "Balance Due" + '</td>' +
+            '<td style="font-weight:bold; font-size:15Px;width:25%; text-align:right">' + Number(parseFloat(Billtotal.trim().replace(/,/g, '')).toFixed(2) - payTotAmount).toFixed(2) + '</td>' +
+            '</tr>').appendTo('#paymentTable1');
+    });
+
+    function changeButtonStatus() {
+
+        if (balance == 0) {
+            $('#btnAddPaymentToGrid').prop('disabled', true);
+            $('#Completebtn').removeClass('disabled');
+        }
+        else {
+            $('#btnAddPaymentToGrid').prop('disabled', false);
+            $('#Completebtn').addClass('disabled');
+        }
+    }
+
+    $.fn.digits = function () {
+        return this.each(function () {
+            $(this).text($(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+        })
+    }
+
+</script>
+

@@ -1,0 +1,131 @@
+﻿
+@using Scienter.DestinityHorizon.Common.Domain
+<style>
+    .card-content {
+    }
+
+    body {
+        background-color: none !important;
+    }
+
+    .card-header {
+        background-color: #6f195b !important;
+    }
+
+    .tile-height {
+        height: 80px !important;
+    }
+    .card .card-header {
+        border-radius: 0px;
+    }
+
+    .card {
+        border-radius: 0px;
+    }
+
+    .btn, .navbar .navbar-nav > li > a.btn {
+        border-radius: 0px
+    }
+</style>
+
+<input type="hidden" id="outletCode" value="@ViewBag.OutletCode" />
+<input type="hidden" class="warningMessage" id="warningMessage" value="@ViewBag.Message" />
+<div class="row" style="margin-top:15px;">
+    <div class="container" style="padding:60px 0;">
+        <input type="hidden" id="PropertyId" value="" />
+        <div class="col-md-1"></div>
+        <div class="col-md-2">
+            <div class="row">
+                <div class="col-md-6 tile-height">
+                    <a><span class="tile-lable tile-dark"></span></a>
+                </div>
+                <div class="col-md-6  tile-height flip" style="background-color:#34495e" data-order="2">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height" style="background-color:#e67e22">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 tile-height">
+                    <a><span class="tile-lable tile-dark"></span></a>
+                </div>
+                <div class="col-md-6  tile-height flip" style="background-color:#34495e" data-order="3">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height" style="background-color:#95a5a6">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height flip" data-order="4">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6 tile-height">
+                    <a><span class="tile-lable tile-dark"></span></a>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="row">
+                <div class="col-md-6 tile-height">
+                    <a></a>
+                </div>
+
+                <div class="col-md-6  tile-height">
+                    <a></a>
+                </div>
+                <div class="col-md-6  tile-height" style="background-color:#e67e22" data-order="1">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height">
+                    <a></a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 tile-height" style="background-color:#d0d0d0">
+                    <a><span class="tile-lable tile-dark"></span></a>
+                </div>
+
+                <div class="col-md-6  tile-height" style="background-color:#34495e">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height flip" style="background-color:#e67e22" data-order="1">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height" style="background-color:#808080">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+
+                <div class="col-md-6 tile-height" style="background-color:#34495e; padding:0px; padding-top:30px;">
+                    <a></a>
+                    <img src="~/Images/destinity-left.png" style="float:right; width:90px;" />
+                </div>
+                <div class="col-md-6 tile-height" style="padding:0px; padding-top:30px;">
+                    <a></a>
+                    <img src="~/Images/destinity-right.png" style="float:left;width:80px;" />
+                </div>
+
+
+            </div>
+        </div>
+        <div class="col-md-4"></div>
+
+    </div>
+   
+</div>
+<script>
+    $(document).ready(function(){
+
+        //ShowWarningMessage($('#warningMessage').val());
+        //setTimeout(function () { $('#message-warning-model').modal('hide'); }, 4000);
+        //$('#warningMessage').val("");
+
+    });
+</script>

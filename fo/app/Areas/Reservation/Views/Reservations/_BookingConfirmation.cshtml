@@ -1,0 +1,192 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.ViewModels.HotelConfirmationView>
+@using System.Linq;
+<style>  
+
+    .col-title{
+        font-size:11px;
+        font-weight:bold;
+        text-align:right ;
+    }
+ 
+    h5, .h5 {
+    font-size: 1.25em;
+    line-height: 1.4em;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+    .col-md-1c {
+    width: 4.333333333333332%;
+}
+</style>
+
+<div class="container div-scroll">
+    <div class="row visible-print">
+        <div class="col-md-12 text-center">
+            <center> <img src="~/Content/Images/logo.jpg" style="width:100px !important" /> </center>
+            <h3 class="font-family-01">Sigiriya Jungles Hotel</h3>
+            <p style="text-align:center !important;">SIGIRIYA JUNGLES, AUDANGAWA ROAD, KIMBISSA, SIGIRIYA, SRI LANKA. <br /> Email : reservations@sigiriyajungles.com, Telephone: +94114508508, +94664508508</p>
+        </div>
+    </div>
+
+    @if (Model.Count() > 1)
+    {
+        <div class="row margin-top-20px">
+            <div class="col-md-12 text-left">
+                <h4>
+                    <hr class="hr-dark" />
+                    <b> Group Reservation Details </b>
+                    <hr class="hr-dark" />
+                </h4>
+            </div>
+        </div>
+        <fieldset class="the-fieldset reservationDetailsLoop margin-top-10px" style="border:1px solid #000000">
+            <div class="row margin-top-20px">
+                <div class="col-md-6 col-sm-6 col-xs-6 margin-bottom-20">
+                    <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 col-title">Confirmation No</div>  <div class="col-md-1 col-sm-1 col-xs-1">:</div>     <div class="col-md-4 col-sm-4 col-xs-4">@Model.FirstOrDefault().GroupReservationNo </div><input type="hidden" class="GroupResNo" value="@Model.FirstOrDefault().GroupReservationNo" /></div>
+                    <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 col-title">Arrival</div>          <div class="col-md-1 col-sm-1 col-xs-1">:</div>     <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Convert.ToDateTime(Model.FirstOrDefault().Arrival).ToShortDateString()</div></div>
+                    <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 col-title">Country</div>          <div class="col-md-1 col-sm-1 col-xs-1">:</div>     <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().CountryName</div></div>
+                    <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 col-title">Rate Code </div>       <div class="col-md-1 col-sm-1 col-xs-1">:</div>     <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().RateCodeHeaderName </div></div>
+                    <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 col-title">Company</div>          <div class="col-md-1 col-sm-1 col-xs-1">:</div>     <div class="col-md-4 col-sm-4 col-xs-4 data-show"> @Model.FirstOrDefault().CompanyName</div></div>
+                    <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 col-title">Booking Source</div>   <div class="col-md-1 col-sm-1 col-xs-1">:</div>     <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().BookingSourceName</div></div>
+                    <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 col-title">Segment</div>          <div class="col-md-1 col-sm-1 col-xs-1">:</div>     <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().SegmentName</div></div>
+                    <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 col-title">Market</div>           <div class="col-md-1 col-sm-1 col-xs-1">:</div>     <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().MarketName</div></div>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6 margin-bottom-20">
+                    <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Status</div>       <div class="col-md-1 col-sm-1 col-xs-1">:</div><div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().Status</div></div>
+                    <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Departure</div>    <div class="col-md-1 col-sm-1 col-xs-1">:</div><div class="col-md-4 col-sm-4 col-xs-4 data-show">@Convert.ToDateTime(Model.FirstOrDefault().Departure).ToShortDateString()</div></div>
+                    <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Meal Plan</div>    <div class="col-md-1 col-sm-1 col-xs-1">:</div><div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().MealPlanName</div></div>
+                    <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Voucher No</div>   <div class="col-md-1 col-sm-1 col-xs-1">:</div><div class="col-md-4 col-sm-4 col-xs-4 data-show"> @Model.FirstOrDefault().VoucherNo</div></div>
+                    <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Tour No</div>      <div class="col-md-1 col-sm-1 col-xs-1">:</div><div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().TourNo</div></div>
+                </div>
+            </div>
+        </fieldset>
+    }
+    <div class="row margin-top-10px">
+        <div class="col-md-12 text-left ">
+            <h4>
+                <hr class="hr-dark" />
+                <b>
+                    Rooming Details @if (Model.Count() < 1 || Model.Count() == 1)
+                    { @("and Related Details");
+                    }
+                </b>
+
+                <hr class="hr-dark" />
+            </h4>
+        </div>
+    </div>
+
+    @foreach (var resdetails in Model)
+    {
+        <fieldset class="the-fieldset reservationDetailsLoop" style="border:1px solid #000000">
+            <input type="hidden" Id="resNo" value="@resdetails.ReservationNo" />
+            <legend class="the-legend">
+                <b>
+                    @if (Model.Count() > 1)
+                { @resdetails.ReservationNo}
+                else
+                { @Model.FirstOrDefault().GroupReservationNo}
+                </b>
+            </legend>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12 margin-bottom-20">
+                    <div class="row">
+                        <div class="col-md-2 col-sm-3 col-xs-3 col-title">Guest</div> <div class="col-md-1c col-sm-1 col-xs-1">:</div>  <div class="col-md-7 col-sm-6 col-xs-6">
+                            @foreach (var guest in resdetails.SelectedGuestDetail)
+                            {@guest.Name <br>}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-sm-6 col-xs-6 margin-bottom-20">
+                    <div class="row"><div class="col-md-4  col-sm-5 col-xs-5 col-title">Arrival</div>      <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-5 col-xs-5 data-show">@Convert.ToDateTime(resdetails.SelectedRoomDetail.FirstOrDefault().Arrival).ToShortDateString() @Convert.ToDateTime(resdetails.ExpectedArrivalTime).ToShortTimeString()</div></div>
+                    <div class="row"><div class="col-md-4  col-sm-5 col-xs-5 col-title">Arrival For </div> <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-5 col-xs-5 data-show">@resdetails.ArriveForMealName</div></div>
+                    <div class="row"><div class="col-md-4  col-sm-5 col-xs-5 col-title">Rate Code </div>   <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-5 col-xs-5 data-show">@resdetails.RateCodeHeaderName</div></div>
+                    @if (Model.Count() < 1 || Model.Count() == 1)
+                    {
+                        <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 col-title">Country</div>        <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().CountryName</div></div>
+                        <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 col-title">Company</div>        <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-6 col-sm-4 col-xs-4 data-show"> @Model.FirstOrDefault().CompanyName</div></div>
+                        <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 col-title">Booking Source</div> <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().BookingSourceName</div></div>
+                        <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 col-title">Segment</div>        <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().SegmentName</div></div>
+                        <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 col-title">Market</div>         <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().MarketName</div></div>
+                    }
+                </div>
+
+                <div class="col-md-6 col-sm-6 col-xs-6 margin-bottom-20">
+                                                                                                                                                                          
+                    <div class="row"><div class="col-md-3 col-sm-4 col-xs-4 col-title">Departure</div>    <div class="col-md-1 col-sm-1 col-xs-1">:</div><div class="col-md-4 col-sm-6 col-xs-6 data-show">@Convert.ToDateTime(resdetails.SelectedRoomDetail.FirstOrDefault().Departure).ToShortDateString() @Convert.ToDateTime(resdetails.ExpectedDepartureTime).ToShortTimeString()</div></div>
+                    <div class="row"><div class="col-md-3 col-sm-4 col-xs-4 col-title">Leave After</div>  <div class="col-md-1 col-sm-1 col-xs-1">:</div><div class="col-md-4 col-sm-6 col-xs-6 data-show">@resdetails.LeaveAfterMealName</div></div>
+                    <div class="row"><div class="col-md-3 col-sm-4 col-xs-4 col-title">No Of Nights</div> <div class="col-md-1 col-sm-1 col-xs-1">:</div><div class="col-md-4 col-sm-6 col-xs-6 data-show">@resdetails.NoOfNights</div> </div>
+                    @if (Model.Count() < 1 || Model.Count() == 1)
+                    {
+                        <div class="row"><div class="col-md-3 col-sm-4 col-xs-4 col-title">Status</div>     <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-6 col-xs-6 data-show">@Model.FirstOrDefault().Status</div></div>
+                        <div class="row"><div class="col-md-3 col-sm-4 col-xs-4 col-title">Meal Plan</div>  <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-6 col-xs-6 data-show">@Model.FirstOrDefault().MealPlanName</div></div>
+                        <div class="row"><div class="col-md-3 col-sm-4 col-xs-4 col-title">Voucher No</div> <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-6 col-xs-6 data-show"> @Model.FirstOrDefault().VoucherNo</div></div>
+                        <div class="row"><div class="col-md-3 col-sm-4 col-xs-4 col-title">Tour No</div>    <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-6 col-xs-6 data-show">@Model.FirstOrDefault().TourNo</div></div>
+                    }
+                </div>
+            </div>
+            @foreach (var roomDetails in resdetails.SelectedRoomDetail)
+                {
+                <div class="row tableDiv">
+                    <div class="col-md-12 margin-top-15px">
+                        <table class="table table-striped selectedRoomTable">
+                            <tr>
+                                <th class="col-md-2">Category</th>
+                                <th class="col-md-2">Type</th>
+                                <th class="col-md-2">Meal Plan</th>
+                                <th class="col-md-2">No of Rooms</th>
+                                <th class="col-md-2">Rate</th>
+                            </tr>
+                            <tr>
+                                <td>@roomDetails.RoomCategoryName</td>
+                                <td>@roomDetails.RoomTypeName</td>
+                                <td>@roomDetails.MealPlanName</td>
+                                <td>@(roomDetails.NoOfRooms / resdetails.NoOfNights)</td>
+                                <td>@roomDetails.AmountFormatedH</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <hr class="hr-dark" />
+            }
+        </fieldset>
+    }
+
+    <div class="col-md-12">
+        <span class="glyphicon glyphicon-hand-right"></span>  Check-in time 13.00hrs and Check-out time 11.00hrs. <br />
+        <span class="glyphicon glyphicon-hand-right"></span>   Please email us on info@sigiriyajungles.com for any further assistance or information in relation to your reservation, the hotel, its facilities or related services and experiences.
+        <h5 class=""><hr class="hr-dark" /> Additional Compulsory Supplementary Charges. <hr class="hr-dark" /> </h5>
+        <ul class="no-list-style">
+            <li><span class="glyphicon glyphicon-hand-right"></span>  Additional compulsory supplementary charges – For non Sri Lankans/ Expatriates ( USD clients) – Please settle direct at the hotel on arrival.         </li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>  24th December - Xmas eve – additional compulsory supplement of USD 58 nett per Adult & 50% discount for Kids between 5 – 11.99years                   </li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>  31st December – New Year’s eve - additional compulsory supplement of USD 68 nett per Adult & 50% discount for Kids between 5 – 11.99years             </li>
+            <li></li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>  Additional compulsory supplementary charges – for Sri Lankans and Expatriates ( Sri Lankans Clients) – Please settle direct at the hotel on arrival.  </li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>  24th December - Xmas eve – additional compulsory supplement of Rs. 5,000 per Adult & 50% discount for Kids between 5 – 11.99years                     </li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>  31st December – New Year’s eve – additional compulsory supplement of Rs. 6,000 per Adult & 50% discount for Kids between 5 – 11.99years               </li>
+        </ul>
+        <h5 style="margin-top:15px"><hr class="hr-dark" /> Cancellation Policy <hr class="hr-dark" /> </h5>
+        <ul class="no-list-style">
+            <li><span class="glyphicon glyphicon-hand-right"></span>  Less than 21 days prior to arrival - 100% of total amount.        </li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>  22-45 days prior to arrival - 50% of total amount.                </li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>   Over 46 days prior to arrival - No cancellation fee              </li>
+        </ul>
+        <h5 class=""><hr class="hr-dark" /> Child Policy <hr class="hr-dark" /> </h5>
+        <ul class="no-list-style">
+            <li><span class="glyphicon glyphicon-hand-right"></span>  Infant to 4.99 years – Free ( Sharing parent’s room).</li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>  5 to 11.99 years – 50% off on meal rates.            </li>
+        </ul>
+        <hr class="hr-dark " />
+        We warmly welcome you to Sigiriya Jungles and hope you will have a pleasant stay !
+        <br />Powered by <a href="http://www.scienter.lk" target="_blank"><b> Destinity</b></a>
+    </div>
+</div>
+
+<button type="button" style="float:right;" class="btn btn-default hidden-print hidden-xs" onclick="javascript:window.print()">
+    <span class="glyphicon glyphicon-print "></span> Print
+</button>
+
+

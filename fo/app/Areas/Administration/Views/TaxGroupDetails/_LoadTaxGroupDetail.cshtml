@@ -1,0 +1,40 @@
+﻿@model  Scienter.HotelERP.Common.Domain.ViewModels.TaxGroupViewModel
+
+
+@foreach (var item in Model.TaxGroupsList)
+{
+
+    <div class="col-md-4">
+        <div class="well tax-group-well">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>@item.Name</h3><hr />
+                    <input type="hidden" value="@item.Id" class="tax-group-hidden-Id" />
+                   
+                        @foreach (var itemType in Model.TaxTypesList)
+                        {
+                         
+                            <div class="row tax-type-row">
+                                <div class="col-md-6">
+                                    <div class="form-group checkbox">
+                                        <label>
+                                            <input type="checkbox" value="@itemType.Id" name="Taxtypes" id="Taxtypes" class="checkbox tax-type-checkbox tax-type-inWell" /> @itemType.Name
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="number" min="0" max="100" name="TaxtypeOrder" id="TaxtypeOrder" class="form-control order-id-for-taxType" />
+                                </div>
+                                <div class="col-md-2"></div>
+                            </div>
+                        }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+

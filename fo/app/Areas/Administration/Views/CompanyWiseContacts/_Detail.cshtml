@@ -1,0 +1,332 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.CompanyWiseContactViewModel
+
+@*<div>
+    <h4>CompanyWiseContactViewModel</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedUserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedUserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedDateTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedDateTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastEditedUserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastEditedUserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastEditedDateTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastEditedDateTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastUpdatedUserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastUpdatedUserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastUpdatedDateTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastUpdatedDateTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PageCount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PageCount)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ProfileTypeId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ProfileTypeId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SegmentId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SegmentId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ProfileCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ProfileCode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Address)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Address)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ContactPerson)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ContactPerson)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsLocal)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsLocal)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsForeign)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsForeign)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CountryId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CountryId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RefNo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RefNo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TelNo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TelNo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FaxNo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FaxNo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreditLimit)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreditLimit)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PrintRateOnGRC)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PrintRateOnGRC)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FITProfile)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FITProfile)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Active)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Active)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AddToOccupancy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AddToOccupancy)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ConfirmationRemark)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ConfirmationRemark)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ProfileRemarks)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ProfileRemarks)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RateCodeId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RateCodeId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CancellationPolicy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CancellationPolicy)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Promotion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Promotion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.VATRegNo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.VATRegNo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RepresentativeName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RepresentativeName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RepresentativeEmail)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RepresentativeEmail)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RepresentativeContactNo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RepresentativeContactNo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DesignationId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DesignationId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DOB)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DOB)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RepresentativeAddress)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RepresentativeAddress)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Segment)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Segment)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Country)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Country)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RateCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RateCode)
+        </dd>
+
+    </dl>
+</div>*@
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

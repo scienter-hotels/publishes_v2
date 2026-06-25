@@ -1,0 +1,80 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.PreventiveMaintenanceSceduleJobViewModel
+
+@{
+    ViewBag.Title = "Create / Edit";
+}
+
+<div class="col-md-12">
+
+    <form id="JobWiseNotes">
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <input type="hidden" value="@Model.JobId" name="Id" id="Id" />
+        <input type="hidden" value="@Model.PreventiveMaintenanceSceduleId" name="PreventiveId" id="PreventiveId" />
+
+        <div class="row">
+            <div class="col-md-12">
+                
+                    <div class="col-md-4">
+                        <div class="form-group label-floating">
+                            <label class="control-label">JobNo *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="JobNo" name="JobNo" type="text" value="@Model.JobNo" required readonly="readonly">
+                        </div>
+                    </div>
+              
+                <div class="col-md-4">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Job Type *</label>
+                        @{Html.RenderAction("JobTypeCombo", "JobTypes", new { name = "JobTypeId", requiered = true, value = Model?.JobTypeId });}
+                    </div>
+                </div>
+               
+                    <div class="col-md-4">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Status *</label>
+                            @{Html.RenderAction("JobStatusCombo", "JobWiseNotes", new { name = "StatusId", requiered = true, value = Model?.StatusId });}
+
+                        </div>
+                    </div>
+          
+
+              
+                   
+                
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-10">
+                <div class="form-group label-floating">
+                    <label class="control-label">Note</label>
+                    <input autocomplete="off" class="form-control text-box single-line" maxlength="10000" id="Note" name="Note" type="text" value="@Model.Note" required>
+                    @*<textarea class="form-control summernote" id="Remark" name="Remark" value="@Model.Remark" rows="4"></textarea>*@
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+        <div class="form-group">
+            <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+            &nbsp;
+            <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+        </div>
+
+    </form>
+
+
+</div>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+
+@* Select Index change in combo box*@
+

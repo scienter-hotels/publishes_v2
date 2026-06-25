@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.CompanyWiseRateCodeView>
+
+@{
+    ViewBag.Title = "Exising Company Wise Rate Code";
+}
+
+<div class="table-responsive">
+       <table class="table table-striped" id="existingCompanyWiseRateCodeGrid">
+           <thead>
+               <tr>
+                   <th class="text-primary">
+                       Company Profile
+                   </th>
+                   <th class="col-md-1 text-primary">
+                       Rate Code
+                   </th>
+                   <th class="col-md-1 hidden-print"></th>
+               </tr>
+           </thead>
+
+           <tbody>
+               @foreach (var item in Model)
+               {
+                   <tr>
+                       <td>
+                           @Html.DisplayFor(modelItem => item.CompanyName)
+                       </td>
+                       <td class="col-md-1">
+                           @Html.DisplayFor(modelItem => item.RateCodeName)
+                       </td>
+                       <td class="hidden-print text-right">
+                           <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Company Wise Rate Codes @*-@item.Name*@" data-href="/administration/companywiseratecodes/print/@item.Id">
+                               <span class="glyphicon glyphicon-print"></span>
+                           </a>
+
+
+
+
+                       </td>
+                   </tr>
+               }
+           </tbody>
+    </table>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#existingCompanyWiseRateCodeGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+</script>

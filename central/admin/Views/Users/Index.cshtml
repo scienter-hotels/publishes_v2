@@ -1,0 +1,159 @@
+﻿<style>
+    .form-group-marging {
+        margin-top: 0px;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header" data-background-color="purple">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="title">
+                    @ViewBag.Title
+                    <hr class="visible-print" />
+                </h4>
+            </div>
+            <div class="col-md-4 text-right hidden-print">
+                <button type="button" class="btn btn-sm btn-theme-color-2 showForm" id="btnForm" title="Add New">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
+                <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid" id="btnGrid" title="Show Grid">
+                    <span class="glyphicon glyphicon-th-list"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-content" id="contentLoadingArea">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row grid">
+                    <div class="col-md-12 table-responsive">
+                        <input type="text" id="searchby" onkeyup="SearchGrid()" placeholder="Search by any Column" title="Search by any Column">
+                        <div id="loadingProjects" class="well">
+                            <center>
+                                <img src="~/Images/loading.gif" style="width:50px; margin-top:20px; margin-bottom:0px;" />
+                            </center>
+                        </div>
+
+                        <table class="table table-striped" id="grid" style="display:none;">
+                            <tr>
+                                <th class="">User Name</th>
+                                <th class="col-md-1"><span data-toggle="tooltip" title="Active / Inactive">Active</span></th>
+                                <th class="col-md-2"></th>
+                            </tr>
+                            <tr class="no-record">
+                                <td colspan="4">No Records Found.</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+
+                <form id="form" class="form" enctype="multipart/form-data">
+                    <input type="hidden" id="Id" name="Id" value="" />
+                    <input type="hidden" id="salt" name="salt" value="" />
+
+                    <div class="row">
+                        <div class="col-md-3">
+
+                            <div class="row" id="Username">
+                                <div class="col-md-9">
+                                    <div class="form-group label-floating">
+                                        <label class="control-label">Username *</label>
+                                        <input type="text" class="form-control" id="username" disabled name="username" pattern="[^' ']+" required maxlength="20" autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" id="UserRolesDiv">
+                                <div class="col-md-9">
+                                    <div class="form-group label-floating">
+                                        <label class="control-label">User Role *</label>
+                                        <select id="UserRole" class="form-control" required>
+                                            @*<option value="">---------- Select ----------</option>*@
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" id="">
+                                <div class="col-md-9 IsPasswordChangediv">
+                                    <div class="checkbox">
+                                        <label class="control"><input type="checkbox" id="IsPasswordChange" name="IsPasswordChange" checked value="1"> Password Change</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="IsPwdChangeOnly">
+
+                                <div class="row" id="previousPassworddiv">
+                                    <div class="col-md-9">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">Previous Password *</label>
+                                            <input type="password" class="form-control" id="previousPassword" name="previousPassword"  maxlength="100" autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" id="passworddiv">
+                                    <div class="col-md-9">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">Password *</label>
+                                            <input type="password" class="form-control" id="password" name="password"  maxlength="100" autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" id="newPassworddiv">
+                                    <div class="col-md-9">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">New Password *</label>
+                                            <input type="password" class="form-control" id="newPassword" name="newPassword"  maxlength="100" autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" id="confirmPassword">
+                                    <div class="col-md-9">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">Confirm Password *</label>
+                                            <input type="password" class="form-control" id="confPassword" name="confPassword"  maxlength="100" autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                           
+
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <div class="checkbox">
+                                        <label class="control"><input type="checkbox" id="IsActive" name="IsActive" checked value="1"> Active</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                      
+                       
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-success btn-width-100px" id="btnSubmit">
+                                Save
+                            </button>
+
+                            <button type="reset" class="btn btn-default btn-width-100px btn-shadow" onclick="ClearForm()">
+                                Clear
+                            </button>
+
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/scripts/UI/scienter.users.js"></script>
+

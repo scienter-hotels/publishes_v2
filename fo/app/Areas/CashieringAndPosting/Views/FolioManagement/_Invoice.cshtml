@@ -1,0 +1,297 @@
+﻿@using Scienter.HotelERP.Common.Domain;
+@model List<Scienter.HotelERP.Common.Domain.FolioHeader>
+<style>
+    .invoiceBox {
+        margin-top: 9px;
+    }
+</style>
+
+<link href="~/Content/ConerRibbon.css" rel="stylesheet" />
+<fieldset class="the-fieldset invoiceBox ribbonbox" style="height:740px; ">
+  <div class="visible-print" style="height:100px"></div>
+    <div class="ribbon hidden-print"><span>Bill Preview</span></div>
+    <div id="ReportLoadingArea" class="col-md-12" >
+        <hr>
+        <div id="ReportHeader" style="border:solid 1px" >
+            <table class="col-md-12" style="width:100%">
+                <tr style="padding-bottom:20px;">
+                    @foreach (var item in Model)
+                    {
+                        if (item.InvoiceNo == string.Empty || item.InvoiceNo == null)
+                        {
+                            <th style="text-align:center;" colspan="5">OUTSTANDING INVOICE</th>
+                        }
+                        else
+                        {
+                            <th style="text-align:center;" colspan="5">TAX INVOICE</th>
+                        }
+                        break;
+                    }
+                </tr>
+            </table>
+            @foreach (var item in Model)
+            {
+                <input type="hidden" id="ReservationHeaderId" value="@item.ReservationID" />
+                <input type="hidden" id="ThisFolioNo" value="@item.FolioNo" />
+
+                <div class="" >
+                <table style="width:100%; " >
+                    <tr>
+                        <td id="easyPaginate2" style="width:100%">
+                            <table class="table-posting" style="width:100%">
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <td class="report-width75perc" style="width:70%">
+                                        <div class="row" style="padding-left:20px;"><b>Room No</b></div>
+                                        <div class="row room-Id-each-table" style="padding-top:10px; padding-bottom:10px; padding-left:20px; font-size:30px" id="roomCode">@item.RoomCode</div>
+                                        <div class="row" id="guestName" style="padding-left:20px;">@item.FolioCompanyName</div>
+                                        <div class="row" style="padding-left:20px;">@item.FolioAddress </div>
+                                        <div class="row" style="padding-left:20px;">@item.GuestName </div>
+                                    </td>
+                                    <td class="report-width25perc" style="width:30%">
+                                        
+
+                                        @if (item.InvoiceNo == string.Empty || item.InvoiceNo == null)
+                                        {
+                                        }
+                                        else
+                                        {
+                                            <div class="row"><b>InvoiceNo:&nbsp </b>@item.InvoiceNo </div>
+
+                                        }
+                                        <div class="row"><b>Date:&nbsp</b>@DateTime.Now.ToShortDateString()</div>
+                                        <div class="row"><b>Res No:&nbsp</b>@item.ReservationNo</div>
+                                        <div class="row"><b>Arrival:&nbsp</b>@item.Arrival</div>
+                                        <div class="row"><b>Departure:&nbsp</b>@item.Departure</div>
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                </table>
+                </div>
+
+                break;
+
+            }
+            <input type="hidden" value="@ViewBag.postingType" name="" id="PosringTypehdn" />
+        </div>
+        <div id="ReportBody1" style="width:100%;">
+
+            <div id="ReportBody1" class="div-scroll" style="height:300px; border:solid 1px">
+              
+                <table class="col-md-12 table table-bordered"  id="itemtable" >
+                    <tr class="" style="width:100%">
+                        <th style="width:15%; padding-left:10px;">Charge Date</th>
+                        <th style="width:65%; padding-left:10px;">Description</th>
+                        <th style="width:20%; text-align:right">Amount</th>
+                    </tr>
+                    <hr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr class="item-body">
+                            <td style="width:15%; padding-left:10px;" class="folio-text">@item.ChargeDate</td>
+                            <td style="width:65%; padding-left:10px;" class="folio-text">@item.FolioText</td>
+                            <td style="width:20%; text-align:right" class="folio-charge-amount">@item.ChargeAmount.ToString("#,##0.00")</td>
+                            <td style="width:25%; text-align:right; visibility:hidden; display:none;" class="folio-tax-group-id">@item.TaxGroupId</td>
+                            <td style="width:10%; text-align:right; visibility:hidden; display:none;" class="folio-charge-code">@item.ChargeCode</td>
+                        </tr>
+
+                    }
+                </table>
+            </div>
+        </div>
+        
+        <div id="ReportTaxCalCulationArea" style="width:100%;">
+            <div class="row" style="border:solid 1px; margin-left:0px; margin-right:0px;">
+                <div class="col-md-5 report-width40perc report-float-left">
+                    @foreach (var item in Model)
+                    {
+                        if (item.InvoiceNo == string.Empty || item.InvoiceNo == null)
+                        {
+
+                        }
+                        else
+                        {
+
+                            <table class="table" style="width:100%" id="paymentTable">
+                                <tr>
+                                    <th>Payment Type</th>
+                                    <th>Amount</th>
+                                </tr>
+                                <tbody class="tb-folioWisePayment">
+                                    @* LOAD BY JQUERY *@
+                                </tbody>
+                            </table>
+                            <div class="box sample" id="paid_tampseal">  </div>
+
+                        }
+
+                        break;
+                    }
+                </div>
+
+                <div class="col-md-7 report-width60perc report-float-right" id="TaxLoadingArea">
+                    @Html.Partial("_TaxCalculation", new List<Scienter.HotelERP.Common.Domain.ViewModels.TaxCalculationsViewModel>())
+                </div>
+                <span style="float:right" class="currencyTc hidden"> * All currency amounts are in @SessionObjects.LocalCurrency.Name (@SessionObjects.LocalCurrency.ISOCode)</span>
+
+
+            </div>
+            <div class="row" style="padding-top:30px;">
+                <table style="width:100%" class="report-width100perc">
+                    <tr>
+                        <td>
+                            <div class="col-md-4" style="padding-right:10px;">
+
+                                @*@foreach (var item in Model)
+                                {
+                                    if (item.InvoiceNo == string.Empty || item.InvoiceNo == null)
+                                    {
+
+                                    }
+                                    else
+                                    {
+                                        <div class="box sample" id="paid_tampseal">  </div>
+
+                                    }
+                                    break;
+                                }*@
+
+                            </div>
+                        </td>
+                        <td style="padding-right:20px;width:35%;">
+                            <hr />
+                        </td>
+                        <td style="padding-right:20px;width:35%;">
+                            <hr />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="">
+                            <div style="padding-right:0px; width:30%;">
+                                <input type="button" id="btnprint" value="Print" onclick="window.print();" class="btn btn-primary hidden-print" />
+
+                            </div>
+                        </td>
+                        <td class="report-width30px" style="width:35%">
+
+                            <div style="padding-right:10px;text-align:center;">Prepared By</div>
+
+                        </td>
+                        <td class="report-width30px" style="width:35%; text-align:right">
+                            <div style="padding-right:10px;text-align:right;">Guest Signature</div>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+
+            <div id="ReportFooter">
+                @*<div class="form-group col-md-2">
+                    @*full-width-100perc*@
+                @*</div>*@
+                <div class="form-group col-md-12">
+
+
+                    <input type="hidden" value="" name="" id="PosringTypehdn" />
+                </div>
+            </div>
+        </div>
+    </div>
+</fieldset>
+
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+
+
+        TaxCalculation();
+
+        function TaxCalculation() {
+
+            //////////////////////////// Making Json from Chargers in table /////////////////////
+            //var calString = ''
+            //var sign = ''
+
+            //$.each($('.item-body'), function (index, itemTr) {
+            //    
+            //    //folio-charge-code
+
+            //        
+            //        if ((index + 1) < $('.item-body').length) {
+            //            sign = ','
+            //        } else {
+            //            sign = ''
+            //        }
+
+            //        calString = calString + '{"TaxGroupId":"' + $('.item-body').eq(index).find('td.folio-tax-group-id').text() + '","Amount":"' + $('.item-body').eq(index).find('td.folio-charge-amount').text() + '"}' + sign
+
+
+
+            //})
+
+            //var jsonString = JSON.parse('[' + calString + ']');
+            //calculationString = jsonString
+
+            //JSON.stringify(calculationString)
+            /////////////////////////////////////////// pass calculationString if want calculate tax from front end ////////////
+
+            $.ajax({
+                url: '/CashieringAndPosting/TaxCalculation/GetTaxes',
+                dataType: 'html',
+                data: { TaxGroupAmontJson: '', ResId: $('#ReservationHeaderId').val(), FolioNo: $('#ThisFolioNo').val(), Operation: 'FOLIO' },
+                method: 'POST',
+                success: function (response) {
+
+                    $('#TaxLoadingArea').html(response)
+
+                    SettledPaymentTypes();
+                },
+                error: function (xhr, status, error) {
+                    ShowErrorMessage('Sorry, There is an error.');
+                }
+            });
+
+        }
+
+
+        function SettledPaymentTypes() {
+            
+            $.ajax({
+                url: '/CashieringAndPosting/FolioManagement/SettledBillPaymentTypes',
+                dataType: 'json',
+                data: { ReservationHeaderId: $('#ReservationHeaderId').val(), FolioNo: $('#ThisFolioNo').val() },
+                method: 'POST',
+                success: function (data) {
+                    
+                    $.each(data, function (index, payments) {
+                        
+
+                        $('.tb-folioWisePayment').append('<tr>' +
+                                                        '<td>' + payments.PaymentTypeName + '</td>' +
+                                                        '<td>' + payments.Amount + '</td>' +
+                                                        '</tr>');
+
+
+
+                    })
+                },
+                error: function () {
+                    ShowErrorMessage('Sorry, There is an error.');
+                }
+            });
+
+
+
+        }
+    })
+   
+
+
+</script>

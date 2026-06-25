@@ -1,0 +1,335 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.GuestProfileView>
+
+@{
+    ViewBag.Title = "Existing GuestProfiles";
+}
+<style>
+    .btn-padding-override {
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-bottom: 0px !important;
+        font-size: 10.5px !important;
+    }
+
+    .btn-right-padding5px {
+        padding: 0px;
+        padding-right: 5px;
+    }
+
+    .row-padding0px {
+        padding: 0px;
+    }
+
+    .dataTables_filter {
+        width: 40% !important;
+        float: left !important;
+    }
+
+    .dt-buttons {
+        width: 60% !important;
+    }
+
+    .border-margin {
+        border: 1px solid white;
+    }
+
+</style>
+<div class="col-md-12">
+    <div class="row">
+        <div id="main-grid-content" class="col-md-12">
+            <div class="table-responsive">
+                <table class="table font-size-12px" id="existingGuestProfileGrid">
+                    <thead>
+                        <tr>
+                            <th class="col-sm-2 text-primary">
+                                @Html.DisplayNameFor(model => model.Id)
+                            </th>
+                            <th class="col-sm-3 text-primary">
+                                @Html.DisplayNameFor(model => model.Name)
+                            </th>
+                            <th class="col-sm-2 text-primary">
+                                @Html.DisplayNameFor(model => model.CountryId)
+                            </th>
+                            </th>
+
+                            <th class="col-sm-2 text-primary">
+                                @Html.DisplayNameFor(model => model.IsActive)
+                            </th>
+                            <th class="col-sm-2 hidden-print"></th>
+                            <th class="col-sm-1"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Id)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FirstName)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CountryName)
+                                </td>
+
+                                <td class="text-right">
+                                    <div class="form-group checkbox">
+                                        <label>
+                                            @Html.DisplayFor(modelItem => item.IsActive)
+                                            <span class="hidden">
+                                                @if (item.IsActive)
+                                                {
+                                                    @:Active
+                                                }
+                                                else
+                                                {
+                                                    @:Inactive
+                                                }
+                                            </span>
+                                        </label>
+                                    </div>
+
+                                </td>
+                                <td class="hidden-print text-right">
+
+                                    <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnReservationNote" data-title="Guest Activity Log" data-href="/Administration/GuestProfiles/GuestActivityLog/@item.Id" title="Activity Log" data-toggle="tooltip" data-width="500">
+                                        <span class="glyphicon glyphicon-tags"></span>
+                                    </a>
+
+                                    <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/guestprofiles/edit/@item.Id">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>
+
+                                    <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/administration/guestprofiles/delete/@item.Id">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="form-group checkbox">
+                                        <label>
+                                            <input class="guest-checkBox" type="checkbox" value="@item.Id" />
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="side-buttons" class="hidden">
+            <div class="row row-padding0px">
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#c21b1b !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override call-popup-model" id="btnContactDetails" data-href="" data-width="500" data-title='Communication Details'>
+                        <span class="glyphicon glyphicon-list"></span>
+                        <br />
+                        Contact<br /> Details
+                    </button>
+                </div>
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#c21b1b !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override call-popup-model" id="btnPreferences" data-href="" data-width="1200" data-title='Preferences'>
+                        <span class="glyphicon glyphicon-list"></span>
+                        <br />
+                        Guest<br />Preferences
+                    </button>
+                </div>
+
+            </div>
+
+            <div class="row row-padding0px">
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    <button style="background-color:#b45200 !important;" class="btn btn-default  btn-theme-color-2 full-width-100perc btn-padding-override call-popup-model" id="btnReservationsStatistics" data-href="" data-width="1200" data-title='Guest Reservation Status'>
+                        <span class="glyphicon glyphicon-list"></span>
+                        <br />
+                        Reservations &<br />Statistics
+                    </button>
+                </div>
+
+                <div class="border-margin col-md-6 btn-right-padding5px">
+                    @*<button style="background-color:#e84118 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override " id="btnProfileMerge">
+                            <span class="glyphicon glyphicon-floppy-saved"></span>
+                            <br />
+                            Profile<br />Merge
+                        </button>*@
+                    <button style="background-color:#2f9b04 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override call-popup-model" id="btnGuestNotes" data-href="" data-width="500" data-title='Guest Notes'>
+                        <span class="glyphicon glyphicon-list"></span>
+                        <br />
+                        Guest<br />Notes
+                    </button>
+                </div>
+            </div>
+
+            <div class="row row-padding0px">
+                    <div class="border-margin col-md-6 btn-right-padding5px">
+                        <button style="background-color:#940191 !important;" class="btn btn-default  btn-theme-color-2 full-width-100perc btn-padding-override call-popup-model" id="btnGuestHistory" data-href="" data-width="1200" data-title='Guest History'>
+                            <span class="glyphicon glyphicon-list"></span>
+                            <br />
+                            Guest<br />History
+                        </button>
+                    </div>
+                    @*<div class="col-md-6 btn-right-padding5px">
+            <button style="background-color:#940191 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override" id="btnDocuments">
+                <span class="glyphicon glyphicon-floppy-saved"></span>
+                <br />
+                Documents &<br />Complaints
+            </button>
+        </div>*@
+                </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" value="@ViewBag.editId" id="hdnEditrecordId" />
+
+
+<script>
+    $(document).ready(function () {
+
+    
+     //   $('#existingGuestProfileGrid tr').find('input.guest-checkBox');
+        //}
+
+
+        //Contact Details Select
+
+        $('#btnContactDetails').click(function () {
+
+            var guestid = $('#existingGuestProfileGrid').find('.guest-checkBox:checked').val();
+            $('#btnContactDetails').attr('data-href', '/administration/GuestProfiles/GuestCommunicationDetails?guestId=' + guestid);
+
+        })
+
+
+
+        // Guest preferences
+        $('#btnPreferences').click(function () {
+            var guestid = $('#existingGuestProfileGrid').find('.guest-checkBox:checked').val();
+            $('#btnPreferences').attr('data-href', '/administration/GuestProfiles/GuestPreferences?guestId=' + guestid)
+
+        })
+
+
+        //Guest Reservations
+        $('#btnReservationsStatistics').click(function () {
+            var guestid = $('#existingGuestProfileGrid').find('.guest-checkBox:checked').val();
+            $('#btnReservationsStatistics').attr('data-href', '/administration/GuestProfiles/GuestReservationDetails?guestId=' + guestid);
+
+        })
+
+
+        $('#btnGuestNotes').click(function () {
+            var guestid = $('#existingGuestProfileGrid').find('.guest-checkBox:checked').val();
+            $('#btnGuestNotes').attr('data-href', '/administration/GuestProfiles/GuestNotes?guestId=' + guestid);
+
+        })
+
+        //Guest History
+        $('#btnGuestHistory').click(function () {
+            var guestid = $('#existingGuestProfileGrid').find('.guest-checkBox:checked').val();
+            //$('#btnGuestHistory').attr('data-href', '/administration/GuestProfiles/GuestHistory?guestId=' + guestid);
+            LoadRepeatedGuestHistory(guestid);
+        })
+
+        //$('#btnDocuments').click(function () {
+        //    var guestid = $('#existingGuestProfileGrid').find('.guest-checkBox:checked').val();
+        //    window.location.href = '/administration/companywiseratecodes?companyId=' + guestid;
+
+        //})
+
+
+        //$('#btnProfileMerge').click(function () {
+        //    var guestid = $('#existingGuestProfileGrid').find('.guest-checkBox:checked').val();
+        //    window.location.href = '/administration/CompanyWiseContacts/ContactView?id=' + guestid;
+        //})
+
+        //$('#btnGuestNotes').click(function () {
+        //    var guestid = $('#existingGuestProfileGrid').find('.guest-checkBox:checked').val();
+        //    window.location.href = '/administration/CompanyWiseContacts/ContactView?id=' + guestid;
+        //})
+
+
+
+        $('#existingGuestProfileGrid tr').on('click', function () {
+            var check = $(this).find('input.guest-checkBox').prop('checked');
+            if (check) {
+                $(this).find('input.guest-checkBox').prop('checked', false);
+                if (!$('#main-grid-content').hasClass('col-md-12')) {
+                    $('#main-grid-content').removeClass('col-md-10').fadeIn();
+                    $('#main-grid-content').addClass('col-md-12');
+                    $('#side-buttons').addClass('hidden').removeClass('col-md-2').fadeIn();
+                    $('input.guest-checkBox:checked').closest('tr').removeClass('selectdRecord');
+                }
+
+            } else {
+                $(this).find('input.guest-checkBox').prop('checked', true);
+                if (!$('#main-grid-content').hasClass('col-md-10')) {
+                    $('#main-grid-content').removeClass('col-md-12').fadeOut();
+                    $('#main-grid-content').addClass('col-md-10').fadeIn();
+                    $('#side-buttons').removeClass('hidden').addClass('col-md-2').fadeIn();
+                }
+
+            }
+            $('#existingGuestProfileGrid tr').not(this).find('input.guest-checkBox').prop('checked', false);
+            $('#existingGuestProfileGrid tr').not(this).closest('tr').removeClass('selectdRecord');
+            $(this).addClass('selectdRecord');
+        });
+
+        $('input.guest-checkBox').on('change', function () {
+            ;
+            $('input.guest-checkBox').not(this).prop('checked', false);
+            $('input.guest-checkBox').not(this).closest('tr').removeClass('selectdRecord');
+            $('input.guest-checkBox:checked').closest('tr').addClass('selectdRecord');
+
+            if ($('input.guest-checkBox:checked').length > 0) {
+                if (!$('#main-grid-content').hasClass('col-md-10')) {
+                    $('#main-grid-content').removeClass('col-md-12').fadeOut();
+                    $('#main-grid-content').addClass('col-md-10').fadeIn();
+                    $('#side-buttons').removeClass('hidden').addClass('col-md-2').fadeIn();
+                }
+            }
+            else {
+                if (!$('#main-grid-content').hasClass('col-md-12')) {
+                    $('#main-grid-content').removeClass('col-md-10').fadeIn();
+                    $('#main-grid-content').addClass('col-md-12');
+                    $('#side-buttons').addClass('hidden').removeClass('col-md-2').fadeIn();
+                    $('input.guest-checkBox:checked').closest('tr').removeClass('selectdRecord');
+                }
+            }
+
+        });
+
+
+
+
+    });
+
+
+
+
+
+
+
+    $(document).ready(function () {
+        $('#existingGuestProfileGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: false,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ],
+                scrollY: '58vh',  
+                
+            });
+    });
+</script>

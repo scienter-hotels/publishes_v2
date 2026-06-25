@@ -1,0 +1,99 @@
+﻿
+
+@model  IEnumerable<Scienter.HotelERP.Common.Domain.Posting>
+
+@{
+    ViewBag.Title = "Existing Postings";
+}
+
+<div class="table-responsive">
+    <table id="current-date-postings" class="table table-striped">
+        <thead>
+            <tr>
+                <th class="text-primary">
+                    Reservation No
+                </th>
+                <th class="text-primary">
+                    Room No
+                </th>
+                <th class="text-primary">
+                    Doc No
+                </th>
+                <th class="col-md-1 text-primary">
+                    Posting Type
+                </th>
+                <th class="text-primary">
+                    Charge Code
+                </th>
+                <th class="col-md-1 text-primary">
+                    Charge Date
+                </th>
+                <th class="text-primary">
+                    Charge Amount
+                </th>
+                <th class="col-md-1 text-primary">
+                    Folio Text
+                </th>
+                <th class="text-primary">
+                    Remarks
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReservationNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DocumentNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PostingType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChargeCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChargeDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FolioText)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Remarks)
+                </td>
+            </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
+
+<script>
+    $(function () {
+        $('#current-date-postings').DataTable(
+            {
+                searching: true,
+                ordering: true,
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ],
+                scrollY: '58vh',
+            });
+    })
+</script>

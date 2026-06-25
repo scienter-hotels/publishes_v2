@@ -1,0 +1,971 @@
+﻿@using Scienter.HotelERP.Common.Domain
+@{
+    ViewBag.TitleInHouse = "Room Profit Center Posting";
+    ViewBag.TitleWalkIn = "Walk-In Profit Center Posting";
+}
+<style>
+    label.CusAddrInGrid {
+        /* width: 23em;
+        word-wrap: break-word;*/
+    }
+
+    .checkbox label, .radio label, label {
+        font-size: 12px !important;
+    }
+
+    .form-group {
+    margin:25px 0 0 0;
+    }
+</style>
+
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("IsDirectPrint")" name="" id="IsDirectPrint" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("IsPCPostingDirectPrint")" name="" id="IsPCPostingDirectPrint" />
+
+<input type="hidden" name="ChargeTypeId" value="" id="ChargeTypeId"/>
+<input type="hidden" name="ChargeTypeId" value="" />
+<input type="hidden" value="" id="hdnAllowCreditPosting" />
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card" id="profCard">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title hidden-print">
+                            @if (ViewBag.postingType == "guest")
+                            {
+                                @ViewBag.TitleInHouse
+
+                            }
+                            else
+                            {
+                                @ViewBag.TitleWalkIn
+                            }
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            @if (Request.Url.ToString().Contains("ProfitCenter/Landing/walkin"))
+            {
+                <style>
+                    .min-height {
+                        min-height: 546px;
+                    }
+
+                    .max-scroll {
+                        max-height: 180px;
+                        overflow-y: auto;
+                        overflow-x: hidden;
+                    }
+                </style>
+            }
+            else if (Request.Url.ToString().Contains("ProfitCenter/Landing/guest"))
+            {
+                <style>
+                    .min-height {
+                        min-height: 515px;
+                    }
+
+                    .max-scroll {
+                        max-height: 155px;
+                        overflow-y: auto;
+                        overflow-x: hidden;
+                    }
+                </style>
+            }
+
+                <div class="card-content" id="contentLoadingArea">
+                    <input type="hidden" value="@ViewBag.postingType" name="categoryId" id="categoryId" />
+                    <div class="row">
+                        <div class="col-md-5 hidden-print">
+                            <fieldset class="the-fieldset" id="formP">
+                                <legend class="the-legend"> Select Details</legend>
+                                @Html.Partial("Form", new Scienter.HotelERP.FrontOffice.WebUIMvc.Areas.CashieringAndPosting.Models.ProfitCenterViewModel())
+                            </fieldset>
+                        </div>
+                        <div class="col-md-7" style="margin-top:10px;">
+
+                            <fieldset class="the-fieldset min-height" id="gridP">
+                                <div id="sd" style="margin-bottom:30px;">
+                                    <div class="pritableArea">
+                                        <div class="row">
+                                            <div class="col-md-6"><legend class="the-legend " style="text-align:left; margin-left:-4px;"><b>PROFIT CENTER BILL</b></legend></div>
+                                            <div class="col-md-6">
+                                                <legend class="the-legend " style="text-align:left">
+                                                    <b>
+                                                        Document# :
+                                                        <label id="DocumentNoInGrid">
+                                                        </label>
+                                                    </b>
+                                                </legend>
+                                            </div>
+                                        </div>
+                                        <div class="row" id="scrolledDiv">
+                                            <div class="col-md-12">
+                                                <div class="row" style="margin-bottom:10px;">
+                                                    <table width="97%" align="right" style="font-size:12px;">
+                                                        <tr>
+                                                            <td width="60%">
+
+                                                                <div class="row">
+                                                                    <div class="col-md-2">
+                                                                        <p id="roomNolabel" class="hidden">Room No:</p>
+                                                                    </div>
+                                                                    <div class="col-md-9" style="margin-left:-64px;">
+                                                                        <label id="RoomNoInGrid" style="font-size:20px;">
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row">
+                                                                    <div class="col-md-6 CustomerName">
+                                                                        Cus.Name :
+                                                                        <label id="CusNameInGrid">
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        Cus.Addr :
+                                                                        <label class="CusAddrInGrid" id="CusAddrInGrid">
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="40%">
+                                                                <div class="row">
+                                                                    <div class="col-md-6">
+                                                                        Charge Date :
+                                                                        <label id="ChargeDateInGrid">
+                                                                            @DateTime.Now
+                                                                        </label>
+                                                                    </div>
+                                                                    @*Anu*@
+                                                                    <div class="col-md-6">
+                                                                        User :
+                                                                        <label id="UserInGrid">
+                                                                            @SessionObjects.LoggedUser.Username
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                                <div class="row" style="margin-bottom:50px;">
+                                                    <div class="col-md-12 max-scroll" id="gridScroll">
+                                                        @Html.Partial("Grid", new List<Scienter.HotelERP.FrontOffice.WebUIMvc.Areas.CashieringAndPosting.Models.ProfitCenterViewModel>())
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top:-50px;">
+                                                    <div class="col-md-12">
+                                                        <div class="row">
+                                                            <div class="col-md-7">
+
+                                                            </div>
+                                                            <div class="col-md-5">
+                                                                <div id="TaxCalcutationTable" class="report-width60perc report-float-right">
+                                                                    @Html.Partial("_TaxCalculationProfitCenter", new List<Scienter.HotelERP.Common.Domain.ViewModels.TaxCalculationsProfiCenterViewModel>())
+                                                                </div>
+                                                                <div class="report-width60perc report-float-right">
+                                                                    <table class="table hidden" id="paymentTable1" style="width:100%">
+                                                                        <tr></tr>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div>
+                                                                    <span style="font-size:11px; margin-top:20px;">
+                                                                        * All currency amounts are in @SessionObjects.LocalCurrency.Name (@SessionObjects.LocalCurrency.ISOCode)
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        @*<div class="row" style="padding-top:30px; width:100%;">
+                                                        <div class="col-md-12">
+                                                            <table style="width:100%" class="report-width100perc">
+                                                                <tr>
+                                                                    <td>
+                                                                        <div class="col-md-4" style="padding-right:10px; ">
+                                                                        </div>
+                                                                    </td>
+                                                                    <td style="padding-right:20px;width:35%;">
+                                                                        <hr />
+                                                                    </td>
+                                                                    <td style="padding-right:20px;width:35%;">
+                                                                        <hr />
+                                                                    </td>
+                                                                </tr>
+
+                                                                <tr>
+                                                                    <td class="">
+                                                                        <div style="padding-right:10px;"></div>
+                                                                    </td>
+                                                                    <td class="report-width30px" style="width:33.3%">
+
+                                                                        <div style="padding-right:10px;text-align:center;">Prepared By</div>
+
+                                                                    </td>
+                                                                    <td>
+                                                                        <div style="padding-right:10px;text-align:center;">Guest Signature</div>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                    </div>*@
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <div style="position:absolute; width:92%; bottom:15px; margin-left:15px; margin-top:20px;" id="btnDiv">
+                                <div class="row">
+
+                                    @if ((ViewBag.postingType == "walkin"))
+                                    {
+                                        <div class="col-md-9">
+                                            <button class="btn btn btn-primary disabled hidden-print" id="btnbillpayment" style="width:100%;">
+                                                Settle Now
+                                            </button>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-5">
+                                            <input type="button" id="Save" value="Post To Room" class="btn btn-primary disabled hidden-print" style="width:100%;" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button class="btn btn btn-primary disabled  hidden-print" id="btnbillpayment" style="width:100%;">
+                                                Settle Now
+                                            </button>
+                                        </div>
+                                    }
+
+                                    <div class="col-md-3">
+
+                                        @*<input type="button" id="PostToRoom" value="Settle Bill" class="btn btn-primary" />*@
+                                        @*<input type="button" id="btnprint" value="Print" onclick="window.print()" class="btn btn-primary disabled hidden-print" />*@
+                                        @if (Scienter.HotelERP.Common.Utility.Configs.GetAppSettingBoolValue("IsDirectPrint"))
+                                        {
+                                            <button id="btnprint" class="btn btn-primary disabled hidden-print" target="" style="width:100%;">
+                                                <span class="glyphicon glyphicon-print"></span>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <a id="btnprint" class="btn btn-primary disabled hidden-print" style="width:100%;">
+                                                <span class="glyphicon glyphicon-print"></span>
+                                            </a>
+                                        }
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+    </div>
+</div>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    var ItemCategoryId = 0;
+
+    $(document).ready(function () {
+
+        var currentHeight = $('#profCard').height();
+        var windowHeight = $(window).height()
+        console.log(windowHeight)
+        $('#profCard').height(windowHeight - 100);
+
+        $('#profCard').css('min-height', currentHeight);
+        $('#gridP').height(windowHeight - 200);
+        $('#formP').height($('#gridP').height() + 10);
+
+        if (windowHeight > 661) {
+            $('#btnDiv').css('width', '95%');
+            $('#btnDiv2').css('width', '90%');
+            $('#gridScroll').css('max-height', '420px');
+            $('#scrolledDiv table').css('margin-right', '10px');
+        }
+
+        LoadProfitCenterCombo();
+        LoadItemPriceTypeCombo();
+        var category = $('#categoryId').val();
+        //debugger;
+        $.ajax({
+            url: '/CashieringAndPosting/ProfitCenter/SelectIdByCategory',
+            dataType: 'json',
+            data: { category: category },
+            method: 'POST',
+            success: function (data) {
+                ItemCategoryId = data;
+                console.log(ItemCategoryId);
+            },
+        });
+
+        if ($('#PrintingMethod').val() == 'F') {
+            $('#btnprint').addClass('hidden');
+        }
+
+    });//-----
+
+    //Profit Center Combo
+    function LoadProfitCenterCombo() {//---o
+        //debugger;
+        $.ajax({
+            url: '/CashieringAndPosting/ProfitCenter/Select_ProfitCenter_ForCombo',
+            dataType: 'json',
+            success: function (modules) {
+                if ($('.Profit-Centers').length > 0) {
+                    //$('.Profit-Centers').empty();
+
+                    $.each(modules, function (index, type) {
+                        $(' <option value="' + type.Id + '"> ' + type.Name + ' </option>').appendTo($('#ProfitCenterId'));
+                        //console.log(index);
+                    });
+                }
+            }
+        });
+    }
+    //Load Profit Cener Item Category
+    $('#ProfitCenterId').change(function () {//---o
+        //alert('Deguggeer');
+        //debugger;
+        let profitCenterId = $('#ProfitCenterId').val();
+        //console.log(profitCenterId);
+        $.ajax({
+            url: '/CashieringAndPosting/ProfitCenter/Select_ProfitCenterWise_ItemCategory_ForCombo',
+            dataType: 'json',
+            method: 'POST',
+            data: { ProfitCenterId: profitCenterId },
+            success: function (modules) {
+                //debugger;
+                LoadItemsByProfitCenterId(profitCenterId);
+
+                //let ChargeTypeId = $('#ChargeTypeId').val(modules.ChargeTypeId);
+                //let ItemCategoryId = $('#ItemCategoryId').val(modules.ItemCategoryId);
+
+                //if (($('#ItemCategoryId').length > 0) || ($('#ChargeTypeId').length > 0)) {
+                //    $('#ItemCategoryId').empty();
+                //    $('#ChargeTypeId').empty();
+                //    $('#ItemCategoryId').append('<Option>---Select---</Option>');
+                //    $('#ChargeTypeId').append('<Option>---Select---</Option>');
+
+                //    $.each(modules, function (index, type) {//This need to change line 287-295
+                //        $(' <option value="' + type.CategoryId + '"> ' + type.CategoryName + ' </option>').appendTo($('#ItemCategoryId'));
+                //    });
+                //}
+            },
+            complete: function () {
+                //debugger;
+                //$('#CategoryId').val($('#hdn-CategoryId').val());
+            }
+        });
+        //LoadItemsByProfitCenterId(profitCenterId);
+    });
+
+    //Load Profit Center Charge Type
+    $('#ItemCategoryId').change(function () {//---o
+        //debugger;
+        let profitCenterId = $('#ProfitCenterId').val();
+        var itemCategoryId = $('#ItemCategoryId').val();
+        LoadChargeType(profitCenterId, itemCategoryId);
+    });
+
+    //function LoadChargeType(profitCenterId, itemCategoryId) {
+    //    debugger;
+    //    $.ajax({
+    //        url: '/CashieringAndPosting/ProfitCenter/Select_ChargeType',
+    //        dataType: 'json',
+    //        method: 'POST',
+    //        data: { profitCenterId: profitCenterId, itemCategoryId: itemCategoryId },
+    //        success: function (data) {
+    //            if ($('#ChargeTypeId').length > 0) {
+    //                $('#ChargeTypeId').empty();
+    //                $('#ChargeTypeId').append('<Option>---Select---</Option>');
+
+    //                $.each(data, function (index, type) {
+    //                    $(' <option value="' + type.ChargeTypeId + '"> ' + type.ChargeTypeName + ' </option>').appendTo($('#ChargeTypeId'));
+    //                    $('.ItemCategory').removeAttr();
+    //                    console.log(index);
+    //                });
+    //            }
+    //        }
+    //    });
+    //}
+    function LoadItemsByProfitCenterId(profitCenterId) {
+        //debugger;
+        $.ajax({
+            url: '/CashieringAndPosting/ProfitCenter/Select_ProfitCenterWise_Item_ForCombo',
+            dataType: 'json',
+            method: 'POST',
+            data: { profitCenterId: profitCenterId },
+            success: function (data) {
+                if ($('#ItemId').length > 0) {
+                    $('#ItemId').empty();
+                    $('#ItemId').append('<Option>---Select---</Option>');
+
+                    $.each(data, function (index, type) {
+                        $(' <option value="' + type.Id + '" taxgroup-data="' + type.TaxGroupId + '"> ' + type.Name + ' </option>').appendTo($('#ItemId'));
+                        console.log(index);
+                    });
+                }
+            }
+        });
+    }
+
+    //Charge Type Change even rate---Ganguli
+    $('#ChargeTypeId').change(function () {//----*
+       // debugger;
+        LoadItemPrice();
+    });
+
+    //Item Change for rate load---Ganguli
+    $('#ItemId').change(function () {//----*
+        //debugger;
+        LoadItemPrice();
+    });
+
+    //----Load Rete
+    //$('.price-type').change(function () {
+    //    //debugger;
+    //    LoadItemPriceforpricetype();
+    //});
+    //function LoadItemPriceforpricetype() {
+    //    debugger;
+    //    var ProfitCenterId = 0
+    //    var ChargeTypeId = 0;
+    //    var ItemId = 0;
+    //    var PriceType = 0;
+    //    var ItemCategoryId = 0;
+
+    //    if ($('#ProfitCenterId').val() != undefined && $('#ProfitCenterId').val() != "") {
+    //        var ProfitCenterId = Number($('#ProfitCenterId').val());
+    //        console.log(ProfitCenterId);
+    //    }
+
+    //    if ($('#ChargeTypeId').val() != undefined && $('#ChargeTypeId').val() != "") {
+    //        var ChargeTypeId = Number($('#ChargeTypeId').val());
+    //        console.log(ProfitCenterId);
+    //    }
+
+
+    //    if ($('#ItemId').val() != undefined && $('#ItemId').val() != "") {
+    //        var ItemId = Number($('#ItemId').val());
+    //        console.log(ProfitCenterId);
+    //    }
+
+    //    if ($('.price-type').val() != undefined && $('.price-type').val() != "") {
+    //        var PriceType = Number($('.price-type').val());
+    //        console.log(ProfitCenterId);
+    //    }
+
+    //    if ($('#ItemCategoryId').val() != undefined && $('#ItemCategoryId').val() != "") {
+    //        var ItemCategoryId = Number($('#ItemCategoryId').val());
+    //        console.log(ProfitCenterId);
+    //    }
+
+    //    if (ChargeTypeId != 0 && ItemId != 0 && PriceType != 0) {
+    //        //debugger;
+    //        $.ajax({
+    //            url: '/CashieringAndPosting/ProfitCenter/SelectPriceCenterPrices',
+    //            dataType: 'Json',
+    //            data: { ProfitCenterId: ProfitCenterId, ItemId: ItemId, ChargeTypeId: ChargeTypeId, PriceType: PriceType, ItemCategoryId: ItemCategoryId },
+    //            method: 'POST',
+    //            success: function (data) {
+    //                console.log(data);
+    //                $('#RateId').val(data.Price)
+    //            },
+    //        });
+    //    }
+
+    //}
+    function LoadItemPrice() {
+        //debugger;
+        var ProfitCenterId = 0
+        var ChargeTypeId = 0;
+        var ItemId = 0;
+        var PriceType = 0;
+        var ItemCategoryId = 0;
+
+        if ($('#ProfitCenterId').val() != undefined && $('#ProfitCenterId').val() != "") {
+            var ProfitCenterId = Number($('#ProfitCenterId').val());
+        }
+
+        if ($('#ChargeTypeId').val() != undefined && $('#ChargeTypeId').val() != "") {
+            var ChargeTypeId = Number($('#ChargeTypeId').val());
+        }
+
+
+        if ($('#ItemId').val() != undefined && $('#ItemId').val() != "") {
+            var ItemId = Number($('#ItemId').val());
+        }
+
+        if ($('.price-type').val() != undefined && $('.price-type').val() != "") {
+            var PriceType = Number($('.price-type').val());
+        }
+
+        if ($('#ItemCategoryId').val() != undefined && $('#ItemCategoryId').val() != "") {
+            var ItemCategoryId = Number($('#ItemCategoryId').val());
+        }
+
+        //if (ChargeTypeId != 0 && ItemId != 0 && PriceType != 0) {
+            //debugger;
+            $.ajax({
+                url: '/CashieringAndPosting/ProfitCenter/SelectPriceCenterPrices',
+                dataType: 'Json',
+                data: { ProfitCenterId: ProfitCenterId, ItemId: ItemId, ChargeTypeId: ChargeTypeId, PriceType: PriceType, ItemCategoryId: ItemCategoryId },
+                method: 'POST',
+                success: function (data) {
+
+                    $('#RateId').val(data.Price)
+                },
+            });
+       // }
+    }
+    ///--------------------------------Add Button -------------------------
+    //debugger;
+    var LaundryDetailArrray = [];
+    var LaundryDetail = "";
+    var total = 0;
+    var TaxGroupDetailArray = [];
+    var CompanyId = 0;
+
+    $('body').on('submit', '#ProfitCenterPostingForm', function (e) {
+        debugger;
+        e.preventDefault();
+        $('#hdnAllowCreditPosting').val($("#CompanyId option:selected").attr('data-allowCreditPosting'));
+
+
+        if ($('#postingTypeTitle').val() == "walkin") {
+            $('#hdnAllowCreditPosting').val($("#CompanyId option:selected").attr('data-allowCreditPosting').toString());
+            let CompanyId = $('#CompanyId').val();
+        } else if ($('#postingTypeTitle').val() == "guest") {
+            $('#hdnAllowCreditPosting').val($("#RoomId option:selected").attr('data-allowCreditPosting').toString());
+            CompanyId = $("#RoomId option:selected").attr('data-companyId');
+        }
+
+
+        if ($('#Quantity').val() == '' || parseInt($('#Quantity').val()) < 1) {
+            ShowWarningMessage('Quantity should be greated than zero.');
+            return false;
+        }
+
+        CalculateTax();
+        var rate = 0;
+        if ($('#IsComplementary').is(":checked") == true) {
+            rate = 0;
+        } else {
+            rate = $('#RateId').val().replace(/,/g, '');
+        }
+
+
+        debugger;
+        if (rate < 0) {
+            ShowWarningMessage('Invalid rate.');
+        } else if ($('#Quantity').val() == '' || parseInt($('#Quantity').val()) < 1) {
+            ShowWarningMessage('Quantity should be greated than zero.');
+        } else {
+            total = Number(total) + Number(parseFloat(rate) * parseInt($('#Quantity').val()));
+            console.log(total);
+            LaundryDetail = {//-----ProfitCenterId Need to passs
+                CompanyId: $('#CompanyId').val(),//New add 2022-08-25
+                ProfitCenterId: $('#ProfitCenterId').val(),
+                ItemId: $('#ItemId').val(),
+                ItemCategoryId: $('#ItemCategoryId').val(),
+                ChargeTypeId: $('#ChargeTypeId').val(),
+                //Rate: $('#Rate').val(),
+                Rate: rate,
+                Quantity: $('#Quantity').val(),
+                //Discount: $('#Discount').val(),
+                //Amount: total,
+                Amount: rate * $('#Quantity').val(),
+                TaxGroupId: $('#ItemId option:selected').attr('taxgroup-data'),
+                Remarks: $('#Remarks').val(),
+                IsDiscount:0
+            }
+            console.log(LaundryDetail);
+
+            if ($('#categoryId').val() == "walkin") {
+                $('#CusNameInGrid').html($('#Name').val());
+                $('#CusAddrInGrid').html($('#Address').val());
+            }
+
+            
+            LaundryDetailArrray.push(LaundryDetail);
+            $('<tr><td><button type="button" class="hidden-print btn btn-danger btn-sm rowDelbtn"  data-item="' + 'item' + $('#ItemId option:selected').val() + '"> <span class="glyphicon glyphicon-minus"></span>  </button>' + '</td><td>' + $('#ItemId option:selected').text() + '</td><td>' + $('#ChargeTypeId option:selected').text() + '</td><td>' + $('#Remarks').val() + '</td><td class="formatNumber">' + rate + '</td><td style="text-align:right;">' + $('#Quantity').val() + '</td><td class="priceTd formatNumber" style="text-align:right;">' + parseFloat(rate) * parseInt($('#Quantity').val()) + '</td></tr>').appendTo($('#ProfitCenterWisePostingTable'));
+           
+            //var discount = $('#Discount').val();
+            var discount = Number($('#Discount').val().replace(',', ''));
+           
+            if (discount > 0) {
+                $('<tr><td><button type="button" class="hidden-print btn btn-danger btn-sm rowDelbtn ' + 'item' + $('#ItemId option:selected').val() + '" data-item="' + 'item' + $('#ItemId option:selected').val() + '"> <span class="glyphicon glyphicon-minus"></span>  </button>' + '</td><td>' + $('#ItemId option:selected').text() + '- Discount' + '</td><td>' + '' + '</td><td>' + 'Discount' + '</td><td class="formatNumber">' + '-' + discount + '</td><td style="text-align:right;">' + $('#Quantity').val() + '</td><td class="priceTd formatNumber" style="text-align:right;">' + '-' + parseFloat(discount) * parseInt($('#Quantity').val()) + '</td></tr>').appendTo($('#ProfitCenterWisePostingTable'));
+             
+                LaundryDetail = {//-----ProfitCenterId Need to passs
+                    CompanyId: $('#CompanyId').val(),//New add 2022-08-25
+                    ProfitCenterId: $('#ProfitCenterId').val(),
+                    ItemId: $('#ItemId').val(),
+                    ItemCategoryId: $('#ItemCategoryId').val(),
+                    ChargeTypeId: $('#ChargeTypeId').val(),
+                    //Rate: $('#Rate').val(),
+                    Rate: discount * parseInt($('#Quantity').val()),
+                    Quantity: $('#Quantity').val(),
+                    //Discount: $('#Discount').val(),
+                    //Amount: total,
+                    Amount: discount * $('#Quantity').val(),
+                    TaxGroupId: $('#ItemId option:selected').attr('taxgroup-data'),
+                    Remarks: $('#Remarks').val(),
+                    IsDiscount:1
+                }
+                LaundryDetailArrray.push(LaundryDetail);
+            
+            }
+
+            var RoomNo = $('#RoomId option:selected').text()
+            $('#RoomNoInGrid').html(RoomNo)
+
+            var DocumentNo = $('#DocumentNo').val()
+            $('#DocumentNoInGrid').text(DocumentNo)
+
+            GetTotal();
+
+            if (LaundryDetailArrray.length > 0) {
+                $('#btnbillpayment').removeClass('disabled');
+                $('#Save').removeClass('disabled');
+            }
+
+            if (RoomNo != "") {
+
+                $('#roomNolabel').removeClass('hidden');
+            }
+
+            $('#ItemId').val('');
+            $('#RateId').val('');
+            $('#Quantity').val('0');
+            $('#Remarks').val('');
+            $('#Discount').val(''),
+
+            $('#ProfitCenterId').prop('disabled', true);
+        }
+    });
+
+    $('#ProfitCenterWisePostingTable').on('click', '.rowDelbtn', function () {
+       //debugger;
+
+        // erase from array
+        var i = 0;
+        i = $(this).closest('tr').index()
+
+        var dataitem = $(this).closest('tr').find('.rowDelbtn').attr('data-item');
+        
+        if (i == 0) {
+            LaundryDetailArrray.splice(i, 1);
+            TaxGroupDetailArray.splice(i, 1);
+        }
+        else {
+            LaundryDetailArrray.splice(i - 1, 1);
+            TaxGroupDetailArray.splice(i - 1, 1);
+        }
+
+        if (LaundryDetailArrray.length > 0) {
+            $('#btnbillpayment').removeClass('disabled');
+        } else {
+            $('#btnbillpayment').addClass('disabled');
+        }
+        // delete row
+        $(this).closest('tr').remove();
+
+        $('.' + dataitem).closest('tr').remove();
+
+        //debugger;
+        //get total
+        GetTotal();
+        $.ajax({
+            url: '/CashieringAndPosting/TaxCalculation/GetTaxes_ProfitCenter',
+            dataType: 'html',
+            data: { TaxGroupAmontJson: JSON.stringify(TaxGroupDetailArray), ResId: 0, FolioNo: 0, Operation: "POSTING" },
+            method: 'POST',
+            success: function (response) {
+                $('#TaxCalcutationTable').html(response);
+            },
+
+        });
+    });
+
+    //---Room change
+    $('body').on('change', '#RoomId', function () {
+        //debugger;
+        var guestName = $('option:selected', this).attr('data-guestname');
+        var guestAddress = $('option:selected', this).attr('data-address');
+        $('#CusNameInGrid').html(guestName);
+        $('#CusAddrInGrid').html(guestAddress);
+
+    });
+
+    //-----Get Total
+    function GetTotal() {
+       /// debugger;
+        var totalVal = 0;
+        $('.priceTd').each(function (index, eachTd) {
+            totalVal = totalVal + parseFloat($(eachTd).text())
+        })
+        $('#TotalInGrid').html(totalVal);
+    }
+
+
+    //-----Save
+    $('#Save').click(function () {
+        //debugger;
+        
+        CallPasswordModel(function (e) {
+            SaveBillProfitCenter();
+            $('#btnprint').removeClass('disabled');
+            $('#btnAdd').addClass('disabled');
+            $('#Save').prop('disabled', true);
+            $('.rowDelbtn').addClass('hidden');
+            $('#btnbillpayment').addClass('btnReload');
+            $('#btnbillpayment').attr('data-href', '');
+        });
+
+    });
+
+    function SaveBillProfitCenter() {
+        debugger;
+        var IsComplementary = 0
+        var AgentId = 0;
+        if ($('#IsComplementary').prop("checked")) {
+            IsComplementary = 1;
+        } else {
+            IsComplementary = 0;
+        }
+        var billpaymentArrayCheckIfNull = false;
+        if (billpaymentArray.length == 0) {
+            billpaymentArrayCheckIfNull = true;
+        }
+
+        if ($('#postingTypeTitle').val() == "guest") {
+            AgentId = CompanyId;
+        } else {
+            AgentId = $('#CompanyId').val();
+        }
+
+        billDetail = {
+            RoomId: $('#RoomId').val(),
+            Name: $('#Name').val(),
+            Address: $('#Address').val(),
+            ProfitcenterItemCategoryId: LaundryDetailArrray[0].ProfitcenterItemCategoryId,  //Capturing laundry item category id from the first item type
+            ProfitcenterDetailsJson: JSON.stringify(LaundryDetailArrray),
+            PaymentDetailsJson: JSON.stringify(billpaymentArray),
+            TaxDetailsJson: JSON.stringify(TaxGroupDetailArray),
+            InhousePaymentAmount: parseFloat($('#taxCalculationTable1 tr:last td:eq(1)').text().trim().replace(/,/g, '')).toFixed(2),//report
+            BillToRoomCheck: billpaymentArrayCheckIfNull,
+             CompanyId: AgentId
+        }
+        console.log(billDetail);
+
+        $.ajax({
+            url: '/CashieringAndPosting/Profit_CenterWise_Posting/save',
+            dataType: 'Json',
+            data: { profit_CenterWisePosting: billDetail, IsComplementary: IsComplementary },
+            method: 'POST',
+            success: function (response) {
+                debugger;
+                //if (response.startsWith("ERR-")) {
+                //    ShowErrorMessage(response.replace("ERR-", ""));
+                //}
+                if (typeof response === 'string' && response.startsWith("ERR-")) {
+                    ShowErrorMessage(response.replace("ERR-", ""));
+                }
+                else {
+                    $('#DocumentNoInGrid').html(response.DocumentNo)
+                    $('#DocNo').html(response.DocumentNo)
+
+                    $('#CusNameInGrid').html(response.Name)
+                    $('#CusAddrInGrid').html(response.Address)
+                    ShowSuccessMessage('Record has been saved successfully.');
+
+                    $('.rowDelbtn').addClass('hidden');
+                    $('#btnbillpayment').removeClass('disabled');
+                    $('#btnbillpayment').addClass('btnReload');
+                    $('#btnbillpayment').attr('data-href', '');
+                    $('#btnbillpayment').text('New bill');
+                    $('#ProfitCenterId').prop('disabled', false);
+                }
+            },
+            complete: function () {
+                var docType = "PRC";
+                var docno = $('#DocumentNoInGrid').text();
+                var propertyId = $('#PropertyId').val();
+                var userId = $('#UserId').val();
+                
+                if ($('#PrintingMethod').val() == 'F') {
+                    var fiscalPrinterUrl = '/Base/FiscalPrinter_DirectPrint?docType=' + docType + '&docno=' + docno + '&propertyId=' + propertyId + '&userId=' + userId;
+                    FiscalPrinterRequest(fiscalPrinterUrl);
+                }
+            }
+        });
+    }
+
+    //----Tax Cal----
+    function CalculateTax() {
+        debugger;
+        var rate = 0;
+        var discount = Number($('#Discount').val().replace(',', ''));
+        if ($('#IsComplementary').is(":checked") == true) {
+            rate = 0;
+        } else {
+            rate = (parseFloat($("#RateId").val().trim().replace(/,/g, '')) * parseInt($('#Quantity').val()))
+        }
+
+        taxDetails = {
+            TaxGroupId: $('#ItemId option:selected').attr('taxgroup-data'),
+            Amount: rate
+        }
+        
+        TaxGroupDetailArray.push(taxDetails);
+
+        if (discount>0) {
+            taxDetails = {
+                TaxGroupId: $('#ItemId option:selected').attr('taxgroup-data'),
+                Amount: '-' + discount * parseInt($('#Quantity').val())
+            }
+
+            TaxGroupDetailArray.push(taxDetails);
+        }
+
+        console.log(TaxGroupDetailArray);
+
+        $.ajax({
+            url: '/CashieringAndPosting/TaxCalculation/GetTaxes_ProfitCenter',
+            dataType: 'html',
+            data: { TaxGroupAmontJson: JSON.stringify(TaxGroupDetailArray), ResId: 0, FolioNo: 0, Operation: "WALKIN" },
+            method: 'POST',
+            success: function (response) {
+
+                $('#TaxCalcutationTable').html(response);
+            },
+
+        });
+
+    }
+
+
+    //Sattele now button
+    $('#btnbillpayment').click(function () {
+        //debugger;
+        if ($(this).hasClass("btnReload")) {
+            window.location.reload();
+        } else {
+            CallPasswordModel(function (e) {
+                Billtotal = $('#taxCalculationTable1 tr:last td:eq(1)').text().trim();
+                var url = '/CashieringAndPosting/ProfitCenter/BillPayment/';
+                CallDetailModelSimple('Profit Center Payments', url, 800);
+                console.log(CallDetailModelSimple);
+                $('#ProfitCenterId').prop('disabled', false);
+                if ($('#hdnAllowCreditPosting').val() != "") {
+                    AllowCreditPostingInWalkingPosting = $('#hdnAllowCreditPosting').val();
+
+                }
+                //Billtotal = parseFloat($('#taxCalculationTable tr:last td:eq(1)').text().trim().replace(/,/g, '')).toFixed(2);
+            });
+        }
+    });
+    $.fn.digits = function () {
+        return this.each(function () {
+            $(this).text($(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+        })
+    }
+    //$('#btnprint').on('click', function (e) {
+    $('body').off('click', '#btnprint').on('click', '#btnprint', function (e) {
+        //debugger;
+        //alert($('#UserId').val(), $('#DocumentNoInGrid').text(), $('#PropertyId').val());
+
+        e.preventDefault();
+        var invoiceNo = $('#DocumentNoInGrid').text();
+        console.log(invoiceNo);
+        console.log($('#DocumentNoInGrid').text());
+        //alert($('#DocumentNoInGrid').text());
+
+        var docType = "PRC";//-----Need to change to PRC
+        var docno = $('#DocumentNoInGrid').text();
+        var propertyId = $('#PropertyId').val();
+        var userId = $('#UserId').val();
+        var printURL = $('#DirectPrintURL').val();
+        alert(docno);
+
+        if ($('#IsPCPostingDirectPrint').val() == 1) {
+            $("#btnprint").attr('target', '');
+
+            var ajaxUrl = printURL + 'PRT/' + docType + '/' + docno + '/' + propertyId + '/' + userId + '/';
+
+            console.log(docType);
+            console.log(docno);
+            console.log(propertyId);
+            console.log(userId);
+            console.log(printURL);
+            console.log(ajaxUrl);
+
+            //debugger;
+            ReportDirectPrintRequest(ajaxUrl);
+            console.log(ajaxUrl);
+            //$.ajax({
+            //    url: ajaxUrl,
+            //    method: 'POST',
+            //    beforeSend: function () {
+            //        $('#btnprint').val('Please wait');
+            //        $('#btnprint').prop('disabled', true);
+            //    },
+            //    complete: function () {
+            //        $('#btnprint').val('Print');
+            //        $('#btnprint').prop('disabled', false);
+            //    },
+            //    success: function (data) {
+            //
+            //        if (data.HttpCode == "200") {
+            //            ShowSuccessMessage('Receipt printed.');
+            //            ;
+            //        } else {
+            //            ShowErrorMessage(data.HttpDescription);
+            //        }
+            //    },
+            //    error: function (data) {
+            //        ShowErrorMessage('Sorry there is an error in printing the receipt.');
+            //    }
+            //});
+
+        } else {
+            //2024-02-22 fiscal print
+            if ($('#PrintingMethod').val() == 'F') {
+                var fiscalPrinterUrl = '/Base/FiscalPrinter_DirectPrint?docType=' + docType + '&docno=' + docno + '&propertyId=' + propertyId + '&userId=' + userId;
+                FiscalPrinterRequest(fiscalPrinterUrl);
+            } else {
+                var reportName = 'Profit Center Receipt';//--------------------ganguli
+                $('#btnprint').attr("href", '/Reporting/Report/ViewReport?ReportName=' + reportName + '&DocNo=' + invoiceNo + '');
+            }
+        }
+       // debugger;
+        var reportName = 'Profit Center Receipt';//--------------------ganguli
+        $('#btnprint').attr("href", '/Reporting/Report/ViewReport?ReportName=' + reportName + '&DocNo=' + invoiceNo + '');
+
+    });
+
+
+    $('body').on('click', '.btnReload', function () {
+        window.location.reload();
+    });
+</script>

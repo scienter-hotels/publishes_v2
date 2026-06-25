@@ -1,0 +1,242 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.ReservationHeaderView>
+@*existingInduvidualReservationGrid*@
+@{
+    ViewBag.Title = "Reservation List";
+}
+
+<style>
+    .form-group{
+        margin:0;
+    }
+</style>
+
+<input type="hidden" value="@ViewBag.GroupResNo" name="" id="gresNo_Attach" />
+<input type="hidden" value="@ViewBag.ResNo" name="" id="resNo_Attach" />
+<input type="hidden" value="@ViewBag.ReservationHeaderId" name="" id="res_Header_Attach" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+<input type="hidden" name="NewResUuid" value="" />
+
+<div class="row">
+    <div class="input-group col-md-12">
+        <div class="col-md-8" style="padding:0;">
+            <input type="text" id="searchKeyWord" class="form-control" placeholder="Search By KeyWord">
+        </div>
+        <div class="col-md-4" style="margin-top: -1px;">
+            <button class="btn btn-primary btn-SearchKeyWord" type="button">Search</button>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="">
+    <table class="table font-size-12px" id="existingInduvidualReservationGrid" style="padding:15px 0;">
+        <thead>
+            <tr>
+                <th class="text-primary ">
+                    Arrival
+                </th>
+                <th class="text-primary ">
+                    Departure
+                </th>
+                <th class="text-primary ">
+                    Res.#
+                </th>
+                <th class="text-primary">
+                    Guest
+                </th>
+                <th class="text-primary">
+                    Company
+                </th>
+                <th class="text-primary ">
+                    Group#
+                </th>
+                <th class="text-primary col-md-1" style="text-align:center;">
+                    Status
+                </th>
+                <th style="width:30px;">
+                </th>
+                <th class="hidden"></th>
+            </tr>
+        </thead>
+
+        <tbody class="all-transaction">
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="arrival-date">
+                        @item.ArrivalDate
+                    </td>
+
+                    <td class="depature-date">
+                        @item.DepartureDate
+                    </td>
+
+                    <td class="res-no">
+                        @item.ResNo
+                    </td>
+
+                    <td class="guest-name">
+                        @item.GuestName
+                    </td>
+
+                    <td>
+                        @item.AgentName
+                    </td>
+                    <td class="group-res-no">
+                        @item.GResNo
+                    </td>
+
+                    <td style="text-align:center;">
+                        @item.ReservationStatus
+                    </td>
+
+                    <td>
+                        <div class="form-group checkbox">
+                            <label>
+                                <input type="checkbox" class="data-reservation-no" guestId="@item.GuestProfileId" guestName="@item.GuestName" group-resNo="@item.GResNo" arrival-date=@item.Arrival departure-date="@item.Departure" room-id="@item.RoomId" room-code="@item.RoomNo" resNo="@item.ResNo" value="@item.Id" res-Uuid="@item.ResUuid" />
+                            </label>
+                        </div>
+                    </td>
+                    <td class="hidden">
+                        Active
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="text-right" style="padding-bottom:30px;">
+
+    <button style="width:180px;margin-left: 0px !important;"class="attchToGroupBtn dt-button buttons-html5 dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="0">
+
+        <span class="glyphicon glyphicon-import"></span>
+        <span class="disabled" id="filteringMenuText"> ATTACH TO GROUP</span>
+
+    </button>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+       
+    });
+
+    $('body').off('click', '#existingInduvidualReservationGrid_wrapper tr').on('click', '#existingInduvidualReservationGrid_wrapper tr', function () {
+        if ($(this).find('input.data-reservation-no').prop('checked')) {
+            $(this).find('input.data-reservation-no').prop('checked', false);
+        } else {
+            $(this).find('input.data-reservation-no').prop('checked', true);
+        }
+        $('#existingInduvidualReservationGrid_wrapper tr').not(this).find('input.data-reservation-no').prop('checked', false);
+        $('#existingInduvidualReservationGrid_wrapper tr').not(this).closest('tr').removeClass('selectdRecord');
+        $(this).addClass('selectdRecord');
+    });
+
+    $('body').off('click', '.attchToGroupBtn').on('click', '.attchToGroupBtn', function () {
+        debugger;
+        if ($('#existingInduvidualReservationGrid tr').find('input.data-reservation-no:checked').length > 0) {
+
+            var ResheaderIdAttach = $('#existingInduvidualReservationGrid tr').find('input.data-reservation-no:checked').val();
+            var ResheaderIdList = $('#res_Header_Attach').val();
+            var GroupResNo = $('#gresNo_Attach').val();
+            $.ajax({
+                url: '/Reservation/ReservationList/AttachToGroupSave?AttachListHeaderId=' + ResheaderIdAttach + '&ReservationListHeaderId=' + ResheaderIdList + '&GroupNoToAttach=' + GroupResNo,
+                dataType: 'json',
+                method: 'POST',
+                success: function (response) {
+                    var Type = $('#resType').val();
+                    $('#grid-detail-popup-container').hide();
+                    ShowSuccessMessage('Attach Success.');
+                    $('.success-popup-ok, .error-popup-ok').closest('.modal').on('hide.bs.modal', function (e) {
+                        
+                    })
+
+                    setTimeout(function () {
+                        if (Type == "reservation") {
+                            //closeFullContent();
+                            LoadReservationGrid();
+                        } else {
+                            location.reload()
+                        }
+                    }, 2500);
+
+                },
+                error: function (error) {
+                    ShowErrorMessage('There is an error.');
+                },
+                complete: function () {
+                }
+            });
+        } else {
+            ShowWarningMessage('Please select an reservation to attach.');
+        }
+    });
+
+    $('.success-popup-ok model-popup-close-btn').click(function () {
+        alert('gg')
+    });
+
+    //Search by ganguli
+    $('body').off('click', '.btn-SearchKeyWord').on('click', '.btn-SearchKeyWord', function () {
+        debugger;
+
+        setTimeout(function () {
+            LoadGrid();
+        }, 2000);
+
+    });
+
+    $('body').off('change', '#searchKeyWord').on('change', '#searchKeyWord', function () {
+        debugger;
+        if (($('#searchKeyWord').val()).length == 0) {
+            $('.all-transaction tr').add();
+        }
+
+    });
+
+    //Table load by ganguli
+    function LoadGrid() {
+        debugger;
+        let searchKeyWord = $('#searchKeyWord').val();
+        $.ajax({
+            url: '/Reservation/ReservationList/AttachToGroup_SearchReservation',
+            method: 'POST',
+            data: { SearchKeyWord: searchKeyWord },
+            beforeSend: function () {
+                debugger;
+                $('.all-transaction tr').remove();
+            },
+            success: function (response) {
+                debugger;
+                console.log(response);
+                $(response).each(function (index, item) {
+                    $('<tr class="data-row">' +
+                        '<td class="arrival-date">' + item.ArrivalDate + '</td>' +
+                        '<td class="depature-date">' + item.DepartureDate + '</td>' +
+                        '<td class= "res-no">' + item.ResNo + '</td>' +
+                        '<td class="guest-name">' + item.GuestName + '</td>' +
+                        '<td>' + item.AgentName + '</td>' +
+                        '<td class="group-res-no">' + item.GResNo + '</td>' +
+                        '<td style="text-align:center;">' + item.ReservationStatus + '</td>' +
+                        '<td>' +
+                        '<div class="form-group checkbox">' +
+                        '<label>' +
+                        '<input type="checkbox" class="data-reservation-no" guestId="' + item.GuestProfileId + '" guestName="' + item.GuestName + '" group-resNo="item.GResNo" arrival-date="' + item.Arrival + '" departure-date="' + item.Departure + '" room-id="' + item.RoomId + '" room-code="' + item.RoomNo + '" resNo="' + item.ResNo + '" value="' + item.Id + '" res-Uuid="' + item.ResUuid + '" />' +
+                        '</label>' +
+                        '</div>' +
+                        '</td>' +
+                        '<td class="hidden">Active</td>' +
+                        '</tr>').appendTo('#existingInduvidualReservationGrid');
+                });
+            },
+            error: function () {
+                alert('There is an Error...Can not load table');
+            },
+            complete: function () {
+            }
+        });
+    }
+</script>
+

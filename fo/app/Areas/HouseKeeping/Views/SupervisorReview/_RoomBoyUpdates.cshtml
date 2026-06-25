@@ -1,0 +1,326 @@
+﻿@model Scienter.HotelERP.Common.Domain.SupervisorReview
+
+<style>
+    /* ---- Theme tokens (easy to tweak) ---- */
+    :root {
+        --hk-bg: #ffffff;
+        --hk-text: #1f2937;
+        --hk-muted: #6b7280;
+        --hk-border: #e5e7eb;
+        --hk-primary: #0ea5e9;
+        --hk-primary-50: rgba(14,165,233,.08);
+        --hk-accent: #22c55e;
+        --hk-shadow: 0 20px 40px rgba(0,0,0,.18), 0 2px 8px rgba(0,0,0,.06);
+        --hk-radius: 12px;
+    }
+
+    /* ---- Modal shell ---- */
+    .hk-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        width: min(880px, 95vw);
+        max-height: 90vh;
+        overflow: hidden;
+        background: var(--hk-bg);
+        border-radius: var(--hk-radius);
+        box-shadow: var(--hk-shadow);
+        color: var(--hk-text);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    }
+
+    .hk-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--hk-border);
+        background: linear-gradient(180deg, #fafafa, #fff);
+    }
+
+        .hk-modal-header h4 {
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+
+    .hk-modal-close {
+        border: 0;
+        background: #fff;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+        line-height: 1;
+        box-shadow: 0 1px 3px rgba(0,0,0,.06) inset;
+    }
+
+        .hk-modal-close:hover {
+            background: #f3f4f6;
+        }
+
+    /* scrollable content */
+    .hk-modal-body {
+        padding: 16px 18px;
+        max-height: calc(90vh - 60px);
+        overflow: auto;
+    }
+
+    /* ---- Cards & sections ---- */
+    .hk-card {
+        background: #fff;
+        border: 1px solid var(--hk-border);
+        border-radius: 12px;
+        padding: 14px;
+        box-shadow: 0 1px 2px rgba(0,0,0,.03);
+    }
+
+        .hk-card + .hk-card {
+            margin-top: 12px;
+        }
+
+    .hk-card-header {
+        font-weight: 700;
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    .hk-card-title {
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--hk-primary);
+    }
+
+    .hk-section {
+        border: 1px dashed var(--hk-border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin: 10px 0 12px;
+        background: #fff;
+    }
+
+    .hk-section-title {
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: .2px;
+        color: var(--hk-muted);
+        margin: 2px 0 8px;
+        text-transform: uppercase;
+    }
+
+    /* ---- Summary key-values ---- */
+    .hk-kv {
+        display: flex;
+        gap: 10px;
+        padding: 6px 0;
+    }
+
+        .hk-kv .k {
+            width: 120px;
+            color: var(--hk-muted);
+        }
+
+        .hk-kv .v {
+            font-weight: 600;
+        }
+
+    /* ---- Checklist rows ---- */
+    .hk-list .hk-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 8px;
+        border-radius: 10px;
+        transition: background .15s ease, transform .08s ease;
+    }
+
+        .hk-list .hk-item + .hk-item {
+            border-top: 1px solid var(--hk-border);
+        }
+
+        .hk-list .hk-item:hover {
+            background: var(--hk-primary-50);
+        }
+
+        .hk-list .hk-item input[type="checkbox"] {
+            margin: 0;
+            transform: translateY(1px);
+        }
+
+        .hk-list .hk-item .hk-title {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .hk-list .hk-item .hk-qty {
+            margin-left: auto;
+            white-space: nowrap;
+            text-align: right;
+            font-size: 12px;
+            color: var(--hk-muted);
+            background: #f3f4f6;
+            border: 1px solid var(--hk-border);
+            padding: 3px 8px;
+            border-radius: 999px;
+        }
+
+    /* ---- Section badges (optional) ---- */
+    .hk-section-title::before {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: var(--hk-primary);
+        border-radius: 999px;
+        margin-right: 6px;
+    }
+
+    #secInventory .hk-section-title::before {
+        background: var(--hk-accent);
+    }
+</style>
+
+<!-- Right: Changed Details (items only) -->
+<input type="hidden" id="hdn-Changes" value='@Html.Raw(Model.CheckListItemListJson ?? "[]")' />
+
+<!-- ROW 1: Request & User (full width, two inner rows) -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="hk-card">
+            <div class="hk-card-title">Request &amp; User</div>
+
+            <!-- Inner Row A -->
+            <div class="row hk-kv-row">
+                <div class="col-sm-6">
+                    <div class="hk-kv">
+                        <span class="k">Updated Status</span>
+                        <span class="v" id="vUpdatedStatus">@Model.CurrentHouseKeepingStatusNameUpdatedByRoomBoy</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="hk-kv">
+                        <span class="k">Room Boy</span>
+                        <span class="v" id="vRoomBoy">@Model.RoomBoyName</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inner Row B -->
+            <div class="row hk-kv-row">
+                <div class="col-sm-6">
+                    <div class="hk-kv">
+                        <span class="k">Submitted At</span>
+                        <span class="v" id="vSubmittedAt">@Model.UpdatedDate</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="hk-kv">
+                        <span class="k">Note</span>
+                        <span class="v" id="vNote"></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ROW 2: Changed Details (two side-by-side blocks) -->
+<div class="row" style="margin-top:10px;">
+    <div class="col-sm-12">
+        <div class="hk-card">
+            <div class="hk-card-header">Changed Details</div>
+
+            <div class="row">
+                <!-- Block A: Inventory Items -->
+                <div class="col-sm-6">
+                    <div id="secInventory" class="hk-section">
+                        <div class="hk-section-title">Inventory Items</div>
+                        <div id="listInventory" class="hk-list"></div>
+                    </div>
+                </div>
+
+                <!-- Block B: Common Checklist -->
+                <div class="col-sm-6">
+                    <div id="secChecklist" class="hk-section">
+                        <div class="hk-section-title">Common Checklist</div>
+                        <div id="listChecklist" class="hk-list"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var changes = "";
+    var changeItems = [];
+
+    $(document).ready(function () {
+        changes = $('#hdn-Changes').val();
+
+        try {
+            changeItems = JSON.parse(changes) || []; // -> array
+        } catch (e) {
+            changeItems = [];
+        }
+
+        console.log('as string:', changes);
+        console.log('as array:', changeItems);     // <-- array of objects
+
+        LoadCheckListItems(changeItems);
+    });
+
+    function LoadCheckListItems(changeItems) {
+        // Split into Inventory vs Common
+        var inventory = [];
+        var common = [];
+        (changeItems || []).forEach(function (x) {
+            (x.IsInventory ? inventory : common).push(x);
+        });
+
+        function renderList(sectionId, listId, data) {
+            var section = document.getElementById(sectionId);
+            var host = document.getElementById(listId);
+            if (!section || !host) return;
+
+            if (!data.length) { section.style.display = 'none'; return; }
+            section.style.display = '';
+            host.innerHTML = '';
+
+            data.forEach(function (x) {
+                var row = document.createElement('div');
+                row.className = 'hk-item';
+
+                var cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.disabled = true;                 // always read-only
+                cb.checked = !!x.IsChecked;        // <-- exactly follow IsChecked boolean
+
+                var title = document.createElement('div');
+                title.className = 'hk-title';
+                title.textContent = x.Item || '';
+
+                var qty = document.createElement('div');
+                qty.className = 'hk-qty';
+                var showQty = x.DefaultQuantity !== null && x.DefaultQuantity !== undefined && x.DefaultQuantity !== '';
+                qty.textContent = showQty ? ('Qty: ' + x.DefaultQuantity + (x.DefaultUnit ? ' ' + x.DefaultUnit : '')) : '';
+
+                row.appendChild(cb);
+                row.appendChild(title);
+                row.appendChild(qty);
+                host.appendChild(row);
+            });
+        }
+
+        renderList('secInventory', 'listInventory', inventory);
+        renderList('secChecklist', 'listChecklist', common);
+    }
+
+
+</script>

@@ -1,0 +1,118 @@
+﻿
+@{
+    ViewBag.Title = "View Room Rates By Agent";
+}
+
+@model Scienter.HotelERP.Common.Domain.RoomRate
+<style>
+    .rateValue {
+        padding: 2px;
+    }
+
+        .rateValue:hover {
+            color: #ff0000;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+    .form-group {
+        padding-bottom: 10px;
+         margin:0px;
+    }
+    .input-group .input-group-addon {
+        font-size: 14px;
+        margin-top: -20px;
+    }
+
+
+</style>
+
+<br />
+
+                <div style="padding:20px; padding-top:40px; background-color:#ffffff;">
+                    <form method="post" id="agentWiserates">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="required control-label">Company</label>
+                                    @{Html.RenderAction("CompaniesCombo", "Companies", new { area = "Administration", name = "agentId", requiered = true });}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class='date' style="margin-top:-22px;">
+                                    <label>Select arrival and departure</label>
+                                    <input type='text' class="form-control dateRangePicker" id="reservationDateRange" required />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary btnViewRates">
+                                    View Rates
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="table-responsive">
+                        @Html.Raw(Model.RoomRatesHtml)
+                    </div>
+                </div>
+
+
+<input type="hidden" id="currentFrom" value="@ViewBag.CurrentFrom" />
+<input type="hidden" id="currentTo" value="@ViewBag.CurrentTo" />
+<input type="hidden" id="companyId" value="@ViewBag.AgentId" />
+
+<script>
+
+    $(document).ready(function () {
+        setTimeout(function () {
+            $('#agentId').val($('#companyId').val());
+            $('#reservationDateRange').data('daterangepicker').setStartDate($('#currentFrom').val());
+            $('#reservationDateRange').data('daterangepicker').setEndDate($('#currentTo').val());
+        }, 2000);       
+    });
+
+    $('body').on('submit', '#agentWiserates', function (e) {
+       
+        e.preventDefault();      
+        var fromDate = $('#currentFrom').val();
+        var toDate = $('#currentTo').val();
+      
+        window.location.href = '/Administration/RoomRates/ViewRoomRatesByAgent?from=' + fromDate + '&to=' + toDate + '&countryId=217&agentId=' + $('#agentId').val();
+    });
+
+    $('body').on('click', '.applyBtn', function () {
+        var fromDate = $('input[name=daterangepicker_start]').val();
+        var toDate = $('input[name=daterangepicker_end]').val();
+        $('#currentFrom').val(fromDate);
+        $('#currentTo').val(toDate);
+    });
+
+    $('body').on('change', '#agentId', function () {
+
+        var hasCompanyAssignedToARateCode = false;
+        if ($('#data-companyid').val() != undefined && $('#data-companyid').val() != null && $('#agentId').val() != "") {
+            $('.data-rate-code-tr').hide();
+            $('.data-rate-code-tr').each(function () {
+                var currRow = $(this);
+                var d = currRow.attr('data-companies').split(',');
+
+                for (var i = 0; i < d.length; i++) {
+                    if (d[i].length > 0 && d[i] == $('#data-companyid').val()) {
+                        currRow.fadeIn();
+                        hasCompanyAssignedToARateCode = true;
+                    }
+                }
+            });
+        } else {
+            $('.data-rate-code-tr').show();
+        }
+
+        if (hasCompanyAssignedToARateCode == false) {
+            $('.data-rate-code-tr').show();
+        }
+
+    });
+
+
+</script>

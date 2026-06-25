@@ -1,0 +1,309 @@
+﻿@model Scienter.HotelERP.Common.Domain.RoomCategory
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-15---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        overflow-x: hidden;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+</style>
+
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("FilesUploadTo")" name="" id="FilesUploadTo" />
+<div class="col-md-12">
+    <form id="roomCategory">
+        @Html.AntiForgeryToken()
+        <div>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @*@Html.HiddenFor(model => model.Id)*@
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="col-md-3 form-group label-floating">
+                            <label class="control-label">Code *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="3" id="Prefix" name="Prefix" type="text" value="@Model.Prefix" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-5 form-group label-floating">
+                            <label class="control-label">Name *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="50" id="Name" name="Name" type="text" value="@Model.Name" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8 form-group label-floating">
+                            <label class="control-label">Description </label>
+                            <textarea autocomplete="off" class="form-control text-box single-line" maxlength="200" id="Description" name="Description" type="text" rows="3">@Model.Description</textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 form-group label-floating">
+                            <label class="control-label">Display Order *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" @*min="0"*@ id="OrderId" name="OrderId" type="number" value="@Model.OrderId" required>
+                        </div>
+
+                        <div class="col-md-4 form-group label-floating">
+                            <label class="control-label">Rank </label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="50" id="Rank" name="Rank" type="number" value="@Model.Rank" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group label-floating">
+                            <label class="control-label">Posting Type *</label>
+                            @{Html.RenderAction("PostingTypesCombo", "PostingTypes", new { name = "PostingTypeId", required = true, value = Model?.PostingTypeId });}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group label-floating">
+                            <label class="control-label">Colors *</label>
+                            @{Html.RenderAction("ColorsCombo", "Colors", new { name = "ColorID", requiered = true, value = Model?.ColorID });}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group checkbox">
+                                <label>
+                                    @Html.CheckBoxFor(model => model.IsActive)
+                                    Active
+                                </label>
+                            </div>
+                            @if (Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.IsDormitory)
+                            {
+                                <div class="form-group checkbox IsDormitory">
+                                    <label>
+                                        @Html.CheckBoxFor(model => model.IsDormitory)
+                                        IsDormitory
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                                &nbsp;
+                                <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <fieldset class="the-fieldset" style="height:484px;">
+                        <legend class="the-legend"><font size="2">Booking Engine Related</font> </legend>
+                        <div class="row" style="margin-top: -45px;">
+                            <div class="col-md-12">
+                                <div class="form-group checkbox">
+                                    <label>
+                                        @Html.CheckBoxFor(model => model.IsApplicableForIBE)
+                                        Apply For Booking Engine
+                                    </label>
+                                </div>
+                                @*<div class="form-group checkbox">
+            <label>
+                @Html.CheckBoxFor(model => model.IsFullVillaCategory, new { disabled = "disabled" })
+                Full Villa Category
+            </label>
+        </div>*@
+                                <div class="form-group checkbox">
+                                    <label>
+                                        @Html.CheckBoxFor(model => model.IsVillaCategory)
+                                        Villa Category
+                                    </label>
+                                </div>
+                                <label class="control-label" style="font-size:13px; color: #020202">
+                                    Booking Engine Image*
+                                </label>
+                                @if (@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("FilesUploadTo")== "AzureBlobStorage")
+                                {
+                                    <div style="margin-bottom:5px;">
+
+                                        @{
+                                            string imageUrl = "/Attachments/" + Model.Image;
+                                            if (Model.Image.Contains("windows.net"))
+                                            {
+                                                imageUrl = Model.Image;
+                                            }
+                                        }
+
+                                        @if (Model.Id > 0)
+                                        {
+                                            <img class="img img-thumbnail" src="@imageUrl" style="max-height:130px" id="imgPreview" />
+                                        }
+                                        else
+                                        {
+                                            <img class="img img-thumbnail" src="" id="imgPreview" style="max-height:130px" />
+                                        }
+                                        <input type="file" name="Image" id="Image" accept="" value="@imageUrl" />
+                                        <input type="hidden" name="docBytes" id="docBytes" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div style="margin-bottom:5px;">
+                                        @if (Model.Id > 0)
+                                        {
+                                            <img class="img img-thumbnail" src="/Attachments/@Model.Image" style="max-height:130px" id="imgPreview" />
+                                        }
+                                        else
+                                        {
+                                            <img class="img img-thumbnail" src="" id="imgPreview" style="max-height:130px" />
+                                        }
+                                        <input type="file" name="Image" id="Image" accept="" value="/Attachments/@Model.Image" />
+                                        <input type="hidden" name="docBytes" id="docBytes" />
+                                    </div>
+                                }
+
+                                <hr />
+                                <label class="control-label" style="font-size:13px; color: #020202">
+                                    Room Types*
+                                </label>
+                                <input type="hidden" value="@Model.AvailableRoomTypesJson" id="availableroomtypeJson">
+                                <div id="roomtype">
+
+                                    @*@foreach (var item in Model.AvailableRoomTypes)
+            {
+
+            }*@
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-1">
+
+                </div>
+                @*<div class="col-md-4" style="display:none">
+                        @{Html.RenderAction("ListVertical", "Properties", new { selectedPoperties = Model.Properties }); }
+                    </div>*@
+            </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        LoadRoomtype();
+
+        //2023-08-15--------------------------------------------------------------------------
+        $('#ColorID').addClass('select2');
+        $('#PostingTypeId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+    //-------------------------------------------------------------------------------------------
+    });
+
+    function readDocURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+
+                var docBytes = e.target.result;
+                $('#btnSave').attr('disabled', false);
+
+                if (
+                    docBytes.toLowerCase().indexOf("jpg") < 0 &&
+                    docBytes.toLowerCase().indexOf("jpeg") < 0 &&
+                    docBytes.toLowerCase().indexOf("png") < 0
+                ) {
+                    ShowWarningMessage('Invalid Image type. Only JPG, JPEG, PNG files are allowed.');
+                    $('#btnSave').attr('disabled', true);
+                    docBytes = "";
+                }
+                $('#docBytes').val(docBytes);
+                $('#imgPreview').attr('src', docBytes)
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $("#Image").change(function (e) {
+        readDocURL(this);
+    });
+
+    function LoadRoomtype() {
+        $.ajax({
+            url: '/Administration/RoomTypes/SelectRoomTypeForBookingEngine',
+            dataType: 'json',
+            method: 'post',
+            success: function (data) {
+                $.each(data, function (index, item) {
+                    $('<div class="checkbox">' +
+                        '<label class="control-label">' +
+                        '<input type="checkbox" class="checkBoxRoom" name="item.Id" value="' + item.Id + '"/>' +
+                        item.Name +
+                        '</label>' +
+                        '</div>'
+                    ).appendTo("#roomtype");
+                });
+            }
+            //,
+            //complete: function () {
+
+            //    $('.checkBoxRoom').attr('checked', false);
+            //    var object = JSON.parse($('#availableroomtypeJson').val());
+            //    $('.checkBoxRoom').each(function (index, item) {
+            //        $.each(object, function (index2, item2) {
+            //            if ($(item).val() == item2.Id) {
+            //                $(item).attr('checked', true);
+            //            }
+            //        });
+            //    });
+            //}
+        });
+
+    }
+
+</script>
+
+

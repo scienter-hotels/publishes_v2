@@ -1,0 +1,203 @@
+﻿
+@{
+    ViewBag.Title = "Quick Check In";
+}
+
+<style>
+    .divCorner {
+        border-radius: 25px;
+        border: 2px solid #CBC8C8;
+        margin: 20px;
+    }
+
+    .card .card-content {
+        padding: 25px 20px;
+    }
+
+    .form-control-margin-top {
+        margin-top: 0px;
+    }
+</style>
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="checkIn">
+                <div class="card-content" id="contentLoadingArea">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="grid-area">
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-top-20px">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <div class="form-group label-floating form-control-margin-top">
+                                        <label class="control-label">Check in Remark</label>
+                                        <input type="Text" class="form-control" id="CheckInRemark" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="button" id="btnCheckIn" value="CHECK IN" class="btn btn-primary" />
+                                    &nbsp;
+                                    <input type="button" id="btnClear" value="CLEAR" class="btn btn-default" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        FillGrid();
+        //2023-08-24-Anuradha-------------------------------------------------------------------------------------------
+
+        var windowHeight = $(window).height();
+        if (windowHeight >  661) {
+            $('.grid-area').css('min-height', windowHeight - 250)
+            $('.grid-area').css('max-height', windowHeight - 230)
+        } else {
+            $('.grid-area').css('min-height', windowHeight - 220)
+            $('.grid-area').css('max-height', windowHeight - 200)
+        }
+        //------------------------------------------------------------------------------------------------------
+    });
+
+    $('body').on('change', '.quickCheckIn-checkBox', function () {
+
+        if ($(this).closest('tr').find('.isAllowToCheckIn').val() != "True") {
+            ShowWarningMessage('This room is not ready to check in. Please updated the house keeping status.');
+            $(this).prop('checked', false);
+            $(this).prop('disabled', true);
+        }
+    });
+
+    // Update --------------------------------------
+    var clickedReservationNumbers = [];
+    var clickedNo = {};
+    $('#btnCheckIn').on('click', function (e) {
+
+        e.preventDefault();
+        var qCheckInsList = [];
+        var ckInRemark = "";
+
+        $('.quickCheckIn-checkBox').each(function (index, item) {
+
+            if ($(this).is(':checked')) {
+                qCheckInsList.push({ Id: $(this).val() });
+            }
+        });
+        ckInRemark = $('#CheckInRemark').val();
+
+        $('.quickCheckIn-checkBox').each(function (index, item) {
+            if ($(this).is(':checked'))  {
+                clickedNo = {
+                    ReservationNo: $(this).attr('reservation-no'),
+                    GuestName: $(this).attr('guest-Name'),
+                    RoomNo: $(this).attr('room-No'),
+                }
+                clickedReservationNumbers.push(clickedNo);
+                console.log(clickedReservationNumbers);
+            }
+        });
+
+        $.ajax({
+            url: '/reservation/QuickCheckIns/QuickCheckIn',
+            dataType: 'JSON',
+            data: { qCheckIns: qCheckInsList, CheckInRemark: ckInRemark },
+            method: 'POST',
+            success: function (response) {
+                if (response.startsWith('success')) {
+                    ShowSuccessMessage('Guest cheked in successfully..');
+
+                    ///
+                    //$.each(clickedReservationNumbers, function (index, item) {
+                    //    var EventCode = "CI";
+                    //    var propertyId = $('#PropertyId').val();
+                    //    var userId = $('#UserId').val();
+                    //    var printURL = $('#DirectPrintURL').val();
+                    //    var FromRoom = item.RoomNo;
+                        
+                    //    var ToRoom = item.RoomNo;
+                    //    var GuestName = item.GuestName;
+                    //    var ReservationNo = item.ReservationNo;
+
+                    //    var ajaxUrl = printURL + 'PABX/' + EventCode + '/' + ReservationNo + '/' + propertyId + '/' + userId + '/' + FromRoom + '/' + ToRoom + '/' + GuestName + '/'
+                       
+                    //    PABXAjaxRequest(ajaxUrl);
+                       
+                       
+
+
+                    //});
+
+                    FillGrid();
+                } else {
+                    ShowWarningMessage(response.replace('ERR-', ''));
+                }
+
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in check in this reservation.');
+            }
+        });
+    });
+
+
+    // fill grid -----------------------------------
+    function FillGrid() {
+        var gridId = "#existingReservationHeaderGrid"; // change this - relevent grid id
+        var paginations = {
+
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/reservation/QuickCheckIns/selectforgrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+
+                $('.grid-area').html('').fadeOut();
+                $('.grid-area').html(response).fadeIn();
+                GridFunctionalities();
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+    $('body').on('click', '#btnClear', function () {
+        window.location.reload();
+    });
+</script>
+
+

@@ -1,0 +1,195 @@
+﻿
+@{
+    ViewBag.Title = "Inventory Items";
+}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    $(function () {   
+        FillGrid();
+    })
+
+    function ShowForm() {
+        $.ajax({
+            url: '/administration/FrontOfficeInventory/form',
+            dataType: 'HTML',
+            method: 'GET',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+        });
+    } 
+
+    function FillGrid() {
+        $.ajax({
+            url: '/administration/frontofficeinventory/grid',
+            dataType: 'HTML',
+            method: 'GET',
+            beforeSend: function () {
+                $('#existing-inventory-items').hide();
+                $("#loadingProjects").show();
+            },
+            complete: function () {
+                $("#loadingProjects").hide();
+            },
+            success: function (data) {
+                $('#contentLoadingArea #content').html('');
+                $('#contentLoadingArea #content').html(data);
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
+    // show form -----------------------------------
+    $('body').on('click', '.showForm', function (e) { 
+        ShowForm();
+    });
+
+    // show grid...................................
+    $('body').on('click', '.showGrid', function (e) {    
+        FillGrid();
+    });
+
+    $('body').on('submit', '#inventoryItems', function (e) {         
+        e.preventDefault();
+
+        $('#btnSubmit').html('<i class="fa fa-refresh fa-spin" style="font-size:14px"></i>  Please wait ....');
+        $('#btnSubmit').prop('disabled', true);
+
+        var obj = {}
+
+        if ($('#Id').length > 0) { obj.Id = $('#Id').val(); }
+        if ($('#Name').length > 0) { obj.Name = $('#Name').val(); }
+        if ($('#Description').length > 0) { obj.Description = $('#Description').val(); }
+        if ($('#ActualQty').length > 0) { obj.ActualQty = $('#ActualQty').val(); }
+        if ($('#OverBookingQty').length > 0) { obj.OverBookingQty = $('#OverBookingQty').val(); }
+        if ($('#IsActive').length > 0) { obj.IsActive = $('#IsActive').prop("checked"); }
+        if ($('#CreatedUserId').length > 0) { obj.CreatedUserId = $('#CreatedUserId').val(); }
+        if ($('#CreatedDateTime').length > 0) { obj.CreatedDateTime = $('#CreatedDateTime').val(); }
+        if ($('#LastModifiedUserId').length > 0) { obj.LastModifiedUserId = $('#LastModifiedUserId').val(); }
+        if ($('#LastModifiedDateTime').length > 0) { obj.LastModifiedDateTime = $('#LastModifiedDateTime').val(); }
+        if (selectedProperties.length > 0) { obj.Properties = selectedProperties }
+
+        //var Properties = { Properties:selectedProperties };
+       //alert(Properties);
+
+        //if (selectedProperties.length > 0) {
+            $.ajax({
+                url: '/administration/frontofficeinventory/save',
+                dataType: 'JSON',
+                data: obj,
+                beforeSend: function () {
+                    $('#btnSubmit').html('<i class="fa fa-refresh fa-spin" style="font-size:14px"></i>  Please wait ....');
+                    $('#btnSubmit').prop('disabled', true);
+                },
+                complete: function () {
+                    $('#btnSubmit').html('Save');
+                    $('#btnSubmit').prop('disabled', false);
+                },
+                method: 'POST',
+                success: function (data) {
+                    if (data.startsWith('300-')) {
+                        ShowErrorMessage(data.replace("300-", ""));
+                    } else {
+                        ShowSuccessMessage('Record saved successfully.');
+                        FillGrid();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        //} else {
+        //    ShowErrorMessage('Please select at least one property to continue.');
+        //}
+    });
+              
+    $('body').on('click', '#btnEdit', function (e) {     
+        e.preventDefault();    
+        $.ajax({
+            url: '/administration/frontofficeinventory/edit/',
+            dataType: 'HTML',
+            data: { id: $(this).attr('data-id') },
+            beforeSend: function () {
+                $('.btnEdit').attr('disabled', true);
+                $('.btnDelete').attr('disabled', true);
+            },
+            complete: function () {
+                $('.btnEdit').attr('disabled', false);
+                $('.btnDelete').attr('disabled', false);
+            },
+            method: 'GET',
+            success: function (data) {
+               
+                $('#contentLoadingArea #content').html('');
+                $('#contentLoadingArea #content').html(data);       
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    });
+
+    $('body').on('click', '#btnEdit', function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: '/administration/frontofficeinventory/edit/',
+            dataType: 'HTML',
+            data: { id: $(this).attr('data-id') },
+            beforeSend: function () {
+                $('.btnEdit').attr('disabled', true);
+                $('.btnDelete').attr('disabled', true);
+            },
+            complete: function () {
+                $('.btnEdit').attr('disabled', false);
+                $('.btnDelete').attr('disabled', false);
+            },
+            method: 'GET',
+            success: function (data) {
+               
+                $('#contentLoadingArea #content').html('');
+                $('#contentLoadingArea #content').html(data);
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    });
+</script>

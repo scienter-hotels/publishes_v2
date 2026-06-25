@@ -1,0 +1,31 @@
+﻿<form id="frmRemark">
+
+    <input type="hidden" id="TraceId" value="@ViewBag.TraceId" />
+    <input type="hidden" id="rdtId" value="@ViewBag.rdtId" />
+
+    <lable>Remark</lable>
+    <textarea id="txtRemark" class="form-control" required>@ViewBag.Remark</textarea>
+    <button type="submit" class="btn btn-primary">Save Remark</button>
+</form>
+
+<script>
+    $('body').off('submit', '#frmRemark').on('submit', '#frmRemark', function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: '/reservation/ReservationTraces/updateremark?id=' + $('#TraceId').val() + '&remark=' + $('#txtRemark').val() + '&rdtId=' + $('#rdtId').val(),
+            dataType: 'Json',
+            method: 'POST',
+            success: function (response) {       
+                if (response.startsWith("ERR-")) {
+                    ShowErrorMessage(response.replace("ERR-",""));
+                } else {                 
+                    ShowSuccessMessage('Remark added successfully.');
+                    setTimeout(function () { window.location.reload(); }, 3000);
+                }
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+        });
+    });
+</script>

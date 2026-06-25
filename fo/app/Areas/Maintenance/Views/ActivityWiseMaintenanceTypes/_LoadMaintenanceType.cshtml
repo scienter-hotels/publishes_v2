@@ -1,0 +1,46 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.ActivityWiseMaintenanceTypeViewModel
+
+@foreach (var item in Model.Maintenances)
+{
+    <div class="col-md-4" style="height:80px">
+        @if (Model.ActivityWiseMaintenance.Count(x => x.MaintenanceTypeId == item.Id) > 0)
+        {
+            <div class="row" style="margin-left:1px;">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" value="@item.Id" checked name="SelectedMarketsIds" class="data-selected-market" />
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            @item.Name
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row" style="margin-left:1px;">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" value="@item.Id"   name="SelectedMarketsIds" class="data-selected-market" />
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            @item.Name
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+}

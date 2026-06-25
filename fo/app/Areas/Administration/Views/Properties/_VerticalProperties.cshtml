@@ -1,0 +1,45 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.Property>
+
+<fieldset class="the-fieldset" style="padding: 0em 1em 0.5em 1em;">
+        <legend class="the-legend">Applicable Properties</legend>
+        <div style="max-height:350px; overflow-y:scroll">
+                    @foreach (Scienter.HotelERP.Common.Domain.Property property in Model)
+                    {
+                        string isChecked = "";
+                        if (property.Id== Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id)
+                        {
+                            isChecked = "checked";
+                        }
+
+                    <div class="col-md-9" style="margin-left:15px;">
+                        <div class="form-group checkbox">
+                            <label>
+                                <input class="data-property-checkbox" type="checkbox" name="PropertyId" value="@property.Id"/> @property.Name
+                            </label>
+                        </div>
+                    </div>
+                    }
+                </div>
+    </fieldset>
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            AddRemoveProperties();
+        }, 1500);
+
+    });
+
+    $('body').on('change', '.data-property-checkbox', function () {
+        AddRemoveProperties();
+    });
+
+    function AddRemoveProperties() {
+        selectedProperties = [];
+        $('.data-property-checkbox').each(function () {
+            if ($(this).prop('checked')) {
+                selectedProperties.push({ Id: $(this).val(), IsSelected: true });
+            }
+        });
+    }
+</script>
+

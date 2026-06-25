@@ -1,0 +1,286 @@
+﻿@model Scienter.HotelERP.Common.Domain.AdvancePaymentLink
+@using System.Linq;
+@{
+    Layout = null;
+    ViewBag.Title = "Invoice";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@Model.BankReferenceNo - Your renewal invoice | Scienter - Sri Lanka</title>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/manifest.json">
+
+    <style>
+
+        body {
+            background-image: url('/images/pizza-bg.png');
+            padding: 30px;
+        }
+
+        * {
+            font-family: Arial, Helvetica, sans-serif !important;
+        }
+
+        td {
+            padding: 10px;
+            /*vertical-align:bottom !important;*/
+        }
+
+        th {
+            padding: 10px;
+        }
+
+        .hasTdBorder {
+            border: 1px solid #b7b6b6 !important;
+        }
+
+        .hasNoTdBorder {
+            border: none !important;
+        }
+
+        .text-right {
+            text-align: right !important;
+        }
+
+        .print-icon {
+            margin-right: 5px;
+            cursor: pointer;
+            width: 23px;
+        }
+
+        @@media print {
+            .print-icon {
+                display: none;
+            }
+        }
+
+        .payment-status {
+            font-weight: bolder;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .payment-status-success {
+            color: green;
+        }
+
+        .payment-status-fail {
+            color: red;
+        }
+
+        p {
+            margin-bottom: 0px;
+        }
+
+        .hidden-print td {
+            padding: 0px;
+        }
+    </style>
+    <script>
+        function myPrint() {
+            window.print();
+        }
+    </script>
+    @*<script src="~/scripts/jquery-3.3.1.min.js"></script>
+         <script>
+             (function () {
+
+                 if (window.history && window.history.pushState) {
+
+                     $(window).on('popstate', function () {
+
+                         alert('Back button was pressed.');
+                     });
+                 }
+             })();
+        </script>*@
+</head>
+<body>
+    <center>
+
+
+        <div>
+            <div style="min-height:920px;">
+                <div style="background-color:white; width:680px; padding:20px; border-radius:5px;">
+                    <div class="visible-print">
+                        <table width="680px" style="font-family:Arial !important;">
+                            <tr>
+                                <td style="text-align:left; font-weight:bold; font-size:17px; vertical-align:bottom !important" width="50%">
+                                    <a href="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("WebsiteURL")"><img src="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("WebsiteURL")/images/destinity-right.png" width="200px" alt="Scienter Sri Lanka" style="margin-left:-2px;" /></a>
+                                    <h3 style="margin:0px; text-transform:uppercase; color:#808080"> @*@Model.OrderTypeDesc Order*@  INVOICE</h3>
+                                </td>
+                                <td style="text-align:right; font-weight:bold; font-size:16px;" width="50%">
+                                    <table class="hidden-print" style="float:right; display:block;">
+                                        <tr>
+                                            <td></td>
+                                            <td style="text-align:right; width:50px;"> <a href="/home"><img src="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("WebsiteURL")/Images/home.png" onclick="" alt="Home" title="Home" class="print-icon hidden-print" /></a></td>
+                                            <td style="text-align:right; width:50px;"><img src="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("WebsiteURL")/Images/print.png" onclick="myPrint();" alt="Print" title="Print Receipt" class="print-icon hidden-print" /><br /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3">
+                                                @if (Model.StatusCode == "00" || Model.StatusCode == "0")
+                                                {
+                                                    <span class="payment-status payment-status-success" onclick="myPrint();">Success</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="payment-status payment-status-fail" onclick="myPrint();">Failed</span>
+
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3">
+                                                <span style="font-size:16px;">Transaction No : @Model.TransactionNo</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <br />
+
+
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="text-align:left; font-weight:normal; font-size:14px; vertical-align:top !important" width="50%">
+
+                                    <span style="font-size:14px; font-weight:bold; text-transform:uppercase;">SENDER DETAILS</span>
+
+
+                                    <p style="line-height:20px;margin-top:10px;">
+                                        SCIENTER TECHNOLOGIES PVT(LTE)
+                                        <br />
+                                        012345678
+                                        <br />
+                                        Scienter.lk
+                                    </p>
+                                </td>
+                                <td style="text-align:right; font-weight:normal; font-size:14px; vertical-align:top !important" width="50%">
+                                    <span style="font-size:14px; font-weight:bold">HOTEL DETAILS</span>
+
+                                    <p style="line-height:20px;margin-top:5px; width:250px; float:right;">
+                                        @Model.PropertyName
+                                        <br />                    
+                                        @Model.Address                                                  
+                                        <br />
+                                        @Model.ContactNo1
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left; font-weight:normal; font-size:14px; vertical-align:top !important" width="50%">
+                                    <span style="font-size:14px; font-weight:bolder">Renewal Period(Months) | DATE TIME</span>
+                                    <p style="margin-top:5px;">
+                                        @Model.RenewalPeriod | @Model.TxnDateTime.ToString("dd/MM/yyyy HH:mm")
+                                    </p>
+                                </td>
+                                <td style="text-align:right; font-weight:normal; font-size:14px; vertical-align:top !important" width="50%">
+                                    <span style="font-size:14px; font-weight:bolder">BANK REFERENCE NO</span>
+                                    <p style="margin-top:5px;">
+                                        @Model.BankReferenceNo
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:left; font-weight:normal; font-size:14px; vertical-align:top !important" width="50%">
+                                    <span style="font-size:14px; font-weight:bolder">PAYMENT METHOD | TYPE</span>
+                             
+                                        <p style="margin-top:5px;">
+                                            @Model.PaymentMethod | @Model.CardNo
+                                        </p>
+                             
+
+                                </td>
+                                <td style="text-align:right; font-weight:normal; font-size:14px; vertical-align:top !important" width="50%">
+
+                                    <span style="font-size:14px; font-weight:bolder">INVOICE DATE TIME</span>
+                                    <p style="margin-top:5px;">
+                                        @Model.TxnDateTime.ToString("dd/MM/yyyy HH:mm")
+                                    </p>
+                                </td>
+                            </tr>
+         
+                            <tr>
+                                <td colspan="2" style="text-align:left; font-weight:normal; font-size:14px; vertical-align:top !important" width="50%">
+                                    <div class="panel-group" role="tablist" aria-multiselectable="true">
+                                        <span style="font-size:14px; font-weight:bolder">YOUR ORDER</span>
+                                        <div>
+                                            <table class="table" width="100%" style="font-size:12px !important; margin-top:2px; border-radius:2px !important;">
+                                                <thead>
+                                                    <tr>
+                                                        @*<th class="hasTdBorder hasTdBorder"></th>*@
+                                                        <th class="hasTdBorder hasTdBorder">Description</th>                    
+                                                        <th width="120px" class="text-right hasTdBorder">Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                           
+
+                                                        <tr>
+                                                            <td class="hasTdBorder">
+                                                                Hotel Subscription Renewal for @Model.RenewalPeriod Months
+                                                            </td>
+                                 
+                                                            <td class="text-right hasTdBorder">
+                                                                @Model.Amount
+                                                            </td>
+                                                        </tr>
+
+
+                                                   
+                                     
+                                                    <tr>
+                                                        <td class="text-right hasTdBorder" style="border-bottom:double !important"><b>Total Amount</b></td>
+                                                        <td class="text-right hasTdBorder" style="border-bottom:double !important">
+                                                            <b>
+                                                                @Model.Currency @Model.Amount
+                                                            </b>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="text-align:left; font-weight:normal; font-size:12px; vertical-align:top !important" width="50%">
+                                    @*<span style="font-size:14px; font-weight:bolder">ADDITIONAL NOTES</span>*@
+
+                                    <p style="line-height:20px; margin-top:5px;">
+                                        <b>All amounts are in Sri Lankan Rupees (LKR)</b> <br />
+                                        This receipt is the invoice for your transaction.
+                                        <br />
+                                        A copy of this receipt has been sent to your registered email address.
+                                        <br />
+                                        This is a computer generated invoice. No verification is required.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        <p style="font-size:12px; width:680px;">
+                            © Scienter Sri Lanka.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </center>
+</body>
+</html>

@@ -1,0 +1,222 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.ReservationGuestGroupView>
+
+@{ 
+    string colour = "#4a93e3";
+}
+<div class="row">
+    <div class="col-md-12">
+        <fieldset class="the-fieldset">
+            <legend class="the-legend"><font size="2"></font> Reservation Details</legend>
+            <div id="reservationList" style="height:200px; overflow-x:hidden; overflow-y:scroll;">
+                <table class="table table-striped table-hover" id="groupResList" cellspacing="5">
+                    <tr>
+                        <th class="text-primary " input type="text">
+                            Arrival
+                        </th>
+                        <th class="text-primary " input type="text">
+                            Departure
+                        </th>
+                        <th class="text-primary " input type="text">
+                            Res.#
+                        </th>
+                        <th class="text-primary " input type="text">
+                            Title
+                        </th>
+                        <th class="text-primary " input type="text">
+                            First Name
+                        </th>
+                        <th class="text-primary " input type="text">
+                            Last Name
+                        </th>
+                        <th class="text-primary " input type="text">
+                            Agent
+                        </th>
+                        <th class="text-primary " input type="text">
+                            MP
+                        </th>
+                        <th class="text-primary " input type="text">
+                            Cat
+                        </th>
+                        <th class="text-primary " input type="text">
+                            Room.#
+                        </th>
+                        <th class="text-primary " input type="text">
+                            Group Res.#
+                        </th>
+                        <th class="text-primary " input type="text">
+                            Status
+                        </th>
+                    </tr>
+                    @foreach (var item in Model)
+                    {
+                        if (item.ReservationStatus== "Confirmed")
+                        {
+                            colour = "#0d8f2e";
+                        }else if(item.ReservationStatus == "Cancelled")
+                        {
+                            colour = "#820000";
+                        }
+
+                        <tr style="color: @colour;">
+                            <td>
+                                @item.Arrival
+                            </td>
+                            <td>
+                                @item.Departure
+                            </td>
+                            <td>
+                                @item.ReservationNo
+                            </td>
+                            <td>
+                                @item.SalutationName
+                            </td>
+                            <td>
+                                @item.LastName
+                            </td>
+                            <td>
+                                @item.FirstName
+                            </td>
+                            <td>
+                                @item.Agent
+                            </td>
+                            <td>
+                                @item.MealPlan
+                            </td>
+                            <td>
+                                @item.RoomCategory
+                            </td>
+                            <td>
+                                @item.RoomNo
+                            </td>
+                            <td>
+                                @item.GroupReservationNo
+                            </td>
+                            <td>
+                                @item.ReservationStatus
+                            </td>
+                        </tr>
+                    }
+                </table>
+                </div>
+            </fieldset>
+            </div>
+    </div>
+<div class="row">
+    <div class="col-md-4">
+        <fieldset class="the-fieldset">
+            <legend class="the-legend"><font size="2"></font> Rooming Details (Confirm) </legend>
+            <div id="roomList" style="height:200px; overflow-x:hidden; overflow-y:scroll;">
+                <table class="table table-striped table-hover" id="roomDetailGrid" cellspacing="5">
+                    <tr>
+                        <th class="text-primary " input type="text">
+                            Category
+                        </th>
+                        <th class="text-primary " input type="text">
+                            Type
+                        </th>
+                        <th class="text-primary " input type="text">
+                            Rooms
+                        </th>
+                    </tr>
+                </table>
+                </div>
+            </fieldset>
+            </div>
+            <div class="col-md-8">
+                <fieldset class="the-fieldset">
+                    <legend class="the-legend"><font size="2"></font> Advance Details</legend>
+                    <div id="paymentList" style="height:200px; overflow-x:hidden; overflow-y:scroll;">
+                        <table class="table table-striped table-hover" id="paymentDetailGrid" cellspacing="5">
+                            <tr>
+                                <th class="text-primary " input type="text">
+                                    ADV.#
+                                </th>
+                                <th class="text-primary " input type="text">
+                                    Date
+                                </th>
+                                <th class="text-primary " input type="text">
+                                    Room.#
+                                </th>
+                                <th class="text-primary " style="text-align:right" input type="text">
+                                    Amount
+                                </th>
+                                <th style="width:75px"></th>
+                                <th class="text-primary " input type="text">
+                                    Status
+                                </th>
+                            </tr>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+    </div>
+<input type="hidden" value="@ViewBag.GroupReservationNo" name="groupReservationNo" id="groupReservationNo" />
+
+<script>
+    $(document).ready(function () {
+        LoadSubGrids();
+    });
+
+    function LoadSubGrids() {
+        $.ajax({
+            method: 'get',
+            url: '/Reservation/Reservations/SelectGroupWiseRoomPlusAdvanceDetails?groupReservationNo=' + $('#groupReservationNo').val(),
+            datatype: 'json',
+            beforeSend: function () {
+                $('#roomDetailGrid tr').not(':first-child').remove();
+                $('#paymentDetailGrid tr').not(':first-child').remove();
+            },
+            success: function (data) {
+                console.log(data.AllocatedRoomDetails);
+                if (data != undefined) {
+                    try {
+                        var roomDetails = $.parseJSON(data.AllocatedRoomDetails);
+                        $.each(roomDetails, function (index, item) {
+                            $('<tr class="data-single-filteration">' +
+                                '<td>' +
+                                item.RoomCategory +
+                                '</td>' +
+                                '<td>' +
+                                item.RoomType +
+                                '</td>' +
+                                '<td>' +
+                                item.NoOfRooms +
+                                '</td>' +
+                                '</tr>'
+                            ).appendTo("#roomDetailGrid");
+                        });
+
+                        var advanceDetails = $.parseJSON(data.PaidAdvanceDetails);
+                        $.each(advanceDetails, function (index, item) {
+                            $('<tr class="data-single-filteration">' +
+                                '<td>' +
+                                item.DocNo +
+                                '</td>' +
+                                '<td>' +
+                                item.ChargeDate +
+                                '</td>' +
+                                '<td>' +
+                                item.RoomNo +
+                                '</td>' +
+                                '<td class="formatNumber data-amount">' +
+                                item.Amount.toFixed(2) +
+                                '</td>' +
+                                '<td>' +
+                               
+                                '</td>' +
+                                '<td>' +
+                                item.ADVStatus +
+                                '</td>' +
+                                '</tr>'
+                            ).appendTo("#paymentDetailGrid");
+                        });
+                    }
+                    catch (errror) {
+                        console.error("Not a JSON response")
+                    }
+                }
+            },
+        });
+    }
+</script>
+

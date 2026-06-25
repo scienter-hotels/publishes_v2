@@ -1,0 +1,491 @@
+﻿@using Scienter.HotelERP.Common.Domain;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Landing</title>
+    <link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+    <script src="~/Select2/js/select2.full.min.js"></script>
+</head>
+
+<body>
+
+    <style>
+        /*2023-08-16---------------------------------------------------------------------*/
+        .select2-results {
+            line-height: 12px !important;
+            font-size: 12px !important;
+        }
+
+            .select2-results ul li {
+                color: black !important;
+                font-family: 'Roboto', sans-serif !important;
+                font-weight: 200 !important;
+                cursor: auto;
+            }
+
+        .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+            background-color: #0078D4 !important;
+            color: white !important;
+        }
+
+        .select2-selection__rendered {
+            color: #0a1324;
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            height: 26px;
+            font-size: 14px;
+        }
+
+        .control-label {
+            z-index: 1 !important;
+        }
+
+        .select2-container {
+            width: 100% !important;
+        }
+        /*-------------------------------------------------------------------------------*/
+
+        .card form [class*="col-"] {
+            padding: 0px;
+        }
+
+        .form-group {
+            padding-bottom: 0px;
+        }
+
+
+        .the-fieldset .test {
+            border: 1px solid #bebebe;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 0px;
+        }
+
+
+        .btn-padding-override {
+            padding-left: 5px;
+            padding-right: 5px;
+            margin-bottom: 0px !important;
+            font-size: 10.5px !important;
+        }
+
+        .btn-right-padding5px {
+            padding: 0px;
+            padding-right: 5px;
+        }
+
+        .row-padding0px {
+            padding: 0px;
+        }
+
+        .dataTables_filter {
+            width: 30% !important;
+            float: left !important;
+        }
+
+        .dt-buttons {
+            width: 70% !important;
+        }
+
+
+        .card .card-content {
+            padding: 2px 20px;
+            min-height: 530px !important;
+            min-height: 530px !important;
+        }
+    </style>
+    <input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("IsDirectPrint")" name="" id="IsDirectPrint" />
+    <input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+    <input type="hidden" name="docno" id="DocNo" value="" />
+    <input type="hidden" name="propertyId" id="PropertyId" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" />
+    <input type="hidden" name="userId" id="UserId" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" />
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header" data-background-color="purple">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="title">
+                                Meal Reservations  <hr class="visible-print" />
+                            </h4>
+                        </div>
+                        <div class="col-md-4 text-right hidden-print">
+                            <button type="button" class="btn btn-sm btn-success btn-wizard">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+                <div Id="DataLoadingArea" class="card-content">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/Scripts/bootstrap-daterangepicker.js"></script>
+
+</body>
+
+</html>
+<script src="~/Scripts/jquery.validate.js"></script>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    //-----------------------Grid Details------------------------pppppp//
+    $(document).ready(function () {
+        debugger;
+
+        GridLoad();
+        $(document).ready(function () {
+            $('#MealReservationGrid').DataTable(
+                {
+                    //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                    searching: true,
+                    ordering: true,
+                    //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    dom: 'Bfrtipl',
+                    select: true,
+                    buttons: [
+                        'copy',
+                        'excel',
+                        'csv',
+                        'pdf',
+                        'print'
+                    ],
+                    scrollY: '58vh',
+                });
+            setInterval(function () {
+                $('.showFiltering').hide();
+            }, 1000);
+        });
+    });
+
+    function GridLoad() {
+
+        $.ajax({
+            url: '/MealReservation/MealReservation/grid',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#DataLoadingArea').html('').fadeOut();
+                $('#DataLoadingArea').html(response).fadeIn();
+               // $('#btnAdvPrint').html(response).fadeIn();
+
+            }
+        });
+    }
+
+
+    //--------------------------------------------------------------//
+
+    //-------------------------Wizard------------------------------//
+    $('body').off('click', '.btn-wizard').on('click', '.btn-wizard', function () {
+        debugger;
+        $.ajax({
+            url: '/MealReservation/MealReservation/wizard?mealResId=' + 0,
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                //$('#DataLoadingArea').html('').fadeOut();
+                $('#DataLoadingArea').html(response).fadeIn();
+                //$('#DataLoadingArea').html(response).fadeIn();
+                MainDetails();
+            },
+            complete: function () {
+            }
+        });
+    });
+    //-------------------------------------------------------------//
+
+    //-------------------------(Main Details Load)------------------------------//
+    function MainDetails() {
+        debugger;
+        $.ajax({
+            url: '/MealReservation/MealReservation/MainDetails',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                //$('#DataLoadingArea2').html('').fadeOut();
+                $('#DataLoadingArea2').html(response).fadeIn();
+            },
+            complete: function () {
+                if ($('.hidden-MRes-Id').val() != "") {
+                    var AllDetails = JSON.parse($('.hidden-stringify-json-AllDetails').val());
+                    $('#Date').val(AllDetails.Date);
+                    $('#Name').val(AllDetails.Name);
+                    $('#CompanyId').val(AllDetails.AgentId);
+                    $('#MarketId').val(AllDetails.MarketId);
+                    $('#ArrivalDateTime').val(AllDetails.ArrivalDateTime);
+                    $('#VoucherNo').val(AllDetails.VoucherNo);
+                    if (AllDetails.IsBillToAgent == true) { $('#IsBillToAgent').prop("checked", true) };
+                    $('#Remark').val(AllDetails.Remark);
+                    $('#ArriveMeal').val(AllDetails.MealId);
+                    $('#GuestPax').val(AllDetails.GuestPax);
+                    $('#GuidePax').val(AllDetails.GuidePax);
+                    $('#KidsPax').val(AllDetails.KidsPax);
+                    $('#ReservatonStatusId').val(AllDetails.ReservatonStatusId);
+                    //$('#PaymentModeId').val(AllDetails.PaymentModeId);
+                }
+            }
+        });
+    }
+    //-------------------------------------------------------------//
+
+    $('body').off('click', '#MealReservationGrid tr').on('click', '#MealReservationGrid tr', function () {
+        debugger;
+        var check = $(this).find('input.mealRes-checkBox').prop('checked');
+        if (check) {
+            $(this).find('input.mealRes-checkBox').prop('checked', false);
+            if (!$('#main-grid-content').hasClass('col-md-12')) {
+                $('#main-grid-content').removeClass('col-md-10');
+                $('#main-grid-content').addClass('col-md-12');
+                $('#side-buttons').addClass('hidden').removeClass('col-md-2');
+                $('input.mealRes-checkBox:checked').closest('tr').removeClass('selectdRecord');
+            }
+
+        } else {
+            $(this).find('input.mealRes-checkBox').prop('checked', true);
+            if (!$('#main-grid-content').hasClass('col-md-10')) {
+                $('#main-grid-content').removeClass('col-md-12');
+                $('#main-grid-content').addClass('col-md-10');
+                $('#side-buttons').removeClass('hidden').addClass('col-md-2');
+            }
+        }
+        $('#MealReservationGrid tr').not(this).find('input.mealRes-checkBox').prop('checked', false);
+        $('#MealReservationGrid tr').not(this).closest('tr').removeClass('selectdRecord');
+        $(this).addClass('selectdRecord');
+    });
+
+    //------------------------- Btn Step 01 ()------------------------------//
+    $('body').off('click', '#btnSave').on('click', '#btnSave', function () {
+        debugger;
+        if ($('.MainDetails').valid()) {
+            var MresId = $('.hidden-MRes-Id').val();
+            if (MresId == "") MresId = 0
+
+            if ($('#MarketId').val() == "" || $('#MarketId').val() == null || $('#MarketId').val()== 0) {
+                ShowWarningMessage("Please select a market to continue.");
+                return false;
+            }
+
+            if ($('#CompanyId').val() == "" || $('#CompanyId').val() == null || $('#CompanyId').val() == 0) {
+                ShowWarningMessage("Please select a company to continue.");
+                return false;
+            }
+
+            var AllDetailsObj = {
+                Date: $('#Date').val(),
+                Name: $('#Name').val(),
+                AgentId: $('#CompanyId').val(),
+                MarketId: $('#MarketId').val(),
+                ArrivalDateTime: $('#ArrivalDateTime').val(),
+                VoucherNo: $('#VoucherNo').val(),
+                IsBillToAgent: $('#IsBillToAgent').prop("checked"),
+                Remark: $('#Remark').val(),
+                MealId: $('#ArriveMeal').val(),
+                GuestPax: $('#GuestPax').val(),
+                GuidePax: $('#GuidePax').val(),
+                KidsPax: $('#KidsPax').val(),
+                ReservatonStatusId: $('#ReservatonStatusId').val()
+                //PaymentModeId: $('#PaymentModeId').val()
+            }
+
+            var stringify_json_Alletails = JSON.stringify(AllDetailsObj);
+            $('.hidden-stringify-json-AllDetails').val(stringify_json_Alletails);
+
+            $.ajax({
+                url: '/MealReservation/MealReservation/Save',
+                dataType: 'json',
+                data: { MealReservationId: MresId, AllDetails: stringify_json_Alletails },
+                method: 'POST',
+                success: function (response) {
+
+                    if (MresId > 0) {
+                        ShowSuccessMessage("Record Updated Successfully");
+                        setTimeout(function () {
+
+                            location.reload();
+                        }, 3000);
+                    } else {
+                        window.open('/reporting/report/ViewReport?ReportName=MealReservationConfirmation&ResNo=' + response.ReservationNo, '_blank');
+                        location.reload();
+                    }
+                },
+                complete: function () {
+                }
+            });
+        } else {
+            ShowWarningMessage("Please fill all the required details!");
+
+        }
+    });
+    //-------------------------------------------------------------//
+
+    //------------------------------Meal Edit-------------------------//
+    $('body').off('click', '#btnMealEdit').on('click', '#btnMealEdit', function () {
+
+        var MealResId = $("input:checkbox:checked").val()
+
+        $.ajax({
+            url: '/MealReservation/MealReservation/wizard?mealResId=' + MealResId,
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                //$('#DataLoadingArea').html('').fadeOut();
+                $('#DataLoadingArea').html(response).fadeIn();
+                //$('#DataLoadingArea').html(response).fadeIn();
+                MainDetails();
+            }
+        });
+    });
+    //-------------------------------------------------------------//
+
+    //------------------------- Btn Step 01 ()------------------------------//
+    $('body').off('click', '#btnAdvSave').on('click', '#btnAdvSave', function (e) {
+        debugger;
+        e.preventDefault()
+        if ($('#advForm').valid()) {
+            var IsGuest = false;
+            var IsAgent = false;
+            if ($('#isBillToAgent').val() == true) { IsGuest = true } else { IsAgent = true }
+
+            var Obj = {
+                IsAgent: IsAgent,
+                IsGuest: IsGuest,
+                MealReservationId: $('#advMealReservationId').val(),
+                Amount: $('#advAmount').val(),
+                Date: $('#advDate').val(),
+                Remark: $('#advRemark').val(),
+                Payment_ModeId: $('#Payment_ModeId').val(),
+                settlementRemark: $('#settlementRemark').val()
+            }
+            console.log(Obj);
+            $.ajax({
+                url: '/MealReservation/MealReservation/SaveAdvance',
+                dataType: 'json',
+                data: { mealReservationWiseAdvancePayments: Obj },
+                method: 'POST',
+                beforeSend: function () {
+                    //$('#btnAdvSave').attr('disabled', true);
+                },
+                success: function (data) {
+                   
+                    if (data.Message == "OK") {
+                        ShowSuccessMessage("Record added Successfully");
+                        //$('#btnAdvSave').attr('disabled', true);
+                        $('.btnAdvSave').addClass('disabled');
+                        //$('#btnAdvPrint').removeAttr('disabled');
+                        $('#DocNo').val(data.DocNo);
+                        LoadGridAdvancePayment();
+                    } else {
+                        ShowWarningMessage(data.Message.replace("Err-", ""));
+                    }
+                },               
+                complete: function () {
+                    debugger;
+                    $('.btnAdvSave').addClass('disabled');
+                    $('.btnAdvPrint').removeClass('disabled');
+                }
+            });
+        } else {
+            ShowWarningMessage("Settlement remark field is required...!");
+        }
+    });
+
+    $('body').off('click', '#btnAdvCancel').on('click', '#btnAdvCancel', function (e) {
+        e.preventDefault()
+        if (confirm("Do you want to cancle this?")) {
+            var AdvanceId = $(this).attr("data-id");
+            $.ajax({
+                url: '/MealReservation/MealReservation/CancelAdvance?AdvanceId=' + AdvanceId,
+                dataType: 'json',
+                method: 'POST',
+                success: function (data) {
+                    if (data.startsWith("Err-")) {
+                        ShowWarningMessage(data.replace("Err-", ""));
+                    } else {
+                        ShowSuccessMessage("Advance cancelled");
+                        LoadGridAdvancePayment();
+                    }
+                    
+                    //setTimeout(function () { location.reload(); }, 3000);
+                },
+                complete: function () {
+                }
+            });
+        }
+    });
+
+    $('body').off('click', '#btnResComplete').on('click', '#btnResComplete', function (e) {
+        e.preventDefault()
+
+        var mealReservationWiseAdvancePayments = {
+            MealReservationId: $("#comMealReservationId").val(),
+            Note: $("#CompleteNote").val()
+        }
+
+        $.ajax({
+            url: '/MealReservation/MealReservation/ReservationCompleteSave',
+            dataType: 'json',
+            data: { mealReservationWiseAdvancePayments: mealReservationWiseAdvancePayments },
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage("Meal Reservation Completed");
+                setTimeout(function () { location.reload(); }, 3000);
+            },
+            complete: function () {
+            }
+        });
+    });
+   
+    $('body').off('click', '#btnAdvPrint').on('click', '#btnAdvPrint', function (e) {
+        var postingtype = $('#PosringTypehdn').val();
+        var reportName = 'MealReservationAdvanceReciept';
+        var docno = $('#DocNo').val();
+        var propertyId = $('#PropertyId').val();
+        if ($('#IsDirectPrint').val() == 1) {
+            e.preventDefault();
+            $("#btnAdvPrint").attr('target', '');
+            var docType = "ADVM";
+            var userId = $('#UserId').val();
+            var printURL = $('#DirectPrintURL').val();
+
+            var ajaxUrl = printURL + 'PRT/' + docType + '/' + docno + '/' + propertyId + '/' + userId + '/';
+            ReportDirectPrintRequest(ajaxUrl);
+        } else {
+
+            $('#btnAdvPrint').attr('href', '/Reporting/Report/ViewReport?ReportName=' + reportName + '&DocNo=' + docno + '&MealAdvDocNo=' + docno);
+            $('#btnAdvPrint').addClass('disabled')
+        }
+    });
+
+    $('body').off('click', '.reportViewBtn').on('click', '.reportViewBtn', function (e) {
+        debugger;
+        var postingtype = $('#PosringTypehdn').val();
+        var reportName = 'AdvancePaymentReciept';
+        if ($('#IsDirectPrint').val() == 1) {
+            e.preventDefault();
+            $(".reportViewBtn").attr('target', '');
+            var docType = "ADVM";
+            var docno = $(this).attr('data-docno');
+            var propertyId = $('#PropertyId').val();
+            var userId = $('#UserId').val();
+            var printURL = $('#DirectPrintURL').val();
+            alert(docno);
+            var ajaxUrl = printURL + 'PRT/' + docType + '/' + docno + '/' + propertyId + '/' + userId + '/';
+            ReportDirectPrintRequest(ajaxUrl);
+            
+        }
+    });
+
+    function CleanForm() {
+        $('#advAmount').val('');
+        $('#advRemark').val('');
+    }
+</script>

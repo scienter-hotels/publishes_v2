@@ -1,0 +1,497 @@
+﻿@using Scienter.DestinityHorizon.Common.Service
+@{
+
+    ViewBag.Title = "Menu Items";
+    bool isQSRMode = new MenuItemService().FindBackendMode();
+}
+
+
+<style>
+    .card-content {
+        height: 570px !important;
+        min-height: 570px !important;
+    }
+
+    .side-button {
+        height: 40px;
+        width: 93px;
+        font-size: 10px;
+        padding: 0px;
+        margin-top: 0px;
+        float: right;
+        border-radius: 0px;
+    }
+
+    .side-button-div {
+        padding: 0px;
+    }
+
+    .side-button:hover {
+        background-color: #6f195b !important;
+    }
+
+    #sideButtonArea {
+    }
+
+    .form-group {
+        margin-top: 2px !important;
+    }
+</style>
+<body>
+    <input type="hidden" value="" id="hdnvalaction" />
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header" data-background-color="purple">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="title">
+                                @ViewBag.Title
+                                <hr class="visible-print" />
+                            </h4>
+                        </div>
+                        <div class="col-md-4 text-right hidden-print">
+                            <button type="button" class="btn btn-sm btn-theme-color-2 showForm" title="Add New">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                            <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid" title="Show Grid">
+                                <span class="glyphicon glyphicon-th-list"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-content" id="contentLoadingArea">
+                    <div class="row" id="searchandSidebtndiv">
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <input type="text" id="searchby" onkeyup="SearchGrid()" placeholder="Search by any Column" title="Search by any Column">
+                            </div>
+                            <div class="col-md-6" id="sideButtonArea">
+                                <div class="side-button-div col-md-2">
+                                    <button style="background-color:#f541c0;" class="btn btn-default call-popup-model side-button" data-enabled="0" id="btnLinkToRecipe" data-title="Link To Recipe" data-width="600" data-href="">
+                                        <span class="glyphicon glyphicon-shopping-cart"></span>
+                                        <br />
+                                        Link To Recipe
+                                    </button>
+                                </div>
+                                <div class="side-button-div col-md-2">
+                                    <button style="background-color:#e74c3c;" class="btn btn-default call-popup-model side-button" data-enabled="0" id="btn-combo-setup" data-title="Combo Setup" data-width="1200" data-href="">
+                                        <span class="glyphicon glyphicon-tasks"></span>
+                                        <br />
+                                        Combo Setup
+                                    </button>
+                                </div>
+                                <div class="side-button-div col-md-2">
+                                    <button style="background-color:#1abc9c;" class="btn btn-default call-popup-model side-button" data-enabled="0" id="btn-modifier-setup" data-title="@ViewBag.Description" data-width="500" data-href="">
+                                        <span class="glyphicon glyphicon-tasks"></span>
+                                        <br />
+                                        Assign Modifiers
+                                    </button>
+                                </div>
+                                <div class="side-button-div col-md-2">
+                                    <button style="background-color:#6d18ce;" class="btn btn-default call-popup-model side-button" data-enabled="0" id="btnChangePrice" data-title="Menu Item Price Change" data-width="1200" data-href="">
+                                        <span class="glyphicon glyphicon-usd"></span>
+                                        <br /> Change Price
+                                    </button>
+                                </div>
+                                <div class="side-button-div col-md-2">
+                                    <button style="background-color:#cea418;" class="btn btn-default call-popup-model side-button" data-enabled="0" id="btnAssignPrinter" data-title="Assign Printer" data-width="500" data-href="">
+                                        <span class="glyphicon glyphicon-print"></span>
+                                        <br /> Assign Printer
+                                    </button>
+                                </div>
+                                <div class="side-button-div col-md-2">
+                                    <button style="background-color:#4159f5;" class="btn btn-default call-popup-model side-button" data-enabled="0" id="btnMenuItemlog" data-title="Menu Item log" data-width="500" data-href="">
+                                        <span class="glyphicon glyphicon-list-alt"></span>
+                                        <br /> View Log
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" id="gridArea">
+                            @*<div class="col-md-12">*@
+                            @*Table and form area*@
+                            <div class="col-md-12 master-file-grid" style="overflow-y:scroll; max-height:450px;">
+                                @*Grid comes here*@
+                                <div class="table-responsive">
+                                    <div id="loadingProjects" class="well">
+                                        <center>
+                                            <img src="~/Images/loading.gif" style="width:50px; margin-top:20px; margin-bottom:0px;" />
+                                        </center>
+                                    </div>
+
+                                    <table class="table" id="grid" style="display:none;">
+                                        <tr>
+                                            <th class="">Code</th>
+                                            <th class="">Full Name</th>
+                                            <th class="">Category</th>
+                                            <th class="">Price</th>
+                                            <th class="">Tax Type</th>
+                                            <th class="">Btn Color</th>
+                                            <th class="">Effect Date</th>
+                                            <th class="col-md-2"></th>
+                                            <th class="col-md-1"></th>
+                                        </tr>
+                                        <tr class="no-record">
+                                            <td colspan="4">No Records Found.</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-12 master-file-form hidden">
+                                @*Form Comes here*@
+                                <form id="form" class="form" enctype="multipart/form-data">
+                                    <input type="hidden" value="0" id="menu-item-id-form" class="menu-item-id" />
+                                    <input type="hidden" value="@ViewBag.Code" name="ItemCode" id="menu-item-code-form ItemCode" class="menu-item-code" />
+
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">Item Name *</label>
+                                                            <input type="text" class="item-name form-control" id="item-name" value="" maxlength="50" required autocomplete="off" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">Long Name *</label>
+                                                            <input type="text" class="long-name form-control" id="long-name" value="" required autocomplete="off" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group  label-floating">
+                                                            <label class="control-label">Short Name *</label>
+                                                            <input type="text" class="short-name form-control" id="short-name" value="" required autocomplete="off" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                               <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group  label-floating">
+                                                            <label class="control-label">KDS Name *</label>
+                                                            <input type="text" class="kds-name form-control" id="kds-name" value="" required autocomplete="off" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">Category *</label>
+                                                            <select class="form-control categoryCombo" id="categoryCombo" required>
+                                                                <option value=""></option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">Item Code *</label>
+                                                            <input type="text" class="item-code form-control" id="item-code" value="" maxlength="4" required autocomplete="off" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="form-group  col-md-10 label-floating">
+                                                        <label class="control-label">Previous Menu Item</label>
+                                                        <select id="PreviousMenuCombo" class="form-control @*font-size-16px*@">
+                                                            <option value=""></option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">KDS Display Category *</label>
+                                                            <select class="form-control kds-category" id="kds-category" required>
+                                                                <option value=""></option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="row">
+                                                    <div class="form-group  col-md-10 label-floating">
+                                                        <label class="control-label">Meal Type *</label>
+                                                        <select id="ItemCategoryCombo" class="form-control @*font-size-16px*@" required>
+                                                            <option value=""></option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group">
+                                                            <label class="control-label">Effective From *</label>
+                                                            <input type="text" class=" datePicker effective-from form-control control-label" id="effective-from" value="" autocomplete="off" placeholder="" />
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="row">
+                                                    <div class="form-group  col-md-10 label-floating">
+                                                        <label class="control-label">Tax group</label>
+                                                        <select id="taxGroupCombo" class="form-control @*font-size-16px*@" required>
+                                                            <option value=""></option>
+                                                        </select>
+                                                    </div>
+
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group label-floating ">
+                                                            <label class="control-label">Item Type *</label>
+                                                            <select class="form-control item-type" id="item-type" required>
+                                                                <option value=""></option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group">
+                                                            <label class="control-label">Button Color *</label>
+                                                            <br />
+                                                            <div class="col-md-4">
+                                                                <input type="text" id="btn-color-picker" value="" autocomplete="off" />
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <input type="text" class="btn-color form-control" id="btn-color" value="000000000" autocomplete="off" disabled />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="form-group  checkbox">
+                                                        <label><input type="checkbox" id="is-Highlight" class="is-Highlight" />Highlight on KDS</label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group" dis>
+
+                                                            <div class="col-md-4">
+                                                                <input type="text" id="KDSbtn-color-picker" autocomplete="off" />
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <input type="text" class="KDSbtn-color form-control" id="KDSbtn-color" value="000000000" autocomplete="off" disabled />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">Dine-in Price *</label>
+                                                            <input type="text" class="selling-price NumberTxt form-control" id="selling-price" title="Only numbers are allowed." pattern=" (\,)?([0-9]+(\\.[0-9]+))" value="" required autocomplete="off" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">TakeAway Price *</label>
+                                                            <input type="text" class="packaging-charge NumberTxt form-control" id="packaging-charge" pattern=" (\,)?([0-9]+(\\.[0-9]+))" title="Only numbers are allowed." value="" required autocomplete="off" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">Delivery Price *</label>
+                                                            <input type="text" class="delivery-price NumberTxt form-control" id="delivery-price" pattern=" (\,)?([0-9]+(\\.[0-9]+))" title="Only numbers are allowed." value="" required autocomplete="off" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">Standard Cost Price *</label>
+                                                            <input type="text" class="cost-price NumberTxt form-control" id="cost-price" pattern=" (\,)?([0-9]+(\\.[0-9]+))" title="Only numbers are allowed." value="" required autocomplete="off" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">Executive Price </label>
+                                                            <input type="text" class="Executive-price NumberTxt form-control" id="Executive-price" pattern=" (\,)?([0-9]+(\\.[0-9]+))" title="Only numbers are allowed." value="" autocomplete="off" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group  label-floating">
+                                                            <label class="control-label">Action Template *</label>
+                                                            <select class="form-control" id="Action-Template" required>
+                                                                <option value=""></option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group  label-floating">
+                                                            <label class="control-label">Default Action</label>
+                                                            <select class="form-control" id="Default-Action">
+                                                                <option value=""></option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">ProcessTime *</label>
+                                                            <input type="number" class="ProcessTime form-control" id="ProcessTime" pattern="" title="" min="0" max="999" value="" required autocomplete="off" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group label-floating">
+                                                            <label class="control-label">Credit *</label>
+                                                            <input type="number" class="Credit form-control" id="Credit" pattern="" title="" min="0" max="999" value="" required autocomplete="off" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="MenuCheckBoxGrp">
+                                                        <div class="row">
+                                                            <div class="col-md-10">
+                                                                <div class="form-group  checkbox">
+                                                                    <label><input type="checkbox" id="is-modifier" class="is-modifier SetupGrp" />Modifier</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-10">
+                                                                <div class="form-group  checkbox">
+                                                                    <label><input type="checkbox" id="is-instruction" class="is-instruction SetupGrp" />Instruction</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-10">
+                                                                <div class="form-group  checkbox">
+                                                                    <label><input type="checkbox" id="is-combo-meal" class="is-combo-meal SetupGrp" />Combo Meal</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-10">
+                                                                <div class="form-group  checkbox">
+                                                                    <label><input type="checkbox" id="is-active" />Active</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group  checkbox">
+                                                                    <label><input type="checkbox" data-toggle='tooltip' data-placement='right' data-original-title="tooltip here" id="is-mainpage" class="is-mainpage" />Show On Main Page</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group  checkbox">
+                                                                    <label><input type="checkbox" id="discount" class="discount" />Discount not applicable</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group  checkbox">
+                                                                    <label><input type="checkbox" id="halfItem" class="halfItem" />Half Item</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group  checkbox">
+                                                                    <label><input type="checkbox" id="openItem" class="openItem" />Open Item</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group  checkbox">
+                                                                    <label><input type="checkbox" id="setMenu" class="setMenu" /> setMenu</label>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                @if (isQSRMode == false)
+                                                {
+
+                                                    <div class="row">
+                                                            <label class="control-label">Printer  *</label>
+                                                        <div class="form-group col-md-12 label-floating" style="overflow-y:scroll; max-height:500px;">                                                           
+                                                            @*<select class="form-control Printer-Name @*font-size-16px" id="Printer-Name" multiple required>
+                                                                    <option value=""></option>
+                                                                </select>*@
+                                                            <div class="printerSelectDiv"></div>
+                                                        </div>
+                                                    </div>
+                                                    @*<div class="row">
+                                                            <div class="form-group col-md-10 label-floating" style="overflow-y:scroll; max-height:100px;">
+                                                                <label class="control-label">Location *</label>
+                                                                @*<select class="form-control Printer-Name @*font-size-16px" id="Printer-Name" multiple required>
+                                                                        <option value=""></option>
+                                                                    </select>
+                                                                <div class="OutletSelectDiv"></div>
+                                                            </div>
+                                                        </div>*@
+
+                                                }
+
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button type="submit" class="btn btn-success btn-width-100px" id="btnSubmit">
+                                                    Save
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-width-100px btn-shadow clearbtn" onclick="ClearForm()">
+                                                    Clear
+                                                </button>
+                                            </div>
+                                        </div>
+                                </form>
+                            </div>
+                            @*</div>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<input type="hidden" value="" id="hdnAction" />
+<script src="~/scripts/UI/scienter.menuitems.js"></script>
+

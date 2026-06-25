@@ -1,0 +1,320 @@
+﻿
+@{
+    ViewBag.Title = "Landing";
+}
+
+
+<style>
+
+    .single-event-reservation {
+        border: 3px solid black;
+        /*padding: 15px;*/
+        margin-bottom: 15px;
+    }
+
+    /*.ReservationNo {
+        font-size: 18px;
+        font-weight: bold;
+        color: black;
+    }
+
+    .Details {
+        color: black;
+    }*/
+
+    td, th {
+        vertical-align: top !important;
+        margin-right: 15px;
+    }
+
+    .border {
+        padding-left: 10px !important;
+        margin-right: 10px;
+    }
+
+    #eventReservationGrid th {
+        font-size: 18px !important;
+        text-align: center;
+        padding: 10px;
+    }
+
+   
+    
+</style>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group form-group-margin-override label-floating">
+            <label class="required control-label">Venue*</label> <select name="venueId" id="venueId" class="form-control" required>
+                <option value="0">N/A</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group form-group-margin-override label-floating">
+            <label class="required control-label">Month*</label>
+            <select name="month" id="month" class="form-control">
+                <option value="1">Jan</option>
+                <option value="2">Feb</option>
+                <option value="3">Mar</option>
+                <option value="4">Apr</option>
+                <option value="5">May</option>
+                <option value="6">Jun</option>
+                <option value="7">Jul</option>
+                <option value="8">Aug</option>
+                <option value="9">Sep</option>
+                <option value="10">Oct</option>
+                <option value="11">Nov</option>
+                <option value="12">Dec</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group form-group-margin-override label-floating">
+            <label class="required control-label">Year*</label>
+            <select name="yearpicker" id="yearpicker" class="form-control"></select>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <input type="submit" id="btnAddNewEvent" value="New Event" class="btn btn-primary do-not-disable" style="width:100%" onclick="addNewEvent()" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div id="eventReservationList" overflow-x:hidden; overflow-y:scroll;">
+            <table class="table table-striped table-hover" id="eventReservationGrid" cellspacing="5">
+                <tr>
+                    <th class="text-primary " input type="text">
+                        Sun
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Mon
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Tue
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Wed
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Thu
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Fri
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Sat
+                    </th>
+                </tr>
+                <tr>
+                    <td class="Sun"></td>
+                    <td class="Mon"></td>
+                    <td class="Tue"></td>
+                    <td class="Wed"></td>
+                    <td class="Thu"></td>
+                    <td class="Fri"></td>
+                    <td class="Sat"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</div>
+<div class="row" id="eventReservationList">
+    @*<div class="col-md-2 border single-event-reservation">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="CurrtentDate">
+                                29
+                            </div>
+                            <div class="Name">
+                                OCT
+                            </div>
+                            <div class="ExistingReservations">
+                                2020
+                            </div>
+                            <hr style="margin-top: 5px !important; margin-bottom: 5px !important;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="CurrtentDate">
+                                15/10/2020
+                            </div>
+                            <div class="Name">
+                                Name
+                            </div>
+                            <hr style="margin-top: 5px !important; margin-bottom: 5px !important;" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 image">
+                            <img src="/Images/user.png" style="width:20px; filter: grayscale(100%);">
+                        </div>
+                        <div class="col-md-6 ExistingReservations">
+                            10/20
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+</div>
+<script>
+    var year = new Date().getFullYear();
+    for (i = year; i < (year + 10); i++) {
+        $('#yearpicker').append($('<option />').val(i).html(i));
+    }
+
+    $(document).ready(function () {
+        loadVenueCombo();
+
+        var d = new Date();
+        var n = d.getMonth();
+        $('#month').val((n + 1));
+
+        setTimeout(function () {
+             LoadExistingEvents();
+        }, 2000);
+       
+    });
+
+    function loadVenueCombo() {
+        $.ajax({
+            url: '/reservation/eventreservations/venueselect',
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $('#venueId option').remove();
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.code + '" >' + item.description + '</optoin>').appendTo($('#venueId'));
+                });
+            }
+        });
+    }
+
+    $('body').off('click', '#btnAddNewEvent').on('click', '#btnAddNewEvent', function () {
+
+    });
+
+
+    function addNewEvent(id){
+        //e.preventDefault();
+        var id = id;
+        $.ajax({
+            method: 'GET',
+            url: '/reservation/eventreservations/NewEvent?id=' + id,
+            dataType: 'html',
+            beforeSend: function () {
+                var winHeight = $(window).innerHeight() + 30;
+                //var winHeight = $(window).innerHeight();
+                $('body').find('#rightMenu').height(winHeight);
+                $('body').find('#rightMenu').css('overflow-y', 'hidden');
+            },
+            success: function (data) {
+                $('body').find('#rightMenu .right-menu-content-area').html('');
+                $('body').find('#rightMenu .right-menu-content-area').html(data);
+                $('#grid-record-detail-model').modal("hide");
+            }
+        });
+        openRightMenu();
+    }
+
+    function LoadExistingEvents() {
+        var venue = $('#venueId').val();
+        var month = $('#month').val();
+        var year = $('#yearpicker').val();
+
+        $.ajax({
+            method: 'get',
+            url: '/reservation/eventreservations/selecteventreservation?venue=' + venue + '&month=' + month + '&year=' + year,
+            datatype: 'json',
+            beforeSend: function () {
+                $('.single-event-reservation').remove();
+            },
+            success: function (data) {
+                //console.log(data);
+                
+                $(data).each(function (index, item) {   
+
+                    var appendTo = '.' + item.DayName;
+                    var maxpx = item.MaxPaxs;
+                    var existing = item.ExistingReservations;
+                    var max = (maxpx - existing);
+                    var popup = '';
+                    var name = '';
+                    var viewEvents = '';
+
+                    if (item.Id == 0) {
+                        popup = '<a><span class="glyphicon glyphicon-user" title="No Events" style="font-size: 18px;padding-right: 10px; float: right; text-decoration: line-through"></span></a>';
+                        name = '<div class="Name" style="font-size:15px; min-height: 35px">No Events</div>';
+                        viewEvents = '<span class="	glyphicon glyphicon-resize-full"  title="No Events" style="font-size: 18px;padding-right: 10px; float: right; text-decoration: line-through"></span>'
+                    }
+                    else {
+                        var event = $.parseJSON(item.ExistingReservationsJson);
+                        name = '<div class="Name"  style="font-size:15px; min-height: 35px">' + event.length.toString() + ' Event(s)</div>';
+                        popup = '<a title="Add reservation."><span class="glyphicon glyphicon-user   call-popup-model"  data-title="Reserve (' + item.CurrtentDate + ')' +
+                            ' " data-href="/Reservation/EventReservations/EventReservationPopup?eventReservationId=' + item.Id + '&venue=' + venue + '&currentDate=' + item.CurrtentDateString+'" style="font-size: 18px;padding-right: 10px; float: right;"></span></a>';
+                        viewEvents = '<a title="View Events." class="call-popup-model" data-href="/Reservation/EventReservations/SelectByDayAndVenue?date=' + item.CurrtentDateString + '&venueCode=' + venue + ' " data-title="Existing events at ' + $('#venueId option:selected').text() + ' on ' + item.CurrtentDateString+'"><span class="	glyphicon glyphicon-resize-full" style="font-size: 18px;padding-right: 10px; float: right;"></span></a>'
+                    }                    
+
+                    $(
+                        '<div class="border single-event-reservation " style="background-color:' + item.BgColor + ';border-color:' + item.BorderColor + ';color:' + item.FontColor + ';" >' +
+                        '<div class="row">' +
+                        '<div class="col-md-3 " style="padding: 10px;background-color: #ff9900;; margin-left: 5px;">' +
+                        '<div class="row">' +
+                        '<div class="col-lg-12">' +
+                        '<div style="text-align:center; font-size:20px; line-height: 22px; font-weight:bold;" class="CurrtentDate  full-width-100perc" id="CurrtentDate" >' +
+                        item.Day +
+                        '</div>' +
+                        '<div class="Month" style="text-align:center; line-height: 18px; font-size:16px; font-weight:bold;">' +
+                        item.Month +
+                        '</div>' +
+                        '<div class="Year" style="text-align:center; font-size:14px; font-weight:bold; line-height: 15px;">' +
+                        item.Year +
+                        '</div>' +                       
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="col-md-9" style="margin-left: -5px;">' +
+                        '<div class="row">' +
+                        '<div class="col-lg-12" style="padding-top:5px;">' +                       
+                        name +
+                        '<div class="row">' +  
+                        '<div class="col-md-12" style="margin-left:-5px; margin-bottom:5px;"><hr/></div>' +
+                        '<div class="col-md-6">' +                       
+                        '</div>' +
+                        '<div class="col-md-3">' +
+                        viewEvents +
+                        '</div>'+
+
+                        '<div class="col-md-3">' +
+                        popup +
+                        '</div>'
+
+                        + '</div>' + 
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>').appendTo(appendTo);
+                        });
+                //    }
+                //});
+            },
+        });
+    }
+
+    $('body').off('change', '#venueId,#month,#yearpicker').on('change', '#venueId,#month,#yearpicker', function () {
+        LoadExistingEvents();
+    });
+
+    function LoadEventreservationPopup() {
+        $('#CurrtentDate').attr('data-href', '/Reservation/EventReservations/EventReservationPopup');
+    }
+
+</script>
+

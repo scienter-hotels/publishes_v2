@@ -1,0 +1,546 @@
+﻿@model Scienter.HotelERP.Common.Domain.Alert
+@{
+    ViewBag.Title = "Reservation Alert";
+}
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+        <div>
+            @* Header  *@
+            <fieldset class="the-fieldset col-md-12" style="padding:5px; background-color:#f8f8f8;padding-top: 15px;">
+                <div class="col-md-12">
+                    <div class="row">
+                        <input type="hidden" value="@Model.ReservationHeaderId" id="ReservationHeaderId">
+
+                        <div class="col-md-3 form-group label-floating margin-top-10px">
+                            <label class="control-label">Arrival</label>
+                            <input type="text" class="form-control" name="ArrivalFor" value="@Model.ArrivalFor" id="ArrivalFor" readonly />
+                        </div>
+                        <div class="col-md-3 form-group label-floating margin-top-10px">
+                            <label class="control-label">Departure</label>
+                            <input type="text" class="form-control" name="Departure" value="@Model.DepartureAfter" id="Departure" readonly />
+                        </div>
+                        @*<div class="col-md-2 form-group label-floating margin-top-10px">
+                        <label class="control-label">RateCode</label>
+                        <input type="text" class="form-control" name="RateCode" value="" id="RateCode" readonly />
+                    </div>*@
+
+                        <div class="col-md-3 form-group label-floating margin-top-10px">
+                            <label class="control-label">Res:No</label>
+                            <input type="text" class="form-control" name="ResNo" value="@Model.ResNo" id="ResNo" readonly />
+                        </div>
+                        @*<div class="col-md-1 form-group label-floating margin-top-10px">
+                        <label class="control-label">Room No</label>
+                        <input type="text" class="form-control" name="Room" value="@Model.RoomNo" id="Room" readonly />
+                    </div>*@
+                        <div class="col-md-3 form-group label-floating margin-top-10px">
+                            <label class="control-label">Guest</label>
+                            <input type="text" class="form-control" name="Guest" value="@Model.Guest" id="Guest" readonly />
+                        </div>
+
+                    </div>
+                </div>
+            </fieldset>
+
+
+            @* Middle  *@
+            <div class="row" style="padding-top:0px;padding-left:0px; padding-right:0px">
+
+                <div class="col-md-3" style="">
+                    <fieldset class="the-fieldset" style="height:260px;">
+                        <legend class="the-legend">
+                            <div class="checkbox">
+                                <label style="color:black"> <input type="checkbox" id="cb-selectAllRes" /> Res No </label>
+                            </div>
+                        </legend>
+                        <div class="col-md-12" style="padding:0px;overflow-y:scroll;  height:175px;" id="reservationNumbersLoadingArea">
+
+                        </div>
+                    </fieldset>
+                </div>
+
+                @* COL 8 *@
+                <div class="col-md-5">
+                    <div style="padding-top:20px;padding-left:0px; padding-right:0px">
+                        @* Alert  Grid *@
+                        <fieldset class="the-fieldset col-md-12" style="padding:0px;">
+                            <div class="table-responsive" style="max-height:350px; overflow-y:scroll; overflow-x:hidden;">
+                                <table class="table font-size-12px"
+                                       id="tbl-all-alerts"
+                                       data-page-index="1"
+                                       data-page-size="5"
+                                       data-page-count="5"
+                                       data-filter-type="2"
+                                       data-search-keyword="false"
+                                       data-grid-top-functionalities="true"
+                                       data-grid-pageable="false"
+                                       data-grid-sortable="false">
+
+                                    <tr>
+                                        <th class="" style="padding-left:10px;">ResNo</th>
+                                        <th class="">Message</th>
+                                        <th class="">Process</th>
+                                        <th class="">Alert Type</th>
+                                        <th class="">Deactivate</th>
+                                    </tr>
+
+                                    <tbody class="tb-all-alerts">
+                                        @* load From Jquery *@
+                                    </tbody>
+                                </table>
+                            </div>
+                        </fieldset>
+
+                    </div>
+                </div>
+
+                @* COL 4 *@
+                <div class="col-md-4" style="padding-top:20px;">
+
+                    <fieldset class="the-fieldset" style="padding:5px; margin-bottom:10px;">
+                        @*<div class="form-group label-floating is-empty col-md-12" style="margin-top:0px;">
+                            <label class="control-label"></label>
+                            <select class="select2 form-control" id="cmb-alert-types" style="padding-bottom:0px; text-align:right">
+                                <option value="0">Select Alert Type</option>
+
+                            </select>
+                        </div>*@
+
+                        <div class="table-responsive" style="max-height:165px; overflow-y:scroll; overflow-x:hidden;">
+                            <table class="table table-striped" id='tbl-all-navigation-pages'>
+                                <tr>
+                                    <th class="col-md-5">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" class="form-group checkbox" id="chk-select-all-alert-type" style="margin-left:10px" />
+                                            </label>
+                                        </div>
+
+                                    </th>
+                                    <th class="">Select Alert Type</th>
+                                </tr>
+                                <tbody class="tb-all-navigation-alert-type">
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="the-fieldset col-md-12" style="padding:0px;">
+
+                        <div class="table-responsive" style="max-height:165px; overflow-y:scroll; overflow-x:hidden;">
+                            <table class="table table-striped" id='tbl-all-navigation-pages'>
+                                <tr>
+                                    <th class="col-md-5">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" class="form-group checkbox" id="chk-select-all" style="margin-left:10px" />
+                                            </label>
+                                        </div>
+
+                                    </th>
+                                    <th class="">Process</th>
+                                </tr>
+                                <tbody class="tb-all-navigation-pages">
+                                    @*LOAD FROM JQUERY*@
+                                </tbody>
+                            </table>
+                        </div>
+                    </fieldset>
+
+                    <div class="col-md-12" style="padding-top:0px;padding-left:0px;padding-right:0px">
+                        <fieldset class="the-fieldset col-md-12" style="padding:5px">
+                            <textarea class="form-control" rows="3" id="alertNote" maxlength="500" placeholder="Enter Message"></textarea>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group checkbox">
+                            <label>
+                                @Html.CheckBoxFor(model => model.IsInternal)
+                                Internal
+                            </label>
+                            @Html.ValidationMessageFor(model => model.IsInternal, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group checkbox">
+                            <label>
+                                @Html.CheckBoxFor(model => model.IsExternal)
+                                External
+                            </label>
+                            @Html.ValidationMessageFor(model => model.IsExternal, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            @* Footer *@
+            <div class="row">
+
+            </div>
+            <div class="row">
+                <div class="col-md-12" style="padding:10px;">
+                    <div style="text-align:right">
+                        <input type="button" class="btn btn-primary saveAlert" value="Add">
+
+                        <input type="button" class="btn btn-primary clearAlert" value="Clear">
+
+                        <text id="deadrow">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+        //2023-08-16--------------------------------------------------------------------------
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+
+        $('#cmb-alert-types').val()
+        $('.tb-all-alerts').html('')
+        $('.tb-all-navigation-pages').html('')
+        $('.tb-all-navigation-alert-type').html('')
+        loadAllALerts()
+        loadALertsTypes()
+        loadAllPages()
+        GridFunctionalities();
+
+        var reservationHeaderId = $('#ReservationHeaderId').val();
+        var Type = $('#reservationLevel').val();
+        LoadReservationNumbers(reservationHeaderId, Type);
+
+    })
+
+    $('#chk-select-all-alert-type').on('click', function (e) {
+
+        if ($('#chk-select-all-alert-type').is(':Checked')) {
+            $('.chk-alert-types').find("input[type=checkbox]").prop('checked', true);
+
+        } else if (!$('#chk-select-all-alert-type').is(':Checked')) {
+
+            $('.chk-alert-types').find("input[type=checkbox]").prop('checked', false);
+        }
+    });
+
+    //Load alert types
+    function loadALertsTypes() {
+        $.ajax({
+            url: '/Reservation/Reservations/GetAlertTypes',
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+                $.each(data, function (index, item) {
+
+                    $('.tb-all-navigation-alert-type').append('<tr>' +
+                        '<td class="chk-alert-types">' +
+                        ' <div class="checkbox"><label><input type="checkbox" id="' + item.Id + '" /></label></div></td>' +
+                        '<td class="">' + item.Description + '</td>' +
+                        '</tr>')
+
+                    //$('#cmb-alert-types').append('<option value="' + item.Id + '">' + item.Description + '</option>')
+
+                })
+            }
+        })
+    }
+
+    //AlertRemoveOption
+    $('body').off('click', '#btnDeleteAlert').on('click', '#btnDeleteAlert', function () {
+
+        var alertId = $(this).attr('key')
+
+        $.ajax({
+            url: '/Reservation/Reservations/DeleteReservationAlert?reservationHeaderId=' + $('#ReservationHeaderId').val() + '&alertId=' + alertId,
+            dataType: 'json',
+            method: 'POST',
+            success: function (response) {
+                loadAllALerts();
+
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in Deleting this record.');
+            }
+
+        })
+
+    })
+
+
+
+    //Grid
+    function loadAllALerts() {
+        $('.tb-all-alerts').html('')
+        //Load ALL ALerts
+        var gridId = "#tbl-all-alerts"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+
+        $.ajax({
+            url: '/Reservation/Reservations/GetAllAlerts?reservationHeaderId=' + $('#ReservationHeaderId').val(),
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+                $.each(data, function (index, item) {
+
+                    $('.tb-all-alerts').append('<tr>'
+                        + '<td class="" style="padding-left:10px;">' + item.ResNo + '</td>'
+                        + '<td class="">' + item.Note + '</td>'
+                        + '<td class="">' + item.Name + '</td>'
+                        + '<td class="">' + item.Type + '</td>'
+                        + '<td class=""><a key="' + item.Id + '" '
+                        + ' id="btnDeleteAlert" class="btn btn-danger btn-sm" >'
+                        + '<span class="glyphicon glyphicon-trash"></span>'
+                        + '</a></td>'
+                        + '</tr>')
+
+                })
+
+            }
+        })
+
+    }
+
+    //select all check box click
+    $('#chk-select-all').on('click', function (e) {
+
+        if ($('#chk-select-all').is(':Checked')) {
+            $('.chk-process').find("input[type=checkbox]").prop('checked', true);
+
+        } else if (!$('#chk-select-all').is(':Checked')) {
+
+            $('.chk-process').find("input[type=checkbox]").prop('checked', false);
+        }
+    });
+
+    
+
+    // Clear all
+    $('.clearAlert').on('click', function (e) {
+
+        $('.chk-process').find("input[type=checkbox]").prop('checked', false);
+        $('.chk-alert-types').find("input[type=checkbox]").prop('checked', false);
+        $('#cmb-alert-types').val(0)
+        $('#alertNote').val('')
+        $('#chk-select-all').prop('checked', false)
+    })
+
+
+    //load pages to small table
+    function loadAllPages() {
+        $.ajax({
+            url: '/Reservation/Reservations/GetPages',
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+                $.each(data, function (index, item) {
+
+                    $('.tb-all-navigation-pages').append('<tr>' +
+                        '<td class="chk-process">' +
+                        ' <div class="checkbox"><label><input type="checkbox" id="' + item.Id + '" /></label></div></td>' +
+                        '<td class="">' + item.LongName + '</td>' +
+                        '</tr>')
+
+                })
+            }
+        })
+    }
+
+
+    // Save Alert
+    //-- Get all pages
+    $('.saveAlert').on('click', function (e) {
+        var pagesArray = []
+
+        //Get Checked Pages
+        $.each($('.chk-process'), function (index, item) {
+
+            if ($(this).find('input[type=checkbox]').is(':Checked')) {
+                pagesArray.push({
+                    PageId: $(this).find('input[type=checkbox]').attr('id')
+                })
+            }
+        })
+
+        var alertTypesArray = []
+
+        //Get Checked Pages
+        $.each($('.chk-alert-types'), function (index, item) {
+
+            if ($(this).find('input[type=checkbox]').is(':Checked')) {
+                alertTypesArray.push({
+                    AlertType: $(this).find('input[type=checkbox]').attr('id')
+                })
+            }
+        })
+
+
+
+        if (pagesArray.length != 0) {
+            if ($('#cmb-alert-types').val() != 0) {
+                if ($('#alertNote').val() != " ") {
+                    if ($('#alertNote').val() != '') {
+
+                        selectedReservationHeaderIds = [];
+
+                        $('.checbox-item').each(function (index, date) {
+
+                            if ($(this).prop('checked')) {
+                                selectedReservationHeaderIds.push({
+                                    ReservationHeaderId: $(this).val()
+                                });
+                            }
+                        });
+
+                        console.log(selectedReservationHeaderIds);
+
+                        var AlertObj = {
+
+                            ResNo: $('#ResNo').val(),
+                            ReservationHeaderId: $('#ReservationHeaderId').val(),
+                            //AlertType: $('#cmb-alert-types').val(),
+                            AlertTypes: alertTypesArray,
+                            Note: $('#alertNote').val(),
+                            IsInternal: $('#IsInternal').prop("checked"),
+                            IsExternal: $('#IsExternal').prop("checked"),
+                            lstAlertPages: pagesArray,
+                            SelectedReservationHeaderIds: selectedReservationHeaderIds
+
+                        }
+
+                        //Post to Controller
+                        $.ajax({
+                            url: '/Reservation/Reservations/SaveReservationPages',
+                            data: { alert: AlertObj },
+                            dataType: 'json',
+                            method: 'POST',
+                            success: function (response) {
+                                var Type = $('#resType').val();
+                                loadAllALerts();
+                                $('#cmb-alert-types').val(0)
+                                $('#alertNote').val('')
+                                $('.chk-process').find("input[type=checkbox]").prop('checked', false)
+                                $('#chk-select-all').prop('checked', false)
+                                $('.tb-all-alerts').html('')
+                                ShowSuccessMessage('Successfully Saved !');
+                                setTimeout(function () {
+                                    if (Type == "reservation") {
+                                        //Update Uuid
+                                        //window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+                                        //console.log("Uuid");
+
+                                        LoadInhouseReservationGrid();
+
+                                    } else {
+                                        //location.reload()
+                                        LoadInhouseReservationGrid();
+                                    }
+                                }, 2500);
+
+                            },
+                            error: function (xhr, status, error) {
+                                ShowErrorMessage('Sorry, There is an error in saving this record.');
+                            }
+                        })
+                    }
+                    else {
+                        ShowWarningMessage('Fill The note');
+                    }
+                } else {
+                    ShowWarningMessage('Fill The note');
+                }
+
+            }
+            else {
+                ShowWarningMessage('Select an Alert Type');
+            }
+        }
+        else {
+            ShowWarningMessage('Select a Process');
+        }
+
+
+    })
+
+
+    // Grid Add New Button Click
+    $('.showForm').on('click', function (e) {
+
+        $('.chk-process').find("input[type=checkbox]").prop('checked', false);
+        $('.chk-alert-types').find("input[type=checkbox]").prop('checked', false);
+        $('#cmb-alert-types').val(0)
+        $('#alertNote').val('')
+        $('#chk-select-all').prop('checked', false)
+
+    })
+
+</script>

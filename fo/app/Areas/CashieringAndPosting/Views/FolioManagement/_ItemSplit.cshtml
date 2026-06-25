@@ -1,0 +1,215 @@
+﻿
+@*<form id="ItemSplit" style="padding-top:20px;">
+    <div class="container"></div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="form-group label-floating col-md-12">
+                    <label class="control-label">Folio No</label>
+
+                    <input type="text" value="@ViewBag.FolioNo" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group label-floating col-md-12">
+                <label class="control-label">
+                    Date
+                </label>
+                <input type="text" class="form-control" value="@ViewBag.Date" readonly />
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group label-floating">
+                <label class="control-label" >
+                    Description
+                </label>
+                <input type="text" class="form-control" value="@ViewBag.Description" readonly/>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group label-floating checkbox ">
+                <label >
+                    <input type="checkbox"  class="itemSplitchkbox" value="p" /> Percentage (%)
+                </label>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group label-floating checkbox ">
+                <label >
+                    <input type="checkbox" class="itemSplitchkbox" value="v" /> Value
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row">       
+       <div class="form-group label-floating col-md-6">
+         <label class="control-label" id="data-amount">
+                    Amount
+          </label>
+                <input type="number" id="data-split-amount" class="form-control" />
+          
+        </div>
+       <div class="col-md-1 form-group label-floating" id="data-perc-mark" style="margin-top:50px" hidden>
+       <label class="control-label"   style=" font-size: 20px;">
+           %
+        </label></div>
+    </div>   
+        <div class="row">
+            <div class="col-md-12" >
+                <button type="submit" class="btn theme-bg-color-2" id="btnsplitItem" style="float:right">
+                    Split  <span class="glyphicon glyphicon-arrow-right"></span>
+               </button>
+            </div>
+            
+
+        </div>
+   
+
+</form>*@
+<form id="ItemSplit" style="padding-top:20px;">
+    @*<div class="container"></div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="form-group label-floating col-md-12">
+                        <label class="control-label">Folio No</label>
+
+                        <input type="text" value="@ViewBag.FolioNo" class="form-control" readonly />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group label-floating col-md-12">
+                    <label class="control-label">
+                        Date
+                    </label>
+                    <input type="text" class="form-control" value="@ViewBag.Date" readonly />
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group label-floating">
+                    <label class="control-label" >
+                        Description
+                    </label>
+                    <input type="text" class="form-control" value="@ViewBag.Description" readonly/>
+                </div>
+            </div>
+        </div>*@
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table class="table" id='selected-split-transactions'>
+                    <thead>
+                        <tr>
+                            <th class="">Folio</th>
+                            <th class="">Date</th>
+                            <th class="">Description</th>
+                            <th class="" style="text-align:right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody class="selected-transactions"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group label-floating checkbox ">
+                <label>
+                    <input type="checkbox" class="itemSplitchkbox" value="p" /> Percentage (%)
+                </label>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group label-floating checkbox ">
+                <label>
+                    <input type="checkbox" class="itemSplitchkbox" value="v" /> Value
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group label-floating col-md-6">
+            <label class="control-label" id="data-amount">
+                Amount
+            </label>
+            <input type="number" step="0.01" id="data-split-amount" class="form-control" />
+            <input type="hidden" id="folio-details-minimum-amount" />
+        </div>
+        <div class="col-md-1 form-group label-floating" id="data-perc-mark" style="margin-top:50px" hidden>
+            <label class="control-label" style=" font-size: 20px;">
+                %
+            </label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button type="submit" class="btn theme-bg-color-2" id="btnsplitItem" style="float:right">
+                Split  <span class="glyphicon glyphicon-arrow-right"></span>
+            </button>
+        </div>
+    </div>
+</form>
+
+<script>
+    $(function () {
+        let selectedTransationsArray = [];
+
+        $.each($('.folio-detail-id:checked').closest('tr'), function (index, item) {
+            selectedTransationsArray.push({
+                folioNo: $(item).find('.td-folio-nos').html(),
+                folioDate: $(item).find('.data-date').html(),
+                folioDescription: $(item).find('.data-desc').html(),
+                folioAmount: $(item).find('.formatNumber').html()
+            });
+        });
+
+        DrawSelectedTransactionGrid(selectedTransationsArray);
+    })
+
+    function DrawSelectedTransactionGrid(transactionArr) {
+
+        let minimumAmount = 0;
+
+        $.each(transactionArr, function (index, item) {
+            //SET LOWEST AMOUNT OF THE SELECTED FOLIO DETAILS
+            let thisItemAmount = parseFloat(item.folioAmount.replace(',', ''));
+            if (index == 0) {
+                minimumAmount = thisItemAmount;
+            } else {
+                if (minimumAmount > thisItemAmount) {
+                    minimumAmount = thisItemAmount;
+                }
+            }
+
+            $('<tr>' +
+                '<td class="" > ' + item.folioNo + '</td>' +
+                '<td class="">' + item.folioDate + '</td>' +
+                '<td class="">' + item.folioDescription + '</td>' +
+                '<td class="" style="text-align:right">' + item.folioAmount + '</td>' +
+                '</tr>').appendTo($('#selected-split-transactions .selected-transactions'));
+        });
+
+        $('#folio-details-minimum-amount').val(minimumAmount);
+    }
+
+    $('body').on('change', '#data-split-amount', function () {
+       
+        if ($('.itemSplitchkbox:checked').val() == 'v') {
+            if (parseFloat($(this).val()) > parseFloat($(this).attr('max'))) {
+                ShowErrorMessage('Value based split amount should be less than selected folio details lowest amount');
+                $(this).val($(this).attr('max'));
+            }
+        }
+    })
+
+</script>

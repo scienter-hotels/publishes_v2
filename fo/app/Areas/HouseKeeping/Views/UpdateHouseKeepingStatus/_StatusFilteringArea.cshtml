@@ -1,0 +1,134 @@
+﻿
+<style>
+    .override-from-group-margin {
+        margin-top: 5px;
+    }
+
+    .filter-area-style {
+        height: 100px !important;
+    }
+
+    .button-padding-override {
+        padding-left: 22px;
+        padding-right: 22px;
+    }
+
+    .hr-top-margin {
+        margin-top: 10px !important;
+    }
+
+/*by Ayomi*/
+
+    .nav-pills:not(.nav-pills-icons) > li > a {
+        border-radius: 0px;
+    }
+    .nav-pills > li.active > a.blueOn {
+        background-color: #34495e;
+        color: #FFFFFF;
+        /*box-shadow: 0 12px 20px -10px rgba(52, 73, 94, 0.24), 0 4px 20px 0px rgba(52, 73, 94, 0.33), 0 7px 8px -5px rgba(52, 73, 94, 0.43);*/
+    }
+    .nav-pills > li > a.blueOn {
+        background-color: #094F70;
+        color: #fff;
+        /*box-shadow: 0 12px 20px -10px rgba(52, 73, 94, 0.24), 0 4px 20px 0px rgba(52, 73, 94, 0.33), 0 7px 8px -5px rgba(52, 73, 94, 0.43);*/
+    }
+
+
+        .nav-pills > li > a.blueOn:focus, .nav-pills > li > a.blueOn:hover {
+            background-color: #34495e;
+            color: #FFFFFF;
+            /*box-shadow: 0 12px 20px -10px rgba(52, 73, 94, 0.24), 0 4px 20px 0px rgba(52, 73, 94, 0.33), 0 7px 8px -5px rgba(52, 73, 94, 0.43);*/
+        }
+    .nav-pills > li.active > a.orangeOn {
+        background-color: #d26b0f;
+        color: #FFFFFF;
+        /*box-shadow: 0 12px 20px -10px rgba(52, 73, 94, 0.24), 0 4px 20px 0px rgba(52, 73, 94, 0.33), 0 7px 8px -5px rgba(52, 73, 94, 0.43);*/
+    }
+    .nav-pills > li > a.orangeOn {
+        background-color: #d26b0f;
+        color: #fff;
+        /*box-shadow: 0 12px 20px -10px rgba(52, 73, 94, 0.24), 0 4px 20px 0px rgba(52, 73, 94, 0.33), 0 7px 8px -5px rgba(52, 73, 94, 0.43);*/
+    }
+
+        .nav-pills > li > a.orangeOn:focus, .nav-pills > li > a.orangeOn:hover {
+            background-color: #e67e22;
+            color: #FFFFFF;
+            /*box-shadow: 0 12px 20px -10px rgba(52, 73, 94, 0.24), 0 4px 20px 0px rgba(52, 73, 94, 0.33), 0 7px 8px -5px rgba(52, 73, 94, 0.43);*/
+        }
+
+    .nav-pills > li > a.blueOn {
+        line-height: 14px;
+        text-transform: uppercase;
+        font-size: 0.7em;
+        font-weight: 500;
+        min-width: 100px;
+        text-align: center;
+        transition: all .3s;
+        padding: 4px 5px 4px 5px;
+        /*display: flex;*/
+    }
+    .nav-pills > li > a.orangeOn {
+        line-height: 14px;
+        text-transform: uppercase;
+        font-size: 0.7em;
+        font-weight: 500;
+        min-width: 100px;
+        text-align: center;
+        transition: all .3s;
+        padding: 10px 5px 12px 5px;
+        /*height: 3.6em;*/
+        /*display: flex;*/
+    }
+    nav-pills > li.active > a, .nav-pills > li.active > a:focus, .nav-pills > li.active > a:hover {
+        
+        box-shadow: none;
+    }
+    .nav-pills > li.active > a, .nav-pills > li.active > a:focus, .nav-pills > li.active > a:hover {
+        
+        box-shadow:none;
+    }
+    .form-group label.control-label {
+        color: #fff;
+    }
+    </style>
+
+
+<div class="row mar-l-r-0">
+        <div class="col-md-12 pad-l-r-0">
+            <ul id="myTabs" class="nav nav-pills nav-justified" role="tablist" data-tabs="tabs">
+                <li class="active" style="top:-0.4em;">
+                    <a href="#Category" class="blueOn" data-toggle="tab">Status Category</a>
+                </li>
+                <li>
+                    <a href="#floors" class="orangeOn" data-toggle="tab">Floors</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in active tab-panel-1" id="Category">
+                    <div class="row" style="background-color: #34495e ;height: 25.85em;max-height: 25.85em;margin-left:0px;margin-right:0px; padding: 0em 1em;">
+                        <div class="col-md-12 pad-l-r-0">
+                            <div class="form-group label-floating" style="margin-top: 1.5em;">
+                                @Html.Label("Status Category", new { @class = "control-label" })
+                                @{Html.RenderAction("RoomStatusCategoryCombo", "RoomStatusCategory", new { name = "RoomStatusCategoryId", requiered = true, value = Model?.RoomStatusCategoryId });}
+                            </div>
+                            <div class="filter-area-style" id="filterng-checkbox-area">
+                                @{Html.RenderAction("FilteringCheckBox", "UpdateHouseKeepingStatus");}
+                            </div>
+                        </div>
+                     
+                    </div>
+                </div>
+                <div role="tabpanel" class="tab-pane fade" id="floors">
+                            <div class="row" style="background-color: #e67e22;height: 25.85em;max-height: 25.85em;margin-left:0px;margin-right:0px; padding: 0em 1em;">
+                                <div class="col-md-12 filter-area-style pad-l-r-0" id="filterng-floor-types">
+                                    <label style="color:#fff;font-size: 1.0em;padding-top: 1em;font-weight: 500;">Floors</label>
+                                    @{Html.RenderAction("FloorNumberFilter", "UpdateHouseKeepingStatus");}
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+

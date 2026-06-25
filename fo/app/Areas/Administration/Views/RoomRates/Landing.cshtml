@@ -1,0 +1,180 @@
+﻿
+@{
+    ViewBag.Title = "Manage Room Rates";
+}
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header" data-background-color="purple">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h4 class="title">@ViewBag.Title
+                                <hr class="visible-print" />
+                                </h4>  
+                            </div>
+                            <div class="col-md-4 text-right hidden-print">
+                                <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+
+                                <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                                    <span class="glyphicon glyphicon-th-list"></span>
+                                </button>
+                                
+                            </div>
+                        </div>                                          
+                    </div>
+                    <div class="card-content" id="contentLoadingArea" style="padding-top:10px; padding-bottom:0px !important;">
+                     
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+    <script>
+        var companyId = 0;
+        // form load --------------------------------
+        $(document).ready(function () {           
+                $('.showForm').click();
+        });
+
+        // show form --------------------------------
+        $('body').on('click', '.showForm', function (e) {      
+            $.ajax({
+                url: '/administration/roomrates/form',
+                dataType: 'html',        
+                method: 'POST',                
+                success: function (response) {
+                   
+                    $('#contentLoadingArea').html('').fadeOut();
+                    $('#contentLoadingArea').html(response).fadeIn();                   
+                }
+               
+            });
+        });
+
+        //// show grid --------------------------------
+
+        //$('body').on('click', '.showGrid', function (e) {
+        //    FillGrid();
+        //});
+        
+
+        // save --------------------------------------
+        //$('body').on('submit', '#roomRates', function (e) {
+       
+
+        //    
+        //var roomCategories = [];
+        //var mealPlans = [];
+        //var mealPlanWiseRoomTypes = [];
+        //var categoryVar = "";
+        //var mealPlanVar = "";
+        //var roomTypeVar = "";
+
+        //$('#roomCategoriesInRoomRates tr.room-category').each(function (index, category) {
+        //   
+           
+        //    $(category).find('#ratePalet tr.meal-plan').each(function (index2, mealPlan) {
+
+        //       
+
+        //        $(mealPlan).find('td.room-rate').each(function (index3, roomType) {
+        //           
+        //            roomTypeVar = {
+        //                Id: $(roomType).find('.roomTypes').val(),
+        //                Rate: $(roomType).find('.rateValue').val()
+        //            }
+        //            mealPlanWiseRoomTypes.push(roomTypeVar);
+        //        });
+        //       
+        //        mealPlanVar = {
+                    
+        //            Id: $(mealPlan).find('.mealPlanId').val(),
+        //            MealPlanWiseRoomTypeRates: mealPlanWiseRoomTypes
+        //        };
+        //        mealPlans.push(mealPlanVar);
+        //        mealPlanWiseRoomTypes = [];
+        //    });
+          
+        //    categoryVar = {
+        //        Id: $(category).find('.roomCategory').val(),
+        //        CategoryWiseMealPlans: mealPlans
+        //    }
+        //    roomCategories.push(categoryVar);
+        //    mealPlans = [];
+        //});
+        //
+
+        //var roomRates = {
+        //    RateCodeId: $('#RateCodeHeaderID option:selected').val(),
+        //    PackageId: $('#PackageHeaderId option:selected').val(),
+        //    SeasonId: $('#SeasonId option:selected').val(),
+        //    CurrencyId: $('#CurrencyId option:selected').val(),
+        //    RoomCategoriesWiseRates: roomCategories
+        //};
+
+        //
+        //var daterangeStart = $('input[name=daterangepicker_start]').val();
+        //var daterangeEnd = $('input[name=daterangepicker_end]').val();
+        //var isIBE = $('.isIBE').is(':checked');
+        //var isLocal = $('.isLocal').is(':checked');
+        ////console.log(JSON.stringify(roomRates));
+
+        //$.ajax({
+        //    url: '/administration/roomrates/Save',
+        //    dataType: 'json',
+        //    data: { roomRate: roomRates, daterangeStart: daterangeStart, daterangeEnd: daterangeEnd, IsLocal: isLocal, IsIBE: isIBE },
+        //    method: 'POST',
+        //    success: function (data, textStatus, xhr) {
+        //        console.log(data);
+        //        if (xhr.status == 200) {
+        //            alert('Success');
+        //        } else {
+        //            alert(data.responseText);
+        //        }
+        //    }
+        //    //,
+        //    //error: function (data, textStatus, xhr) {
+        //    //    console.log(data);
+        //    //    alert(data.responseText);
+        //    //},
+        //    //complete: function () {
+        //    //    $(this).text('Login');
+        //    //}
+        //});
+
+
+        //});
+
+
+        //// fill grid -----------------------------------
+        //function FillGrid() {
+        //    var gridId = "#existingBedTypeGrid"; // change this - relevent grid id
+        //    var paginations = {                                
+        //        PageIndex: $(gridId).attr('data-page-index'),
+        //        PageSize: $(gridId).attr('data-page-size'),
+        //        FilterType: $(gridId).attr('data-filter-type'),
+        //        SearchKeyword: $(gridId).attr('data-search-keyword') 
+        //    }
+        //    $.ajax({
+        //        url: '/administration/bedtypes/selectforgrid',
+        //        dataType: 'html',
+        //        data: paginations,
+        //        method: 'POST',
+        //        success: function (response) {
+        //           
+        //            $('#contentLoadingArea').html('').fadeOut();
+        //            $('#contentLoadingArea').html(response).fadeIn();                    
+        //            GridFunctionalities(); 
+        //        },
+        //        error: function (error) {
+        //           
+        //        }
+        //    });
+        //}
+
+    </script>
+

@@ -1,0 +1,146 @@
+﻿@using Scienter.HotelERP.Common.Domain;
+
+@{
+    ViewBag.Title = "DocumentScan";
+    Layout = null;
+}
+
+<style>
+    .success-color {
+        background-color: #4caf50 !important;
+        border: none;
+        color: #fff !important;
+    }
+
+    .connect-color {
+        background-color: #ff9800 !important;
+        color: #fff !important;
+    }
+
+    .failure-color {
+        background-color: #bd0000 !important;
+        color: #fff !important;
+    }
+
+    .container-padding {
+        padding: 50px 250px;
+    }
+</style>
+
+<script src="~/Scripts/passportsacn/scan.js"></script>
+<script src="~/Scripts/passportsacn/main.js"></script>
+<link href="~/Scripts/passportsacn/style.css" rel="stylesheet" />
+<div class="container container-padding">
+    <div class="row">
+        <div class="col-md-12">
+            @*<div style="z-index: 10;top:0px; width:800px;font-size:12px; height:25px;" id="status" class="connect-color">Device is connecting...</div>*@
+            <div style="z-index: 10;top:0px; font-size:12px; height:25px;" id="status" class="connect-color">Device is connecting...</div>
+        </div>
+    </div>
+
+    <input type="hidden" name="name" id="ScannedDocumentBase64" value="" />
+    <input type="hidden" name="name" id="reservationHeaderId" value="@ViewBag.reservationHeaderId" />
+    <input type="hidden" name="name" id="resNo" value="@ViewBag.resNo" />
+    <input type="hidden" name="name" id="hdnDocScanguestProfileId" value="@ViewBag.guestProfileId" />
+    <input type="hidden" name="name" id="imageType" value="" />
+
+    <div class="col-md-12" style="margin-left:-15px">
+
+        <form id="documentScanForm" style="margin-top:20px;">
+            <div class="form-horizontal">
+                <div class="card-content col-md-12">
+                    <div class="row">
+
+                        <div class="col-md-4" style="margin-top:40px; margin-left:0px">
+                            <div class="form-group form-group-margin-override label-floating">
+                                <label class="required control-label">Doc Type</label>
+                                <select name="DocumentProcess" id="DocumentTypeId" class="select2 form-control" required>
+                                    @foreach (var item in Model)
+                                    {
+                                        <option value="@item.Id" data-FolderName="@item.FolderName">@item.Name</option>
+
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="button" class="btn theme-bg-color-1 btn-sm btnScan" style="margin:74px 0px 0px 0px" id="btnScanDocument" value="" data-profiletype="" data-id="" data-toggle="">
+                                <span class="glyphicon glyphicon-upload"></span>
+                            </button>
+                        </div>
+
+                        <div class="col-md-6">
+                            <img id="ScannedDocument" src="~/Images/no_available_image.png" style="height:160px; width:315px; margin-top:15px; margin-left:57px" name="ScannedDocument" />
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top:20px">
+                        <div class="form-group label-floating is-empty" style="margin-left:0px;">
+                            <label class="required control-label">Remark</label>
+                            <textarea maxlength="500" rows="2" id="Remark" name="Remark" required class="form-control"></textarea>
+                            <span class="material-input"></span>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 1em;">
+                        <div class="col-md-3" style="padding-left:0px; padding-right:0px">
+                            <button type="button" id="btnSaveScannedDocument" class="btn theme-bg-color-1">
+                                Save <span class="glyphicon glyphicon-floppy-saved"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    </div>
+    <script>
+
+        $(document).ready(function () {
+            var maxLength = 500;
+
+            $('#Remark').on('input', function () {
+                const text = $(this).val();
+                if (text.length > maxLength) {
+                    $(this).val(text.substring(0, maxLength));
+                } else if (text.length === maxLength) {
+                    ShowWarningMessage('You have reached the maximum limit of 500 characters');
+                }
+                else {
+
+                }
+                $('#charCount').text(`${text.length}/${maxLength} characters used`);
+            });
+        });
+
+        $('#btnSaveScannedDocument').off('click').on('click', function (e) {
+            var document = {};
+            document.DocumentUrl = $('#ScannedDocumentBase64').val();
+            document.FolderName = $('#DocumentTypeId option:selected').attr('data-FolderName');
+            document.Remark = $('#Remark').val();
+            document.ReservationHeaderId = $('#reservationHeaderId').val();
+            document.GuestProfileId = $('#hdnDocScanguestProfileId').val();
+            document.DocumentProcessWiseDocumentId = $('#DocumentTypeId option:selected').val();
+
+            $('#imageType').val($('#DocumentTypeId option:selected').attr('data-FolderName'));
+
+            $.ajax({
+                url: '/Reservation/Document/SaveScannedDocument',
+                dataType: 'json',
+                data: { document: document },
+                method: 'POST',
+                success: function (response) {
+                    if (response == "success") {
+                        ShowSuccessMessage('Record has been saved successfully.');
+
+                    } else {
+                        ShowWarningMessage(response);
+                    }
+
+                }
+            });
+        });
+    </script>
+
+

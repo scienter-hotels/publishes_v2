@@ -1,0 +1,134 @@
+﻿
+@{
+    ViewBag.Title = "Front Office Room Status";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                        <hr class="visible-print" />
+                    </h4>
+                </div>
+                <div class="col-md-4 text-right hidden-print">
+                    <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+
+                    <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                        <span class="glyphicon glyphicon-th-list"></span>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-content" id="contentLoadingArea">
+            <div id="content">
+
+            </div>
+            @Html.Partial("_Loading")
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+         // form load --------------------------------
+        $(document).ready(function () {
+            FillGrid();
+        });
+
+        // show form --------------------------------
+        $('body').on('click', '.showForm', function (e) {
+            $.ajax({
+                url: '/administration/frontofficeroomstatus/form',
+                dataType: 'html',
+                method: 'POST',
+                success: function (response) {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+               
+            });
+        });
+
+        // show grid --------------------------------
+
+        $('body').on('click', '.showGrid', function (e) {
+            FillGrid();
+        });
+
+
+        // save --------------------------------------
+        $('body').on('submit', '#frontofficeroomstatus', function (e) {
+           
+            e.preventDefault();
+            var frontofficeroomstatus = {              
+                Id: $('#Id').val(),
+                Prefix: $('#Prefix').val(),
+                Name: $('#Name').val(),
+                Remarks: $('#Remarks').val(),
+                ColorId: $('#ColorID').val(),
+                IsActive: $('#IsActive').prop("checked"),
+                IsOccupied: $('#IsOccupied').prop("checked"),
+                Properties: selectedProperties
+            };
+
+
+            //if (selectedProperties.length > 0) {
+                $.ajax({
+                    url: '/administration/frontofficeroomstatus/save',
+                    dataType: 'html',
+                    data: frontofficeroomstatus,
+                    method: 'POST',
+                    success: function (response) {
+
+                        ShowSuccessMessage('Record has been saved successfully.');
+                        FillGrid();
+                    },
+                    error: function () {
+                        ShowErrorMessage('Sorry, There is an error.');
+                    }
+
+                });
+            //} else {
+            //    ShowErrorMessage('Please select at least one property to continue.');
+            //}
+        });
+
+
+        // fill grid -----------------------------------
+        function FillGrid() {
+            var gridId = "#existingFrontOfficeRoomStatusGrid"; // change this - relevent grid id
+            var paginations = {
+                PageIndex: $(gridId).attr('data-page-index'),
+                PageSize: $(gridId).attr('data-page-size'),
+                FilterType: $(gridId).attr('data-filter-type'),
+                SearchKeyword: $(gridId).attr('data-search-keyword')
+            }
+            $.ajax({
+                url: '/administration/frontofficeroomstatus/selectforgrid',
+                dataType: 'html',
+                data: paginations,
+                method: 'POST',
+                success: function (response) {
+                   
+                    if ($('.grid-container').length > 0) {
+                        $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                        $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                    } else {
+                        $('#contentLoadingArea #content').html('').fadeOut();
+                        $('#contentLoadingArea #content').html(response).fadeIn();
+                    }
+              
+                }
+                
+            });
+        }
+
+</script>

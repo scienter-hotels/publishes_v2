@@ -1,0 +1,103 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.Property>
+
+@{
+    ViewBag.Title = "Exising Properties";
+}
+
+
+<div class="table-responsive">
+    <table id="existingPropertyGrid" class="table table-striped">
+        <thead>
+            <tr>
+                <th class="text-primary">
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th class="text-primary">
+                    @Html.DisplayNameFor(model => model.Image)
+                </th>
+                <th class="text-primary">
+                    @Html.DisplayNameFor(model => model.WebSiteURL)
+                </th>
+
+                <th class="text-primary">
+                    @Html.DisplayNameFor(model => model.Address)
+                </th>
+                <th class="text-primary">
+                    @Html.DisplayNameFor(model => model.ContactNos)
+                </th>
+                <th class="text-primary">
+                    @Html.DisplayNameFor(model => model.Emails)
+                </th>
+                <th class="text-primary">
+                    @Html.DisplayNameFor(model => model.IsActive)
+                </th>
+
+            </tr>
+
+
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(model => item.Name)
+                    </td>
+                    <td>                        
+                        <img src="@item.Image" width="80" height="80" /> 
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.WebSiteURL)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Address)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.ContactNos)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Emails)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.IsActive)
+                       
+                    </td>
+                    <td class="hidden-print text-right col-md-1">                      
+
+                        <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/properties/edit/@item.Id">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+
+                        <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/administration/properties/delete/@item.Id">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </a>
+                    </td>
+                </tr>
+
+            }
+        </tbody>
+    </table>  
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#existingPropertyGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+</script>
+

@@ -1,0 +1,207 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.VillaCategoriesViewModel
+@{
+
+    ViewBag.Title = "Villa Categories";
+}
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    .search-col {
+        margin-top: 20px;
+        padding-left: 5px !important;
+    }
+
+    /*2023-08-15---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        overflow-x: hidden;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                    <div class="row">
+                        <div class=" col-md-4">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Room Category *</label>
+
+                                <select id="RoomCategoryId" name="" class="select2 form-control" required>
+                                    <option value=""></option>
+
+                                    @foreach (var RoomCategory in Model.RoomCategories)
+                                    {
+                                        <option value="@RoomCategory.Id" selected>@RoomCategory.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        @foreach (var item in Model.RoomDetailsForVillaAssign)
+                        {
+                            <div class=" col-md-2">
+                                <div class="form-group checkbox" style="margin-top:10px;">
+                                    <label>
+                                        <input type="checkbox" class="room-id" value="@item.Id" data-room-code="@item.Code" /> @item.Name
+                                    </label>
+
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-success btn-save" id="">SAVE</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#RoomCategoryId').val('');
+        $('.room-id').prop('checked', false);
+    });
+    //2023-08-15--------------------------------------------------------------------------
+    $('.select2').select2();
+
+    setTimeout(function () {
+        $('.select2.select2-container').addClass('form-control');
+        $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+        $('.select2-selection__arrow').css('display', 'none');
+        $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+    }, 900);
+
+    $('body').off('click', '.select2').on('click', '.select2', function () {
+        setTimeout(function () {
+            $('.select2-results ul li').removeClass('select2-results__option--selected');
+        }, 200);
+    });
+
+    //-------------------------------------------------------------------------------------------
+    $('.btn-save').click(function (e) {
+        // alert("ok");
+        e.preventDefault();
+
+        var roomCategoryWiseRoomDetails = {};
+        roomCategoryWiseRoomDetails.Id = $('#RoomCategoryId').val();
+
+        var roomsArray = [];
+        $('.room-id').each(function (index, item) {
+            if ($(item).prop("checked")) {
+                var room = {};
+                room.Id = $(item).val();
+                roomsArray.push(room);
+            }
+        });
+        console.log(roomsArray);
+
+        roomCategoryWiseRoomDetails.Rooms = roomsArray;
+        $.ajax({
+            url: '/Administration/RoomCategories/AssignVillaCategoriesSave',
+            dataType: 'json',
+            data: { roomCategory: roomCategoryWiseRoomDetails },
+            method: 'POST',
+            beforeSend: function () {
+                $('.btn-save').text('Please Wait......!');
+            },
+            success: function (response) {
+                console.log(response);
+                if (response.startsWith('ERR-')) {
+                    ShowErrorMessage(response);
+                } else {
+                    ShowSuccessMessage(response);
+                }
+            },
+            error: function () {
+                ShowErrorMessage(response);
+            },
+            complete: function () {
+                $('.btn-save').text('Save');
+            },
+        });
+    });
+
+    $('#RoomCategoryId').change(function () {
+        var roomCategoryId = $("#RoomCategoryId").val();
+        $('.room-id').prop("checked", false);
+        if (roomCategoryId != 0 || roomCategoryId != undefined) {
+            $.ajax({
+                url: '/Administration/RoomCategories/SelectRoomCategoryWiseRoomsById',
+                dataType: 'JSON',
+                data: { id: roomCategoryId },
+                method: 'POST',
+                success: function (response) {
+                    debugger;
+                    $('.room-id').each(function (index, item) {
+                        $.each(response, function (index2, item2) {
+                            if ($(item).val() == item2.Id) {
+                                $(item).prop("checked", true);
+                            }
+                        });
+                    });
+                },
+                error: function () {
+                    alert('There is an error');
+                }
+            });
+        }
+    });
+
+
+</script>
+

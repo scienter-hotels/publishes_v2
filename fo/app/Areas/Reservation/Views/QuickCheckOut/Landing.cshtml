@@ -1,0 +1,208 @@
+﻿@{
+    ViewBag.Title = "Quick Check Out";
+}
+
+<style>
+    .divCorner {
+        border-radius: 25px;
+        border: 2px solid #CBC8C8;
+        margin: 20px;
+    }
+
+    .card .card-content {
+        padding: 25px 20px;
+    }
+
+    .form-control-margin-top {
+        margin-top: 0px;
+    }
+</style>
+
+@*<input type="hidden" id="GuestName" value="@ViewBag.guestName" />*@
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="checkOut">
+                <div class="card-content" id="contentLoadingArea">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="grid-area">
+
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-top-20px">
+                            <div class="row">
+
+                                <div class="col-md-9">
+                                    <div class="form-group label-floating form-control-margin-top">
+                                        <label class="control-label">Check Out Remark</label>
+                                        <input type="Text" class="form-control" id="CheckOutRemark" />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="button" id="btnCheckOut" value="CHECK OUT" class="btn btn-primary call-popup-model" data-width="500px" />
+                                    &nbsp;
+                                    <input type="reset" id="btnClear" value="CLEAR" class="btn btn-default" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        FillGrid();
+        //2023-08-24-Anuradha-------------------------------------------------------------------------------------------
+        var windowHeight = $(window).height();
+        if (windowHeight > 661) {
+            $('.grid-area').css('min-height', windowHeight - 250)
+            $('.grid-area').css('max-height', windowHeight - 230)
+        } else {
+            $('.grid-area').css('min-height', windowHeight - 220)
+            $('.grid-area').css('max-height', windowHeight - 200)
+        }
+        //------------------------------------------------------------------------------------------------------
+        // SelectFOSCurrentDate();
+    });
+
+    //// show form --------------------------------
+    //$('body').on('click', '.showForm', function (e) {
+    //    $.ajax({
+    //        url: '/administration/packagedetails/form',
+    //        dataType: 'html',
+    //        method: 'POST',
+    //        success: function (response) {
+    //
+    //            $('#contentLoadingArea').html('').fadeOut();
+    //            $('#contentLoadingArea').html(response).fadeIn();
+    //        },
+    //        error: function (error) {
+    //
+    //        }
+    //    });
+    //});
+
+    //// show grid --------------------------------
+
+    //$('body').on('click', '.showGrid', function (e) {
+    //    FillGrid();
+    //});
+
+    $('body').on('change', '.quickCheckOut-checkBox', function () {
+
+        if ($(this).closest('tr').find('.isAllowToCheckOut').val() == "True") {
+            ShowWarningMessage('This room is not ready to check Out. There are unsettled folios.');
+            $(this).prop('checked', false);
+            $(this).prop('disabled', true);
+        }
+    });
+
+    // Update --------------------------------------
+    var clickedReservationNumbers = [];
+    var clickedNo = {};
+    $('#btnCheckOut').on('click', function (e) {
+        e.preventDefault();
+        if ($('input[class=quickCheckOut-checkBox]:checked').length > 0) {
+            $('#btnCheckOut').attr('data-href', '/Reservation/Reservations/CheckOutConfirmation?reservationNo=group&arrival=""&departure=""');
+            $('#btnCheckOut').attr('data-title', 'Check Out reservations');
+
+        } else {
+            ShowWarningMessage('Select one or more records to continue')
+        }
+
+
+        //$.ajax({
+        //    url: '/Reservation/Reservations/CheckOutConfirmation?reservationNo="group"&arrival=""&departure=""',
+        //    dataType: 'JSON',
+        //    data: { qCheckOut: qCheckOutsList, CheckOutRemark: ckOutRemark },
+        //    method: 'POST',
+        //    success: function (response) {
+        //        if (response.startsWith('success')) {
+        //            ShowSuccessMessage('Guest checked out successfully.');
+        //            FillGrid();
+        //        } else {
+        //            ShowWarningMessage(response);
+        //        }
+
+        //    },
+        //    error: function (xhr, status, error) {
+        //        ShowErrorMessage('Sorry, There is an error in checkout.');
+        //    }
+        //});
+
+    });
+
+
+
+
+    // fill grid -----------------------------------
+    function FillGrid() {
+        var gridId = "#existingReservationHeaderGridCheckOut"; // change this - relevent grid id
+        var paginations = {
+
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/reservation/QuickCheckOut/SelectForGrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+
+                $('.grid-area').html('').fadeOut();
+                $('.grid-area').html(response).fadeIn();
+                GridFunctionalities();
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+    //function SelectFOSCurrentDate() {
+    //    $.ajax({
+    //        url: '/reservation/QuickCheckOut/selectcurrentdate',
+    //        dataType: 'Json',
+    //        method: 'POST',
+    //        success: function (data) {
+    //            var date = new Date(parseInt(data.CurrentDate.substr(6)));
+    //            $('#data-fos-current-date').val(date);
+    //        },
+    //        error: function (error) {
+
+    //        }
+    //    });
+    //}
+</script>

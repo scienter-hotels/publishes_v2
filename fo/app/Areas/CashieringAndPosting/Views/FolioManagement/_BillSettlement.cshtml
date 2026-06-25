@@ -1,0 +1,229 @@
+﻿@model Scienter.HotelERP.Common.Domain.FolioBillPaymentView
+
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("IsDirectPrint")" name="" id="IsDirectPrint" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Username" name="" id="userName" />
+
+<form id="BillPaymentLoadingView">
+
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <fieldset class="the-fieldset col-md-12" style="padding:10px; background-color:#fafafa;">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+
+
+                    <div class="form-group label-floating col-md-3">
+                        <h5 style="margin-top:0px; margin-bottom:5px;font-size: 12px;">Guest Name</h5>
+                        <h4 style="margin-top:0px; margin-bottom:5px; font-weight:bold;font-size: 16px;">@Model.GuestName</h4>
+                    </div>
+                    <div class="form-group label-floating col-md-2">
+                        <h5 style="margin-top:0px; margin-bottom:5px;font-size: 12px;">GRC No</h5>
+                        <h4 style="margin-top:0px; margin-bottom:5px; font-weight:bold;font-size: 16px;">@Model.GRCno</h4>
+                    </div>
+
+                    <div class="form-group label-floating col-md-3">
+                        <h5 style="margin-top:0px; margin-bottom:5px;font-size: 12px;">Company</h5>
+                        <h4 style="margin-top:0px; margin-bottom:5px; font-weight:bold;font-size: 16px;">@Model.FolioCompanyName</h4>
+                    </div>
+
+                    <div class="form-group label-floating col-md-2">
+                        <h5 style="margin-top:0px; margin-bottom:5px;font-size: 12px;">Invoice</h5>
+                        <h4 style="margin-top:0px; margin-bottom:5px; font-weight:bold;font-size: 16px;">@Model.InvoiceNo</h4>
+                    </div>
+
+                    <div class="form-group label-floating col-md-2">
+                        <h5 style="margin-top:0px; margin-bottom:5px;font-size: 12px;">Folio</h5>
+                        <h4 style="margin-top:0px; margin-bottom:5px; font-weight:bold;font-size: 16px;">@Model.FolioNo</h4>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-6">
+
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row billPartial">
+                    @Html.Partial("~/Views/Shared/_BillPayment.cshtml", @Model.BillPaymentDetails.First())
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<input type="hidden" value="@Model.FolioNo" id="hdnFolioNo" />
+<input type="hidden" value="@Model.ReservationID" id="hdnResNo" />
+
+<input type="hidden" value="@Model.FolioNo" id="hdnFolioNoNew" />
+<input type="hidden" value="@Model.ReservationID" id="hdnResNoNew" />
+
+<input type="hidden" value="@Model.InvoiceNo" id="InvoiceNo" />
+<input type="hidden" value="@Model.FolioCompanyName" id="FolioCompanyName" />
+<input type="hidden" value="@Model.GuestName" id="GuestName" />
+
+
+
+<script>
+    var folioNo = 0;
+    var docno = "";
+    var invoiceNo = "";
+
+    function SaveBill() {
+
+        $('#grid-record-detail-model-close').addClass('folio-settle-refresh');
+
+        var thisFolio = {
+            InvoiceNo: $('#InvoiceNo').val(),
+            ReservationID: $('#hdnResNo').val(),
+            FolioNo: $('#hdnFolioNo').val(),
+            FolioCompanyName: $("#FolioCompanyName").val(),
+            GuestName: $("#GuestName").val(),
+            BillTotal: Billtotal,
+            Remarks: $("#Remarks").val(),
+            DRCR: 'D',
+            BillPaymentDetails: billpaymentArray,
+
+        }
+
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/SettleBill',
+            dataType: 'json',
+            data: thisFolio,
+            method: 'POST',
+            success: function (response) {
+
+
+                if (typeof response == 'string') {
+                    if (response.toString().startsWith('ERR-')) {
+                        //ShowErrorMessage(response.toString().split("-")[1]);
+                        ShowWarningMessage(response.replace("ERR-", ""));
+                    }
+                } else {
+                    ShowSuccessMessage('Record has been saved successfully.');
+                    invoiceNo = response.InvoiceNo;
+                    $('.rowPaymentDelbtncls').addClass('disabled', true);
+                    var docType = "INV";
+                     docno = $('#hdnResNo').val();//
+                    var propertyId = $('#PropertyId').val();
+                    var userId = $('#UserId').val();
+                    var printURL = $('#DirectPrintURL').val();
+                     folioNo = $('#hdnFolioNo').val();
+                    var userName = $('#userName').val();
+                    var IsBilPreview = "0";
+                    //alert($('#IsDirectPrint').val());
+
+                    if ($('#IsDirectPrint').val() == 1) {
+                        debugger;
+                        var ajaxUrl = printURL + 'PRT/' + docType + '/' + docno + '/' + propertyId + '/' + userId + '/' + folioNo + '/' + userName + '/' + IsBilPreview + '/';
+                        $('#BtnPrintBill').attr('href', ajaxUrl);
+                    } else {
+
+                        // 2024-02-06 Fiscal Printer
+                        if ($('#PrintingMethod').val() == 'F') {
+                            $('#BtnPrintBill').addClass('hidden');
+                            var fiscalPrinterUrl = '/Base/FiscalPrinter_FolioInvoice?folioNo=' + $('#hdnFolioNo').val() + '&reservationHeaderId=' + $('#hdnResNo').val() + '&IsPreview=0' + '&IsLKROnlyInvoice=0';
+                            FiscalPrinterRequest(fiscalPrinterUrl);
+                        } else {
+                            $('#BtnPrintBill').attr("href", '/Reporting/Report/ViewReport?ReportName=FolioInvoice&ReservationHeaderId=' + $('#hdnResNo').val() + '&FolioNo=' + $('#hdnFolioNo').val() + '&IsPreview=0' + '&IsLKROnlyInvoice=0');
+                        }
+                        
+                    }
+
+                  
+                    
+                    $('#BtnLKRBill').attr("href", '/Reporting/Report/ViewReport?ReportName=FolioInvoice&ReservationHeaderId=' + $('#hdnResNo').val() + '&FolioNo=' + $('#hdnFolioNo').val() + '&IsPreview=0' + '&IsLKROnlyInvoice=1');
+                    $('.all-transaction').html('')
+                    $('.tbl-folioWiseTable').html('')
+                    $('.btn-folio-numbers').html('')
+                   
+                    GetAllFoliosNumbers(RoomId, ResheaderId);
+                }
+                //set print bill only for folio settlement
+
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in saving this record.');
+            }
+        });
+
+
+
+    }
+
+    $('body').on('click', '#BtnPrintBill', function (e) {
+        var isPrintCopy = false;
+        if ($('#IsDirectPrint').val() == 1) {
+            e.preventDefault();
+            var ajaxUrl = $('#BtnPrintBill').attr('href');
+            // alert(ajaxUrl);
+            ReportDirectPrintRequest(ajaxUrl);
+
+        //$.ajax({
+        //    url: ajaxUrl,
+        //    method: 'POST',
+        //    beforeSend: function () {
+        //        $('#BtnPrintBill').val('Please wait');
+        //        $('#BtnPrintBill').prop('disabled', true);
+        //    },
+        //    complete: function () {
+        //        $('#BtnPrintBill').val('Print');
+        //        $('#BtnPrintBill').prop('disabled', false);
+        //    },
+        //    success: function (data) {
+        //       
+        //        if (data.HttpCode == "200") {
+        //            ShowSuccessMessage('Receipt printed.');
+        //            ;
+        //        } else {
+        //            ShowErrorMessage(data.HttpDescription);
+        //        }
+        //    },
+        //    error: function (data) {
+        //        ShowErrorMessage('Sorry there is an error in printing the receipt.');
+        //    }
+        //});
+        } else {
+            if ($('#PrintingMethod').val() == 'F') {
+                var fiscalPrinterUrl = '/Base/FiscalPrinter_FolioInvoice?folioNo=' + $('#hdnFolioNo').val() + '&reservationHeaderId=' + $('#hdnResNo').val() + '&IsPreview=0' + '&IsLKROnlyInvoice=0' + '&isPrintCopy=' + isPrintCopy;
+                FiscalPrinterRequest(fiscalPrinterUrl);
+            }
+        }
+        
+
+    });
+
+    $('body').off('click', '#BtnShareBill').on('click', '#BtnShareBill', function (e) {
+        e.preventDefault(); // avoid form submit
+
+        var resNo = $('.hdn-reservation-No').val() || '';
+        // assumes `folioNo` and `reservationHeaderId` are available (set them where you build the page)
+        var documentParams = {
+            reservationHeaderId: $('#hdnResNo').val(),
+            guestProfileId: ($('#GuestProfileId').val() || 0),
+            Uuid: "",
+            reservationLevel: "CheckedOut",
+            reservationNo: resNo,
+            InvoiceNo: invoiceNo,
+            FolioNo: folioNo
+        };
+
+        if (folioNo > 0) {
+            var url = '/DocumentDelivery/DocumentDelivery?documentParams=' + encodeURIComponent(JSON.stringify(documentParams));
+            var title = 'Send Document ' + (typeof invoiceNo !== 'undefined' ? invoiceNo : '');
+            CallDetailModelSimple(title, url, 800);
+        } else {
+            ShowWarningMessage('Please settle the bill to proceed.');
+        }
+    });
+</script>
+
+

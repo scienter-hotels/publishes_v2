@@ -1,0 +1,83 @@
+﻿<div class="col-md-12">
+    <div class="row">
+        <div class="other">
+            <input class="transport-header-id" type="hidden" id="transport-header-id" />
+        </div>
+        <div class="col-md-12 other">
+            <div class="form-group label-floating">
+                <label class="control-label">Transport for</label>
+                <input class="form-control transport-for-other" type="text" id="transport-for-other" />
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6 other">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Transfer Type</label>
+                        @{Html.RenderAction("TransferTypesCombo", "TransferTypes", new { area = "Administration", name = "Transfertype" });}
+                    </div>
+                </div>
+                <div class="col-md-6 other">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Transport Mode</label>
+                        @{Html.RenderAction("TransferModesCombo", "TransferModes", new { area = "Administration", name = "Transfermode" });}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6 other">
+                            <div class="input-group date form-group label-floating" id="datetimepicker1">
+                                <div id="requiredDateContainer" class='input-group date'>
+                                    <label class="control-label">Required Date</label>
+                                    <input type="text" class="form-control required-date" id="requiredDate" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 other">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Required Time</label>
+                                @{Html.RenderPartial("_TimeRange");}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 other">
+            <div class="form-group label-floating">
+                <label class="control-label">Remarks</label>
+                <input class="form-control remarks" id="remarks" type="text" />
+            </div>
+        </div>
+        <div class="col-md-12 other">
+            <div class="form-group label-floating">
+                <label class="control-label">Status</label>
+                @{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { area = "Administration", name = "TransportStatus" });}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(function () {
+        $('.required-date').daterangepicker({
+            locale: {
+                format: 'DD/MM/YYYY'
+            },
+            "showDropdowns": true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "singleDatePicker": true,
+            "opens": "right",
+            "applyClass": "btn-primary",
+            "minDate": $('#hotelDate').val()
+        });
+    })
+</script>
+

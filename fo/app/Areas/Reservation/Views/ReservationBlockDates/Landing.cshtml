@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "Block Date Availability";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    $(document).ready(function () {
+        ShowForm();
+    });
+
+    function ShowForm() {
+       
+        $.ajax({
+            url: '/Reservation/ReservationBlockDates/form',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+        });
+    }
+
+</script>

@@ -1,0 +1,105 @@
+﻿@model Scienter.HotelERP.Common.Domain.CancellationPolicy
+
+@{
+    ViewBag.Title = "Create / Edit";
+}
+
+<div class="col-md-12">
+
+    <form id="cancellationPolicies">
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+
+            <input type="hidden" value="@Model.Description" name="hiddenDesc" id="hiddenDesc" />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Name *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Name" name="Name" type="text" value="@Model.Name" required>
+                    </div>
+
+                    @*<div class="form-group label-floating">
+                            <label class="control-label">Description</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="200" id="Description" name="Description" type="text" value="@Model.Description">
+                        </div>*@
+
+                    <div class="col-md-12">
+                        <div class="form-group" style="margin-left: -1.4em;">
+                            <label class="control-label">Description </label> <span class="blink_me" style="color:#ff0000; display:none; float:right;" id=""></span>
+                            <text class="form-control summernote" id="Description" name="Description" rows="10" value="@Model.Description"></text>
+                        </div>
+                    </div>
+
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsActive)
+                            @*<input type="checkbox" checked name="IsActive" value="True" />*@ Is Active
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+
+                    </div>
+
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsShowInIBEConfirmation)
+                            @*<input type="checkbox" checked name="IsActive" value="True" />*@ Show In Booking Engine Confirmation
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsShowInIBEConfirmation, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsCancellationPolicy)
+                            @*<input data-val="true" data-val-required="Is Cancellation Policy" id="IsCancellationPolicy" name="IsCancellationPolicy" type="checkbox" value="true" />*@
+                            Is Cancellation Policy
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsCancellationPolicy, "", new { @class = "text-danger" })
+                        @*<span class="field-validation-valid text-danger" data-valmsg-for="IsCancellationPolicy" data-valmsg-replace="true"></span>*@
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                        &nbsp;
+                        <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+</div>
+
+@*<link href="~/Content/spectrum.css" rel="stylesheet" />
+    <script src="~/Scripts/summernote.js"></script>*@
+<script>
+    $(document).ready(function () {
+        $('.summernote').summernote();
+        SetDescription();
+
+    });
+
+    function SetDescription() {
+        var desc = $('#hiddenDesc').val();
+        $('.note-editable').html(desc);
+    }
+
+    //$(document).ready(function () {
+    //    $('.summernote').on('summernote.init', function () {
+    //        $('textarea.someDummyClassName').html($('.summernote').summernote("code"))
+    //    }).on("summernote.blur", function () {
+    //        $('textarea.someDummyClassName').html($('.summernote').summernote("code"))
+    //    }).summernote({
+
+    //    });
+    //});
+
+ //   $(document).ready(function () {
+ //       $(".summernote").summernote("code", your server variable to string);
+
+ //});
+ //       });
+</script>

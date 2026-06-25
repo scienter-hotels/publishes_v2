@@ -1,0 +1,483 @@
+﻿<input type="hidden" id="eventReservationId" class="eventReservationId" value="@ViewBag.eventReservationId" />
+<input type="hidden" id="venue" class="venue" value="@ViewBag.venue" />
+<input type="hidden" id="currentDate" class="currentDate" value="@ViewBag.currentDate" />
+<style>
+    .guest-type .form-group{
+        margin-top:9px;
+    }
+
+        .guest-type .form-group label {
+            font-size: 14px;
+            font-weight: bold;
+            color:#4d4d4d;
+        }
+
+    .guest-type input[type="radio"], input[type="checkbox"] {
+        margin: 4px 0 0;
+        margin-top: 1px \9;
+        line-height: normal;
+        width: 15px;
+        height: 15px;
+        margin-right:10px;
+    }
+</style>
+    <div id="eventReservationArea">
+        <div style="padding:10px; background-color:#f2f2f2; border:1px solid #ccc; margin-bottom:20px; border-radius:3px;" class="guest-type">
+            <div class="row type">
+                <div class="col-md-4 form-group  label-floating">
+                    <input type="radio" id="resrvation" name="type" value="resrvation">
+                    <label for="resrvation">Future Reservation</label>
+                </div>
+                <div class="col-md-4 form-group  label-floating inhouse">
+                    <input type="radio" id="inhouse" name="type" value="inhouse">
+                    <label for="inhouse">In-house Reservation</label>
+                </div>
+
+                @*<div class="col-md-4 form-group  label-floating">
+            <input type="radio" id="walkIn" name="type" value="walkIn">
+            <label for="walkIn">Walk-In</label>
+        </div>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Event</label>
+                    <select name="event" id="event" class="form-control" required>
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group  label-floating">
+                    @*<label class="control-label">Guest</label>
+                <input class="form-control guest" type="text" id="guest" />*@
+                    <label class="required control-label">Guest</label>
+                    <select name="guest" id="guest" class="form-control" required>
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group  label-floating">
+                            <label class="control-label">Pax</label>
+                            <input class="form-control pax" type="number" id="pax" max="0" style="text-align:right" required min="0" />                           
+                        </div>
+                    </div>
+                   
+                </div>
+               
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group form-group-margin-override label-floating">
+                    <label class="required control-label">Room#</label>
+                    @{Html.RenderAction("RoomDetailCombo", "RoomDetails", new { area = "Administration", name = "RoomId", requiered = true });}
+                    @*<select name="roomId" id="roomId" class="form-control" required>
+                            <option value="0">N/A</option>
+                        </select>*@
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group form-group-margin-override label-floating time" id="time">
+                    <label class="required control-label">Time</label>
+                    <input type="hidden" class="time" id="time" />
+                    @{Html.RenderPartial("_TimeRange");}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group form-group-margin-override label-floating">
+                    <label class="required control-label">Table#</label>
+                    <select name="tableId" id="tableId" class="form-control" required>
+                        <option value="0">N/A</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-Event" style="padding-left: 0px;">
+                    <input type="submit" id="btnEventSubmit" value="ADD" class="btn btn-primary" />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="reset" id="btnClear" class="btn btn-default">
+                    Clear
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <fieldset class="the-fieldset" style="margin-top:20px;">
+                    <legend class="the-legend"><font size="2"></font> Event Reservations </legend>
+                    <div id="EventReservationList">
+                        <table class="table table-striped table-hover" id="EventReservationGrid" cellspacing="5">
+                            <tr>
+                                <th class="text-primary " input type="text" width="300px">
+                                    Event Reservation No 
+                                </th>
+                                <th class="text-primary " input type="text" width="300px">
+                                    Guest Name
+                                </th>
+                                <th class="text-right" input type="number" width="60px">
+                                    Pax
+                                </th>
+                                <th width="50px">
+
+                                </th>
+                            </tr>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+    </div>
+    <div class="createGuestArea" id="createGuestArea">
+        <form id="guest">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group label-floating">
+                        <label class="control-label">FirstName *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="FirstName" name="FirstName" type="text" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group label-floating">
+                        <label class="control-label">MiddleName </label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MiddleName" name="MiddleName" type="text">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group label-floating">
+                        <label class="control-label">LastName </label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="LastName" name="LastName" type="text" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group label-floating">
+                        <label class="control-label required">Salutation</label>
+                        @{Html.RenderAction("SalutationCombo", "Salutations", new { area = "Administration", name = "SalutationId", requiered = true });}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group label-floating">
+                        <label class="control-label">NIC / Passport</label>
+                        <input type="text" name="NICPassport" id="NICPassport" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group label-floating">
+                        <label class="control-label required">Country</label>
+                        @{Html.RenderAction("CountriesCombo", "Countries", new { area = "Administration", name = "CountryId", requiered = true });}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group label-floating">
+                        <label class="control-label required">Nationality</label>
+                        @{Html.RenderAction("NationalityCombo", "Nationalities", new { area = "Administration", name = "NationalityId", requiered = true });}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Email</label>
+                        <input type="email" name="Email" id="Email" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Contact No</label>
+                        <input type="text" name="ContactNo" id="ContactNo" class="form-control data-telephone" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <script>
+        $(document).ready(function () {
+            $('#EventReservationGrid tr').not(':first-child').remove();
+            loadTable();
+            LoadEventCombo();
+            $('.createGuestArea').hide();
+            ClearForm();
+        });
+
+        $('#btnClear').click(function (e) {
+
+            $('#eventReservationId').val('');
+            $('#guest').val('');
+            $('#pax').val('');
+            $('#RoomId').val('');
+            $('#time #Timerange').val('');
+            $('#tableId').val('');
+        });
+
+        $('body').off('click', '#btnSave').on('click', '#btnSave', function (e) {
+            CreateNewGuest();
+        });
+
+        function CreateNewGuest() {
+            var guestId = 0;
+            SelectedGuest = {
+                Id: guestId,
+                FirstName: $('#FirstName').val(),
+                LastName: $('#LastName').val(),
+                Email: $('#Email').val(),
+                ContactNo: $('#ContactNo').val(),
+                NICPassport: $('#NICPassport').val(),
+                SalutationId: $('#SalutationId').val(),
+                CountryId: $('#CountryId').val(),
+                NationalityId: $('#NationalityId').val()
+
+            }
+
+            if ($('#FirstName').val() == undefined || $('#FirstName').val() == "") {
+                ShowWarningMessage('Please enter a first name.');
+            }
+            else if ($('#LastName').val() == undefined || $('#LastName').val() == "") {
+                ShowWarningMessage('Please enter a last name.');
+            }
+
+            else{
+           
+                $.ajax({
+                    url: '/reservation/reservations/SaveGuest',
+                    dataType: 'html',
+                    data: SelectedGuest,
+                    method: 'POST',
+                    success: function (data) {
+                        ShowSuccessMessage('Record saved successfully.');
+                        $('.createGuestArea').hide();
+                        $('#eventReservationArea').show();
+                        LoadWalkInGuest();
+                    },
+                    error: function (error) {
+                    }
+                });
+            }
+        }
+
+        function loadTable() {
+            $.ajax({
+                url: '/reservation/eventreservations/SelectAllTables',
+                dataType: 'json',
+                method: 'get',
+                success: function (data) {
+                    $('#tableId option').remove();
+                    $(data).each(function (index, item) {
+                        $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#tableId'));
+                    });
+                }
+            });
+        }
+
+        $('body').off('click', '#btnEventSubmit').on('click', '#btnEventSubmit', function (e) {
+
+           
+            var EventReservationId =    $('#event').val();
+            var GuestProfileId =        $('#guest').val();
+            var Pax =                   $('#pax').val();
+            var RoomId =                $('#RoomId').val();
+            var Time =                  $('#time #Timerange').val();
+            var TableId =               $('#tableId').val();
+
+            if ($('#event').val() == undefined || $('#event').val() == "") {
+                ShowWarningMessage('Please select an event.');
+            }
+            else if ($('#guest').val() == undefined || $('#guest').val() == "") {
+                ShowWarningMessage('Please select a guest.');
+            }
+            else if ($('#pax').val() == 0) {
+                ShowWarningMessage('Invalid pax count.');
+            }
+            else if (Number($('#pax').val()) > Number($('#event option:selected').attr('data-remaining-paxs'))) {
+                ShowWarningMessage('Entered pax count is grated than remaining.');
+            }
+            else if ($('#pax').val() == undefined || $('#pax').val() == "") {
+                ShowWarningMessage('Please select a pax.');
+            }
+            else {
+            //console.log(EventReservationId);
+
+                $.ajax({
+                    url: '/reservation/eventreservations/SaveEventReservationDetails',
+                    dataType: 'JSON',
+                    data: { EventReservationId: EventReservationId, GuestProfileId: GuestProfileId, Pax: Pax, RoomId: RoomId, Time: Time, TableId: TableId },
+                    method: 'POST',
+                    success: function (data) {
+                        ShowSuccessMessage('Record saved successfully.');
+                        LoadreservationDetailGrid();
+                        LoadExistingEvents();
+                        ClearForm();
+                        LoadEventCombo();
+                    }
+                });
+            }
+        });
+
+        function ClearForm() {
+            $('#event').val('');
+            $('#guest').val('');
+            $('#pax').val('');
+            $('#RoomId').val('');
+            $('#time #Timerange').val('');
+            $('#tableId').val('');
+            $('#EventReservationGrid tr').not(':first-child').remove();
+        }
+
+        $('body').off('click', '#inhouse').on('click', '#inhouse', function (e) {
+            var type = 'inres';
+
+            $.ajax({
+                url: '/reservation/eventreservations/SelectAllGuestName?type=' + type,
+                dataType: 'json',
+                method: 'get',
+                success: function (data) {
+                    $('#guest option').remove();
+                    $(data).each(function (index, item) {
+                        $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#guest'));
+                    });
+                }
+            });
+        });
+
+        $('body').off('click', '#resrvation').on('click', '#resrvation', function (e) {
+            var type = 'res';
+            $.ajax({
+                url: '/reservation/eventreservations/SelectAllGuestName?type=' + type,
+                dataType: 'json',
+                method: 'get',
+                success: function (data) {
+                    $('#guest option').remove();
+                    $(data).each(function (index, item) {
+                        $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#guest'));
+                    });
+                }
+            });
+        });
+
+        $('body').off('click', '#walkIn').on('click', '#walkIn', function (e) {
+           
+            $('#eventReservationArea').hide();
+            $('#createGuestArea').show();
+        });
+
+        function LoadWalkInGuest() {
+            var type = 'wIn';
+            $.ajax({
+                url: '/reservation/eventreservations/SelectAllGuestName?type=' + type,
+                dataType: 'json',
+                method: 'get',
+                success: function (data) {
+                    $('#guest option').remove();
+                    $(data).each(function (index, item) {
+                        $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#guest'));
+                    });
+                }
+            }); 
+        }
+
+        function LoadEventCombo() {
+            var venueCode = $('#venue').val();
+            var currentDate = $('#currentDate').val();
+            var remainingPaxs = 0;
+            $.ajax({
+                url: '/reservation/eventreservations/EventNameSelectByVenue?venueCode=' + venueCode + '&currentDate=' + currentDate,
+                dataType: 'json',
+                method: 'get',
+                success: function (data) {
+                    $('#event option').remove();
+                  
+                    $('<option value="0" >').appendTo($('#event'));
+                    $(data).each(function (index, item) {
+                        remainingPaxs = Number(item.MaxPaxs) - Number(item.ExistingPaxs);
+                        $('#rem').html(remainingPaxs);
+                        $('<option value="' + item.Id + '" data-remaining-paxs="' + remainingPaxs+'">' + item.Name + '</optoin>').appendTo($('#event'));
+                    });
+                }
+            }); 
+
+        }
+
+        function LoadreservationDetailGrid() {
+            var EventReservationId = $('#event').val();
+            console.log(EventReservationId);
+            $.ajax({
+                url: '/reservation/eventreservations/SelectEventReservationDetailsForGrid?EventReservationId=' + EventReservationId,
+                dataType: 'json',
+                method: 'get',
+                beforeSend: function () {
+                    $('#EventReservationGrid tr').not(':first-child').remove();
+                },
+                success: function (data) {
+                    console.log(data);
+                    $(data).each(function (index, item) {
+                        $('<tr class="data-single-filteration">' +
+                            '<td>' +
+                            item.EventReservationNo +
+                            '</td>' +
+                            '<td>' +
+                            item.Name +
+                            '</td>' +
+                            '<td class="text-right">' +
+                            item.Pax +
+                            '</td>' +
+                            '<td  class="text-right">' +
+                            '<a id="btnDelete" style="padding:8px 10px;" data-Id="' + item.Id + '">' +
+                            '<i class="fa fa-trash" style="font-size: 13px;"></i></a>' +
+                            '</td>' +
+                            '</tr>'
+                        ).appendTo("#EventReservationGrid");
+                    });
+                }
+            });
+        }
+
+        $('body').off('change', '#event').on('change', '#event', function (e) {
+            $('#EventReservationGrid tr').not(':first-child').remove();
+           
+            $('#pax').attr('max', $('#event option:selected').attr('data-remaining-paxs'));
+            LoadreservationDetailGrid();
+        })
+
+        $('body').off('click', '#btnDelete').on('click', '#btnDelete', function (e) {
+
+            if (confirm('Are you sure want to delete this event reservation?')) {
+                var Id = $(this).attr("data-Id");
+                $.ajax({
+                    url: '/reservation/eventreservations/DeleteEventReservationDetail?Id=' + Id,
+                    dataType: 'json',
+                    method: 'POST',
+                    success: function (data) {
+                        if (data.startsWith("OK")) {
+                            ShowSuccessMessage("Event reservation removed successfully");
+                            LoadEventCombo();
+                            LoadreservationDetailGrid();                            
+                            LoadExistingEvents();
+                            ClearForm();
+                        }
+                        else { }
+                    }
+                });
+
+            }
+
+        });
+
+    </script>

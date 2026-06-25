@@ -1,0 +1,146 @@
+﻿
+@{
+    ViewBag.Title = "Room Details";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        FillGrid();
+    });
+
+    // show form -----------------------------------
+    $('body').on('click', '.showForm', function (e) {
+        $.ajax({
+            url: '/administration/roomDetails/form',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+        });
+    });
+
+    // show grid -----------------------------------
+
+    $('body').on('click', '.showGrid', function (e) {
+        FillGrid();
+    });
+
+
+    // save --------------------------------------
+    $('body').on('submit', '#roomDetails', function (e) {
+        e.preventDefault();
+
+            var selectedRoomFeaturesArr = [];
+            $('.data-roomFeatures').each(function (index, item) {
+                if ($(item).prop("checked")) {
+                    var itemRoomFeatures = {};
+                    //itemRoomFeatures.Id = $('#Id').prop("checked");
+                    itemRoomFeatures.Id = $(item).attr('data-id');
+                    selectedRoomFeaturesArr.push(itemRoomFeatures);
+                }
+            });
+
+            var roomDetail = {
+                __RequestVerificationToken: $('__RequestVerificationToken').val(),
+                Id: $('#Id').val(),
+                Name: $('#Name').val(),
+                RoomCode: $('#RoomCode').val(),
+                RoomTypeId: $('#RoomTypeId').val(),
+                RoomCategoryId: $('#RoomCategoryId').val(),
+                BedTypeId: $('#BedTypeId').val(),
+                RoomAreaId: $('#RoomAreaId').val(),
+                RoomFloorId: $('#RoomFloorId').val(),
+                ExtentionId: $('#ExtentionId').val(),
+                CleaningCredit: $('#CleaningCredit').val(),
+                RoomIndex: $('#RoomIndex').val(),
+                IsSmokingAllow: $('#IsSmokingAllow').prop("checked"),
+                IsDriverRoom: $('#IsDriverRoom').prop("checked"),
+                ConciderForOccupancy: $('#ConciderForOccupancy').prop("checked"),
+                IsActive: $('#IsActive').prop("checked"),
+                RoomFeatures: selectedRoomFeaturesArr
+            };
+            $.ajax({
+                url: '/administration/roomDetails/save',
+                dataType: 'json',
+                data: roomDetail,
+                method: 'POST',
+                success: function (response) {
+                   
+                    if (response.startsWith("ERR")) {
+                        ShowWarningMessage(response.replace('ERR-',''));
+                    } else {
+                        ShowSuccessMessage('Record has been saved successfully.');
+                    }
+                    FillGrid();
+                }                
+            });       
+    
+    });
+
+
+    // fill grid -------------------------------------
+    function FillGrid() {
+
+        var gridId = "#existingRoomDetailsGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/administration/roomdetails/selectforgrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+
+            }
+        });
+    }
+
+</script>
+

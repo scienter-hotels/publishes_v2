@@ -1,0 +1,369 @@
+﻿<input type="hidden" name="RatecodeheaderId" id="PromotionRatecodeheaderId" value="@ViewBag.ratecodeheaderId" />
+<input type="hidden" name="Arrival" id="PromotionArrival" value="@ViewBag.arrival" />
+<input type="hidden" name="Departure" id="PromotionDeparture" value="@ViewBag.departure" />
+<input type="hidden" name="reservation-applicable-promotions" class="hidden-stringify-json-ApplicablePromotions" />
+<input type="hidden" name="reservationHeaderId" id="ClickedReservationHeaderId" value="@ViewBag.reservationHeaderId" />
+
+@*Anuradha-2024-07-05*@
+<style>
+
+    #applicableDiscountTable th {
+        font-weight: bold;
+        padding: 3px 8px;
+    }
+
+    #applicableDiscountTable td {
+        padding: 3px 8px;
+    }
+
+    #discountPopup {
+        margin-right: -25px;
+    }
+
+        #discountPopup label {
+            color: #000;
+        }
+
+        #discountPopup .form-group {
+            padding-bottom: 10px;
+            margin: -10px 0;
+        }
+
+            #discountPopup .form-group input, .form-group select {
+                font-size: 12px;
+            }
+
+        #discountPopup .the-fieldset {
+            padding-bottom: 15px;
+        }
+
+        #discountPopup .btn.btn-sm {
+            padding: 2px 8px;
+            font-size: 11px;
+        }
+
+</style>
+
+<div class="row" id="discountPopup">
+    <div class="col-md-12">
+        <div class="row appliedDiscounts">
+            <div class="col-md-12">
+                <fieldset class="the-fieldset">
+                    <legend class="the-legend">Applied Discounts/Promotions</legend>
+                    <div class="table-responsive" style="max-height:450px; overflow:auto;">
+                        <table class="table table-striped table-sm" id="alreadyAppliedDiscountTable">
+                            <thead>
+                                <tr>
+                                    <th>Promo Code</th>
+                                    <th>Name</th>
+                                    <th class="text-right"># Free Nights</th>
+                                    <th class="text-right">Discount (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 15px;">
+            <div class="col-md-12">
+                <fieldset class="the-fieldset">
+                    <legend class="the-legend">Add Custom Discount</legend>
+                    <div class="row" style="margin-top:-30px;">
+
+                        <div class="col-md-3">
+                            <label class="control-label">
+                                Promo Code
+                            </label>
+                            <input type="text" class="form-control" name="promoCode" value="CDIS" id="customPromoCode" disabled />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">
+                                Name
+                            </label>
+                            <input type="text" class="form-control" name="name" value="" id="customName" placeholder="Enter name" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">
+                                Discount Percentage
+                            </label>
+                            <select class="select2 form-control" id="discountSelectDropdown">
+                                <option value="0" disabled selected>--Select--</option>
+                                <option value="5">5 % </option>
+                                <option value="10">10 % </option>
+                                <option value="15">15 % </option>
+                                <option value="20">20 % </option>
+                                <option value="25">25 % </option>
+                                <option value="999">Custom </option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">
+                                Add custom discount
+                            </label>
+                            <input type="text" class="form-control" name="name" value="" disabled id="customDiscountValue"  placeholder="Discount" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 text-right">
+                            <button class="btn btn-primary" id="addToGrid">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <fieldset class="the-fieldset">
+                    <legend class="the-legend">Further Applicable Discounts/Promotions</legend>
+                    <div class="table-responsive" style="max-height:450px; overflow:auto;">
+                        <table class="table table-striped table-sm" id="applicableDiscountTable">
+                            <thead>
+                                <tr>
+                                    <th>Promo Code</th>
+                                    <th>Name</th>
+                                    <th class="text-right"># Free Nights</th>
+                                    <th class="text-right">Discount (%)</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <button class="btn btn-success closeModel" id="applyDiscounts" disabled> Apply Selected Discount(s)</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var appliedDiscountArray = [];
+    var appliedDiscountStr = '';
+
+    var promos = "";
+    var isSave = 0;
+
+    $(document).ready(function () {
+        $('.appliedDiscounts').hide();
+        var reservationHeaderId = $('#ClickedReservationHeaderId').val();
+
+        LoadApplicablePromotionsAndDiccounts();
+
+        if (reservationHeaderId > 0) {
+            $('.appliedDiscounts').show();
+            LoadAlreadyAppliedDiscounts();
+
+            setTimeout(function () {
+                RemoveAlreadyAppliedDiscounts();
+            }, 1000);
+        }
+        //else {
+        //    LoadApplicablePromotionsAndDiccounts();
+        //}
+    });
+
+    function LoadApplicablePromotionsAndDiccounts() {
+        var ratecodeheaderId = $('#PromotionRatecodeheaderId').val();
+        var arrival = $('#PromotionArrival').val();
+        var departure = $('#PromotionDeparture').val();
+
+        $.ajax({
+            url: '/Reservation/Reservations/SelectApplicablePromotionsAndDiscounts?ratecodeheaderId=' + ratecodeheaderId + '&arrival=' + arrival + '&departure=' + departure,
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+                $(data).each(function (index, item) {
+                    $(`
+                        <tr class="applied-discounts">
+                            <td class="applied-discount-promo_code" data-discount-id="${item.Id}">${item.PromoCode}</td>
+                            <td class="applied-discount-name">${item.Name}</td>
+                            <td class="text-right applied-discount-free_night">${item.FreeNights}</td>
+                            <td class="text-right applied-discount-precentage">${item.DiscountPercentage}</td>
+                            <td class="text-right"><button class="btn btn-danger btn-sm delete-discount"><span class="glyphicon glyphicon-trash"></button></td>
+                        </tr>
+                    `).appendTo('#applicableDiscountTable tbody');
+                });
+            },
+            error: function (xhr, status, error) {
+            },
+            complete: function () {
+                HideLoader();
+            }
+        });
+    }
+
+    function LoadAlreadyAppliedDiscounts() {
+        var reservationHeaderId = $('#ClickedReservationHeaderId').val();
+
+        $.ajax({
+            url: '/Reservation/ReservationList/SelectAppliedPromotionsAndDiscounts?reservationHeaderId=' + reservationHeaderId,
+            dataType: 'json',
+            success: function (data) {
+                $(data).each(function (index, item) {
+                    $(`
+                        <tr class="already-applied-discounts">
+                            <td class="appliedpromocode" data-discount-id="${item.Id}">${item.PromoCode}</td>
+                            <td class="">${item.Name}</td>
+                            <td class="text-right">${item.FreeNights}</td>
+                            <td class="text-right">${item.Discount}</td>
+                        </tr>
+                    `).appendTo('#alreadyAppliedDiscountTable tbody');
+                });
+            },
+            error: function (xhr, status, error) {
+            },
+            complete: function () {
+                HideLoader();
+            }
+        });
+    }
+
+    $(document).off('change', '#discountSelectDropdown').on('change', '#discountSelectDropdown', function () {
+        var selectedValue = $(this).val();
+        $('#applyDiscounts').attr('disabled', false);
+        if (selectedValue == 999) {
+            $('#customDiscountValue').attr('disabled', false);
+            $('#customDiscountValue').val('');
+        } else {
+            $('#customDiscountValue').attr('disabled', true);
+            $('#customDiscountValue').val(selectedValue);
+
+        }
+    });
+
+    $(document).off('click', '#addToGrid').on('click', '#addToGrid', function () {
+        var customPromoCode = $('#customPromoCode').val();
+        var customName = $('#customName').val();
+        var customDiscountPre = $('#customDiscountValue').val();
+
+        if (customName === '') {
+            alert('Enter a name to continue..');
+        } else if (customDiscountPre === '') {
+            alert('Select a discount or enter discount to continue..');
+        }
+        else {
+
+            $(`
+               <tr class="applied-discounts">
+                   <td class="applied-discount-promo_code" data-discount-id="0">${customPromoCode}</td>
+                   <td class="applied-discount-name">${customName}</td>
+                   <td class="text-right applied-discount-free_night">0</td>
+                   <td class="text-right applied-discount-precentage">${customDiscountPre}</td>
+                   <td class="text-right"><button class="btn btn-danger btn-sm delete-custom-discount"><span class="glyphicon glyphicon-trash"></button></td>
+               </tr>
+            `).appendTo('#applicableDiscountTable tbody');
+
+            $('#addToGrid').prop('disabled', true);
+        }
+    });
+
+    $(document).off('click', '#applyDiscounts').on('click', '#applyDiscounts', function () {
+        appliedDiscountArray = [];
+
+        $('#applicableDiscountTable .applied-discounts').each(function (index, item) {
+            var appliedId = $(item).find('.applied-discount-promo_code').data('discount-id');
+            var appliedPromoCode = $(item).find('.applied-discount-promo_code').text();
+            var appliedName = $(item).find('.applied-discount-name').text();
+            var appliedFreeNights = $(item).find('.applied-discount-free_night').text();
+            var appliedDiscountPre = $(item).find('.applied-discount-precentage').text();
+
+            var ele = {
+                Id: appliedId,
+                PromoCode: appliedPromoCode,
+                Name: appliedName,
+                FreeNights: appliedFreeNights,
+                DiscountPrecentage: appliedDiscountPre,
+            }
+            appliedDiscountArray.push(ele);
+        });
+        appliedDiscountStr = JSON.stringify(appliedDiscountArray);
+        console.log(appliedDiscountArray)
+        $('#grid-record-detail-model-close').click();
+        $('.hidden-stringify-json-ApplicablePromotions').val(appliedDiscountStr);
+
+        var clickedReservationHeaderId = $('#ClickedReservationHeaderId').val();
+        if (clickedReservationHeaderId>0) {
+            PromotionsOrDiscountsPreview(clickedReservationHeaderId);
+        }
+    });
+
+    $(document).off('click', '.delete-custom-discount').on('click', '.delete-custom-discount', function () {
+        $(this).closest('tr').remove();
+        $('#addToGrid').prop('disabled', false);
+        
+        $('#customName').val('');
+        $('#customDiscountValue').val('');
+        $('#discountSelectDropdown').val('0');
+    });
+
+    $(document).off('click', '.delete-discount').on('click', '.delete-discount', function () {
+        $(this).closest('tr').remove();
+    });
+
+    function PromotionsOrDiscountsPreview(reservationHeaderId) {
+
+        promos = $('.hidden-stringify-json-ApplicablePromotions').val();
+        isSave = 0;
+
+        var title = "Preview";
+        var url = "/Reservation/ReservationList/ApplicablePromotionsPreview?reservationHeaderId=" + reservationHeaderId + '&promotions=' + promos + '&isSave=' + isSave;
+        CallDetailModelSimple(title, url, 800);
+    }
+
+    $(document).off('click', '#SavePromotionDiscounts').on('click', '#SavePromotionDiscounts', function () {
+
+        var reservationHeaderId = $('#ClickedReservationHeaderId').val();
+        promos = $('.hidden-stringify-json-ApplicablePromotions').val();
+        isSave = 1;
+
+        $.ajax({
+            url: '/Reservation/ReservationList/ApplyPromotionsOrDiscounts',
+            dataType: 'JSON',
+            data: { reservationHeaderId: reservationHeaderId, promotions: promos, isSave: isSave },
+            method: 'POST',
+            success: function (data) {
+                if (data.startsWith("ERR-")) {
+                    ShowWarningMessage(data.replace("ERR-", ""));
+                } else {
+                    ShowSuccessMessage('Promotion(s) successfully updated.');
+                    LoadReservationGrid();
+                    closeFullContent();
+                    setTimeout(function () {
+                        $('#grid-record-detail-model-close').click();
+                        closeFullContent();
+                    }, 1000);
+                }
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error updating room rates.');
+            }
+        });
+    });
+
+    function RemoveAlreadyAppliedDiscounts() {
+        $('#alreadyAppliedDiscountTable tbody .appliedpromocode').each(function () {
+            var promoCode = $(this).text().trim();
+         
+            $('#applicableDiscountTable tbody .applied-discount-promo_code').each(function () {
+                var tableTwoPromoCode = $(this).text().trim();
+               
+                if (promoCode === tableTwoPromoCode) {
+                    $(this).closest('tr').remove();
+                }
+            });
+        });
+    }
+</script>

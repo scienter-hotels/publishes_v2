@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.RoomCategory>
+
+<table class="table roomDetail table-striped" data-grid-sortable="true">
+    <tr>
+        <th class="text-primary label-data text-left table-data" style=" width:60px">
+            Category
+        </th>
+        <th class="text-primary label-data text-left" style=" width:60px">
+            Availability
+        </th>
+        @*<th class="text-primary text-right" style=" width:60px"></th>*@
+        @if (Model.Count() > 0)
+        {
+            foreach (var roomType in Model.FirstOrDefault().RoomTypes)
+            {
+                <th class="text-primary room-type-inEach-tr label-data text-right" style="  width:60px">
+                    <input type="hidden" data-room-name="@roomType.Name" id="roomTypeId" value="@roomType.Id" />
+                    @roomType.Name
+                </th>
+            }
+        }
+    </tr>
+    @foreach (var item in Model)
+    {
+    <tr class="data-roomDetail">
+        <input type="hidden" class="hidden-room-cat-name" id="roomCatId" value="@item.Id" data-itrm-name="@item.Name" min="0" />
+        <input type="hidden" class="hidden-promo-val" id="promoval" value="0" min="0" />
+        <td class="label-data" style=" width:60px">@item.Prefix</td>
+        <td class="label-data" style=" width:60px">@item.FinalAvailable</td>
+        @*<td class="label-data" style=" width:60px">
+            <div class="form-group checkbox">
+                <label>
+                    <input class="room-checkBox" id="Id" type="checkbox" value="" style="padding-left:5px; width:60px" />
+                </label>
+            </div>
+        </td>*@
+        @if (Model.Count() > 0)
+        {
+            foreach (var roomType in Model.FirstOrDefault().RoomTypes)
+            {
+                <td data-cat-id="@item.Id" data-type-id="@roomType.Id">
+
+
+                    <input type="hidden" class="data-room-type" id="roomTypeId" value="@roomType.Id" data-room-type-name="@roomType.Name" min="0" />
+                    <input type="number" class="form-control room-count text-right" data-roomCategory-id="@item.Prefix" data-roomType-id="@roomType.Prefix" value="0" min="0" id="roomCount" data-max-availability="@item.ActualAvailable"  data-maxheadcount="@roomType.MaxAdultCount" data-max-adult-count="@roomType.MaxAdultCount" data-max-child-count="@roomType.MaxChildCount" />
+
+                </td>
+            }
+        }
+    </tr>
+    }
+    </table>

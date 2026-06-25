@@ -1,0 +1,245 @@
+﻿
+@{
+    ViewBag.Title = "Module";
+}
+
+
+<style>
+
+    .text-card {
+        color: #fff;
+    }
+
+    .bg-c-blue {
+        background: linear-gradient(45deg,#4099ff,#1e62b0);
+    }
+
+    .bg-c-green {
+        background: linear-gradient(45deg,#2ed8b6,#03A9F4);
+    }
+
+    .bg-c-yellow {
+        background: linear-gradient(45deg,#d5bb96,#e89011);
+    }
+
+    .bg-c-pink {
+        background: linear-gradient(45deg,#FF5370,#bf0c29);
+    }
+    .bg-c-purple {
+        background: linear-gradient(45deg,#b663a8,#9C27B0);
+    }
+    .bg-c-orange {
+        background: linear-gradient(45deg,#ff5a40,#FFC107);
+    }
+    .bg-c-gre {
+        background: linear-gradient(45deg,#009688,#673AB7);
+    }
+    .bg-c-bl {
+        background: linear-gradient(45deg,#40ff46,#1e62b0);
+    }
+    .bg-c-red {
+        background: linear-gradient(45deg,#ff40408a,#d50f00);
+    }
+    
+
+    .card {
+        border-radius: 0px;
+        -webkit-box-shadow: 0 1px 2.94px 0.06px rgba(4,26,55,0.16);
+        box-shadow: 0 1px 2.94px 0.06px rgba(4,26,55,0.16);
+        border: none;
+        margin-bottom: 30px;
+        -webkit-transition: all 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
+        margin: 5px 0 10px 0;
+    }
+
+        .card .card-block {
+            padding: 25px;
+        }
+
+    .order-card i {
+        font-size: 26px;
+    }
+
+    .f-left {
+        float: left;
+    }
+
+    .f-right {
+        float: right;
+    }
+
+    .p-l-r-0 {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+    .card-padding {
+        padding: 0em 1.2em 0em 0em;
+    }
+
+    .card img {
+        width: 3em;
+        float: right;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-xl-3 p-l-r-0 card-padding">
+            <div class="card bg-c-blue text-card">
+                <div class="card-block">
+                    @*<h6 class="m-b-20">Production</h6>
+                    <h2 class="text-right"><i class="fa fa-cart-plus f-left"></i><span>486</span></h2>
+                    <p class="m-b-0">Completed Orders<span class="f-right">351</span></p>*@
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h3 class="m-b-20 text-left">Production</h3>
+                        </div>
+                        <div class="col-md-7">
+                            <h2 class="text-right">
+                                <img src="~/Images/module/production.png" class="img-responsive" alt="Production" />
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-xl-3 p-l-r-0 card-padding">
+            <div class="card bg-c-green text-card">
+                <div class="card-block">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h3 class="m-b-20 text-left">Human Resources</h3>
+                        </div>
+                        <div class="col-md-7">
+                            <h2 class="text-right">
+                                <img src="~/Images/module/team.png" class="img-responsive" alt="Human Resources" />
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-xl-3 p-l-r-0 card-padding">
+            <div class="card bg-c-pink text-card">
+                <div class="card-block">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h3 class="m-b-20 text-left">Planning</h3>
+                        </div>
+                        <div class="col-md-7">
+                            <h2 class="text-right">
+                                <img src="~/Images/module/notebook.png" class="img-responsive" alt="Planning" />
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xl-3 p-l-r-0 card-padding">
+            <div class="card bg-c-yellow text-card">
+                <div class="card-block">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h3 class="m-b-20 text-left">Inventory Management</h3>
+                        </div>
+                        <div class="col-md-7">
+                            <h2 class="text-right">
+                                <img src="~/Images/module/team-management.png" class="img-responsive" alt="Inventory Management" />
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xl-3 p-l-r-0 card-padding">
+            <div class="card bg-c-purple text-card">
+                <div class="card-block">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h3 class="m-b-20 text-left">Reporting</h3>
+                        </div>
+                        <div class="col-md-7">
+                            <h2 class="text-right">
+                                <img src="~/Images/module/stats.png" class="img-responsive" alt="Reporting" />
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xl-3 p-l-r-0 card-padding">
+            <div class="card bg-c-orange text-card">
+                <div class="card-block">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h3 class="m-b-20 text-left">CRM</h3>
+                        </div>
+                        <div class="col-md-7">
+                            <h2 class="text-right">
+                                <img src="~/Images/module/customer-relationship-management.png" class="img-responsive" alt="CRM" />
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xl-3 p-l-r-0 card-padding">
+            <div class="card bg-c-gre text-card">
+                <div class="card-block">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h3 class="m-b-20 text-left">Sales & Marketing</h3>
+                        </div>
+                        <div class="col-md-7">
+                            <h2 class="text-right">
+                                <img src="~/Images/module/shopping-online.png" class="img-responsive" alt="Sales & Marketing" />
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xl-3 p-l-r-0 card-padding">
+            <div class="card bg-c-bl text-card">
+                <div class="card-block">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h3 class="m-b-20 text-left">Finance & Accounting</h3>
+                        </div>
+                        <div class="col-md-7">
+                            <h2 class="text-right">
+                                <img src="~/Images/module/finance.png" class="img-responsive" alt="Finance & Accounting" />
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-xl-3 p-l-r-0 card-padding">
+            <div class="card bg-c-red text-card">
+                <div class="card-block">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h3 class="m-b-20 text-left">Purchase</h3>
+                        </div>
+                        <div class="col-md-7">
+                            <h2 class="text-right">
+                                <img src="~/Images/module/market.png" class="img-responsive" alt="Purchase" />
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+

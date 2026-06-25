@@ -1,0 +1,457 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.ViewModels.ReservationDetailWiseRoomRateView>
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-15---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+    .redBackground {
+        background-color: #ff5050;
+    }
+</style>
+
+<input type="hidden" id="ReservationType" value="@ViewBag.ReservationType" />
+<input type="hidden" id="resId" class="resId" value="@ViewBag.resId" />
+<input type="hidden" id="Path" class="Path" value="@ViewBag.Path" />
+<input type="hidden" id="folioDId" />
+<input type="hidden" id="iscmp" />
+<input type="hidden" id="isDormitory" name="isDormitory" value="@ViewBag.IsDormitory" required />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+<div class="row">
+    <div class="col-md-2" style="margin-top:-11px;">
+        <fieldset class="the-fieldset">
+            <legend class="the-legend">Reservation No</legend>
+            <div id="IsTaxInclusive-block">
+
+            </div>
+            <div class="col-md-12" style="padding:3px;  height:405px; overflow-y:scroll" id="reservationNumbersLoadingArea">
+
+            </div>
+        </fieldset>
+    </div>
+    <div class="col-md-10">
+        <div class="custom-accordian">
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#accomadationCollape" aria-expanded="true" aria-controls="collapseOne">
+                                <i class="more-less glyphicon glyphicon-minus"></i>
+                                Accomadation Chargers
+                            </a>
+                        </h4>
+                    </div>
+                    <form id="accomadationRateList">
+                        <div id="accomadationCollape" class="panel-collapse in" role="tabpanel" aria-labelledby="headingOne">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-md-12" id="accommodationRoomRateDetails">
+                                        <div class="col-md-12" style="background-color:#f8f8f8; min-height: 150px; height: 180px; overflow-y:scroll;">
+                                            <table class="table table-striped" id="accommodationRoomRateGrid">
+                                                <tr>
+                                                    <th width="50px"></th>
+                                                    <th class="text-primary">Reservation Date</th>
+                                                    <th class="text-primary">Room</th>
+                                                    <th class="text-primary">Room Type</th>
+                                                    <th class="text-primary">Meal Plan</th>
+                                                    <th class="text-primary">Curr.</th>
+                                                    <th class="text-primary text-right">C.Rate</th>
+                                                    <th class="text-primary text-right">Room Rate</th>
+                                                    <th class="text-primary text-center">Comp.</th>
+
+                                                </tr>
+
+
+                                                @if (Model.Count > 0)
+                                                {
+                                                    foreach (var item in Model)
+                                                    {
+                                                        <tr class="data-single-record">
+                                                            <td>
+                                                                <div class="form-group checkbox">
+                                                                    <label>
+                                                                        <input type="checkbox" class="selected-reservation-detail" reservationDetailId="@item.ReservationDetailId" isComplntry="@item.IsComplimentory" roomId="@item.RoomId" mealPlanId="@item.MealPlanId" conversionRate="@item.ConvertionRate" amount="@item.RoomRate" roomTypeID="@item.RoomTypeId" reservationDate="@item.ReservationDate" arrival="@item.Arrival" departure="@item.Departure" />
+                                                                    </label>
+                                                                </div>
+                                                            </td>
+                                                            <td>@Convert.ToDateTime(item.ReservationOn).ToString("dd/MM/yyyy")</td>
+                                                            <td>@item.RoomCode</td>
+                                                            <td>@item.RoomType</td>
+                                                            <td title="@item.MealPlan">@(item.MealPlan.Length > 10 ? item.MealPlan.Substring(0, 5) + "..." : item.MealPlan)</td>
+                                                            <td>@item.CurrencyCode</td>
+                                                            <td class="text-center number">@Convert.ToDecimal(item.ConvertionRate).ToString("#,##0.00")</td>
+                                                            <td class="text-center number">@Convert.ToDecimal(item.RoomRate).ToString("#,##0.00")</td>
+                                                            <td class="text-center">
+                                                                @{
+                                                                    string chk = "";
+                                                                    if (item.IsComplimentory == 1)
+                                                                    {
+                                                                        chk = "checked";
+                                                                    }
+
+                                                                    <input type="checkbox" value="@item.IsComplimentory" @chk readonly />
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td colspan="15">No Records</td>
+                                                    </tr>
+
+                                                }
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="padding:0px 10px; border:1px #eaeaea solid; margin-bottom:10px;">
+                                    <div class="row">
+                                        <div class="col-md-3"><div class="form-group  label-floating"><label class="required control-label">Room Type</label><select name="rMTId" id="rMTId" class="select2 form-control" required><option></option></select></div></div>
+                                        <div class="col-md-3"><div class="form-group  label-floating"><label class="required control-label">Meal Plan</label><select name="mPlanId" id="mPlanId" class="select2 form-control" required><option></option></select></div></div>
+                                        <div class="col-md-1"><div class="form-group  label-floating"> <label class="control-label">Conversion</label><input disabled class="form-control convsn number" type="number" min="0" /> </div></div>
+                                        <div class="col-md-1"><div class="form-group  label-floating"> <label class="control-label">Amount</label><input class="form-control amnt number" type="text" min="0" /></div></div>
+                                        <div class="col-md-2"><div class="form-group checkbox"><label><input type="checkbox" id="isAllRates" class="isAllRates" /> Update All nights</label></div></div>
+                                        <div class="col-md-2"><div class="form-group text-right"><button type="submit" class="btn btn-primary" id="btnUpdateRoomRate">Update<span class="glyphicon "></span></button></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingOne">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#extraPostingCollaps" aria-expanded="true" aria-controls="collapseOne">
+                                <i class="more-less glyphicon glyphicon-minus"></i>
+                                Extra Postings
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="extraPostingCollaps" class="panel-collapse in" role="tabpanel" aria-labelledby="headingOne">
+                        <div class="panel-body">
+                            <div id="existingFolioDetails">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.number.formatting.js"></script>
+
+<script src="~/Scripts/ui/reservation-list/side-buttons/manage-roomrate.js"></script>
+
+@*<script>
+        var isDormitory = 0
+        var mealPlanId = 0
+        var roomTypeId = 0
+        var arrival;
+        var departure;
+        $(document).ready(function () {
+            $('.select2').select2();
+
+            setTimeout(function () {
+                $('.select2.select2-container').addClass('form-control');
+                $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+                $('.select2-selection__arrow').css('display', 'none');
+                $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+            }, 900);
+
+            $('body').off('click', '.select2').on('click', '.select2', function () {
+                setTimeout(function () {
+                    $('.select2-results ul li').removeClass('select2-results__option--selected');
+                }, 200);
+            });
+
+            var reservationHeaderId = $('#resId').val();
+            var Type = $('#ReservationType').val();
+
+            LoadReservationNumbers(reservationHeaderId, Type);
+
+            setTimeout(function () {
+                var IsTaxInclusive = $('#res-status').val();
+                if (IsTaxInclusive == "true") {
+                    $(
+                        '<button type="button" disabled class="btn btn-success" style="color: white;font-weight: bold;">TAX INC </button>'
+                    ).appendTo("#IsTaxInclusive-block");
+                } else {
+                    $(
+                        '<button type="button" disabled class="btn btn-primary" style="color: white;font-weight: bold;">TAX EXC </button>'
+                    ).appendTo("#IsTaxInclusive-block");
+                }
+
+                $.each($('.checbox-item'), function (index, item) {
+                    if ($(item).prop('checked')) {
+                        arrival = $(item).attr('date-arrival');
+                        departure = $(item).attr('date-departure');
+                    }
+                });
+
+                $.each($('.checbox-item'), function (index, item) {
+                    if (($(item).attr('date-arrival') != arrival) || ($(item).attr('date-departure') != departure)) {
+                      //  alert($(item).attr('reservation-no'));
+                        $(this).attr('disabled', true);
+                    }
+                });
+
+                FillOtherFolioDetails();
+
+            }, 3000);
+
+            // accordian -----------------------------------------
+            function toggleIcon(e) {
+                $(e.target)
+                    .prev('.panel-heading')
+                    .find(".more-less")
+                    .toggleClass('glyphicon-plus glyphicon-minus');
+            }
+            $('.panel-group').on('hidden.bs.collapse', toggleIcon);
+            $('.panel-group').on('shown.bs.collapse', toggleIcon);
+            //end accordian -----------------------------------------
+        });
+
+        function LoadMealPlan(isDormitory) {
+            var reservationForId = 0;
+            if (isDormitory == 1) {
+                reservationForId = 2
+            }
+
+            var rowData = localStorage.getItem("MealPlans");
+            var data = JSON.parse(rowData);
+            $('#mPlanId option').remove();
+            debugger;
+            $(data).each(function (index, item) {
+                if (item.IsDormitory && item.DomitoryCategoryId == reservationForId) {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#mPlanId'));
+                } else {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#mPlanId'));
+                }
+            });
+            $('#mPlanId').val(mealPlanId);
+
+            //$.ajax({
+            //    url: '/Administration/MealPlans/SelectMealPlanForAddRoom?isDormitory=' + isDormitory,
+            //    dataType: 'json',
+            //    method: 'get',
+            //    success: function (data) {
+            //        $('#mPlanId option').remove();
+            //        $(data).each(function (index, item) {
+            //            $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#mPlanId'));
+            //        });
+            //    },
+            //    complete: function () {
+            //        $('#mPlanId').val(mealPlanId);
+            //    }
+            //});
+        }
+
+        function LoadRoomType(isDormitory) {
+            var reservationForId = 0;
+            if (isDormitory == 1) {
+                reservationForId = 2
+            }
+
+            var rowData = localStorage.getItem("RoomTypes");
+            var data = JSON.parse(rowData);
+            $('#rMTId option').remove();
+            debugger;
+            $(data).each(function (index, item) {
+                if (item.IsDormitory && item.DomitoryCategoryId == reservationForId) {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#rMTId'));
+                } else {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#rMTId'));
+                }
+            });
+            $('#rMTId').val(roomTypeId);
+            //$.ajax({
+            //    url: '/Administration/RoomTypes/SelectRoomTypesForAddRoom?isDormitory=' + isDormitory,
+            //    dataType: 'json',
+            //    method: 'get',
+            //    success: function (data) {
+            //        $('#rMTId option').remove();
+            //        $(data).each(function (index, item) {
+            //            $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#rMTId'));
+            //        });
+            //    },
+            //    complete: function () {
+            //        $('#rMTId').val(roomTypeId);
+            //    }
+            //});
+        }
+
+        $('body').off('click', '#accommodationRoomRateGrid tr').on('click', '#accommodationRoomRateGrid tr', function () {
+            var conversion = parseFloat($(this).find('input.selected-reservation-detail').attr('conversionRate'));
+            var amount = parseFloat($(this).find('input.selected-reservation-detail').attr('amount'));
+            mealPlanId = $(this).find('input.selected-reservation-detail').attr('mealPlanId');
+            roomTypeId = $(this).find('input.selected-reservation-detail').attr('roomTypeID');
+            isDormitory = $('#isDormitory').val();
+
+            $('.convsn').val(conversion);
+            $('.amnt').val(amount);
+
+            LoadMealPlan(isDormitory);
+            LoadRoomType(isDormitory);
+        });
+
+        //Select All----------------------------------------------------------------------------------------------------------------------
+        $('body').off('click', '#isAllRates').on('click', '#isAllRates', function () {
+            if ($('#isAllRates').is(':checked')) {
+                $('.selected-reservation-detail').not(':disabled').prop('checked', true);
+
+            } else {
+                $('.selected-reservation-detail').prop('checked', false);
+            }
+        });
+        //----------------------------------------------------------------------------
+
+        $('body').off('submit', '#accomadationRateList').on('submit', '#accomadationRateList', function (e) {
+            e.preventDefault();
+            var selectedReservations = [];
+            var res = {};
+            $.each($('.checbox-item'), function (index, item) {
+                if ($(item).prop('checked')) {
+                    res = {
+                        ReservationHeaderId: $(item).val()
+                    }
+                    selectedReservations.push(res);
+                }
+            });
+
+            var selectedReservationRoomRateList = [];
+            var isRecordSelected = false;
+
+            $('.data-single-record').each(function (index, item) {
+                //if ($($(item).find('.selected-reservation-detail')).prop('checked')) {
+                //    isRecordSelected = true;
+                //    return false;
+                //}
+
+                //if (isRecordSelected == false) {
+                //    ShowWarningMessage('Please select at-least one item.');
+                //}
+                //else {
+                    RemoveFormatNumber();
+                    if ($('#isAllRates').attr('type') === 'checkbox') {
+                        var isAll = +$('#isAllRates').is(':checked');
+                    }
+
+                    $('.data-single-record').each(function (index, item) {
+                        var record = {};
+                        if ($($(item).find('.selected-reservation-detail')).prop('checked')) {
+                            record = {
+                                MealPlanID: $('#mPlanId').val(),
+                                RoomTypeID: $('#rMTId').val(),
+                                ReservationDate: $($(item).find('.selected-reservation-detail')).attr('reservationDate'),
+                                IsComplimentory: $($(item).find('.selected-reservation-detail')).attr('isComplntry'),
+                                RoomRate: $('.amnt').val(),
+                                ConvertionRate: $('.convsn').val(),
+                                IsAll: isAll
+                            }
+                            selectedReservationRoomRateList.push(record);
+                        }
+                });
+
+                    $.ajax({
+                        url: '/reservation/ReservationList/ReservationRoomRateUpdate',
+                        dataType: 'JSON',
+                        data: { selectedRoomRates: selectedReservationRoomRateList, selectedReservations: selectedReservations },
+                        method: 'POST',
+                        success: function (response) {
+                            var Type = $('#ReservationType').val();
+                            if (response.startsWith("ERR-")) {
+                                ShowWarningMessage(response.replace("ERR-", ""));
+                            } else {
+                                $('#isAllRates').prop('checked', false);
+                                ShowSuccessMessage('Room rates successfully updated.');
+                                setTimeout(function () {
+                                    if (Type == "reservation") {
+                                        closeFullContent();
+                                        LoadReservationGrid();
+                                    } else if ($('#Path').val() == "chart") {
+                                        setTimeout(function () {
+                                            LoadCalenderByDateRange();
+                                            $('#grid-record-detail-model-close').click();
+                                        }, 1000);
+                                    }
+                                    else {
+                                        closeFullContent();
+                                        LoadReservationGrid();
+                                    }
+                                }, 5000);
+
+                                $('#mPlanId').val('');
+                                $('#rMTId').val('');
+                                $('.amnt').val('');
+                                $('.convsn').val('');
+                                $('#isCompli').prop('checked', false);
+                                FormatNumbers();
+                            }
+
+                        },
+                        error: function (xhr, status, error) {
+                            ShowErrorMessage('Sorry, There is an error updating room rates.');
+                        }
+                    });
+                //}
+            });
+        });
+
+        function FillOtherFolioDetails() {
+
+            $.ajax({
+                url: '/reservation/ReservationList/FolioDetailSelect?resNo=' + $('#resId').val() + '&ChargeType=' + 'AD',
+                dataType: 'HTML',
+                method: 'POST',
+                success: function (response) {
+
+
+                    $('#existingFolioDetails').html('').fadeOut();
+                    $('#existingFolioDetails ').html(response).fadeIn();
+
+
+                },
+                error: function (xhr, status, error) {
+                    ShowErrorMessage('Sorry, There is an error loading existing setups.');
+                }
+            });
+        }
+    </script>*@

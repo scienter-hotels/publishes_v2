@@ -1,0 +1,172 @@
+﻿
+<style>
+    .restable tr {
+        background-color: #fff !important;
+    }
+
+    .restable td {
+        text-align: left !important;
+        font-size: 12px !important;
+    }
+</style>
+<div class="row">
+    <div class="col-md-6">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Select Reservation *</label>
+                        <select class="select2 form-control" id="ReservationCombo" required>
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            @*<div id="ReservationList" class="tab-pane fade in active">
+            <label class="control-label" style="font-weight:bold; font-size:small;padding-left:20px;">Select Reservation</label>
+            <div class="col-md-11">
+                @*<select class="form-control" id="ReservationCombo"></select>
+                <select class="form-control ReservationCombo" id="ReservationCombo" required>
+                    <option value=""></option>
+                </select>
+            </div>
+            <div>
+                <p style="margin-top:9px;font-size:20px;position:relative;float:left;margin-left:-33px;"> &#9662;</p>
+            </div>
+        </div>*@
+            @*<ul class="nav nav-tabs">
+            <li class="active" id="Reservation_nav"><a data-toggle="tab" href="#ReservationList">Reservation</a></li>
+            @*<li id="inhouse_nav"><a data-toggle="tab" href="#inhouseList">In House</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div id="ReservationList" class="tab-pane fade in active">
+                <label class="control-label" style="font-weight:bold; font-size:small;padding-left:20px;">Select Reservation</label>
+                <div class="col-md-11">
+                    @*<select class="form-control" id="ReservationCombo"></select>
+                    <select class="form-control ReservationCombo" id="ReservationCombo" required>
+                        <option value=""></option>
+                    </select>
+                </div>
+                <div>
+                    <p style="margin-top:9px;font-size:20px;position:relative;float:left;margin-left:-33px;"> &#9662;</p>
+                </div>
+            </div>
+            @*<div id="inhouseList" class="tab-pane fade">
+                <label class="control-label label-floating" style="font-weight:bold; font-size:small;padding-left:20px;">Select in house</label>
+                <div class="col-md-11">
+                    <select class="form-control" id="inhouseReservations"></select>
+                </div>
+                <div>
+                    <p style="margin-top:9px;font-size:20px;position:relative;float:left;margin-left:-33px;"> &#9662;</p>
+                </div>
+
+            </div>
+        </div>*@
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <fieldset class="the-fieldset" style="height:120px;">
+            <legend class="the-legend">Reservation Details</legend>
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <table class="restable">
+                        <tr>
+                            <td style="width:10px;">Res#:&nbsp;</td>
+                            <td id="resNo"></td>
+                        </tr>
+                        <tr>
+                            <td style="width:10px;">Room#:&nbsp;</td>
+                            <td id="roomNo"></td>
+                        </tr>
+
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <table class="restable">
+                        <tr>
+                            <td style="width:10px;">Arrival:&nbsp;</td>
+                            <td id="arrival"></td>
+                        </tr>
+                        <tr>
+                            <td style="width:10px;">Departure:&nbsp;</td>
+                            <td id="depature"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="restable">
+                        <tr style="background-color: #fff !important;">
+                            <td style="width:45px !important;">Guest:&nbsp;</td>
+                            <td id="guest"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<script>
+    //$('#ReservationList').click(function () {
+    //    $('#ReservationList').show();       
+    //});
+
+    //function FillDropDownReservation() {
+    //    $.ajax({
+    //        url: '/CashieringAndPosting/SchedulePosting/ReservationList',
+    //        dataType: 'json',
+    //        method: 'GET',
+    //        success: function (response) {
+
+    //            // $.each(JSON.parse(response), function (index, item) {
+    //            $.each(response, function (index, item) {
+
+    //                $('<option value="' + index + '" res-no="' + item.ResNo + '" gres_no="' + item.GResNo + '" name="' + item.Name + '" roomCode="' + item.RoomCode + '"  roomId="' + item.RoomId + '" guestprofId="' + item.GuestProfileId + '" arr-date="' + fomatTime(item.Arrival, 'd') + '" dep-date="' + fomatTime(item.Departure, 'd') + '" > ' + item.ResNo + '--' + item.Name + '</option>').appendTo($('#cmbAllReservationRooms'));
+
+    //            })
+    //            $('#reservationDatesLoadingArea').html('');
+    //            $('#cmbAllReservationRooms').editableSelect();
+    //        },
+    //        error: function (error) {
+    //            ShowErrorMessage('Sorry, There is an error in loading records.');
+    //        }
+    //    });
+    //}
+
+    //$('#inhouseList').click(function () {
+
+    //    $('#inhouseList').show();
+    //});
+
+
+    //function FillDropDownInhouse() {
+    //    $.ajax({
+    //        url: '/CashieringAndPosting/SchedulePosting/InHouseReservationList',
+    //        dataType: 'json',
+    //        method: 'GET',
+    //        success: function (response) {
+    //            $.each(response, function (index, item) {
+
+    //                $('<option value="' + index + '" res-no="' + item.ResNo + '" gres_no="' + item.GResNo + '" name="' + item.Name + '" roomCode="' + item.RoomCode + '"  roomId="' + item.RoomId + '" guestprofId="' + item.GuestProfileId + '" arr-date="' + fomatTime(item.Arrival, 'd') + '" dep-date="' + fomatTime(item.Departure, 'd') + '" > ' + item.RoomCode + ' --' + item.Name + '</option>').appendTo($('#inhouseReservations'));
+
+    //            })
+    //            $('#reservationDatesLoadingArea').html('');
+    //            $('#inhouseReservations').editableSelect();
+    //        },
+    //        error: function (error) {
+    //            ShowErrorMessage('Sorry, There is an error in loading records.');
+    //        }
+    //    });
+
+
+    //}
+
+
+</script>
+

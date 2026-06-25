@@ -1,0 +1,245 @@
+﻿@model Scienter.HotelERP.Common.Domain.AdvanceRequestOnline
+@{
+    ViewBag.Title = "RequestOnlineAdvance";
+    Layout = null;
+}
+
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+
+    .card-content{
+        padding: 0 30px;
+
+    }
+</style>
+
+<input type="hidden" id="resId" class="resId" value="@ViewBag.reservationHeaderId" />
+<input type="hidden" id="guestId" class="guestId" value="" />
+<input type="hidden" id="reservationUuid" class="reservationUuid" value="" />
+<input type="hidden" id="CurrencyCode" value="@Model.CurrencyCode" />
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#" onclick="showRequestForm()">Request Advance Payment</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#" onclick="showExistingTable()">Existing Advance Payment</a>
+    </li>
+</ul>
+
+
+<form id="RequetrAdvanceForm">
+    <div class="card-content">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group label-floating">
+                    <label class="required control-label">Guest Name:</label>
+                    <input type="text" id="GuestName" name="GuestName" value="@Model.GuestName" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Total Amount(@Model.CurrencyCode):</label>
+                    <input type="number" id="TotalAmount" name="TotalAmount" value="@Convert.ToDecimal(Model.TotalAmount)" class="form-control" required disabled />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Payable Amount(@Model.CurrencyCode):</label>
+                    <input type="number" id="PayableAmount" name="PayableAmount" value="@Convert.ToDecimal(Model.PayableAmount)" class="form-control" required disabled />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Type:</label>
+                    <select class="select2 form-control" id="typeId" required>
+                        <option value="P">Percentage</option>
+                        <option value="V">Value</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Payment Mode:</label>
+                    <select class="select2 form-control" id="PaymentMode" required>
+                        <option value="Online">Online</option>
+                        <option value="Bank Details">Offline</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <input type="text" id="Currancy" name="Currancy" value="@Model.CurrencyCode" class="form-control" required disabled />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <label class="required control-label" id="lbpaidAmount">
+                        Advance Value:
+                    </label>
+                    <input type="number" id="PaidAmount" name="PaidAmount" class="form-control" step="any" required>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+
+                    @{
+                        decimal advanceMinValue;
+                        if (Model.CurrencyCode == "USD")
+                        {
+                            advanceMinValue = 15;
+                        }
+                        else
+                        {
+                            advanceMinValue = 5000;
+                        }
+                    }
+
+                    <label class="required control-label">Advance Amount(@Model.CurrencyCode):</label>
+                    <input type="number" id="AmountId" name="AmountId" min="@advanceMinValue" class="form-control AmountId" disabled>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Due Amount(@Model.CurrencyCode):</label>
+                    <input type="number" id="DueAmount" name="DueAmount" class="form-control DueAmount" disabled>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Email:</label>
+                    <input type="text" id="Email" name="Email" class="form-control" value="@Model.EmailTo" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Email CC:</label>
+                    <input type="text" id="EmailCCTo" name="EmailCCTo" placeholder="" class="form-control" value="@Model.EmailCCTo">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group label-floating">
+                    <label class="required control-label">Subject:</label>
+                    @if (Model.GroupReservationNo.Length > 0)
+                    {
+                        <input type="text" id="Subject" name="Subject" placeholder="" class="form-control" value="Advance Payment for @Model.GroupReservationNo">
+                        
+                    }
+                    else
+                    {
+                        <input type="text" id="Subject" name="Subject" placeholder="" class="form-control" value="Advance Payment for @Model.ReservationNo">
+                        
+                    }
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group label-floating">
+                    <label class="required control-label">Body:</label>
+                    @if (Model.GroupReservationNo.Length > 0)
+                    {
+                        <input type="text" id="Body" name="Body" placeholder="" class="form-control" value="Advance Payment for @Model.GroupReservationNo">     
+                        
+                    }
+                    else
+                    {
+                        <input type="text" id="Body" name="Body" placeholder="" class="form-control" value="Advance Payment for @Model.ReservationNo">
+                        
+                    }
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row d-flex justify-content-end">
+            <div class="col-md-8"></div>
+            <div class="col-md-2">
+                <button type="submit" id="btnAdd" value="Send" class="btn btn-primary" style="width:100%">
+                    Send
+                </button>
+            </div>
+            <div class="col-md-2">
+                <button type="reset" id="btnClear" value="Clear" class="btn btn-default" style="width:100%">
+                    Clear
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="" id="content" style="padding:15px 30px 0 30px;">
+        <div class="">
+            <div class="row">
+                <div class="col-md-12 " id="main-grid-content">
+                    <div class="table-responsive">
+                        <table class="table font-size-12px" id="ExistingAdvancePayment">
+                            <thead >
+                                <tr>
+                                    <th style="font-weight:bold;" class="col-md-1" >Doc No</th>
+                                    <th style="font-weight:bold;" class="col-md-1" >PMS Doc No</th>
+                                    <th style="font-weight:bold; text-align:center" class="col-md-1">Amount</th>
+                                    <th style="font-weight:bold;" class="col-md-1">Mode</th>
+                                    <th style="font-weight:bold;" class="col-md-1">Request D/T</th>
+                                    <th style="font-weight:bold;" class="col-md-1">Status</th>
+                                    <th style="font-weight:bold;" class="col-md-1">User</th>
+                                    <th style="font-weight:bold;" class="col-md-1">IPG Cre D/T</th>
+                                    <th style="font-weight:bold;" class="col-md-1">IPG Txn D/T</th>
+                                    <th style="font-weight:bold;" class="col-md-1"></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+<script src="~/Scripts/ui/reservation-list/side-buttons/request-online-advance.js"></script>

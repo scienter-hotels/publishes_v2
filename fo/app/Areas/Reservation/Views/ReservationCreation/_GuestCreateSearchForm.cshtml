@@ -1,0 +1,329 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.GuestProfileView
+
+<style>
+    .required:after {
+        content: " *";
+        color: #e32;
+    }
+
+    .row-mt-custom {
+        margin-bottom: -16px;
+    }
+
+    .searchBox {
+    margin-top:-26px;
+    }
+
+    .form-group {
+        padding-bottom: 10px;
+        margin: 24px 0 0 0;
+    }
+</style>
+
+@*<script src="~/Scripts/ui/reservation-creation/reservation-creation.js"></script>*@
+
+<div class="searchBox">
+
+    <div class="row row-mt-custom">
+        <div class="col-md-12">
+            <div class="form-group label-floating">
+                <label class="control-label required">First Name</label>
+                <input type="text" name="FirstName" id="FirstName" class="form-control" value="@Model.FirstName" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-mt-custom">
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label required">Last Name</label>
+                <input type="text" name="LastName" id="LastName" class="form-control" value="@Model.LastName" />
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label">VIP Levels  </label>
+                @{Html.RenderAction("VIPLevelCombo", "VIPLevels", new { area = "Administration", name = "VipLevelId", requiered = false, value = Model?.VipLevelId });}
+                @*<select name="VipLevelId" id="ReservationCreationVipLevelId" class="select2 form-control" required></select>*@
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-mt-custom">
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label required">Salutation</label>
+                @{Html.RenderAction("SalutationCombo", "Salutations", new { area = "Administration", name = "SalutationId", requiered = true, value = Model.SalutationId });}
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label">NIC / Passport</label>
+                @{
+                    string nICPassport = Model.PassportNo.Length == 0 ? Model.IdNum : Model.PassportNo;
+                }
+                <input type="text" name="NICPassport" id="NICPassport" class="form-control" value="@nICPassport" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-mt-custom">
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label required">Country</label>
+                @{Html.RenderAction("CountriesCombo", "Countries", new { area = "Administration", name = "CountryId", requiered = true, value = Model.CountryId });}
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label required">Nationality</label>
+                @{Html.RenderAction("NationalityCombo", "Nationalities", new { area = "Administration", name = "NationalityId", requiered = true, value = Model.NationalityId });}
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-mt-custom">
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label">Email</label>
+                <input type="email" name="Email" id="Email" class="form-control" value="@Model.Email" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label">Contact No</label>
+                <input type="text" name="ContactNo" id="ContactNo" class="form-control data-telephone" value="@Model.ContactNo" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <button type="button" id="btnSearchBeforeCreateNew" class="btn btn-warning">
+                Search  <span class="glyphicon glyphicon-search"></span>
+            </button>
+        </div>
+        <div class="col-md-6">
+            <button type="button" class="btn theme-bg-color-1 disabled" id="btnCreateNewGuest">
+                Create
+            </button>
+        </div>
+        <input type="hidden" id="data-guest-id" value="@Model.Id" />
+    </div>
+
+</div>
+<script>
+    $(document).ready(function () {
+      
+    });
+       
+    $('#resetBtn').click(function (e) {
+       
+        $('#FirstName').val('');
+        $('#LastName').val('');
+        $('#NICPassport').val('');
+        $('#Email').val('');
+        $('#ContactNo').val('');
+        $('#SalutationId').val('');
+        $('#NationalityId').val('');
+        $('#CountryId').val('');
+        $('.guest-checkBox-for-reservation-creation').each(function (index, element) {
+            $(element).prop('checked', false);
+        });
+        SearchCustomerForReservationCreation();
+    });
+
+    $('body').off('click', '#btnSearchBeforeCreateNew').on('click', '#btnSearchBeforeCreateNew', function (e) {
+        SearchCustomerForReservationCreation();
+        
+    });
+
+    $('.SearchWindow').keypress(function (e) {
+        if (e.which == 13) {
+            SearchCustomerForReservationCreation();
+        }
+    });
+
+    function SearchCustomerForReservationCreation() {
+
+        Salutation = $('#TitleCombo').val(),
+            FirstName = $('#FirstName').val(),
+            LastName = $('#LastName').val(),
+            NICPassport = $('#NICPassport').val(),
+            Country = $('#CountryCombo2').val(),
+            Nationality = $('#NationalityCombo').val(),
+            Email = $('#Email').val(),
+            ContactNo = $('#ContactNo').val(),
+            $.ajax({
+            url: '/reservation/ReservationCreation/SearchGuest',
+                dataType: 'html',
+                method: 'POST',
+                beforeSend: function () {
+                    $('#GuestResult').html('').fadeOut();
+                },
+                data: { Salutation: Salutation, FirstName: FirstName, LastName: LastName, NICPassport: NICPassport, Country: Country, Nationality: Nationality, Email: Email, ContactNo: ContactNo },
+                success: function (response) {
+                    $('#GuestResult').html(response).fadeIn();
+                },
+                complete: function () {
+                    $('#btnCreateNewGuest').removeClass('disabled');
+                },
+                error: function (error) {
+
+                }
+            });
+    }
+
+    $('body').off('click', '#btnCreateNewGuest').on('click', '#btnCreateNewGuest', function (e) {
+        $('#btnCreateNewGuest').prop('disabled', true).addClass("disabled");
+       
+        var guestId = GetSelectedGuestForREservationCreation();
+
+        if (guestId > -1) {
+            if (confirm('This guest profile already exists.Are you sure want to create a new profile?')) {
+                $('.guest-checkBox-for-reservation-creation').each(function (index, element) {
+                    if ($(element).prop('checked')) {
+                        $(element).prop('checked', false);
+                        $(element).removeClass('selectdRecord');
+                        return false;
+                    }
+                });
+                if (ValidateGuestForReservationCreation()) {
+                    CreateNewGuestForReservationCreation();
+                    $('#btnCreateNewGuest').prop('disabled', true).addClass("disabled");
+                    ShowSuccessMessage('Guest successfully created');
+                } else {
+                    $('#btnCreateNewGuest').prop('disabled', false).removeClass("disabled");;
+                }
+            } else {
+                $('#btnCreateNewGuest').prop('disabled', false).removeClass("disabled");;
+            }
+        } else {
+            if (ValidateGuestForReservationCreation()) {
+                CreateNewGuestForReservationCreation();
+                $('#btnCreateNewGuest').prop('disabled', true).addClass("disabled");
+            } else {
+                ShowWarningMessage('Please fill required information to proceed.');
+                $('#btnCreateNewGuest').prop('disabled', false).removeClass("disabled");
+            }
+        }
+    });
+
+    function ValidateGuestForReservationCreation() {
+        var isValid = true;
+        if ($('#SalutationId').val() == '') {
+            $('#SalutationId').focus();
+            isValid = false;
+        }
+        if ($('#FirstName').val() == '') {
+            $('#FirstName').focus();
+            isValid = false;
+        }
+        if ($('#LastName').val() == '') {
+            $('#LastName').focus();
+            isValid = false;
+        }
+
+        if ($('#CountryId').val() == '') {
+            $('#CountryId').focus();
+            isValid = false;
+        }
+        if ($('#NationalityId').val() == '') {
+            $('#NationalityId').focus();
+            isValid = false;
+        }
+
+        if (!validateEmail($('#Email').val())) {
+            $('#Email').focus();
+            isValid = false;
+            ShowWarningMessage('Invalid email address.');
+        }
+
+        if (isValid) {
+            var guestId = -1;
+            $('.guest-checkBox-for-reservation-creation').each(function (index, element) {
+                if ($(element).prop('checked')) {
+                    guestId = $(element).val();
+                    return false;
+                }
+            });
+
+            var SelectedGuest = {
+                Id: guestId,
+                SalutationId: $('#SalutationId').val(),
+                FirstName: $('#FirstName').val(),
+                LastName: $('#LastName').val(),
+                NICPassport: $('#NICPassport').val(),
+                CountryId: $('#CountryId').val(),
+                NationalityId: $('#NationalityId').val(),
+                Email: $('#Email').val(),
+                ContactNo: $('#ContactNo').val()
+            }
+
+            $('.hidden-singlepage-stringify-json-guest').val(JSON.stringify(SelectedGuest));
+
+        }
+        else {
+            ShowWarningMessage('You have missed some mandatory fields.');
+        }
+        return isValid;
+    }
+
+    function GetSelectedGuestForREservationCreation() {
+        var guestId = -1;
+        $('.guest-checkBox-for-reservation-creation').each(function (index, element) {
+            if ($(element).prop('checked')) {
+                guestId = $(element).val();
+                return false;
+            }
+        });
+        return guestId;
+    }
+
+    function CreateNewGuestForReservationCreation() {
+        debugger;
+        var guestId = GetSelectedGuestForREservationCreation();
+        SelectedGuest = {
+            Id: guestId,
+            FirstName: $('#FirstName').val(),
+            LastName: $('#LastName').val(),
+            Email: $('#Email').val(),
+            ContactNo: $('#ContactNo').val(),
+            NICPassport: $('#NICPassport').val(),
+            SalutationId: $('#SalutationId').val(),
+            CountryId: $('#CountryId').val(),
+            NationalityId: $('#NationalityId').val(),
+            VipLevelId: $('#VipLevelId').val()
+
+        }
+        var occupancyCount = JSON.stringify(RoomCountJson);
+
+        if (ValidateGuestForReservationCreation()) {
+            $.ajax({
+                url: '/reservation/ReservationCreation/SaveGuest',
+                dataType: 'html',
+                data: { guestProfile: SelectedGuest, occupancyCount: occupancyCount },
+                method: 'POST',
+                beforeSend: function () {
+                    $('#btnCreateNewGuest').prop('disabled', true).addClass("disabled");
+                },
+                success: function (data) {
+                    $('.hidden-stringify-json-guest').val(data);
+                },
+                complete: function () {
+                    $('#btnCreateNewGuest').prop('disabled', false).removeClass("disabled");
+                },
+                error: function (error) {
+                }
+            });
+
+        } else {
+            ShowWarningMessage('Please fill required information proceed.');
+
+        }
+    }
+
+</script>

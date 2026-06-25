@@ -1,0 +1,1101 @@
+﻿@*@model Scienter.HotelERP.Common.Domain.DayEnd*@
+@using System;
+@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.FrontOffice.Service
+@using Scienter.HotelERP.FrontOffice.WebUIMvc.Models
+@using Scienter.HotelERP.Common.Domain.ViewModels
+
+<style>
+
+    /******************************************************/
+    /*Wizard for cashier's desk*/
+    /******************************************************/
+
+    #msform {
+        text-align: center;
+        position: relative;
+        margin-top: 20px
+    }
+
+        #msform fieldset .form-card {
+            background: #fff;
+            border: 0 none;
+            border-radius: 0px;
+            width: 100%;
+            margin: 0 0% 3% 0%;
+            position: relative;
+        }
+
+        #msform fieldset {
+            background: white;
+            border: 0 none;
+            border-radius: 0.5rem;
+            box-sizing: border-box;
+            width: 100%;
+            margin: 0;
+            padding-bottom: 20px;
+            position: relative
+        }
+
+            #msform fieldset:not(:first-of-type) {
+                display: none
+            }
+
+            #msform fieldset .form-card {
+                text-align: left;
+                color: #4d4d4d;
+            }
+
+        #msform input,
+        #msform textarea {
+            padding: 0px 8px 4px 8px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            border-radius: 0px;
+            margin-bottom: 25px;
+            margin-top: 2px;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: inherit;
+            color: #2C3E50;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
+
+            #msform input:focus,
+            #msform textarea:focus {
+                -moz-box-shadow: none !important;
+                -webkit-box-shadow: none !important;
+                box-shadow: none !important;
+                border: none;
+                font-weight: bold;
+                border-bottom: 2px solid #e67e22;
+                outline-width: 0
+            }
+
+        #msform .action-button {
+            /*width: 100px;
+            background: #094F70;
+            font-weight: bold;*/
+            color: #fff;
+            border: 0 none;
+            border-radius: 0px;
+            cursor: pointer;
+            padding: 10px 5px;
+            margin: 10px 12px;
+        }
+
+            #msform .action-button:hover,
+            #msform .action-button:focus {
+                /*box-shadow: 0 0 0 2px white, 0 0 0 3px #e67e22*/
+            }
+
+        #msform .action-button-previous {
+            /*width: 100px;
+            background: #616161;
+            font-weight: bold;*/
+            color: white;
+            border: 0 none;
+            border-radius: 0px;
+            cursor: pointer;
+            padding: 10px 5px;
+            margin: 10px 5px
+        }
+
+            #msform .action-button-previous:hover,
+            #msform .action-button-previous:focus {
+                /*box-shadow: 0 0 0 2px white, 0 0 0 3px #616161*/
+            }
+
+    select.list-dt {
+        border: none;
+        outline: 0;
+        border-bottom: 1px solid #ccc;
+        padding: 2px 5px 3px 5px;
+        margin: 2px
+    }
+
+        select.list-dt:focus {
+            border-bottom: 2px solid #e67e22
+        }
+
+    .card {
+        z-index: 0;
+        border: none;
+        position: relative
+    }
+
+    .fs-title {
+        font-size: 1em;
+        color: #094f70;
+        margin-bottom: 10px;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    #progressbar {
+        margin-bottom: 30px;
+        overflow: hidden;
+        color: lightgrey
+    }
+
+        #progressbar .active {
+            color: #000000
+        }
+
+        #progressbar li {
+            list-style-type: none;
+            font-size: 12px;
+            width: 20%;
+            float: left;
+            position: relative
+        }
+
+        #progressbar #front-office:before {
+            /*font-family: FontAwesome;*/
+            content: "1"
+        }
+
+        #progressbar #food-beverage:before {
+            /*font-family: FontAwesome;*/
+            content: "2"
+        }
+
+        #progressbar #pseudo-rooms:before {
+            /*font-family: FontAwesome;*/
+            content: "3"
+        }
+
+        #progressbar #room-rates:before {
+            /*font-family: FontAwesome;*/
+            content: "4"
+        }
+
+        #progressbar #day-end:before {
+            /*font-family: FontAwesome;*/
+            content: "5"
+        }
+
+        #progressbar li:before {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            display: block;
+            font-size: 18px;
+            color: #ffffff;
+            background: lightgray;
+            border-radius: 0;
+            margin: 0 auto 10px auto;
+            padding: 0px;
+        }
+
+        #progressbar li:after {
+            content: '';
+            width: 100%;
+            height: 2px;
+            background: lightgray;
+            position: absolute;
+            left: 0;
+            top: 25px;
+            z-index: -1
+        }
+
+        #progressbar li.active:before,
+        #progressbar li.active:after {
+            background: #e67e22;
+        }
+
+    .radio-group {
+        position: relative;
+        margin-bottom: 25px
+    }
+
+    .radio {
+        display: inline-block;
+        width: 204;
+        height: 104;
+        border-radius: 0;
+        background: lightblue;
+        box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.2);
+        box-sizing: border-box;
+        cursor: pointer;
+        margin: 8px 2px
+    }
+
+        .radio:hover {
+            box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.3)
+        }
+
+        .radio.selected {
+            box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1)
+        }
+
+    .fit-image {
+        width: 100%;
+        object-fit: cover
+    }
+
+    #progressbar li strong {
+        font-size: 1.2em;
+        color: #094f70;
+    }
+    /************/
+    .progress-responsive {
+        width: 100%;
+        margin-top: 1em;
+    }
+    /* Progress bar containers */
+    figure {
+        position: relative;
+        width: 100%;
+        height: 1.4em;
+        border: 1px solid #ff9800;
+        border-radius: 0px;
+        background: #ddd;
+    }
+        /* Progress bar shape */
+        figure div:first-child {
+            height: 1.5em;
+            border-radius: 0px;
+        }
+
+    .progress-responsive .progress-responsive__bar {
+        background: #e67e22;
+    }
+    /* Percent text */
+    figure div:last-child {
+        position: absolute;
+        top: 1px;
+        /*right: 8px;*/
+        font-size: 1.1em;
+        font-weight: normal;
+        font-family: inherit;
+        color: #fff;
+    }
+
+    th {
+        padding: 10px !important;
+        background-color: #094f70 !important;
+        color: #fff;
+        font-weight: normal !important;
+    }
+
+    td {
+        padding: 4px !important;
+    }
+
+    .room-rate-table td, .room-rate-table th {
+        font-size: 10px !important;
+    }
+
+
+    .stepLoading h3 {
+        font-weight: bold;
+        color: #094f70;
+    }
+
+    .stepContent p {
+        text-align: center;
+        font-size: 20px;
+    }
+
+    fieldset {
+        min-height: 320px;
+    }
+
+    .table-responsive {
+        min-height: 300px;
+    }
+
+    .stepContent {
+        min-height: 280px;
+    }
+</style>
+
+<!-- MultiStep Form -->
+<div class="row" style="min-height:475px;">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header hidden-print" data-background-color="purple" style="padding: 5px 0px 3px 0px;">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="title hidden-print">
+                            Day End Process
+                            <span class="hotel-date" style="float:right; padding-right:10px;">
+                                @Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate.ToString("dd/MM/yyyy")
+                            </span>
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="row pad0-mar0">
+                    @if (ViewBag.IsError == true)
+                    {
+                        <center>
+                            <br />
+                            <img src="~/Images/connection-error.jpg" width="200px;" />
+                            <br />
+                            <h3>
+                                @Html.Raw(ViewBag.Msg)
+                            </h3>
+                        </center>
+
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="col-md-12 mx-0">
+                                <form id="msform">
+                                    <!-- progressbar -->
+                                    <ul id="progressbar">
+                                        <li class="active" id="front-office"><strong>Front Office</strong></li>
+                                        <li id="food-beverage"><strong>Food & Beverage</strong></li>
+                                        <li id="pseudo-rooms"><strong>In-house Pseudo Rooms</strong></li>
+                                        <li id="room-rates"><strong>Room Rates</strong></li>
+                                        <li id="day-end"><strong>Day End Summary</strong></li>
+                                    </ul>
+                                    <!-- fieldsets -->
+                                    <fieldset>
+
+                                        <div class="form-card">
+                                            <div id="firstStepLoading" class="stepLoading">
+                                                <center>
+                                                    <h3>00%</h3>
+                                                    <p>Please wait. We are gathering front office data ...</p>
+                                                    <img src="~/Images/work-process-gif.gif" />
+                                                    <br />
+
+
+                                                </center>
+                                            </div>
+
+                                            <div id="firstStepContent" class="stepContent">
+
+                                                @if (Model.DayEndFrontOfficeCheck.Count > 0)
+                                                {
+
+                                                    <div class="table-responsive">
+                                                        <table class="table table-striped">
+                                                            <tr>
+                                                                <th></th>
+                                                                <th>Res. No</th>
+                                                                <th>Guest</th>
+                                                                <th>Arrival</th>
+                                                                <th>Departure</th>
+                                                                <th>Status</th>
+                                                                <th>Type</th>
+                                                                @*<th>Bill Payment LKR</th>*@
+                                                                <th width="50px"></th>
+                                                            </tr>
+
+                                                            @foreach (var item in Model.DayEndFrontOfficeCheck)
+                                                            {
+                                                                <tr>
+                                                                    <td>
+                                                                        @if (item.IsPseudoRoom)
+                                                                        {
+                                                                            <span class="label label-success">Pseudo Room</span>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <span class="label label-danger">Actual Room</span>
+
+                                                                        }
+                                                                    </td>
+                                                                    <td>@item.ReservationNo</td>
+                                                                    <td>@item.GuestName</td>
+                                                                    <td>@item.Arrival.ToString("dd/MM/yyyy")</td>
+                                                                    <td>@item.Departure.ToString("dd/MM/yyyy")</td>
+                                                                    <td>@item.ReservationStatus</td>
+                                                                    <td>@item.Type</td>
+                                                                    @*<td>
+                                                                            @if (item.IsBillPaymentFromLKR)
+                                                                            {
+                                                                                if (item.ReservationStatus == "Inhoused")
+                                                                                {
+                                                                                    <input type="checkbox" disabled checked class="checkbox isBillPaymentFromLKR" value="@item.ReservationNo">
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <input type="checkbox" checked class="checkbox isBillPaymentFromLKR" value="@item.ReservationNo">
+                                                                                }
+
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                if (item.ReservationStatus == "Inhoused")
+                                                                                {
+                                                                                    <input type="checkbox" disabled class="checkbox isBillPaymentFromLKR" value="@item.ReservationNo">
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <input type="checkbox" class="checkbox isBillPaymentFromLKR" value="@item.ReservationNo">
+                                                                                }
+                                                                            }
+                                                                        </td>*@
+                                                                    <td>
+                                                                        @if (item.Type == "Expected Arrivals")
+                                                                        {
+                                                                            <input type="checkbox" data-reservation-no="@item.ReservationNo" class="no-show-expected-arrivals" />
+                                                                        }
+
+                                                                    </td>
+
+                                                                </tr>
+                                                            }
+                                                        </table>
+                                                    </div>
+
+                                                }
+                                                else
+                                                {
+                                                    <p>
+                                                        No records to show.
+                                                    </p>
+                                                }
+
+
+
+                                            </div>
+                                            <button type="button"
+                                                    class="btn-primary btn btn-block save-room-change next action-button btnFirstStepNext"
+                                                    value="Next Step"
+                                                    style="width: 10em;float: right;">
+                                                Next Step
+                                                <div class="ripple-container"></div>
+                                            </button>
+
+                                            <button type="button"
+                                                    class="btn-primary btn btn-block no-show"
+                                                    value="Show As No Show"
+                                                    id="noShow"
+                                                    style="width: 15em;float: right; margin-top:10px; height:37px">
+                                                Update As No Show
+                                                <div class="ripple-container"></div>
+                                            </button>
+
+
+
+
+                                        </div>
+                                        @*<button type="button" next class="btn-danger btn btn-block clear-all " name="next" value="Next Step" style="width: 10em;float: right;">Clear</button>*@
+                                    </fieldset>
+                                    <fieldset>
+                                        <div class="form-card">
+
+                                            <div class="stepLoading">
+                                                <center>
+                                                    <h3>00%</h3>
+                                                    <p>
+                                                        Connecting to restaurant(s)..
+                                                    </p>
+                                                    <img src="~/Images/work-process-gif.gif" />
+                                                    <br />
+
+
+                                                </center>
+                                            </div>
+
+                                            <div class="stepContent" style="padding:0px 15px">
+                                                <div class="row">
+                                                    @{
+                                                        List<Posting> postings = new List<Posting>();
+                                                        postings = new PostingService().LoadPendingExtraPostingsToSettle();
+                                                    }
+                                                    <div class="col-md-4">
+                                                        <h5 style="margin-bottom:4px; font-size: 14px;">Un Settled Orders</h5>
+                                                        <div class="table-responsive" style="max-height:280px; overflow-y:scroll;">
+
+                                                            <table class="table table-striped">
+                                                                <tr>
+                                                                    <th>Doc #</th>
+                                                                    <th>Date</th>
+                                                                    <th>Res #</th>
+                                                                </tr>
+                                                                @foreach (var item in postings)
+                                                                {
+                                                                <tr>
+                                                                    <td>@item.DocumentNo</td>
+                                                                    <td>@item.ChargeDate</td>
+                                                                    <td>@item.ReservationNo</td>
+                                                                </tr>
+                                                                }
+
+                                                                @*@if (postings == 0)
+                                                                {
+                                                                    <tr>
+                                                                        <td colspan="3">No records found.</td>
+                                                                    </tr>
+                                                                }*@
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    @*<div class="col-md-4">
+            <h5 style="margin-bottom:4px; font-size: 14px;">Not Sign Off Orders</h5>
+            <div class="table-responsive" style="max-height:280px; overflow-y:scroll;">
+
+                <table class="table table-striped">
+                    <tr>
+                        <th>Shift No</th>
+                        <th>Date</th>
+                        <th>Waiter</th>
+                    </tr>
+                    @foreach (var item in Model.POSValidates.NotSignOffList)
+                    {
+                        <tr>
+                            <td>@item.ShiftNo</td>
+                            <td>@item.ShiftDate.ToString("dd/MM/yyyy")</td>
+                            <td>@item.WaiterName</td>
+                        </tr>
+                    }
+
+                    @if (Model.POSValidates.NotSignOffList.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="3">No records found.</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>*@
+
+                                                    <div class="col-md-4">
+                                                        <h5 style="margin-bottom:4px; font-size: 14px;">Not Uploaded Orders</h5>
+                                                        <div class="table-responsive" style="max-height:280px; overflow-y:scroll;">
+                                                            <table class="table table-striped">
+                                                                <tr>
+                                                                    <th>Order No</th>
+                                                                    <th>Date</th>
+                                                                    <th>Description</th>
+                                                                </tr>
+                                                                @foreach (var item in Model.POSValidates.NotUploadedList)
+                                                                {
+                                                                    <tr>
+                                                                        <td>@item.OrderNo</td>
+                                                                        <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+                                                                        <td>@item.Description</td>
+                                                                    </tr>
+                                                                }
+
+                                                                @if (Model.POSValidates.NotUploadedList.Count == 0)
+                                                                {
+                                                                    <tr>
+                                                                        <td colspan="3">No records found.</td>
+                                                                    </tr>
+                                                                }
+                                                            </table>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <h5 style="margin-bottom:4px; font-size: 14px;">Un Settled Orders</h5>
+                                                        <div class="table-responsive" style="max-height:280px; overflow-y:scroll;">
+                                                            <table class="table table-striped">
+                                                                <tr>
+                                                                    <th>Order No</th>
+                                                                    <th>Date</th>
+                                                                    <th>Description</th>
+                                                                </tr>
+                                                                @foreach (var item in Model.POSValidates.UnSettledOrdersList)
+                                                                {
+                                                                    <tr>
+                                                                        <td>@item.OrderNo</td>
+                                                                        <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+                                                                        <td>@item.Description</td>
+                                                                    </tr>
+                                                                }
+
+                                                                @if (Model.POSValidates.UnSettledOrdersList.Count == 0)
+                                                                {
+                                                                    <tr>
+                                                                        <td colspan="3">No records found.</td>
+                                                                    </tr>
+                                                                }
+                                                            </table>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                <button type="button" class="btn-primary btn btn-block save-room-change next action-button"
+                                                        name="next" value="Next Step" style="width: 10em;float: right;">
+                                                    Next Step
+                                                    <div class="ripple-container"></div>
+                                                </button>
+                                                <button type="button" next class="btn-danger btn btn-block previous action-button-previous" name="previous" style="width: 10em;float: right;">
+                                                    Previous
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <div class="form-card">
+
+                                            <div class="stepLoading">
+                                                <center>
+                                                    <h3>00%</h3>
+                                                    <p>
+                                                        Checking Pseudo Rooms ...
+                                                    </p>
+                                                    <img src="~/Images/work-process-gif.gif" />
+                                                    <br />
+                                                </center>
+                                            </div>
+
+                                            <div class="stepContent">
+
+                                                @if (Model.DayEndPseudoRoomCheck.Count > 0)
+                                                {
+                                                    <div class="table-responsive">
+                                                        <table class="table table-striped">
+                                                            <tr>
+                                                                <th>Res. No</th>
+                                                                <th>Room Code</th>
+                                                                <th>Guest Name</th>
+                                                                <th>Arrival</th>
+                                                                <th>Depature</th>
+                                                                <th>Status</th>
+                                                                <th>Type</th>
+                                                            </tr>
+
+                                                            @foreach (var item in Model.DayEndPseudoRoomCheck)
+                                                            {
+                                                                <tr>
+                                                                    <td>@item.ReservationNo</td>
+                                                                    <td>@item.RoomCode</td>
+                                                                    <td>@item.GuestName</td>
+                                                                    <td>@item.Arrival.ToString("dd/MM/yyyy")</td>
+                                                                    <td>@item.Departure.ToString("dd/MM/yyyy")</td>
+                                                                    <td>@item.ReservationStatus</td>
+                                                                    <td>@item.Type</td>
+                                                                </tr>
+                                                            }
+                                                        </table>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="table-responsive">
+                                                        <p>
+                                                            <br />
+                                                            No inhouse pseudo rooms found.
+                                                        </p>
+                                                    </div>
+                                                }
+
+                                                <button type="button" class="btn-primary btn btn-block save-room-change next action-button" name="next" value="Next Step" style="width: 10em;float: right;">
+                                                    Next Step
+                                                    <div class="ripple-container"></div>
+                                                </button>
+                                                <button type="button" next class="btn-danger btn btn-block previous action-button-previous" name="previous" style="width: 10em;float: right;">
+                                                    Previous
+                                                </button>
+
+
+                                            </div>
+
+                                        </div>
+                                    </fieldset>
+                                    <fieldset>
+                                        <div class="form-card">
+
+                                            <div class="stepLoading">
+                                                <center>
+                                                    <h3>00%</h3>
+                                                    <p>
+                                                        Checking Room Rates (Today) ...
+                                                    </p>
+                                                    <img src="~/Images/work-process-gif.gif" />
+                                                    <br />
+
+
+                                                </center>
+                                            </div>
+
+                                            <div class="stepContent">
+                                                @if (Model.DayEndRoomRatesCheck.Count > 0)
+                                                {
+                                                    <div class="table-responsive">
+                                                        <table class="table table-striped room-rate-table">
+                                                            <tr>
+
+
+                                                                <th>Res.No</th>
+                                                                <th>Rate<span style="color:transparent;">_</span>Code</th>
+                                                                <th>Res.<span style="color:transparent;">_</span>Type</th>
+                                                                <th>Type</th>
+                                                                <th>Rate<span style="color:transparent;">_</span>Code</th>
+                                                                <th>Room<span style="color:transparent;">_</span>No</th>
+                                                                <th>Guest</th>
+                                                                <th>Arrival</th>
+                                                                <th>Departure</th>
+                                                                <th>Category</th>
+                                                                <th>Room<span style="color:transparent;">_</span>Type</th>
+                                                                <th>Meal<span style="color:transparent;">_</span>Plan</th>
+                                                                <th>Currency</th>
+                                                                <th>Bill Payment LKR</th>
+                                                                <th class="text-right">Conv.<span style="color:transparent;">_</span>R.</th>
+                                                                <th class="text-right">Orig.<span style="color:transparent;">_</span>R.</th>
+                                                                <th class="text-right">Loc.<span style="color:transparent;">_</span>R.</th>
+                                                                <th></th>
+                                                            </tr>
+
+                                                            @foreach (var item in Model.DayEndRoomRatesCheck)
+                                                            {
+                                                                <tr>
+
+                                                                    <td>@item.ReservationNo</td>
+                                                                    <td>@item.RateCode</td>
+                                                                    <td>@item.ReservationType</td>
+                                                                    <td>@item.Type</td>
+                                                                    <td>@item.RateCode</td>
+                                                                    <td>@item.RoomNo</td>
+                                                                    <td>@item.Guest</td>
+                                                                    <td>@item.Arrival.ToString("dd/MM/yyyy")</td>
+                                                                    <td>@item.Departure.ToString("dd/MM/yyyy")</td>
+                                                                    <td>@item.Category</td>
+                                                                    <td>@item.RoomType</td>
+                                                                    <td>@item.MealPlan</td>
+                                                                    <td>@item.CurrencyCode</td>
+                                                                    <td>
+                                                                        @if (item.IsBillPaymentFromLKR)
+                                                                        {
+                                                                            if (item.IsDisable)
+                                                                            {
+                                                                                <input type="checkbox" disabled checked class="checkbox isBillPaymentFromLKR" value="@item.ReservationNo">
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <input type="checkbox" checked class="checkbox isBillPaymentFromLKR" value="@item.ReservationNo">
+                                                                            }
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (item.IsDisable)
+                                                                            {
+                                                                                <input type="checkbox" disabled class="checkbox isBillPaymentFromLKR" value="@item.ReservationNo">
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <input type="checkbox" class="checkbox isBillPaymentFromLKR" value="@item.ReservationNo">
+                                                                            }
+                                                                        }
+                                                                    </td>
+                                                                    <td class="text-right">@item.ConvertionRate.ToString("#,###.00")</td>
+                                                                    <td class="text-right">@item.OriginalRate.ToString("#,###.00")</td>
+                                                                    <td class="text-right">@item.RoomRate.ToString("#,###.00")</td>
+
+                                                                    <td>
+                                                                        <input type="checkbox" style="width:20px; height:20px; margin-top: 20px;" />
+                                                                    </td>
+
+                                                                </tr>
+                                                            }
+                                                        </table>
+
+                                                    </div>
+
+                                                }
+                                                else
+                                                {
+                                                    <div class="table-responsive">
+                                                        <p>
+                                                            <br />
+                                                            No inhouse rooms found.
+                                                        </p>
+                                                    </div>
+                                                }
+
+                                                <button type="button" class="btn-primary btn btn-block save-room-change next action-button btn-get-dayend-summary" name="next" value="Next Step" style="width: 10em;float: right;">
+                                                    Next Step
+                                                    <div class="ripple-container"></div>
+                                                </button>
+                                                <button type="button" next class="btn-danger btn btn-block previous action-button-previous" name="previous" style="width: 10em;float: right;">
+                                                    Previous
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                    </fieldset>
+                                    <fieldset>
+                                        <div class="form-card">
+
+                                            <div class="day-end-summry-container" style="padding:0px 20px;">
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('.btn-complete-day-end').prop('disabled', true);
+        $('.stepContent').hide();
+        AnimatePercentage("#firstStepLoading", "#firstStepContent");
+        $('#noShow').attr('disabled', true);
+    });
+
+    $('body').off('change', '.isBillPaymentFromLKR').on('change', '.isBillPaymentFromLKR', function (e) {
+        var IsBillPaymentFromLKR = "";
+        var ReservationNo = $(this).val();
+        if ($(this).prop('checked')) {
+            IsBillPaymentFromLKR = true
+        } else {
+            IsBillPaymentFromLKR = false
+        }
+        if (confirm('Are you sure you want to proceed?')) {
+            $.ajax({
+                url: '/CashieringAndPosting/DayEndProcess/BillPaymentLKRUpdate',
+                dataType: 'json',
+                method: 'POST',
+                data: { IsBillPaymentFromLKR: IsBillPaymentFromLKR, ReservationNo: ReservationNo },
+                success: function (response) {
+                    if (response == "OK") {
+                        ShowSuccessMessage("Updated succsessfully.");
+                    }
+                    else {
+                        ShowWarningMessage(response);
+                        if ($(this).prop('checked')) {
+                            $(this).prop('checked', false);
+                        } else {
+                            $(this).prop('checked', true);
+                        }
+                    }
+                },
+                error: function (error) {
+                    if ($(this).prop('checked')) {
+                        $(this).prop('checked', false);
+                    } else {
+                        $(this).prop('checked', true);
+                    }
+                },
+                complete: function () { }
+            });
+        } else {
+            if ($(this).prop('checked')) {
+                $(this).prop('checked', false);
+            } else {
+                $(this).prop('checked', true);
+            }
+        }
+
+    });
+
+    function AnimatePercentage(stepLoading, stepContent) {
+        var percContainer = $(stepLoading).find('h3');
+        var perContainerVal = percContainer.html();
+        var perc = 0;
+        setInterval(function () {
+            perc = perc + 5;
+            percContainer.html(perc + '%');
+            if (perc >= 100) {
+                $(stepLoading).hide();
+                $(stepContent).fadeIn();
+                perc = 0;
+                return false;
+            }
+        }, 100);
+    }
+
+    // NO SHOW EXPECTED ARRIVALS
+    $('.no-show-expected-arrivals').change(function () {
+        //alert($('.no-show-expected-arrivals:checked').length);
+        if ($('.no-show-expected-arrivals:checked').length > 0) {
+            $('#noShow').attr('disabled', false); // enable input
+        } else {
+            $('#noShow').attr('disabled', true); //disable input
+        }
+    });
+
+    $('body').on('click', '.btn-get-dayend-summary', function () {
+        $('.day-end-summry-container').html('');
+        $.ajax({
+            url: '/CashieringAndPosting/DayEndProcess/CheckValidations',
+            dataType: 'html',
+            method: 'POST',
+            beforeSend: function () {
+                $('.day-end-summry-container').html('');
+                $('.day-end-summry-container').html('<center><br /><p> Please wait.. <br /> </p> <img src="/Images/work-process-gif.gif" /></center><br/>');
+
+
+            },
+            success: function (data) {
+                $('.day-end-summry-container').html('');
+                $(data).appendTo($('.day-end-summry-container'));
+            },
+            error: function (error) {
+                ShowErrorMessage('There is an error in processing day end.')
+            }
+        });
+    });
+
+    // btn btn-block no-show
+    $('body').on('click', '.no-show', function () {
+        alert("Are you sure,You want to continue !!");
+        var selectedRecords = [];
+        var record = {};
+        $('.no-show-expected-arrivals').each(function (index, checkbox) {
+            //if ($(checkbox).prop('checked')) {
+            //    record = {};
+            //    record.ReservationNo = $(checkbox).attr('data-reservation-no');
+            //    selectedRecords.push(record);
+            //}
+            if ($(checkbox).is(':checked')) {
+                record = {};
+                record.ReservationNo = $(checkbox).attr('data-reservation-no');
+                selectedRecords.push(record);
+            }
+        });
+
+        if (selectedRecords.length == 0) {
+            ShowWarningMessage("Please select at least one reservartion to proceed.");
+        } else {
+            //console.log(selectedRecords);
+            $.ajax({
+                url: '/CashieringAndPosting/DayEndProcess/UpdateNoShows',
+                dataType: 'json',
+                method: 'POST',
+                data: { updateNoShow: selectedRecords },
+                success: function (data) {
+                    if (data.startsWith("ERR-")) {
+                        ShowErrorMessage(data.replace("ERR-", ""));
+                    } else {
+                        ShowSuccessMessage("No shows updated successfully.");
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 3000);
+
+                    }
+                },
+                error: function (error) {
+                    ShowErrorMessage('There is an error in processing day end.')
+                }
+            });
+        }
+    });
+
+    //btn-complete-day-end
+
+    $('body').off('click', '.btn-complete-day-end').on('click', '.btn-complete-day-end', function () {
+        $('.day-end-summry-container').html('');
+        $.ajax({
+            url: '/CashieringAndPosting/DayEndProcess/CompleteDayEnd',
+            dataType: 'json',
+            method: 'POST',
+            beforeSend: function () {
+                $('.day-end-summry-container').html('');
+                $('.day-end-summry-container').html('<center><br /><p> Please wait.. <br /> </p> <img src="/Images/work-process-gif.gif" /></center><br/>');
+
+
+            },
+            success: function (data) {
+                if (data.startsWith('ERR-')) {
+                    if (data.startsWith('ERR-Currently')) {
+                        ShowWarningMessage(data.replace("ERR-", ""));
+                    } else {
+                        ShowErrorMessage(data)
+                    }
+
+                } else {
+                    ShowSuccessMessage('Day end completed succesfully. Please wait, you will redirected to dashboard soon.');
+                    setTimeout(function () {
+                        window.location.href = '/administration/dashboard';
+                    }, 3000);
+                }
+            },
+            error: function (error) {
+                ShowErrorMessage('There is an error in processing day end.')
+            }
+        });
+    });
+
+
+
+    $(document).ready(function () {
+
+        var current_fs, next_fs, previous_fs; //fieldsets
+        var opacity;
+
+        $(".next").click(function () {
+
+            current_fs = $(this).closest('fieldset');
+            next_fs = $(this).closest('fieldset').next();
+
+            AnimatePercentage(next_fs.find('.stepLoading'), next_fs.find('.stepContent'));
+
+            //Add Class Active
+            $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+
+            //show the next fieldset
+            next_fs.show();
+            //hide the current fieldset with style
+            current_fs.animate({ opacity: 0 }, {
+                step: function (now) {
+                    // for making fielset appear animation
+                    opacity = 1 - now;
+
+                    current_fs.css({
+                        'display': 'none',
+                        'position': 'relative'
+                    });
+                    next_fs.css({ 'opacity': opacity });
+                },
+                duration: 600
+            });
+        });
+
+        $(".previous").click(function () {
+
+            current_fs = $(this).closest('fieldset');
+            previous_fs = $(this).closest('fieldset').prev();
+
+            AnimatePercentage(previous_fs.find('.stepLoading'), previous_fs.find('.stepContent'));
+
+            //Remove class active
+            $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+
+            //show the previous fieldset
+            previous_fs.show();
+
+            //hide the current fieldset with style
+            current_fs.animate({ opacity: 0 }, {
+                step: function (now) {
+                    // for making fielset appear animation
+                    opacity = 1 - now;
+
+                    current_fs.css({
+                        'display': 'none',
+                        'position': 'relative'
+                    });
+                    previous_fs.css({ 'opacity': opacity });
+                },
+                duration: 600
+            });
+        });
+
+        $('.radio-group .radio').click(function () {
+            $(this).parent().find('.radio').removeClass('selected');
+            $(this).addClass('selected');
+        });
+
+        $(".submit").click(function () {
+            return false;
+        })
+
+    });
+</script>
+

@@ -1,0 +1,28 @@
+﻿@using Scienter.HotelERP.FrontOffice.WebUIMvc.Models
+@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.Common.Utility
+
+@model ComboBoxViewModel<PackageDetail>
+@{
+    string required = "";
+    if (Model.Required) { required = "required"; }
+}
+
+<select id="@Model.Id" name="@Model.Name" @required class="form-control">
+    <option value="1">1</option>
+
+    @foreach (var option in Model.Options)
+    {
+        if (option.Id.ToString() == Model.SelectedValue)
+        {
+            <option value="@option.CalcOrder" selected>@option.CalcOrder</option>
+        }
+        else
+        {
+            <option value="@option.CalcOrder">@option.CalcOrder</option>
+        }
+    }
+</select>
+
+
+

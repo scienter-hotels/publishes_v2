@@ -1,0 +1,138 @@
+﻿@model Scienter.HotelERP.Common.Domain.TaxGroupDetail
+
+<form id="TaxGroupDetailForm">
+
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+
+        <div class="row">
+            <div class="col-md-9">               
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group label-floating">
+                    @* @Html.LabelFor(model => model.TaxDetailId, htmlAttributes: new { @class = "control-label " })*@
+                    <div id="taxgroupContainer">
+                        @{Html.RenderAction("LoadTaxGroupDetails", "TaxGroupDetails", new { TaxGroupId = 0 });}
+                    </div>
+                    @* @Html.ValidationMessageFor(model => model.TaxDetailId, "", new { @class = "text-danger" })*@
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+            @*<div class="col-md-3">
+                @{Html.RenderAction("ListVertical", "Properties", new { selectedPoperties = Model.Properties }); }
+            </div>*@
+        </div>
+
+        <div class="row">
+            <div class="col-md-10" style="padding-left:5px">
+                <div class="form-group">
+                    <div class="col-md-10">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</form>
+
+
+<script>
+    $('#TaxGroupId').change(function () {
+        if ($(this).val().length) {
+
+            $.ajax({
+                url: '/Administration/TaxGroupDetails/LoadTaxGroupDetails?TaxGroupId=' + $(this).val(),
+                dataType: 'html',
+                success: function (data) {
+                    $('#taxgroupContainer').html(data);
+                },
+
+            });
+        } else {
+            $('input:checkbox').removeAttr('checked');
+        }
+    });
+
+    // save --------------------------------------
+    $('body').on('submit', '#TaxGroupDetailForm', function (e) {
+
+        e.preventDefault();
+        var taxGroupDetailsViewModelList = [];
+       // var taxGroupDetail = { Properties: selectedProperties }
+
+        //console.log(taxGroupDetail);
+
+        $('.tax-group-well').each(function (index, eachWell) {
+
+            var taxGroupId = $(this).find('.tax-group-hidden-Id').val();
+            $(this).find('.tax-type-inWell:checked').each(function (index, eachtaxTypeCheck) {
+
+                taxGroupDetailsViewModel = {
+                    TaxTypeId: $(this).prop('value'),
+                    OrderId: $(this).closest('.tax-type-row').find('.order-id-for-taxType').val(),
+                    TaxGroupId: taxGroupId,
+                    
+                }
+                taxGroupDetailsViewModelList.push(taxGroupDetailsViewModel);
+            });
+        });
+
+        //if (selectedProperties.length > 0) {
+            $.ajax({
+                url: '/administration/TaxGroupDetails/save',
+                dataType: 'html',
+                data: { lstTaxGroupDetailsViewModel: taxGroupDetailsViewModelList},
+                method: 'POST',
+                success: function (response) {
+                    $('#contentLoadingArea').html('').fadeOut();
+                    $('#contentLoadingArea').html(response).fadeIn();
+                    ShowSuccessMessage('Record has been saved successfully.');
+                },
+                error: function (xhr, status, error) {
+                    ShowErrorMessage('Sorry, There is an error in saving this record.');
+                }
+            });
+        
+        //} else {
+        //    ShowErrorMessage('Please select at least one property to continue.');
+        //}
+    });
+
+    $(document).ready(function () {
+
+        $.ajax({
+            url: '/Administration/TaxGroupDetails/Select',
+            dataType: 'json',
+            success: function (data) {
+                var list = {
+                    dataArray: data
+                }
+
+                $('.tax-group-well').each(function (index, eachwell) {
+                    var taxGroupId = parseInt($(this).find('.tax-group-hidden-Id').val());
+                    var taxGroupCheckBoxList = $(this).find('.tax-type-inWell');
+                    $(taxGroupCheckBoxList).each(function (index, eachCheckBox) {
+                        var checkBoxId = parseInt($(eachCheckBox).val());
+                        var existingobject = $.grep(list.dataArray, function (obj, index) {
+                            return obj.TaxGroupId == taxGroupId && obj.TaxTypeId == checkBoxId;
+                        })
+                        if (existingobject.length > 0) {
+                            $(eachCheckBox).prop('checked', true);
+                            $(this).closest('.tax-type-row').find('.order-id-for-taxType').val(existingobject[0].OrderId);
+                        }
+                    });
+
+                })
+            },
+
+
+        });
+
+    });
+
+
+</script>
+

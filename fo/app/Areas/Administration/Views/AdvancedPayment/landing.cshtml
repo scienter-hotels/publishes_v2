@@ -1,0 +1,94 @@
+﻿<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            ADVANCE PAYMENT LINKS
+                            <hr class="visible-print">
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                            <div class="ripple-container"></div>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+                </div>
+                <div class="row">
+                    @Html.Partial("_Loading")
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        //FillGrid();
+        $('.showForm').click();
+    });
+
+    // show form -----------------------------------
+    $('body').on('click', '.showForm', function (e) {
+        $.ajax({
+            url: '/administration/advancedpayment/form',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+        });
+    });
+
+    // show grid -----------------------------------
+
+    $('body').on('click', '.showGrid', function (e) {
+        FillGrid();
+        $.ajax({
+            url: '/administration/advancedpayment/grid',
+            dataType: 'html',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+        });
+    });
+
+    // fill grid -------------------------------------
+    function FillGrid() {
+        $.ajax({
+            url: '/administration/advancedpayment/grid',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+                GridFunctionalities();
+            }
+        });
+    }
+
+
+
+
+</script>

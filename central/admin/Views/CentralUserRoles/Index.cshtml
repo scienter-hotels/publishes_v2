@@ -1,0 +1,171 @@
+﻿
+@{
+    ViewBag.Title = "Central User Role Management";
+}
+
+<style>
+    .mt-11 {
+        margin-top: 11px !important;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header" data-background-color="purple">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="title">
+                    @ViewBag.Title
+                    <hr class="visible-print" />
+                </h4>
+            </div>
+            <div class="col-md-4 text-right hidden-print">
+                <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
+
+                <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                    <span class="glyphicon glyphicon-th-list"></span>
+                </button>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-content form" id="contentLoadingArea">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="accordion" class="panel-group">
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a href="#panelBodyOne" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion">User Wise Role</a>
+                            </h4>
+                        </div>
+                        <div id="panelBodyOne" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <form id="user-role-details">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group label-floating">
+                                                <input type="hidden" class="user-role-id" value="0" />
+                                                <label class="control-label">Name</label>
+                                                <input autocomplete="off" class="form-control text-box single-line Name" maxlength="100" name="Name" type="text" value="" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <div class="form-group label-floating" style="top:8px;">
+                                                <label class="control-label">Hierarchical Level</label>
+                                                <input autocomplete="off" class="form-control text-box single-line HierarchicalLevel" min="0" id="HierarchicalLevel" name="HierarchicalLevel" type="number" value="" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group checkbox">
+                                                <label>
+                                                    <input type="checkbox" name="IsActive" value="True" id="IsActive" class="IsActive" />Is Active
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group">
+                                                <input type="submit" value="Save" class="btn btn-primary user-role-save" />
+                                                &nbsp;
+                                                <input type="reset" value="Clear" class="btn btn-default user-role-clear" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+</form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="">
+                        <div class="panel">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a href="#panelBodyFour" class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">Menu Items</a>
+                                </h4>
+                            </div>
+                            <div id="panelBodyFour" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label"> Role </label>
+                                                <select name="Role" id="Role" class="form-control menu-items-active-roles active-roles select2" required>
+                                                    <option value=""> -- Select  -- </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label"> Module </label>
+                                                <select name="Module" id="Module" class="form-control menu-items-active-modules active-modules select2" required>
+                                                    <option value=""> -- Select  -- </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row active-menu-items-row">
+                                        @*@{
+                Html.Partial("_MenuItems");
+            }*@
+
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <input type="submit" value="Save" class="btn btn-primary user-role-wise-menu-items-save" />
+                                                &nbsp;
+                                                <input type="reset" value="Clear" class="btn btn-default user-role-wise-menu-items-clear" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row grid">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-8">
+                    <input class="txtSearch" type="text" id="searchby" placeholder="Search by any Column" title="Search by any Column">
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="applyBtn btn-primary btn btn-default btn-sm mt-11">Search</button>
+                </div>
+            </div>
+            <div style="max-height:410px; overflow-y:auto;">
+                <br />
+                <table class="table table-striped" id="grid">
+                    <tr>
+                        <th>Name</th>
+                        <th width="100px">Active</th>
+                        <th width="100px"></th>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+@*</div>*@
+   
+<input type="hidden" id="RoleBaseOrInduval" value="R" class="do-not-clear" />
+<script src="~/Scripts/UI/Scienter.UserRole.js"></script>
+
+

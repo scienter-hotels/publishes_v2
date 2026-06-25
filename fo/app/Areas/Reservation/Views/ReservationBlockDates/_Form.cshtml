@@ -1,0 +1,268 @@
+﻿<body>
+    <header>
+        <style>
+            .form-group {
+            padding-bottom:10px;
+            margin: 0px 0 0 0
+            }
+        </style>
+    </header>
+
+
+    <form id="form" class="form" enctype="multipart/form-data">
+        <input type="hidden" id="Id" name="Id" value="0" />
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>From Date</label>
+                    <div class='input-group date start-data-picker'>
+                        <input type='text' class="form-control data-dateselect" id="FromDate" name="FromDate" required autocomplete="off" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>To Date</label>
+                    <div class='input-group date end-data-picker'>
+                        <input type='text' class="form-control data-dateselect" id="ToDate" name="ToDate" required autocomplete="off" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <button type="button" class="btn btn-success btn-width-100px date-submit">
+                    Find
+                </button>
+            </div>
+        </div>
+
+        <div class="daysOfWeeks">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="checkbox">
+                        <label><input type="checkbox" class="date-checkbox1" value="sun">Sunday</label>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="checkbox">
+                        <label><input type="checkbox" class="date-checkbox1" value="mon">Monday</label>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="checkbox">
+                        <label><input type="checkbox" class="date-checkbox1" value="tue">Tuesday</label>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="checkbox">
+                        <label><input type="checkbox" class="date-checkbox1" value="wed">Wendesday</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="checkbox">
+                        <label><input type="checkbox" class="date-checkbox1" value="thu">Thursday</label>
+                    </div>
+                </div>
+
+
+                <div class="col-md-3">
+                    <div class="checkbox">
+                        <label><input type="checkbox" class="date-checkbox1" value="fri">Friday</label>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="checkbox">
+                        <label><input type="checkbox" class="date-checkbox1" value="sat">Saturday</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row grid">
+            <div class="table-responsive" style="height:200px; margin-left:15px; margin-right:15px; overflow-y:scroll;">
+                <table class="table table-striped" id="grid">
+                    <tr>
+                        <th class="">Room Category</th>
+                        <th class="col-md-1"></th>
+                    </tr>
+                    <tr class="no-record">
+                        <td colspan="4">No Records Found.</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-success btn-width-100px" id="btnSubmit">
+                    Save
+                </button>
+
+                <button type="reset" class="btn btn-default btn-width-100px btn-shadow" onclick="ClearForm()">
+                    Clear
+                </button>
+
+            </div>
+        </div>
+
+    </form>
+
+</body>
+
+<script>
+    // $('body').on('change','.data-dateselect', function (e) {
+    $('body').on('click', '.date-submit', function (e) {
+
+       
+        var FromDate = $('#FromDate').val();
+        var ToDate = $('#ToDate').val();
+
+        if (FromDate == "") {
+            $('#FromDate').focus()
+        } else if (ToDate == "") {
+            $('#ToDate').focus();
+        } else {
+
+            if ($('#grid').length == 1) {
+                $('#grid tr').not(':first-child').remove();
+                $.ajax({
+                    url: '/Reservation/ReservationBlockDates/BlockDatesAvailability?From=' + FromDate + '&To=' + ToDate + '',
+                    dataType: 'JSON',
+                    method: 'POST',
+                    success: function (data) {
+                        if (data.length == 0) {
+                            $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#grid'));
+                        }
+
+                        $.each(data, function (index, item) {
+                            $('<tr categoryId="' + item.Id + '">' +
+                                '<td>' + item.Name + '</td>' +
+                                '<td><div class="form-group" style="padding-bottom: 2px;margin: 6px 0 0 0;"> <input type="text" class="form-control text-right data-qty" style="height:20px;" value="' + item.Availability + '"></div> </td>' +
+                                '</tr>').appendTo($('#grid'));
+                        });
+                    },
+                });
+            }
+        }
+    });
+
+    $('.start-data-picker').daterangepicker({
+        linkedCalendars: true,
+        "showWeekNumbers": true,
+        "alwaysShowCalendars": true,
+        singleDatePicker: true,
+        locale: {
+            format: 'DD/MM/YYYY'
+        }
+    }, function (start, end, label) {
+        minDate = start.format('DD/MM/YYYY');
+        $('#FromDate').val(start.format('MM/DD/YYYY'));
+    });
+
+    $('.end-data-picker').daterangepicker({
+        linkedCalendars: true,
+        "showWeekNumbers": true,
+        "alwaysShowCalendars": true,
+        singleDatePicker: true,
+        locale: {
+            format: 'DD/MM/YYYY'
+        }
+    }, function (start, end, label) {
+        minDate = start.format('DD/MM/YYYY');
+        $('#ToDate').val(start.format('MM/DD/YYYY'));
+    });
+
+    $('body').on('submit', '#form', function (e) {
+        e.preventDefault();
+       
+        var SelectedDates = [];
+        var Checkboxdates = [];
+        var itemList = [];
+        var from = new Date($('#FromDate').val());
+        var to = new Date($('#ToDate').val());
+
+        $('.date-checkbox1').each(function (index, item) {
+            if ($(this).prop('checked')) {
+                Checkboxdates.push({
+                    date: $(this).val(),
+                });
+            }
+        });
+
+        $.each($('#grid tr').not(':first-child'), function (index, item) {
+            itemInfo = {
+                RoomCategoryId: $(this).attr('categoryId'),
+                Availability: $(this).find('.data-qty').val()
+            }
+            itemList.push(itemInfo);
+        });
+
+        SelectedDates = getDaysBetweenDates(from, to, Checkboxdates);
+        if (SelectedDates.length == 0) {
+            ShowWarningMessage('Please Select Week Day!');
+        } else if (itemList.length == 0) {
+            ShowWarningMessage('Please Select a Date Range! ');
+        } else {
+        $.ajax({
+            url: '/Reservation/ReservationBlockDates/Save',
+            dataType: 'HTML',
+            data: { category: itemList, blogDates: SelectedDates },
+            method: 'POST',
+            success: function (response) {
+                if (response.startsWith('ERR-')) {
+                    ShowErrorMessage('Sorry, There is an error in saving this record.');
+                } else
+                {               
+                    ShowSuccessMessage('Record has been saved successfully.');
+                }
+            }
+            });
+        }
+    });
+
+    function getDaysBetweenDates(From, To, dates) {
+        var result = [];
+        $(dates).each(function (index, item) {
+            var days = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
+            var day = days[item.date.toLowerCase().substr(0, 3)];
+            var current = new Date(From);
+            current.setDate(current.getDate() + (day - current.getDay() + 7) % 7);
+            while (current < To) {
+                result.push({
+                    Date: formatDate(current)
+                });
+                current.setDate(current.getDate() + 7);
+            }
+        });
+        return result;
+    }
+
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+
+</script>

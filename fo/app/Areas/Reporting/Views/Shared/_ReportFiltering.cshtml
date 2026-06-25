@@ -1,0 +1,167 @@
+﻿
+@*@{
+    Layout = null;
+}*@
+
+
+<script src="~/Scripts/moment.min.js"></script>
+<script src="~/Scripts/jquery-1.11.3.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+
+
+    <fieldset class="the-fieldset">
+        <form id="reportFilteringForm" method="post" action="">
+            <div class="row">
+                <div class="col-md-1">
+
+                    </div>
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <label>From</label>
+                        <div class='input-group date' id='datetimepicker1'>
+                            <input type='text' class="form-control" name="From" required/>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <label>To</label>
+                        <div class='input-group date' id='datetimepicker2'>
+                            <input type='text' class="form-control" name="To" required/>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group hidden" id="ReportTypeCombo">
+                        <label>Filter Type</label>
+                        <select id="FilterType" name="filterTypeId" class="form-control" required>
+                            <option value="E">Expected</option>
+                            <option value="I">Inhouse</option>
+                            <option value="A">All</option>
+                        </select>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group hidden" id="TransportCombo">
+                        <label>Transport Type</label>
+                        <select id="TransportType" name="TransportId" class="form-control" required>
+                            <option value="P">Pick-UP -Only</option>
+                            <option value="D">Drop-Off -Only</option>
+                            <option>All</option>
+                        </select>
+
+                    </div>
+                </div>
+                <div class="col-md-3 ">
+                    <div class="form-group hidden" id="ratesCombo">
+                        <label>Rate</label>
+                        <select id="RateCombobox" name="rateId" class="form-control" required>
+                            <option value="T">With Rates</option>
+                            <option value="F">With Out Rates</option>
+                        </select>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group hide" id="reservationStatusCombo">
+                        <label class="control-label">Reservation Status</label>
+                        @{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { area = "Administration", name = "resStatusId" });}
+                    </div>  
+                </div>
+
+                <div class="col-md-4">
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group hidden" id="countryCombo">
+                        <label class="control-label">Country</label>
+                        @{Html.RenderAction("CountriesCombo", "Countries", new { area = "Administration", name = "CountryId" });}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group hidden" id="companyCombo">
+                        <label class="control-label">Company</label>
+                        @{Html.RenderAction("CompaniesCombo", "Companies", new { area = "Administration", name = "CompanyId" });}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group hidden" id="roomCategoryCombo">
+                        <label class="control-label">Room Category</label>
+                        @{Html.RenderAction("RoomCategoryCombo", "RoomCategories", new { area = "Administration", name = "RoomCategoryId" });}
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group hidden" id="roomCombo">
+                        <label class="control-label">Room #</label>
+                        @{Html.RenderAction("RoomsForFilter", "RoomDetails", new { area = "Administration", name = "RoomId" });}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-5">
+
+                </div>
+                <div class="col-md-2">
+                    <br />
+                    <input type="submit" value="Filter" id="filterBtnId" class="form-control btn-sm btn-primary" />
+                </div>
+            </div>
+</form>
+    </fieldset>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $("#flip").click(function () {
+            $("#filterForm").slideToggle("slow");
+            if ($('#upDown').hasClass('glyphicon glyphicon-triangle-top')) {
+                $('#upDown').fadeIn().removeClass('glyphicon glyphicon-triangle-bottom').addClass('glyphicon glyphicon-triangle-top');
+
+            } else {
+                $('#upDown').fadeIn().removeClass('glyphicon glyphicon-triangle-top').addClass('glyphicon glyphicon-triangle-bottom');
+                $('#filterForm').removeClass('hidden')
+            }
+
+        });
+    });
+
+    $(function () {
+
+        $('#datetimepicker1').datetimepicker({
+            format: 'DD/MM/YYYY'
+        });
+    });
+    $(function () {
+        $('#datetimepicker2').datetimepicker({
+            format: 'DD/MM/YYYY'
+        });
+    });
+
+</script>

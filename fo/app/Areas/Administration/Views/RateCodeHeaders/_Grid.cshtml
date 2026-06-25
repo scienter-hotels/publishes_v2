@@ -1,0 +1,375 @@
+﻿ @model IEnumerable<Scienter.HotelERP.Common.Domain.RateCodeHeader>
+
+@{
+    ViewBag.Title = "Existing Rate Code Headers";
+}
+
+
+
+<div class="row">
+    <div class="col-md-12" id="main-grid-content">
+        <div class="table-responsive">
+            <table class="table table-striped font-size-12px"
+                   id="existingRateCodeHeaderGrid">
+                <thead>
+                    <tr>
+                        <th class="col-sm-1 text-primary">
+                            Code
+                        </th>
+                        <th class=" text-primary">
+                            Name
+                        </th>
+                        <th class=" text-primary">
+                            Folio Name
+                        </th>
+                        @*<th class="col-sm-3 text-primary">
+                                Min Stay
+                            </th>
+                            <th class="col-sm-3 text-primary">
+                               Max Stay
+                            </th>
+                            <th class="col-sm-1 text-primary">
+                                Min Occupancy
+                            </th>
+                            <th class="col-sm-1 text-primary">
+                                Max Occupancy
+                            </th>
+                            <th class="col-sm-1 text-primary">
+                                Min Rooms
+                            </th>
+                            <th class="col-sm-1 text-primary">
+                                Max Rooms
+                            </th>*@
+                        <th class="col-sm-1 text-primary">
+                            Promo C.
+                        </th>
+                        <th class="col-sm-1 text-primary">
+                            Currency C.
+                        </th>
+
+                        @* <th class="col-sm-1 text-primary">
+                                Fixed Rate
+                            </th>
+                            <th class="col-sm-1 text-primary">
+                                Day Use
+                            </th>
+                            <th class="col-sm-1 text-primary">
+                                Complementary
+                            </th>
+                            <th class="col-sm-1 text-primary">
+                                HouseUse
+                            </th>
+
+                        *@
+
+                        <th class="col-sm-1 text-primary">
+                            From
+                        </th>
+
+                        <th class="col-sm-1 text-primary">
+                            To
+                        </th>
+                        <th class="text-primary">
+                            Promo
+                        </th>
+                        <th class="text-primary">
+                            Local
+                        </th>
+                        <th class="text-primary">
+                            IBE
+                        </th>
+                        <th class="col-sm-1 text-primary">
+                            Active
+                        </th>
+                        <th class="col-sm-1 hidden-print"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.HotelRateCode)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.FolioName)
+                            </td>
+                            @*<td>
+                                    @Html.DisplayFor(modelItem => item.MinStayThrough)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MaxStayThrough)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MinOccupancy)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MaxOccupancy)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MinRooms)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MaxRooms)
+                                </td>*@
+                            @*<td>
+                                    @Html.DisplayFor(modelItem => item.BookBeforeDays)
+                                </td>*@
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PromoCode)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CurrencyCode)
+                            </td>
+
+                            @*<td>
+                                    <div class="form-group checkbox">
+                                        <label>
+                                            @Html.DisplayFor(modelItem => item.IsFixedRate)
+                                            <span class="hidden">
+                                                @if (item.IsFixedRate)
+                                                {
+                                                    @:Active
+                                                }
+                                                else
+                                                {
+                                                    @:Inactive
+                                                }
+                                            </span>
+                                        </label>
+                                    </div>
+
+                                </td>
+                                <td>
+                                    <div class="form-group checkbox">
+                                        <label>
+                                            @Html.DisplayFor(modelItem => item.IsDayUse)
+                                            <span class="hidden">
+                                                @if (item.IsDayUse)
+                                                {
+                                                    @:Active
+                                                }
+                                                else
+                                                {
+                                                    @:Inactive
+                                                }
+                                            </span>
+                                        </label>
+                                    </div>
+
+
+                                </td>
+                                <td>
+                                    <div class="form-group checkbox">
+                                        <label>
+                                            @Html.DisplayFor(modelItem => item.IsComplementary)
+                                            <span class="hidden">
+                                                @if (item.IsComplementary)
+                                                {
+                                                    @:Active
+                                                }
+                                                else
+                                                {
+                                                    @:Inactive
+                                                }
+                                            </span>
+                                        </label>
+                                    </div>
+
+                                </td>
+                                <td>
+                                    <div class="form-group checkbox">
+                                        <label>
+                                            @Html.DisplayFor(modelItem => item.IsHouseUse)
+                                            <span class="hidden">
+                                                @if (item.IsHouseUse)
+                                                {
+                                                    @:Active
+                                                }
+                                                else
+                                                {
+                                                    @:Inactive
+                                                }
+                                            </span>
+                                        </label>
+                                    </div>
+                                </td>
+
+                            *@
+                            <td>
+                                @item.FromDate
+                            </td>
+
+                            <td>
+                                @item.ToDate
+                            </td>
+
+                            <td>
+                                <div class="form-group checkbox">
+                                    <label>
+                                        @Html.DisplayFor(modelItem => item.IsPromotion)
+                                    </label>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="form-group checkbox">
+                                    <label>
+                                        @Html.DisplayFor(modelItem => item.IsLocalRate)
+                                    </label>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="form-group checkbox">
+                                    <label>
+                                        @Html.DisplayFor(modelItem => item.IsApplicableForIBE)
+                                    </label>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="form-group checkbox">
+                                    <label>
+                                        @Html.DisplayFor(modelItem => item.IsActive)
+                                        <span class="hidden">
+                                            @if (item.IsActive)
+                                            {
+                                                @:Active
+                                            }
+                                            else
+                                            {
+                                                @:Inactive
+                                            }
+                                        </span>
+                                    </label>
+                                </div>
+                            </td>
+
+
+                            <td class="hidden-print text-right">
+                                <div class="row" style="margin-right: -22px;margin-left: -31px;">
+                                    <button type="button" class="btn btn-theme-color-2 btn-sm btnEdit col-md-3" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" data-id="@item.Id">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </button>
+                                    <a class="btn btn-danger btn-sm col-md-3 call-popup-model-delete" id="btnDelete" data-href="/administration/ratecodeheaders/delete/@item.Id">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+
+                                    <div class="form-group col-md-5 checkbox">
+                                        <label>
+                                            <input class="rateCode-checkBox" type="checkbox" value="@item.Id" TotalNoOfReservationNights="@item.TotalNoOfReservationNights" TotalFreeNights="@item.TotalFreeNights" rateCodeName="@item.Name" companywiseRateId="@item.CompanywiseRateId" />
+                                        </label>
+                                    </div>
+                                </div>
+                                @*<a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Company - @item.Name" data-href="/administration/ratecodeheaders/print/@item.Id">
+                                        <span class="glyphicon glyphicon-print"></span>
+                                    </a>*@
+
+                                @*<a class="btn btn-theme-color-2 btn-sm btnEdit" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/ratecodeheaders/edit/@item.Id"  data-id="@item.Id">*@
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="side-buttons" class="hidden">
+        <div class="row row-padding0px">
+            <div class="col-md-12 btn-right-padding5px">
+                <button style="background-color:#c21b1b !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override call-popup-model" id="btn-FreeNigtOffer">
+                    <span class="glyphicon "></span>
+                    <br />
+                    Free Night<br />Offer
+                </button>
+            </div>
+        </div>
+        <div class="row row-padding0px">
+            <div class="col-md-12 btn-right-padding5px">
+                <button style="background-color:#940191 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override call-popup-model" id="btn-RateRules">
+                    <span class="glyphicon "></span>
+                    <br />
+                    Rate<br />Rules
+                </button>
+            </div>
+        </div>
+        <div class="row row-padding0px">
+            <div class="col-md-12 btn-right-padding5px">
+                <button style="background-color:#b45200 !important;" class="btn btn-default  btn-theme-color-2 full-width-100perc btn-padding-override call-popup-model" id="btn-CopyRateCode">
+                    <span class="glyphicon "></span>
+                    <br />
+                    Copy Rate<br />Code
+                </button>
+            </div>
+        </div>
+        <div class="row row-padding0px">
+            <div class="col-md-12 btn-right-padding5px">
+                <button style="background-color:#e84118 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override call-popup-model" id="btn-CompanyWiseRates">
+                    <span class="glyphicon "></span>
+                    <br />
+                    Company Wise<br />Rates
+                </button>
+            </div>
+        </div>
+    </div>
+</div> 
+
+    <script>
+        $(document).ready(function () {
+            $('#existingRateCodeHeaderGrid').DataTable(
+                {
+                    //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                    searching: true,
+                    ordering: true,
+                    //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                    dom: 'Bfrtipl',
+                    select: true,
+                    buttons: [
+                        'copy',
+                        'excel',
+                        'csv',
+                        'pdf',
+                        'print'
+                    ],
+                    scrollY: '58vh',
+                });
+        });
+
+        $('#btn-FreeNigtOffer').on('click', function () {
+            var rateCodeId = $('input[class="rateCode-checkBox"]:checked').val();
+            var TotalNoOfReservationNights = $('input[class="rateCode-checkBox"]:checked').attr('TotalNoOfReservationNights');
+            var rateCodeName = $('input[class="rateCode-checkBox"]:checked').attr('rateCodeName');
+            var FreeNigtOffer = '/Administration/RateCodeHeaders/FreeNigthOffer?rateCodeId=' + rateCodeId + '&TotalNoOfReservationNights=' + TotalNoOfReservationNights;
+            $(this).attr('data-href', FreeNigtOffer);
+            $(this).attr('data-title', "Free night offer for " + rateCodeName);
+        });
+
+        $('#btn-RateRules').on('click', function () {
+            var rateCodeId = $('input[class="rateCode-checkBox"]:checked').val();
+            var rateCodeName = $('input[class="rateCode-checkBox"]:checked').attr('rateCodeName');
+            var RateRules = '/Administration/RateCodeHeaders/RateRules?rateCodeId=' + rateCodeId;
+            $(this).attr('data-href', RateRules);
+            $(this).attr('data-title', "Rate rules for " + rateCodeName);
+        });
+
+        $('#btn-CopyRateCode').on('click', function () {
+            var rateCodeId = $('input[class="rateCode-checkBox"]:checked').val();
+            var CopyRateCode = '/Administration/RateCodeHeaders/CopyRateCode?rateCodeId=' + rateCodeId;
+            $(this).attr('data-href', CopyRateCode);
+            $(this).attr('data-title', "Copy rate codes");
+        });
+
+        $('#btn-CompanyWiseRates').on('click', function () {
+            var rateCodeId = $('input[class="rateCode-checkBox"]:checked').val();
+            var rateCodeName = $('input[class="rateCode-checkBox"]:checked').attr('rateCodeName');
+            var companywiseRateId = $('input[class="rateCode-checkBox"]:checked').attr('companywiseRateId');
+            var CompanyWiseRate = '/Administration/RateCodeHeaders/CompanyWiseRates?rateCodeId=' + rateCodeId + '&rateCodeName=' + rateCodeName + '&companywiseRateId=' + companywiseRateId;
+            $(this).attr('data-href', CompanyWiseRate);
+            $(this).attr('data-title', "Company wise rates");
+        });
+    </script>
+

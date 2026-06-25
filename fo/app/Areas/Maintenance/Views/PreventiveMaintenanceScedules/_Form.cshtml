@@ -1,0 +1,229 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.PreventiveMaintenanceSceduleJobViewModel
+
+@{
+    ViewBag.Title = "Create / Edit";
+}
+
+<div class="col-md-12">
+
+    <form id="preventivemaintenanescedule">
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <input type="hidden" value="@Model.PreventiveMaintenanceSceduleId" name="Id" id="Id" />
+
+        <div class="row">
+            <div class="col-md-12">
+
+                    <div class="col-md-4">
+                        <div class="form-group label-floating">
+                            <label class="control-label">ReferenceNo *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="ReferenceNo" name="ReferenceNo" type="text" value="@Model.ReferenceNo" required readonly="readonly">
+                        </div>
+                    </div>
+               
+
+                
+                    <div class="col-md-4">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Assets *</label>
+                            @{Html.RenderAction("AssetsCombo", "Assets", new { name = "AssetId", requiered = true, value = Model?.AssetId });}
+                        </div>
+                    </div>
+                
+               
+                    <div class="col-md-4">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Maintenance Types *</label>
+                            @{Html.RenderAction("MaintenanceTypeCombo", "MaintenanceTypes", new { name = "MaintenanceTypeId", requiered = true, value = Model?.MaintenanceTypeId });}
+                        </div>
+                    </div>
+           
+
+               
+                    <div class="col-md-4">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Activity *</label>
+                            @{Html.RenderAction("ActivityCombo", "Activities", new { name = "ActivityId", requiered = true, value = Model?.ActivityId });}
+                        </div>
+                    </div>
+             
+                    <div class="col-md-4">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Staff Category *</label>
+                            @{Html.RenderAction("StaffCategoriesCombo", "StaffCategories", new { area = "Administration", name = "StaffCategoryId", requiered = true, value = Model?.StaffCategoryId });}
+                        </div>
+                    </div>
+               
+        </div>
+           </div>
+      <div class="row">
+                 <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">Date</label>
+                        <div id="date" class='input-group datescedule'>
+                            <input type='text' class="form-control datePicker" required id="datepreventive" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+          </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Remark</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="10000" id="Remark" name="Remark" type="text" value="@Model.Remark" required>
+                            @*<textarea class="form-control summernote" id="Remark" name="Remark" value="@Model.Remark" rows="4"></textarea>*@
+                        </div>
+                    </div>
+                </div>
+                
+
+                <div class="row">
+                    <div class="col-md-12" id="taskAssignees">
+                        <fieldset class="the-fieldset">
+                            <legend class="the-legend"> Assignees</legend>
+                            <label class="control-label"></label>
+                            <div id="membersContainer">
+
+                                Select Staff Category To Load Assignees
+                            </div>
+                            </fieldset>
+                    </div>
+                </div>
+                <div class="form-group checkbox">
+                    <label>
+                        @Html.CheckBoxFor(model => model.IsActive)
+                        IsActive
+                    </label>
+                    @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                </div>
+          
+
+            <div class="form-group">
+                <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                &nbsp;
+                <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+            </div>
+
+</form>
+</div>
+
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+
+@* Select Index change in combo box*@
+<script src="~/Scripts/ui/common/scienter.common.datatimepicker.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#JobTypeId').val($('#hdnRoleId').val());
+
+        $('#.datePicker').val($('#datepreventive').val());
+        
+            if ($('#StaffCategoryId').val() > 0) {
+
+                $.ajax({
+                    url: '/Maintenance/PreventiveMaintenanceScedules/LoadPreventiveMaintenanceScedule',
+                    dataType: 'html',
+                    method: 'POST',
+                    data: { staffcategoryId: $('#StaffCategoryId option:selected').val(), preventId: $('#PreventiveId').val() },
+                    success: function (response) {
+                       
+                        $('#membersContainer').html('').fadeOut();
+                        $('#membersContainer').html(response).fadeIn();
+
+                    },
+
+                });
+            } else {
+                $('input:checkbox').removeAttr('checked');
+            }
+
+            if ($('#Id').val() > 0) {
+
+                $.ajax({
+                    url: '/Maintenance/PreventiveMaintenanceScedules/LoadPreventiveMaintenceSceduleById',
+                    dataType: 'html',
+                    method: 'POST',
+                    data: { staffcategoryId: $('#StaffCategoryId option:selected').val(), Id: $('#Id').val() },
+                    success: function (response) {
+                       
+                        $('#membersContainer').html('').fadeOut();
+                        $('#membersContainer').html(response).fadeIn();
+
+                    },
+
+                });
+            } else {
+                $('input:checkbox').removeAttr('checked');
+            }
+        });
+
+
+    $('#StaffCategoryId').change(function () {
+       
+        if ($(this).val() > 0) {
+
+            $.ajax({
+                url: '/Maintenance/PreventiveMaintenanceScedules/LoadPreventiveMaintenanceScedule',
+                dataType: 'html',
+                method: 'POST',
+                data: { staffcategoryId: $('#StaffCategoryId option:selected').val(), preventId: $('#PreventiveId').val() },
+                success: function (response) {
+                   
+                    $('#membersContainer').html('').fadeOut();
+                    $('#membersContainer').html(response).fadeIn();
+
+                },
+
+            });
+        } else {
+
+            $('input:checkbox').removeAttr('checked');
+        }
+    });
+
+    
+    $('#AssetId').change(function () {
+       
+        var assetId = $(this).val();
+
+        $.ajax({
+            url: '/maintenance/AssetWiseMaintenanceTypes/SelectAssetWiseMaintenceTypeCombo?assetId=' + assetId,
+            dataType: 'json',
+            method: 'POST',
+            success: function (assetWiseMaintenanceType) {
+               
+                $('#MaintenanceTypeId').find('option').not(':first-child').remove();
+                $.each(assetWiseMaintenanceType, function (index, maintenanceType) {
+                   
+                    $('<option value="' + maintenanceType.Id + '">' + maintenanceType.Name + '</option>').appendTo($('#MaintenanceTypeId'));
+                })
+
+            },
+        });
+    });
+
+    $('#MaintenanceTypeId').change(function () {
+
+        var maintenanceTypeId = $(this).val();
+
+        $.ajax({
+            url: '/maintenance/ActivityWiseMaintenanceTypes/SelectActivityWiseMaintenceType?maintenanceTypeId=' + maintenanceTypeId,
+            dataType: 'json',
+            method: 'POST',
+            success: function (maintenanceWiseActivity) {
+                $('#ActivityId').find('option').not(':first-child').remove();
+                $.each(maintenanceWiseActivity, function (index, activity) {
+                    $('<option value="' + activity.Id + '">' + activity.Name + '</option>').appendTo($('#ActivityId'));
+                })
+
+            },
+        });
+    });
+    
+</script>

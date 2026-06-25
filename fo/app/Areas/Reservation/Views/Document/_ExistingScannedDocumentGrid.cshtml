@@ -1,0 +1,116 @@
+﻿
+@model IEnumerable<Scienter.HotelERP.Common.Domain.Document>
+
+<style>
+    #existingScannedDocumentGrid tbody td {
+        height: 30px;
+    }
+
+    a:focus {
+        color: #202020 !important;
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: #094f70 !important;
+        text-decoration: none;
+    }
+</style>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table class="table table-striped" id="existingScannedDocumentGrid">
+                <thead>
+                    <tr>
+                        <th class="col-md-2 text-primary">
+                            Res No
+                        </th>
+
+                        <th class=" text-primary">
+                            Guest Name
+                        </th>
+                        <th class=" text-primary">
+                            Process
+                        </th>
+                        <th class="col-md-1 text-primary">
+                            Type
+                        </th>
+                        <th class="col-md-1 text-primary">
+                            Remark
+                        </th>
+                        <th class="col-md-1 text-primary"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ReservationNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.GuestName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DocumentProcessName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DocumentProcessWiseDocument)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Remark)
+                        </td>
+
+                        @*@{
+            string imageUrl = "/Attachments/"+item.DocumentUrl;
+            if (item.DocumentUrl.Contains("windows.net"))
+            {
+                imageUrl = item.DocumentUrl;
+            }
+        }*@
+
+                        @imageUrl = item.DocumentUrl;
+
+                        <td style="text-align:center;">
+                            <a href="@imageUrl" target="_blank" style="text-decoration:none;">
+                                <span class="glyphicon glyphicon-camera" style="font-size:17px;">
+
+                                </span>
+
+                            </a>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.dt-buttons').addClass('hidden');
+
+        $('#existingScannedDocumentGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: false,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'frtipl',
+                select: true,
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ],
+                scrollY: '58vh',
+            });
+    });
+</script>
+

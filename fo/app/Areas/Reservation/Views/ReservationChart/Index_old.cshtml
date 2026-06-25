@@ -1,0 +1,1287 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <link href="/files/fullcalendar.min.css" rel="stylesheet">
+    <link href="/files/fullcalendar.print.min.css" rel="stylesheet" media="print">
+    <link href="/files/scheduler.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+    <link href="~/fonts/font/stylesheet.css" rel="stylesheet" />
+
+    @*<script src="/files/moment.min.js"></script>
+        <script src="/files/jquery.min.js"></script>
+        <script src="/files/jquery-ui.min.js"></script>*@
+    <script src="/files/fullcalendar.min.js"></script>
+    <script src="/files/scheduler.min.js"></script>
+
+    <style>
+
+        :root {
+            --date_color: #ced6e0;
+            --available_room: #dfe6e9;
+            --table_1: #d0d0d0;
+            --table_2: #F1F6F9;
+            --rate_color: #D2E9E9;
+        }
+
+        html {
+            overflow-y: scroll;
+            height: auto;
+            position: absolute;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        #wrap {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        #external-events {
+            float: left;
+            width: 150px;
+            padding: 0 10px;
+            border: 1px solid #ccc;
+            background: #eee;
+            text-align: left;
+        }
+
+            #external-events h4 {
+                font-size: 16px;
+                margin-top: 0;
+                padding-top: 1em;
+            }
+
+            #external-events .fc-event {
+                margin: 10px 0;
+                cursor: pointer;
+            }
+
+            #external-events p {
+                margin: 1.5em 0;
+                font-size: 11px;
+                color: #666;
+            }
+
+                #external-events p input {
+                    margin: 0;
+                    vertical-align: middle;
+                }
+
+        #calendar {
+            float: right;
+            width: 100%;
+            height: auto;
+            font-family: 'GT Eesti Pro Text', sans-serif;
+        }
+
+        .fc-left {
+            color: #094F70;
+            font-size: 7px;
+            padding-right: 10px;
+        }
+
+            .fc-left h2 {
+                font-family: 'GT Eesti Pro Text', sans-serif !important;
+                font-weight: 800 !important;
+                display:none;
+            }
+
+        .fc-content div .fc-timeline-event {
+            margin-top: 10px !important;
+            line-height: 20px;
+            border-radius: 3px;
+        }
+
+        .fc-timeline-event .fc-event {
+            top: 10px !important;
+        }
+
+        .fc-resource-area {
+            width: 160px !important;
+        }
+
+        .fc-button {
+            border-radius: 0px !important;
+            background-color: white !important;
+            color: #094F70 !important;
+        }
+
+        .fc-title {
+            font-size: 10px;
+            font-weight: 400 !important;
+        }
+
+
+        .fc-widget-header .fc-time-area {
+            z-index: -100 !important;
+        }
+
+        /*right slide menu*/
+        .right_menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 341.5px !important;
+            padding: 10px;
+            margin-top: 3px;
+            padding-bottom: 3px;
+            height: auto;
+            padding-top: 10px !important;
+            margin-right: 11px;
+            font-family: 'GT Eesti Pro Text', sans-serif;
+        }
+
+        .main_details {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+            .main_details div {
+                padding: 5px;
+                line-height: 15px;
+            }
+
+        .label_div {
+            color: black;
+            font-size: 12px;
+        }
+
+        .span {
+            display: inline-block;
+        }
+
+        span img {
+            width: 30px;
+        }
+
+        .side-panel-icons {
+            width: 13px;
+            margin-right: 30px;
+        }
+
+        .db_div {
+            color: black;
+            font-size: 15px;
+        }
+
+        .value-box {
+            margin-top: -10px;
+            margin-bottom: -10px;
+            text-align: center;
+            margin-right: 0px !important;
+        }
+
+            .value-box span {
+                font-size: 14px;
+            }
+
+            .value-box .value span {
+                font-size: 16px !important;
+            }
+
+            .value-box img {
+                width: 20px;
+            }
+
+        .room_num {
+            color: #094F70;
+            font-size: 20px !important;
+        }
+
+        lable {
+            font-size: 12px;
+            display: block;
+            margin-bottom: 10px;
+            font-weight: normal !important;
+        }
+
+        hr {
+            margin: 3px 0px !important;
+        }
+
+        .ch_room_num .form_group {
+            margin-top: -10px !important;
+            margin-bottom: -40px !important;
+            font-size: 12px !important;
+        }
+
+        .form_group {
+            padding-bottom: 0px;
+            margin: 20px 0px -20px 0 !important;
+        }
+
+        fc-scroller {
+            overflow: hidden !important;
+            height: 570px !important;
+        }
+
+        #change-title {
+            margin-left: -15px;
+            font-weight: 500 !important;
+            font-family: 'GT Eesti Pro Text', sans-serif !important;
+            padding: 15px 0;
+            font-size: 18px;
+        }
+
+        .close_button {
+            background-color: white !important;
+            color: #094F70 !important;
+            font-size: 28px !important;
+        }
+
+        .right_menu_row {
+            background-color: #dfe6e9;
+            padding: 5px;
+            padding-bottom: 16px;
+        }
+
+        #cross-close:hover {
+            background-color: white !important;
+            color: black !important;
+        }
+
+        #ledgen_menu {
+            width: 273.2px !important;
+            padding: 0px;
+            padding-top: 7px !important;
+            margin-top: 3px;
+            overflow-y: scroll;
+            margin-right: -6px;
+        }
+
+        .ledgendata {
+            border-collapse: separate;
+            text-align: left;
+            border-spacing: 8px;
+            margin-top: -9px;
+        }
+
+        .circleSpan {
+            width: 20px !important;
+            height: 20px !important;
+            border-radius: 50px;
+            border: solid 2px black;
+        }
+
+        .ledIcon {
+            width: 20px;
+            margin-right: 15px;
+        }
+
+        .tooltip-inner {
+            background-color: #094F70 !important;
+            color: white;
+            font-weight: 500;
+            width: auto;
+        }
+
+        .cursor-pointer {
+            cursor: pointer !important;
+        }
+
+        .fc-view table {
+            height: 300px;
+        }
+
+        #container {
+            height: 200vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            margin: auto -20px;
+            top: 300px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999999;
+            background-color: rgba(0, 0, 0,.6);
+        }
+
+        #h3 {
+            color: white;
+        }
+
+        #ring {
+            width: 190px;
+            height: 190px;
+            border: 1px solid transparent;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+            #ring:nth-child(1) {
+                border-bottom: 8px solid #e67e22;
+                animation: rotate1 2s linear infinite;
+            }
+
+        #h3 {
+            color: white;
+        }
+
+        /*Animation parts (keyframe parts) on scheduler.min.css*/
+
+    </style>
+
+</head>
+
+<body class="" style="cursor: pointer; height:auto;">
+
+</body>
+</html>
+
+
+<div class="row" style="font-family: 'GT Eesti Pro Text', sans-serif;" >
+    <div class="col-md-12">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12"  id="main">
+                    <div class="card" id="card">
+                        <div class="card-header" data-background-color="purple">
+
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h4 class="title" id="title" style="font-family: 'GT Eesti Pro Text', sans-serif !important;">
+                                        Reservation Chart - (<span id="fcLeftVal"></span>)
+                                        @*<hr class="visible-print" />*@
+                                    </h4>
+                                </div>
+                                <div class="col-md-4" style="position:absolute;margin-top:7px;">
+                                    <span id="Change" data-toggle="tooltip" data-placement="left" title="Change Date Range" style="width: 20px; margin-top:-3px; position:absolute; z-index:99; cursor:pointer; float: right !important;"><img src="~/Images/assets/daterange.png" alt="change rate" style="filter: invert(1);" /></span>
+                                    <span id="ledgen_button" data-toggle="tooltip" data-placement="left" title="Legend" style="width: 20px; margin-top:-3px; position:absolute; z-index:99; cursor:pointer; float: right !important;"><img src="~/Images/assets/settings.png" alt="ledgen menu" style="filter: invert(1); "/></span>
+                                    <span id="full_screen_button" data-toggle="tooltip" data-placement="left" title="Full Screen" style="width: 20px; margin-top:-3px; position:absolute; z-index:99; cursor:pointer; float: right !important;"><img src="~/Images/assets/maximize.png" alt="full screen" style="filter: invert(1);" onclick="toggleFullscreen()"/></span>
+                                    @*<span id="Maximize" data-toggle="tooltip" data-placement="left" title="Maximize Reservation Chart" style="width: 20px; margin-top:-3px; position:absolute; z-index:99; cursor:pointer; float: right !important;"><img src="~/Images/assets/maximize.png" alt="maximize window" /></span>*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content" id="contentLoadingArea">
+                            <div class="row">
+                                <div class="search_bar" style=" display:none; margin-top:-15px;">
+                                    <div class="col-md-2">
+                                        <label class="control-label" style="color:black !important;">From:</label>
+                                        <input type="date" id="From" name="From" class="form-control" style="margin-top: -33px !important;">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="control-label" style="color:black !important;">To:</label>
+                                        <input type="date" id="To" name="To" class="form-control" style="margin-top: -33px !important;">
+                                    </div>
+                                    @*<div class="col-lg-2 label_div">
+                                    <label class="control-label" style="color:black !important;">Rate Code:</label>
+                                    <select id="rateCode" class="form-control" style="font-size:15px; margin-top:-34px;">
+
+                                        <option value="value">text</option>
+                                                                </select>
+                                                            </div>*@
+
+                                    <div class="col-md-2">
+                                        <input type="button" name="Search" value="Search" id="Search" class="btn btn-primary" style="margin-top: 19px;" />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div id="wrap">
+                                        <div id="wrap" style="background-color:palevioletred; height:auto !important;">
+                                            <div id="calendar" class="cursor-pointer">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @{
+                DateTime hotelDate = Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate;
+            }
+
+            <input type="hidden" id="FromDate" name="From" value="@hotelDate.ToString("yyyy-MM-dd")" />
+            <input type="hidden" id="ToDate" name="To" value="@hotelDate.AddDays(28).ToString("yyyy-MM-dd")" />
+        </div>
+
+
+        <div class="col-md-12" style="">
+            <div class="container" style="height:auto; margin-top:14px; position:relative !important; float:right !important; z-index:100001 !important;">
+                <div class="w3-sidebar w3-bar-block w3-card w3-animate-right right_menu" id="rightMenu_" style="position:fixed !important;">
+                    <button onclick="closeRightMenu_()" class="w3-button close-right close-btn close_button" id="cross-close" style="float:right; height:10px !important; width:-1px !important; line-height:0px;">&times;</button>
+                    <div class="col-md-12 right-menu-content-area_" style="height:100%;">
+
+                        <div class="main_details w3-animate-top">
+
+                            <div class="row" style="font-weight:bold; font-size:20px; margin-bottom:5px; margin-top:0px; background-color: #dfe6e9;">
+
+                                <div class="col-lg-7">
+                                    <table>
+                                        <tr style="background-color: #dfe6e9;">
+                                            <td>
+                                                <img src="~/Images/assets/time-management.png" style="width:30px; margin-right:15px;" alt="Reservation No" />
+                                            </td>
+                                            <td>
+                                                <lable>Reservation No</lable>
+                                                <span class="res_num text-left db_div span"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+
+                                <div class="col-lg-5" style="margin-left:-15px">
+                                    <table>
+                                        <tr style="background-color: #dfe6e9;">
+                                            <td>
+                                                <img src="~/Images/assets/departure.png" style="width:30px; margin-right:15px;" alt="Room No" />
+                                            </td>
+                                            <td>
+                                                <lable>Room No</lable>
+                                                <span class="room_num text-left db_div span"></span>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row right_menu_row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 label_div">
+                                    <table style="width:inherit;">
+                                        <tr style=" background-color:#dfe6e9;">
+                                            <td style="width: 35px;">
+                                                <span class="span"><img src="~/Images/assets/user.png" class="side-panel-icons" alt="Guest Name" /></span>
+                                            </td>
+                                            <td>
+                                                <span class="span">Guest Name </span>
+                                                <div class="col-lg-12 col-md-12 col-sm-12 guest_name db_div" style="margin-left:-5px;"></div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row right_menu_row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 label_div">
+                                    <table style="width:inherit;">
+                                        <tr style=" background-color:#dfe6e9;">
+                                            <td style="width: 35px;">
+                                                <span class="span"><img src="~/Images/assets/reception.png" class="side-panel-icons" alt="Reservation Status" /></span>
+                                            </td>
+                                            <td>
+                                                <span class="span">Reservation Status</span>
+                                                <div class="col-lg-12 col-md-12 col-sm-12 room_stats db_div" style="margin-left:-5px;"></div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row right_menu_row">
+
+                                <div class="col-lg-6 label_div">
+                                    <table style="width:120px;">
+                                        <tr style=" background-color:#dfe6e9;">
+                                            <td style="width: 34px;">
+                                                <span class="span"><img src="~/Images/assets/landing.png" class="side-panel-icons" alt="Arrival" /></span>
+                                            </td>
+                                            <td>
+                                                <span class="span">Arrival</span>
+                                                <div class="col-lg-12 col-md-12 col-sm-12 arraival db_div" style="margin-left:-5px;"></div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+
+                                <div class="col-lg-6 label_div">
+                                    <table style="width:120px;">
+                                        <tr style=" background-color:#dfe6e9;">
+                                            <td style="width: 35px;">
+                                                <span class="span"><img src="~/Images/assets/departures.png" class="side-panel-icons" alt="Depature" /></span>
+                                            </td>
+                                            <td>
+                                                <span class="span">Depature</span>
+                                                <div class="col-lg-12 col-md-12 col-sm-12 depature db_div" style="margin-left:-5px;"></div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+
+                            </div>
+                            <hr />
+                            <div class="row right_menu_row">
+
+                                <div class="col-lg-4 value-box">
+                                    <div style="margin-right:-31px"><img src="~/Images/assets/man.png" class="side-panel-icons" alt="Adults" /></div>
+                                    <span class="span">Adults </span>
+                                    <div class="adults db_div value"></div>
+                                </div>
+
+                                <div class="col-lg-4 value-box">
+                                    <div style="margin-right:-29px"><img src="~/Images/assets/boy.png" class="side-panel-icons" alt="Kids" /></div>
+                                    <span class="span">Kids </span>
+                                    <div class="child db_div value"></div>
+                                </div>
+
+                                <div class="col-lg-4 value-box">
+                                    <div style="margin-right:-18px; padding-left:15px;"><img src="~/Images/assets/percentage.png" class="side-panel-icons" alt="Rate" /></div>
+                                    <span class="span">Rate </span>
+                                    <div class="rate db_div value"></div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="reservationHeaderId" id="reservationHeaderId" value="" />
+                            @*<div class="hidden resheader_id">
+
+
+                            </div>*@
+                            <hr />
+                        </div>
+
+                        <div class="change_details w3-animate-bottom" style="margin-top:-18px;">
+
+                            <span class="span" id="change-title">Do you wish to change stay ?</span>
+
+                            <div class="row right_menu_row" style="background-color:#ced6e0;">
+                                <div class="col-lg-6 label_div">
+                                    <table style="width:120px;">
+                                        <tr style=" background-color:#ced6e0;">
+                                            <td style="width: 35px;">
+                                                <span class="span"><img src="~/Images/assets/landing.png" class="side-panel-icons" alt="Change Arrival" /></span>
+                                            </td>
+                                            <td>
+                                                <span class="span">Arrival</span>
+                                                <div class="ch_arraival" style="max-width:100px;">
+                                                    <input type="date" id="change_arr" name="From" class="form-control db_div form_group" style="margin-top: -42px !important; font-size:14px;">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                                <div class="col-lg-6 label_div">
+
+                                    <table style="width:120px;">
+                                        <tr style=" background-color:#ced6e0;">
+                                            <td style="width: 35px;">
+                                                <span class="span"><img src="~/Images/assets/departures.png" class="side-panel-icons" alt="Change Depature" /></span>
+                                            </td>
+                                            <td>
+                                                <span class="span">Depature</span>
+                                                <div class="ch_depature" style="max-width:100px;">
+                                                    <input type="date" id="change_dep" name="To" class="form-control db_div form_group" style="margin-top: -42px !important; font-size:14px;" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                            </div>
+                            <hr />
+                            <div class="row right_menu_row" style="background-color:#ced6e0; padding-top: 15px; padding-bottom: 10px;">
+                                <div class="col-lg-6 label_div">
+                                    <span class="span"><img src="~/Images/assets/hotel.png" class="side-panel-icons" /></span>
+                                    <span class="span" style="margin-left:-20px;">Room No: </span>
+                                </div>
+                                <div class="col-lg-6  ch_room_num db_div">
+                                    <div class="form_group form-group">
+                                        <select id="roomCodes" class="form-control text-center" style="font-size:15px; margin-bottom:-10px; margin-left: -42px;">
+                                            @*<option value="value">text</option>*@
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-7 text-center">
+                                    <input type="button" name="Save" value="Confirm" id="Save11" class="btn btn-primary disabled" style="width:100%; height:30px; width:180px; margin-left:-15px;text-decoration: line-through;" disabled/>
+                                </div>
+                                <div class="col-md-5 text-center">
+                                    <input type="button" name="Close" value="CLOSE" id="Close" onclick="closeRightMenu_()" class="w3-button close-right close-btn" style="width:137px; height:30px; margin-top:5px; font-size:12px; padding: 4px 16px; margin-left:-18px;" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container" style="height:auto; margin-top:14px; position:absolute !important; float:right !important; z-index:9999 !important; overflow:hidden !important;">
+                <div class="w3-sidebar w3-bar-block w3-card w3-animate-right right_menu" id="ledgen_menu">
+                    <button onclick="closeLedgenMenu()" class="w3-button close-right close-btn close_button" id="cross-close" style="float:right; height:10px !important; width:-1px !important; line-height:0px; z-index:10000;">&times;</button>
+                    <div class="col-md-12 right-menu-content-area_" id="ledgen_menu_" style="overflow-x:auto;">
+                        <div class="w3-animate-top">
+
+                            <div>
+                                <table id="legendDataIcon" class="ledgendata">
+                                    <tr id="colorsId">
+                                        <th><span class="span">Icons</span></th>
+                                    </tr>
+                                    <tr></tr>
+
+                                </table>
+                                <hr />
+                                <table id="legendDataColor" class="ledgendata" style="margin:0;">
+                                    <tr id="colorId">
+                                        <th><span class="span">Colors</span></th>
+                                    </tr>
+                                    <tr></tr>
+                                    <tr>
+                                        <td><span class="circleSpan span" style="background-color:var(--available_room) !important;"></span></td>
+                                        <td><span>Total Available Rooms</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="circleSpan span" style="background-color:var(--table_1) !important;"></span></td>
+                                        <td><span class="span">Complentory Rooms</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="circleSpan span" style="background-color:var(--table_2) !important;"></span></td>
+                                        <td><span class="span">Paid Rooms</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="circleSpan span" style="background-color:var(--rate_color) !important;"></span></td>
+                                        <td><span class="span">Rate</span></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <div id="container" class="container-fluid">
+            <div id="ring"></div>
+            <div id="ring"></div>
+            <div id="ring"></div>
+            <div id="ring"></div>
+            <h5 id="h3">Loading..</h5>
+        </div>
+    </div>
+</div>
+
+<script>
+    //Changes 22
+    var reservationDetail = {};
+    var reservation = {};
+
+    $(function (data) { // document ready
+       
+
+        LoadRoomNumbers();
+        SetTableHeight();
+
+        setInterval(function () {
+            $('.fc-ooo-content').closest('.fc-timeline-event').css('border-color', '#4d4d4d');
+            $('.fc-ooo-content').closest('.fc-timeline-event').css('background-color', '#4d4d4d');
+            $('[data-toggle="tooltip"]').tooltip();
+        }, 1000);
+
+        var ledHeight = $(window).height() - 120;
+        $('#ledgen_menu_').css('height', ledHeight);
+
+        var width = $('#calendar').width();
+        //$('#Change').css('margin-left', width - 95);
+        //$('#ledgen_button').css('margin-left', width - 67);
+        //$('#Maximize').css('margin-left', width - 35);
+
+        $('#Change').css('margin-left', width - 99);
+        $('#ledgen_button').css('margin-left', width - 67);
+        $('#full_screen_button').css('margin-left', width - 35);
+
+        $('#container').hide();
+        setTimeout(function () {
+            $('#container').css('top', 0);
+        }, 5000)
+
+        $('#From').val($('#FromDate').val())
+        $('#To').val($('#ToDate').val())
+        $('#To').prop('disabled', true);
+
+        $('#From').change(function () {
+            var fromDate = new Date($('#From').val());
+            fromDate.setDate(fromDate.getDate() + 28);
+            $('#To').val(fromDate.toISOString().slice(0, 10));
+        });
+
+        LoadCalenderByDateRange();
+        LoadRateCodes();
+
+    });
+
+
+    function LoadRoomNumbers() {
+        $.ajax({
+            url: '/Administration/GuestComplain/SelectRoom',
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.Id + '" >' + item.RoomCode + '</optoin>').appendTo($('#roomCodes'));
+                });
+            },
+            complete: function () {
+
+            }
+        });
+    }
+
+
+    function SetTableHeight() {
+        $('.data-main-navigation-areas').css('max-height', 550)
+        $('.data-main-navigation-areas').css('height', 550)
+        $('.data-main-navigation-areas').css('overflow', 'scroll')
+        //$('.fc-timeline').css('height', 450)
+    }
+
+    function SetRoomNumber(RoomId) {
+        $('#roomCodes').val(RoomId);
+    }
+
+    function LoadRateCodes() {
+        $.ajax({
+            url: '/Administration/RateCodeHeaders/SelectActiveRateCodes',
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.Name + '" data-curreny="' + item.ISOCode + '" >' + item.Name + '</optoin>').appendTo($('#rateCode'));
+                });
+            }, complete: function () {
+            }
+        });
+    }
+
+    function closeRightMenu_() {
+        LoadCalenderByDateRange();
+        $("#rightMenu_").hide();
+    }
+
+    function closeLedgenMenu() {
+        $("#ledgen_menu").hide();
+    }
+
+
+    function LoadCalenderByDateRange() {
+        var roomDetails = '[]';
+        var reservations = '[]';
+
+        $.ajax({
+            url: '/Reservation/ReservationChart/SelectRoomDetailsForReservationChart',
+            dataType: 'json',
+            method: 'POST',
+            beforeSend: function () {
+                $('#container').show();
+            },
+            success: function (rooms) {
+                roomDetails = '[]'
+                roomDetails = rooms
+
+                $.ajax({
+                    url: '/Reservation/ReservationChart/SelectReservationsForReservationChartByDateRange',
+                    data: { From: $('#From').val(), To: $('#To').val() },
+                    dataType: 'json',
+                    method: 'POST',
+                    success: function (res) {
+                        reservations = '[]';
+                        reservations = res;
+                        DrawCalender(rooms, res);
+                        //LoadRates();
+                    },
+                    error: function () {
+                    },
+
+                    complete: function () {
+                        $('#calendar').fullCalendar('removeEvents');
+                        $('#calendar').fullCalendar('addEventSource', reservations);
+                        $('#container').hide();
+                    }
+                });
+
+            }, complete: function () {
+                // $('h2').text("");
+
+            }
+        });
+    }
+
+    function DrawCalender(roomDetails, reservations) {
+        //debugger;
+        //var w = window.innerWidth;
+        //var h = window.innerHeight;
+        //var ar = 0;
+
+        //if (h >= 760) {
+        //    ar = 2.1
+        //} else {
+        //    ar=2.75
+        //}
+
+        //console.log(ar)
+
+        $('#calendar').fullCalendar({
+            schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+            //now: $('#FromDate').val(),
+            now: $('#From').val(),
+            editable: true, // enable draggable events
+            droppable: true, // this allows things to be dropped onto the calendar
+            aspectRatio: 2.75,
+            scrollTime: '00:00', // undo default 6am scrollTime
+            header: {
+                left: 'title',
+                center: '',
+                right: ''
+                //timelineDay, timelineThreeDays, timelineTenDays, timeline14Days, timeline21Days,timeline30Days
+            },
+            defaultView: 'timeline30Days',
+            views: {
+                //timelineThreeDays: {
+                //    type: 'timeline',
+                //    duration: { days: 3 },
+                //},
+                //timelineTenDays: {
+                //    type: 'timeline',
+                //    duration: { days: 10 }
+                //},
+                //timeline14Days: {
+                //    type: 'timeline',
+                //    duration: { days: 14 },
+                //},
+                //timeline21Days: {
+                //    type: 'timeline',
+                //    duration: { days: 21 }
+                //},
+                timeline30Days: {
+                    type: 'timeline',
+                    duration: { days: 28 }
+                }
+            },
+            resourceLabelText: 'Rooms',
+            resources: roomDetails,
+
+            events: reservations,
+
+            eventClick: function (event) {
+                var roomId = parseInt(event.resourceId);
+                reservationDetail = JSON.parse(event.description);
+                reservation = reservationDetail[0];
+
+                dateCalculation(event);
+                SetRoomNumber(roomId);
+
+                PopupRightMenu();
+                SetTableHeight();
+            },
+
+            drop: function (date, jsEvent, ui, resourceId) {
+                console.log('drop', date.format(), resourceId);
+                // is the "remove after drop" checkbox checked?
+                if ($('#drop-remove').is(':checked')) {
+                    // if so, remove the element from the "Draggable Events" list
+                    $(this).remove();
+                }
+            },
+
+            eventReceive: function (event) { // called when a proper external event is dropped
+                console.log('eventReceive', event);
+            },
+
+            eventResize: function (event, delta, revertFunc) {
+
+                reservationDetail = JSON.parse(event.description);
+                reservation = reservationDetail[0];
+                var roomId = parseInt(event.resourceId);
+                var arrival = event.start.format();
+                var departure = event.end.format();
+
+                if (reservation.BookingMethod != "OOO") {
+
+                    dateCalculation(event);
+                    SetRoomNumber(roomId);
+                    SetTableHeight();
+                    PopupRightMenu();
+                    CheckRoomAvailability(roomId, arrival, departure, reservation.resheaderId);
+                }
+                else {
+                    SetRoomNumber(roomId);
+                    LoadCalenderByDateRange();
+                    SetTableHeight();
+                    CheckRoomAvailability(roomId, arrival, departure, reservation.resheaderId);
+                    event.preventDefault();
+                }
+
+            },
+
+            eventDrop: function (event, delta, revertFunc) {
+                reservationDetail = JSON.parse(event.description);
+                reservation = reservationDetail[0];
+                var roomId = parseInt(event.resourceId);
+                var arrival = event.start.format();
+
+                if (reservation.BookingMethod != "OOO") {
+                    var departure = event.end.format();
+                    dateCalculation(event);
+                    SetRoomNumber(roomId);
+
+                    SetTableHeight();
+                    PopupRightMenu();
+
+                    CheckRoomAvailability(roomId, arrival, departure, reservation.resheaderId);
+                }
+                else {
+                    SetRoomNumber(roomId);
+                    LoadCalenderByDateRange();
+                    SetTableHeight();
+                    CheckRoomAvailability(roomId, arrival, '2023-02-10', reservation.resheaderId);
+                    event.preventDefault();
+                }
+            }
+        });
+        getfcLeftDate();
+
+        $('#external-events .fc-event').each(function () {
+
+            console.log($(this).description);
+            // store data so the calendar knows to render an event upon drop
+            $(this).data('event', {
+                title: $.trim($(this).text()), // use the element's text as the event title
+                stick: true // maintain when user navigates (see docs on the renderEvent method)
+            });
+
+            // make the event draggable using jQuery UI
+            $(this).draggable({
+                zIndex: 999,
+                revert: true,      // will cause the event to go back to its
+                revertDuration: 0  //  original position after the drag
+            });
+
+        });
+
+    }
+
+    function PopupRightMenu() {
+        $("#rightMenu_").show();
+        $("#ledgen_menu").hide();
+
+        $('.res_num').html('<span class="span">' + reservation.ReservationNo + '</span>');
+        $('.room_num').html('<span class="span">' + reservation.RoomCode + '</span>');
+        $('.guest_name').html('<span class="span">' + reservation.guestName + '</span>');
+        $('.room_stats').html('<span class="span">' + reservation.reservationStatus + '</span>');
+        $('.arraival').html('<span class="span">' + reservation.arrivalDate + '</span>');
+        $('.depature').html('<span class="span">' + reservation.departureDate + '</span>');
+        $('.adults').html('<span class="span">' + reservation.NoOfAdults + '</span>');
+        $('.child').html('<span class="span">' + reservation.NoOfKids + '</span>');
+        $('.rate').html('<span class="span">' + reservation.rate + '</span>');
+
+        $('.resheader_id').html('<span class="span">' + reservation.resheaderId + '</span>');
+        $('#reservationHeaderId').val(reservation.resheaderId);
+    }
+
+    function CheckRoomAvailability(roomId, arrival, departure, reservationHeaderId) {
+        
+        $.ajax({
+            url: '/Reservation/ReservationChart/CheckReservationChartRoomAvailability',
+            dataType: 'JSON',
+            method: 'POST',
+            data: { roomId: roomId, arrival: arrival, departure: departure, reservationHeaderId: reservationHeaderId },
+            success: function (response) {
+                if (response != "OK") {
+                    ShowWarningMessage(response);
+                    setTimeout(function () {
+                        LoadCalenderByDateRange();
+                        $('#grid-record-detail-model-close').click();
+                    }, 2000);
+                }
+            }, complete: function () {
+
+            }
+        });
+    }
+
+    function dateCalculation(event) {
+        var arrdate = new Date(event.start.format());
+        var arrdateformat = arrdate.toISOString().slice(0, 10);
+        $('#change_arr').val(arrdateformat);
+
+        var depdate = new Date(event.end.format());
+        var depdateformat = depdate.toISOString().slice(0, 10);
+        $('#change_dep').val(depdateformat);
+    }
+
+    $('body').on('click', '#Search', function (e) {
+
+        setTimeout(function () {
+            $('.search_bar').hide();
+            $('#Change').show();
+            $('#ledgen_button').show();
+            $('#Maximize').show();
+            $('.fc-left').hide();
+            getfcLeftDate();
+        }, 700);
+        // get the selected start date
+        var startDate = $('#From').val();
+        // navigate the calendar to the selected start date
+        $('#calendar').fullCalendar('gotoDate', startDate);
+        LoadCalenderByDateRange();
+
+        //$('html, body').animate({ scrollTop: '+=95px' }, 'slow');
+        //var ratecode = $('#rateCode').val();
+        //var currency = $('#rateCode').find(':selected').attr('data-curreny');
+        //// $('#rateCode').find(':selected').attr('data-curreny');
+        //var displayText = "";
+        //displayText = '| ' + ratecode + ' | ( ' + currency + ' ) |';
+        //$('.fc-center').text(displayText);
+
+    });
+
+    $('#Change').click(function () {
+        $('.search_bar').show();
+        $('#Change').hide();
+        $('#ledgen_button').hide();
+        $('#Maximize').hide();
+        $('.fc-left').hide();
+        //$('.fc-center').hide();
+        //$('html, body').animate({ scrollTop: '-=95px' }, 'slow');
+        var displayText = "";
+    });
+
+    $('#ledgen_button').click(function () {
+        $('#ledgen_menu').toggle();
+        LoadLegend();
+    });
+
+ 
+    $('#Maximize').click(function () {
+        var element = document.getElementById("viewLoadingArea");
+
+        if (!document.fullscreenElement) {
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) {
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+    });
+
+    //Load Legend
+    function LoadLegend() {
+
+        $.ajax({
+            url: '/Reservation/ReservationChart/SelectLegend',
+            method: 'POST',
+            success: function (data) {
+
+                $('.data-row').remove();
+
+                $(data).each(function (index, item) {
+                    if (item.IsIcon == true) {
+                        $(
+                            '<tr class="data-row">' +
+                            '<td><img src="../../Images/assets/' + item.Icon + '.png" class="ledIcon" alt="' + item.Description + '" /></td>' +
+                            '<td><span >' + item.Description + '</span></td>' +
+                            '</tr>'
+                        ).appendTo('#legendDataIcon');
+                    }
+                    else {
+                        $(
+                            '<tr class="data-row">' +
+                            '<td><span class="circleSpan span" style="background-color:' + item.Icon + ' !important;"></span></td>' +
+                            '<td><span>' + item.Description + '</span></td>' +
+                            '</tr>'
+                        ).appendTo('#legendDataColor');
+                    }
+                })
+                $('#container').hide();
+            },
+            error: function (e) {
+                alert(e);
+            }
+        })
+    }
+
+    //comment on 2025-01-27 for Browns
+    //Reservation update
+    //$('body').off('click', '#Save').on('click', '#Save', function () {
+    //    // alert($('#reservationHeaderId').val());
+    //    var obj = {
+    //        ReservationHeaderId: $('#reservationHeaderId').val(),
+    //        ChangedRoomId: $('#roomCodes').val(),
+    //        ChangedArrival: $('#change_arr').val(),
+    //        ChangedDeparture: $('#change_dep').val()
+    //    };
+
+    //    $.ajax({
+    //        url: '/Reservation/ReservationChart/ReservationChartUpdate',
+    //        dataType: 'JSON',
+    //        method: 'POST',
+    //        data: { reservationChart: obj },
+    //        success: function (response) {
+    //            debugger;
+    //            if (response == "OK") {
+    //                ShowSuccessMessage('Reservation updated successfully.');
+    //                LoadCalenderByDateRange();
+    //                $('#grid-record-detail-model-close').click();
+    //            } else {
+    //                ShowWarningMessage(response);
+    //                setTimeout(function () {
+    //                    LoadCalenderByDateRange();
+    //                    $('#grid-record-detail-model-close').click();
+    //                }, 2000);
+    //            }
+    //        }, complete: function () {
+
+    //        }
+    //    });
+    //});
+
+    function LoadRates() {
+
+        $.ajax({
+            url: '/Reservation/ReservationChart/LoadDateWiseRates',
+            dataType: 'JSON',
+            method: 'POST',
+            data: { fromDate: $('#From').val(), toDate: $('#To').val() },
+            success: function (data) {
+                $('.data-table-header').each(function (index, item) {
+
+                    $(data).each(function (index1, item1) {
+                        if ($(item).attr('data-date') == item1.Date) {
+
+                            $(item).find('.totalAvailableRooms').text(item1.AvailableRooms);
+                            $(item).find('.paidRooms').text(item1.PaidRooms);
+                            $(item).find('.complentryRooms').text(item1.ComplimentoryRooms);
+                            //$(item).find('.room-rate').text(item1.Rate);
+
+                        }
+                    });
+                });
+
+            }, complete: function () {
+
+            }
+        });
+    }
+
+    //$('body').off('click', '.main-reservation').on('click', '.main-reservation', function (event) {
+    //    alert('is-group');
+    //    $('#rightMenu_').hide();
+    //});
+
+    $('body').off('click', '.is-group').on('click', '.is-group', function () {
+        $('#container').show();
+        var ResheaderId = reservation.resheaderId;
+        var resNo = reservation.ReservationNo;
+        var roomNo = reservation.RoomCode;
+        var ResUuid = reservation.Uuid;
+
+        var Url = '/Reservation/Reservations/ManageGuests?reservationHeaderId=' + ResheaderId + '&reservationNumber=' + resNo + '&roomNo=' + roomNo + '&Uuid=' + ResUuid + '';
+        var title = 'Add new guest for ' + resNo + '';
+        CallDetailModelSimple(title, Url, 1050);
+
+        $('#rightMenu_').hide();
+    });
+
+    $('body').off('click', '.closeModel').on('click', '.closeModel', function () {
+        $('#container').hide();
+
+    });
+
+    $('body').off('click', '.dollar-mark').on('click', '.dollar-mark', function () {
+        $('#container').show();
+
+        var ResheaderId = reservation.resheaderId;
+        var resType = "booking"
+        var resNo = reservation.ReservationNo;
+        var ResUuid = reservation.Uuid;
+
+        var manageFolioURL = '/Reservation/Reservations/ManageFolio?resId=' + ResheaderId + '&type=' + resType + '&Uuid=' + ResUuid + '';
+        var title = 'Manage folio for reservation: ' + resNo + '';
+        CallDetailModelSimple(title, manageFolioURL, 1200);
+
+        $('#rightMenu_').hide();
+    });
+
+    $('body').off('click', '.main-reservation').on('click', '.main-reservation', function (event) {
+        //console.log(reservation);
+
+        $('#rightMenu_').hide();
+    });
+
+    //$('body').off('click', '.booking-method').on('click', '.booking-method', function () {
+    //    alert('booking-method');
+    //    $('#rightMenu_').hide();
+    //});
+
+    //$('body').off('click', '.fc-title').on('click', '.fc-title', function () {
+    //    alert('reservation number');
+    //    $('#rightMenu_').hide();
+    //});
+
+    function getfcLeftDate() {
+        var fcLeftValue = $('.fc-left').text();
+        $('#fcLeftVal').html(fcLeftValue);
+    }
+
+    function toggleFullscreen() {
+        const elem = document.documentElement; // Use the entire document as the target for fullscreen
+
+        if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+            // Enter fullscreen
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+
+            // Call your custom function when entering fullscreen
+        } else {
+            // Exit fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) { /* Safari */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE11 */
+                document.msExitFullscreen();
+            }
+        }
+            LoadCalenderByDateRange();
+    }
+
+
+
+</script>

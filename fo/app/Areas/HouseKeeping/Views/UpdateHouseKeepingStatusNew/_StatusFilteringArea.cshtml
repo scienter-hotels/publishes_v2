@@ -1,0 +1,66 @@
+﻿
+<style>
+    .override-from-group-margin {
+        margin-top: 5px;
+    }
+
+    .filter-area-style {
+        height:100px !important;
+    }
+    .button-padding-override {
+        padding-left:22px;
+        padding-right:22px;
+    }
+    .hr-top-margin {
+        margin-top:10px !important;
+    }
+</style>
+<div class="col-md-12">
+    <div class="form-group label-floating">
+        @Html.Label("Status Category", new { @class = "control-label" })
+        @{Html.RenderAction("RoomStatusCategoryCombo", "RoomStatusCategory", new { name = "RoomStatusCategoryId", requiered = true, value = Model?.RoomStatusCategoryId });}
+    </div>
+    <div class="row">
+        <div class="col-md-12  filter-area-style div-scroll" id="filterng-checkbox-area">
+            @{Html.RenderAction("FilteringCheckBox", "UpdateHouseKeepingStatus");}
+        </div>
+    </div>
+</div>
+
+<hr class="hr-top-margin" />
+
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-md-12 filter-area-style div-scroll" id="filterng-floor-types">
+            <label style="color:black">Floors</label>
+            @{Html.RenderAction("FloorNumberFilter", "UpdateHouseKeepingStatus");}
+        </div>
+    </div>
+</div>
+
+<hr class="hr-top-margin" />
+
+<div class="col-md-12">
+    <label style="color:black">Room Numbers</label>
+    <div class="form-group label-floating">
+        <label class="control-label"> From </label>
+        <input type="number" id="room-number-from" class="room-number-from form-control" />
+    </div>
+
+    <div class="form-group label-floating">
+        <label class="control-label"> To </label>
+        <input type="number" id="room-number-to" class="room-number-to form-control" />
+    </div>
+</div>
+
+<div class="col-md-12">
+    <button class="btn btn-primary button-padding-override" id="filter-rooms">
+        <span class="glyphicon glyphicon-search">
+        </span>
+    </button>
+    <button class="btn btn-primary button-padding-override" id="clear-room-filter">
+        <span class="glyphicon glyphicon-refresh">
+        </span>
+    </button>
+    @*<input type="button" id="filter-rooms" value="" class="btn btn-primary" />*@
+</div>

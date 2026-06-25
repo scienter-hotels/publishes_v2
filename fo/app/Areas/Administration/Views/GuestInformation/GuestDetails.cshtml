@@ -1,0 +1,190 @@
+﻿
+@{
+    ViewBag.Title = "Guest General Details";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title For @ViewBag.ResNo
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12" id="reservationGrid">
+                <div class="card-content" id="contentLoadingArea" style="padding-left:20px">
+                    <div id="content">
+                        @*<div class="override-card-padding override-card-two-height" id="contentLoadingArea" style="margin-top:0px;">*@
+                        <div class="override-card-padding override-card-two-height">
+                            <div>
+                                @*<div class="panel panel-default">*@
+                                    <input type="hidden" id="reservationno" value="@ViewBag.ResNo" />
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Title</label>
+                                                <input type="text" class="form-control" id="txtTitle" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Name</label>
+                                                <input type="text" class="form-control" id="txtname" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">NIC</label>
+                                                <input type="text" class="form-control" id="txtnic" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Passport No</label>
+                                                <input type="text" class="form-control" id="txtpassportno" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">DOB</label>
+                                                <input type="text" class="form-control" id="txtdob" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Res Date</label>
+                                                <input type="text" class="form-control" id="txtresdate" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Arrival</label>
+                                                <input type="text" class="form-control" id="txtarrival" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Departure</label>
+                                                <input type="text" class="form-control" id="txtdeparture" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Company</label>
+                                                <input type="text" class="form-control" id="txtcompany" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Country</label>
+                                                <input type="text" class="form-control" id="txtcountry" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Meal Plan</label>
+                                                <input type="text" class="form-control" id="txtmealplan" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Pax</label>
+                                                <input type="text" class="form-control" id="txtpax" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Remarks</label>
+                                                <input type="text" class="form-control" id="txtremarks" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Total Visits</label>
+                                                <input type="text" class="form-control" id="total-visits" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Room Nights</label>
+                                                <input type="text" class="form-control" id="room-nights" />
+                                            </div>
+                                        </div>
+                                        @*<div class="row">
+            <div class="col-md-6">
+                <fieldset class="the-fieldset">
+                    <legend class="the-legend">General Details</legend>
+                    <div id="generaldetails" class="row generaldetails">
+
+                    </div>
+                </fieldset>
+            </div>
+
+        </div>*@
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+        loadtable();
+    });
+    var RoomRateChangeDetails = [];
+    var RoomChangeDetails = [];
+    var GeneralDetails = [];
+    var InvoiceDetails = [];
+    var TraceDetails = [];
+    var GuestName = [];
+
+    function loadtable() {
+       
+        var reservationNo = $('#reservationno').val();
+        // var reservationNo = $('input[class="data-reservation-no"]:checked').parents().eq(3).find('.res-no').html();
+        $.ajax({
+            url: '/Administration/GuestInquiry/SelectGuestInquiry',
+            dataType: 'json',
+            method: 'GET',
+            data: { reservationNo: reservationNo },
+            success: function (data) {
+                
+                GuestName = JSON.parse(data.GuestNameJson);
+               
+                $('#txtresno').val(GuestName[0].ReservationNo);
+                $('#txtTitle').val(GuestName[0].Salutation);
+                $('#txtname').val(GuestName[0].GuestName);
+                $('#txtnic').val(GuestName[0].NIC);
+                $('#txtpassportno').val(GuestName[0].PassportNo);
+                $('#txtdob').val(GuestName[0].DOB);
+                $('#total-visits').val(GuestName[0].TotalVisits);
+                $('#room-nights').val(GuestName[0].RoomNights);
+
+                GeneralDetails = JSON.parse(data.GeneralDetailsJson);
+
+               
+                //----------Load General Details
+                $('#txtresdate').val(GeneralDetails[0].ReservationDate);
+                $('#resuser').val(GeneralDetails[0].CreatedUser);
+                $('#txtmealplan').val(GeneralDetails[0].MealPlanId);
+                $('#txtarrival').val(GeneralDetails[0].Arrival);
+                $('#txtdeparture').val(GeneralDetails[0].Departure);
+                $('#txtpax').val(GeneralDetails[0].Pax);
+                $('#luserid').val(GeneralDetails[0].LastEditedUser);
+                $('#txtremarks').val(GeneralDetails[0].BookingRemark);
+                $('#txtcompany').val(GeneralDetails[0].AgentName);
+                $('#txtcountry').val(GeneralDetails[0].CountriesName);
+            }
+            })
+    }
+</script>

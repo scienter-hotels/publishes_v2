@@ -1,0 +1,234 @@
+﻿@{
+    ViewBag.Title = "Guest Portal Experience";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .form-group {
+        margin: 0;
+    }
+</style>
+
+@model  IEnumerable<Scienter.HotelERP.Common.Domain.GuestPortal_Service>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                    <div class="row">
+                        <div class="col-md-4" style="position:absolute;z-index:10000;">
+                            <select id="customSelect" class="custom-select form-control">
+                                <option value="A">All</option>
+                                <option value="R">Reservation</option>
+                                <option value="I">In House</option>
+                                <option value="C">Checked Out</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="guestPortalService">
+                            @*2022-10-20*@
+                            <thead>
+                                <tr>
+                                    <th hidden></th>
+                                    <th class="col-md-1 text-primary">
+                                        Res / No
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Room / No
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Experience
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Req / Date
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Req / Time
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Note
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Status
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                <tr style="height: 36px !important;" data-reservation_level="@Html.DisplayFor(modelItem => item.ReservationLevel)">
+                                    <th hidden></th>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ReservationNo)
+                                        <input type="hidden" name="text" id="guestPoratlServiceReservationHeaderId" value="@item.ReservationHeaderId" />
+                                        <input type="hidden" name="text" id="complaintId" value="@item.ComplaintId" />
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.RoomName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Complaint)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.DateFormatted)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.TimeFormatted)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.AdditionalNotes)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ActionName)
+                                    </td>
+                                    <td style="text-align:right !important;">
+                                        <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="activityLog" data-guestPoratlServiceReservationHeaderId="@item.ReservationHeaderId" data-ActionTypeId="@item.ActionTypeId" data-id="@item.ComplaintId" data-title="Reservation Activity Log" data-href="" title="Activity Log" data-toggle="modal" data-target="" data-width="500">
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                        </a>
+                                        <a class="btn btn-theme-color-2 btn-sm call-popup-model viewactivityLog" data-guestPoratlServiceReservationHeaderId="@item.ReservationHeaderId" data-id="@item.ComplaintId" id="viewactivityLog" data-title="Reservation Activity Log" data-href="" title="View Activity Log" data-toggle="modal" data-target="" data-width="500">
+                                            <span class="glyphicon glyphicon-tags"></span>
+                                        </a>
+                                    </td>
+
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+
+<script>
+
+    var reservationLevel = $('#customSelect').val();
+
+    //$(document).ready(function () {
+    //    $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+    //    $('#guestPortalService').DataTable(
+    //        {
+    //            //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+    //            searching: true,
+    //            ordering: true,
+    //            //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    //            dom: 'Bfrtipl',
+    //            select: true,
+    //            buttons: [
+    //                'copy',
+    //                'excel',
+    //                'csv',
+    //                'pdf',
+    //                'print'
+    //            ],
+    //            scrollY: '58vh',
+    //        });
+    //});
+
+    $(document).ready(function () {
+
+        var defaultReservationLevel = 'I';
+       // $('#customSelect').val(defaultReservationLevel);
+
+        //reservationLevel = defaultReservationLevel;
+
+        loadGridData()
+        $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+        $('#guestPortalService').DataTable(
+            {
+                searching: true,
+                ordering: true,
+                dom: 'frtipl',
+                select: true,
+                scrollY: '58vh',
+            });
+    });
+
+    $(document).off('change').on('change', '#customSelect', function () {
+        //alert(0);
+        reservationLevel = $('#customSelect').val();
+        loadGridData();
+    });
+
+    function loadGridData() {
+        var rows = $('#guestPortalService tr');
+        var noRecords = true;
+
+        if (reservationLevel !== "A") {
+            rows.each(function () {
+                var reservationLevelTr = $(this).data('reservation_level');
+                if (reservationLevel !== reservationLevelTr) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                    noRecords = false;
+                }
+            });
+
+            if (noRecords) {
+                $('#guestPortalService tbody').append('<tr class="no-records"><td colspan="100%" style="text-align:center;">No Records Found</td></tr>');
+            } else {
+                $('#guestPortalService .no-records').remove();
+            }
+        } else {
+            rows.show();
+            $('#guestPortalService .no-records').remove();
+        }
+    }
+
+
+    $('body').on('click', '#activityLog', function () {
+        debugger;
+        var code = "E";
+        $(".guestportal-action-model").modal('show');
+        $('#code').val(code);
+        //$('#hdnreservationHeaderId').val($('#reservationHeaderId').val());
+        $('#hdnreservationHeaderId').val($(this).attr('data-guestPoratlServiceReservationHeaderId'));
+        $('#requestId').val($(this).attr('data-Id'));
+        $('#hdnlabel').val("Complaint Status");
+        $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+        LoadActionType(code);
+    });
+
+    //$('body').on('click', '#viewactivityLog', function () {
+    //    debugger;
+    //    var code = "C";
+    //    $(".guestportal-activitylog-model").modal('show');
+    //});
+
+    $('body').on('click', '.viewactivityLog', function (e) {
+        debugger;
+        var code = "E";
+        var requestId = $(this).attr('data-id');
+        //var reservationHeaderId = $('#reservationHeaderId').val();
+        var reservationHeaderId = $(this).attr('data-guestPoratlServiceReservationHeaderId');
+        var GuestPortalActivityLogURL = '/GuestPortal/Action/ActivityLog?code=' + code + '&requestId=' + requestId + '&reservationHeaderId=' + reservationHeaderId;
+        var title = 'Service Status Activity Log ';
+
+        //'&guestName=' + guestName + '&guestProfileId=' + GuestProfileId + '&Uuid=' + ResUuid + '';
+
+        CallDetailModelSimple(title, GuestPortalActivityLogURL, 800);
+    });
+
+</script>
+

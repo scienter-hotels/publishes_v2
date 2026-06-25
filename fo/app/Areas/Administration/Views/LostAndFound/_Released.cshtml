@@ -1,0 +1,77 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.LostAndFoundView>
+
+<div class="table">
+    <table class="table table-striped">
+
+        <tr>
+            <th class="col-md-1 text-primary">
+                Doc ID
+            </th>
+            <th class="col-md-1 text-primary">
+                Guest Name
+            </th>
+            <th class="col-md-1 text-primary">
+                Entry Date
+            </th>
+            <th class="col-md-1 text-primary">
+                Released Date
+            </th>
+            <th class="col-md-1 text-primary">
+                Found Room
+            </th>
+            <th class="col-md-1 text-primary">
+                Entry Remark
+            </th>
+            <th class="col-md-1 text-primary">
+                Found Floor
+            </th>
+            <th class="col-md-1 text-primary">
+                Current Owner
+            </th>
+            <th class="col-md-1 text-primary">
+                Remark
+            </th>
+           
+
+
+        </tr>
+
+        @foreach (var item in Model)
+        {
+
+            <tr class="pagesDetails">
+                <td>
+                    @Html.DisplayFor(modelItem => item.DocNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GuestName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TxnDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReleaseDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Remark)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FloorName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReleasedPersonName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReleaseRemark)
+                </td>
+              
+       
+            </tr>
+        }
+
+    </table>
+</div>
+

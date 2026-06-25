@@ -1,0 +1,72 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.UserWiseQuickNavigationView>
+<style>
+    .form-group {
+        padding-bottom: 0px;
+        margin: 0px 0 0 0;
+    }
+</style>
+
+ <div class="table-responsive">
+    <table class="table table-striped " id="UserAreas">
+
+        <tr>
+            <th class="col-md-4 text-primary">
+                Area
+            </th>
+            <th class="col-md-5 text-primary">
+                Personalize Name
+            </th>
+            <th class="col-md-1 text-primary">
+                Order
+            </th>
+            <th class="col-md-1 text-primary">
+                Visibility
+            </th>
+            <th class="col-md-1 text-primary">
+              
+            </th>
+        </tr>
+   </table>
+     <div class="div-scroll" style="height:450px !important; border-top:1px #808080 solid;  margin-top:5px;">
+         <table class="table table-striped " id="UserAreas">
+             @foreach (var item in Model)
+         {
+                 <tr class="areaDetails">
+                     <td class="col-md-4">
+                         <input type="hidden" Id="areaId" value="@item.AreaId" />
+                         <h5><strong>@item.Area</strong></h5>
+                     </td>
+                     <td class="col-md-5">
+                         <input type="text" class="form-control areaText" name="AreaText" value="@item.AreaText" />
+                     </td>
+                     <td class="col-md-1">
+                         <input type="number" name="Order" class="form-control displayOrder" value="@item.Order" />
+                     </td>
+                     <td class="col-md-1">
+
+                         <div class="form-group checkbox">
+                             @{
+                             string chk = "";
+                             if (item.IsActive)
+                             {
+                                 chk = "checked";
+                             }
+                             }
+                             <label>
+                                 <input type="checkbox" name="IsActive" id="IsActive" @chk />
+                             </label>
+                         </div>
+
+
+                     </td>
+
+                     <td class="col-md-1">
+                         <button class="btn btn-primary btn-sm" id="getpages" value="@item.AreaId"> <span class="glyphicon glyphicon-share" title="View Pages" data-toggle="tooltip"></span> </button>
+                     </td>
+
+                 </tr>
+                             }
+         </table>
+     </div>
+</div>
+<button class="btn btn-primary" id="areaSaveBtn">Save Areas</button>

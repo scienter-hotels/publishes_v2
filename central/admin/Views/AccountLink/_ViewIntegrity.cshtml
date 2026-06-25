@@ -1,0 +1,170 @@
+﻿@model  List<Scienter.DestinityHorizon.Common.Domain.AccountMapping>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="title">
+                            Block Code- @ViewBag.title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row grid">
+                <div class="col-md-12 table-responsive">
+                    <input type="text" id="searchby" class="searchbyIntegrity" onkeyup="SearchIntegrityGrid()" placeholder="Search by any Column" title="Search by any Column">
+                    @*<div id="loading" class="well">
+                        </div>*@
+                    <div class="col-md-12 card" style="max-height:300px; overflow-y:auto;">
+                        @if (Model.Count() != 0)
+                        {
+                            <table class="table table-striped" id="Integrity">
+                                <tr>                                    
+                                    <th class="Integrityheading1"></th>
+                                    <th class="Integrityheading2"></th>
+                                    <th class="Integrityheading3"></th>
+                                    <th class="Integrityheading4"></th>
+                                </tr>
+
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                       
+
+                                        @*<td>
+                                            <button type="button" class="btn btn-info btn-sm rowSetForSave" itemId=' + @item.ID + ' blockCode=' + @item.BlockCode + '> <span class="glyphicon glyphicon-arrow-up"></span>  </button>
+                                            
+                                        </td>*@
+                                        <td >
+                                        <div class="Searchable">
+                                            <label style="width:350px;">@item.Level1</label>
+                                        </div>
+
+                                        </td>
+                                        <td class="Searchable">
+
+                                            <div>
+                                                <label style="width:350px;">@item.Level2</label>
+                                            </div>
+
+                                        </td>
+                                        <td class="">
+                                            <div>
+                                                <label style="width:350px;">@item.Level3</label>
+                                            </div>
+
+                                        </td>
+                                        <td class="">
+                                          
+                                            <div>
+                                                <label style="width:350px;">@item.Level4</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        }
+                        else
+                        {
+                            <tr> <td>No-records</td></tr>
+                        }
+
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+    </div>
+</div>
+<script>
+    $('.Integrityheading1').text($('#BlockCodeCombo option:selected').attr('l1Desc'));
+    $('.Integrityheading2').text($('#BlockCodeCombo option:selected').attr('l2Desc'));
+    $('.Integrityheading3').text($('#BlockCodeCombo option:selected').attr('l3Desc'));
+    $('.Integrityheading4').text($('#BlockCodeCombo option:selected').attr('l4Desc'));
+
+
+    function SearchIntegrityGrid() {
+        debugger;
+        var input, filter, table, tr, td, i, tds, isDisplay = false, ths;
+        input = document.getElementsByClassName("searchbyIntegrity")[0]
+        filter = input.value.toUpperCase();
+        table = document.getElementById("Integrity");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            // tds = tr[i].getElementsByTagName("td");
+            tds = tr[i].getElementsByClassName("Searchable");
+            for (var j = 0; j < tds.length; j++) {
+                td = tr[i].getElementsByTagName("td")[j];
+                if (td) {
+                    if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        isDisplay = true;
+                        break;
+                    } else {
+                        isDisplay = false;
+                    }
+                }
+            }
+            if (isDisplay) {
+                tr[i].style.display = "";
+            } else {
+                ths = tr[i].getElementsByTagName("th");
+                if (ths == undefined || ths.length == 0) {
+                    tr[i].style.display = "none";
+                }
+            }
+
+        }
+    }
+    //$('#Integrity ').on('click', '.rowSetForSave', function (e) {
+    //    e.preventDefault();
+    //    debugger;
+    //    $('.AddItemtoGrid-btn').prop('disabled', false);
+    //    var rowID = $(this).closest('tr');
+
+    //    $.ajax({
+    //        url: '/AccountLink/SelectMappingByBlockCode',
+    //        datatype: 'json',
+    //        method: 'POST',
+    //        data: { id: $(this).attr('itemId'), blockCode: $(this).attr('blockCode'), spName: $('#BlockCodeCombo option:selected').attr('spName'), type: 'U' },
+    //        success: function (data) {
+    //            debugger;
+    //            $('#grid-record-detail-model').hide();
+    //            if (data != null) {
+    //                $('#hdnId').val(data[0].ID);
+    //                debugger;
+    //                $('#Level1ItemCombo ').text(data[0].Level1);
+    //                $('#Level1ItemCombo').append('<option value="' + data[0].idLevel1 + '">' + data[0].Level1 + '</option>');
+    //                $('#Level1ItemCombo').prop('disabled', true);
+
+    //                $('#Level2ItemCombo ').text(data[0].Level2);
+    //                $('#Level2ItemCombo').append('<option value="' + data[0].idLevel2 + '">' + data[0].Level2 + '</option>');
+    //                $('#Level2ItemCombo').prop('disabled', true);
+
+    //                $('#Level3ItemCombo ').text(data[0].Level3);
+    //                $('#Level3ItemCombo').append('<option value="' + data[0].idLevel3 + '">' + data[0].Level3 + '</option>');
+    //                $('#Level3ItemCombo').prop('disabled', true);
+
+    //                $('#Level4ItemCombo ').text(data[0].Level4);
+    //                $('#Level4ItemCombo').append('<option value="' + data[0].idLevel4 + '">' + data[0].Level4 + '</option>');
+    //                $('#Level4ItemCombo').prop('disabled', true);
+
+    //                $('#SegmentCombo').val(data[0].idSegmentCode);
+    //                $('#AccCodeCombo').val(data[0].AccountID);
+    //            }
+    //            else if (data.startsWith('ERR-')) {
+    //                ShowErrorMessage(data.replace('ERR-', ""));
+    //            }
+
+    //        },
+    //        error: handleAjaxError
+    //    });
+    //});
+</script>

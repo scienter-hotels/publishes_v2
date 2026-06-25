@@ -1,0 +1,152 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.GuestProfileView
+
+<style>
+    .required:after {
+        content: " *";
+        color: #e32;
+    }
+
+    .row-mt-custom {
+        margin-bottom: -16px;
+    }
+
+    .searchBox {
+    margin-top:-26px;
+    }
+
+    .form-group {
+        padding-bottom: 10px;
+        margin: 24px 0 0 0;
+    }
+</style>
+
+<div class="searchBox">
+
+    <div class="row row-mt-custom">
+        <div class="col-md-12">
+            <div class="form-group label-floating">
+                <label class="control-label required">First Name</label>
+                <input type="text" name="FirstName" id="FirstName" class="form-control" value="@Model.FirstName" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-mt-custom">
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label required">Last Name</label>
+                <input type="text" name="LastName" id="LastName" class="form-control" value="@Model.LastName" />
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label">VIP Levels  </label>
+                @{Html.RenderAction("VIPLevelCombo", "VIPLevels", new { area = "Administration", name = "VipLevelId", requiered = false, value = Model?.VipLevelId });}
+            </div>
+
+            @*<div class="form-group label-floating">
+                <label class="control-label required">VIP Level</label>
+                @{Html.RenderAction("SalutationCombo", "Salutations", new { area = "Administration", name = "SalutationId", requiered = true, value = Model.SalutationId });}
+            </div>*@
+        </div>
+    </div>
+
+    <div class="row row-mt-custom">
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label required">Salutation</label>
+                @{Html.RenderAction("SalutationCombo", "Salutations", new { area = "Administration", name = "SalutationId", requiered = true, value = Model.SalutationId });}
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label">NIC / Passport</label>
+                @{
+                    string nICPassport = Model.PassportNo.Length == 0 ? Model.IdNum : Model.PassportNo;
+                }
+                <input type="text" name="NICPassport" id="NICPassport" class="form-control" value="@nICPassport" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-mt-custom">
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label required">Country</label>
+                @{Html.RenderAction("CountriesCombo", "Countries", new { area = "Administration", name = "CountryId", requiered = true, value = Model.CountryId });}
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label required">Nationality</label>
+                @{Html.RenderAction("NationalityCombo", "Nationalities", new { area = "Administration", name = "NationalityId", requiered = true, value = Model.NationalityId });}
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-mt-custom">
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label">Email</label>
+                <input type="email" name="Email" id="Email" class="form-control" value="@Model.Email" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label">Contact No</label>
+                <input type="text" name="ContactNo" id="ContactNo" class="form-control data-telephone" value="@Model.ContactNo" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <button type="button" id="btnSearch" class="btn btn-warning">
+                Search  <span class="glyphicon glyphicon-search"></span>
+            </button>
+        </div>
+        <div class="col-md-6">
+            <input type="reset" id="resetBtn" class="resetBtn btn btn-default" value="Clear" />
+        </div>
+        @*<button type="button" id="btnCreateGuest" class="btn theme-bg-color-1">
+                Create <span class="glyphicon glyphicon-floppy-saved"></span>
+            </button>*@
+        <input type="hidden" id="data-guest-id" value="@Model.Id" />
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <i style="font-size: 8px;font-weight: bold;">*Please press the 'Search' button or the 'Enter' key to initiate the search.</i>
+        </div>
+    </div>
+
+</div>
+<script>
+    //$('body').on('change','.searchBox' function (e) {
+
+    //2024 - 03 - 27 - Anuradha-------------------------
+    $(document).ready(function () {
+        var countryIdValue = $('#countryComboValue').val();
+        //$('#CountryId').val(countryIdValue);
+    });
+        //--------------------------------------------------
+
+    //});
+    $('#resetBtn').click(function (e) {
+       
+        $('#FirstName').val('');
+        $('#LastName').val('');
+        $('#NICPassport').val('');
+        $('#Email').val('');
+        $('#ContactNo').val('');
+        $('#SalutationId').val('');
+        $('#NationalityId').val('');
+        $('#CountryId').val('');
+        $('.guest-checkBox').each(function (index, element) {
+            $(element).prop('checked', false);
+        });
+        SearchCustomer();
+    });
+</script>

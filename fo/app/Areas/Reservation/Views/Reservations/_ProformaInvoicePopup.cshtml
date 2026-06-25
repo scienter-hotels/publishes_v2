@@ -1,0 +1,169 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.ReservationHeader>
+@{
+    ViewBag.Title = "Invoice";
+}
+<style>
+    .checkbox label,
+    .radio label,
+    label {
+        color: #3c4858;
+    }
+
+    .radio,
+    .checkbox {
+        display: inline-block;
+    }
+
+    input[type="radio"], input[type="checkbox"] {
+        margin: 0px 0 0;
+    }
+</style>
+
+<div style="background-color:#f2f2f2; border:1px solid #ccc; padding:10px; margin-bottom:20px;">
+    <div class="row">
+        <div class="col-md-6">
+            <label>
+                <input type="radio" name="performaType" required style="width:16px; height:16px;" checked class="performaType" value="I" />  Individual
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>
+                <input type="radio" name="performaType" required style="width:16px; height:16px;" class="performaType" value="G" />  Group
+            </label>
+        </div>
+    </div>
+</div>
+
+
+@foreach (var item in Model)
+{
+    if ((Model.Count) == 1)
+    {
+        <div class="form-group checkbox" style="margin-top:0px;">
+            <label>
+                <input type="checkbox" class="form-group checkbox proforma-invoice" value="@item.ReservationNo" checked />
+                @item.ReservationNo
+            </label>          
+        </div>
+    }
+    else
+    {
+        <div class="form-group checkbox" style="margin-top:0px;">
+            <label>
+                <input type="checkbox" class="form-group checkbox proforma-invoice" value="@item.ReservationNo" />
+                @item.ReservationNo
+            </label>
+        </div>
+    }
+    <br />
+    
+}
+
+<div class="row" style="margin-top: 1em;">
+    <div class="col-md-12">
+        <input type="button" id="btnViewPerforma" value="View" class="btn btn-primary" />
+    </div>
+</div>
+<input type="hidden" id="groupReservationNo" value="@ViewBag.GroupNo" />
+<script>
+    
+    var performaType = "";
+    $(".performaType").off("change").on("change", function () {     
+        if ($(this).val() == "I") {
+            $(".proforma-invoice").prop("checked", false);
+            $(".proforma-invoice").prop("disabled", false);
+        } else {
+            $(".proforma-invoice").prop("checked", true);
+            $(".proforma-invoice").prop("disabled",true);
+        }
+        performaType = $(this).val();
+    });
+
+    $(".proforma-invoice").off("click").on("click", function () {
+        $(".proforma-invoice").not(this).prop('checked', false);
+    });
+
+    var selectedReservationNo = "";
+    if (performaType == "I") {
+        selectedReservationNo = $(".proforma-invoice:checked").val();
+    } else {
+        selectedReservationNo = $("#groupReservationNo").val();
+    }
+
+    $('body').off('click', '#btnViewPerforma').on('click', '#btnViewPerforma', function (e) {
+        e.preventDefault();
+        if ($(".proforma-invoice:checked").length == 0) {
+            ShowWarningMessage('Please select one reservation to view performa invoice.');
+        } else {
+            $.ajax({
+                url: '/Administration/FrontOfficeSettings/GetFOSettings',
+                dataType: 'json',
+                method: 'get',
+                success: function (data) {              
+                    proformaInvoiceName = data.ProformaInvoiceName;                    
+                    $('#btnView').attr('data-href', '/Reporting/Report/ViewReport?ReportName=' + proformaInvoiceName + '&Uuid=' + @ViewBag.Uuid + '&selectedReservationNo' + selectedReservationNo);
+                }
+            });
+    });
+
+
+
+
+
+            //$.ajax({
+            //    url: '/Administration/FrontOfficeSettings/GetFOSettings',
+            //    dataType: 'json',
+            //    method: 'get',
+            //    success: function (data) {
+            //        confirmationName = data.ConfirmationName;
+            //        grcName = data.GRCName;
+            //        groupConfirmationName = data.GroupConfirmationName;
+            //        groupGrcName = data.GroupGRCName;
+            //        proformaInvoiceName = data.ProformaInvoiceName;
+            //        selectedReservationNo = data.selectedReservationNo;
+
+            //        if (groupResNo == "" || groupResNo == null) {
+            //            $('#btnResConfirm').attr('href', '/Reporting/Report/ViewReport?ReportName=' + confirmationName + '&Uuid=' + ResUuid + '');
+            //        }
+            //        else {
+            //            $('#btnResConfirm').attr('href', '/Reporting/Report/ViewReport?ReportName=' + groupConfirmationName + '&Uuid=' + ResUuid + '');
+            //        }
+
+            //        if (groupResNo == "" || groupResNo == null) {
+            //            var grUrl = '/Reporting/Report/ViewReport?ReportName=' + grcName + '&ResNo=' + resNo + '&RoomRate=1';
+            //            $('.guestReservationClass').attr('href', grUrl);
+            //        }
+            //        else {
+            //            var grUrl = '/Reporting/Report/ViewReport?ReportName=' + groupGrcName + '&GroupReservationNo=' + groupResNo + '&RoomRate=1';
+            //            $('.guestReservationClass').attr('href', grUrl);
+            //        }
+
+            //        $('#btnView').attr('data-href', '/Reporting/Report/ViewReport?ReportName=' + proformaInvoiceName + '&Uuid=' + ResUuid + '&selectedReservationNo' + selectedReservationNo);
+            //    }
+
+
+            //console.log(selectedReservationNo);
+
+            //$.ajax({
+            //    url: '/Reservation/Reservations/SelectedReservationNoList',
+            //    dataType: 'html',
+            //    data: selectedReservationNo,
+            //    method: 'POST',
+            //    success: function (response) {
+            //        ShowSuccessMessage(selectedReservationNo);
+            //       // console.log(selectedReservationNo);
+            //        // FillGrid()
+            //    },
+            //    error: function (xhr, status, error) {
+
+            //        ShowErrorMessage('Sorry, There is an error in saving this record.');
+            //    }
+            //});
+
+
+
+
+
+
+</script>
+

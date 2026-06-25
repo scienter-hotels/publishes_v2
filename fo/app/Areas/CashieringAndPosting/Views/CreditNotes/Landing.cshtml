@@ -1,0 +1,842 @@
+﻿@using Scienter.HotelERP.FrontOffice.Service;
+@using Scienter.HotelERP.Common.Domain;
+
+@{
+    ViewBag.TitleInHouse = "Credit Notes";
+
+}
+
+@*@ViewBag.vbcn = "";*@
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header hidden-print" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title hidden-print">
+                            @if (ViewBag.postingType == "inhouse")
+                            {
+                                @ViewBag.TitleInHouse
+
+                            }
+                            else if (ViewBag.postingType == "rebate")
+                            {
+                                @ViewBag.Rebate
+                                <input type="hidden" value="@ViewBag.Rebate" id="hdnIsRebate" />
+                            }
+                            else
+                            {
+                                @ViewBag.TitleWalkIn
+                            }
+
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="row">
+                    <div class="col-md-6 hidden-print">
+
+                        @if ((ViewBag.postingType == "inhouse") || (ViewBag.postingType == "rebate"))
+                        {
+
+                        <div class="col-md-4" style="min-height:475px;">
+
+                            @*@if (ViewBag.tt == null && ViewBag.tt.isEmpty())*@
+                            
+                            @if (String.IsNullOrEmpty(ViewBag.vbcn))
+
+                            {
+                            @Html.Partial("_InHouse", new DebitAndCreditNotesService().GetRoomInfo())
+                            }
+                            else
+                            {
+                            @Html.Partial("_InHouse", new DebitAndCreditNotesService().GetCheckoutRoomInfo())
+                            }
+
+                            @*@Html.Partial("_InHouse", new DebitAndCreditNotesService().GetRoomInfo())*@
+                        </div>
+                            <div class="col-md-8">
+                                <fieldset class="the-fieldset" style="min-height: 475px;  margin-top: 9px;">
+                                    @Html.Partial("_Form", new Scienter.HotelERP.Common.Domain.DebitAndCreditNotes())
+                                </fieldset>
+                            </div>
+
+                        }
+                        else
+                        {
+                            <div class="col-md-12">
+                                <fieldset class="the-fieldset" style="min-height:475px; margin-top: 9px;">
+                                    @Html.Partial("_WalkInPosting", new Scienter.HotelERP.Common.Domain.DebitAndCreditNotes())
+                                </fieldset>
+                            </div>
+
+                        }
+
+                    </div>
+                    <div class="col-md-6" id="Postinginvoice">
+                        @Html.Partial("_Invoice")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" value="" id="invoicerptNo" />
+<input type="hidden" value="" id="hdnAllowCreditPosting" />
+<input type="hidden" id="roomNo" value="@ViewBag.RoomId" />
+<input type="hidden" id="resnno" value="@ViewBag.reservationNum">
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script src="~/Scripts/jquery.easyPaginate.js"></script>
+<script src="~/Scripts/ui/common/Scienter.Common.TimeFormat.js"></script>
+<script>
+
+    var RoomIds = [];
+    var invoiceData;
+
+
+    $(document).ready(function () {
+        //ScorelToTop60px();
+
+        if ($('#hdnIsRebate').val() == "Rebate") {
+            $('.IsComplementarychkbox').hide();
+        }
+        setTimeout(function () {
+            $('#CurrencyId').val("");
+        }, 500);
+        AddButtonEnableDisable();
+    });
+    var AmountwithoutTax = 0;
+
+    //**********************************************************************************************************************************In-House***************************************************************************************-
+
+    //-----------------Search Room -----------
+
+    function searchRoom() {
+
+        var input, filter, count, tt, b, i, li;
+
+        input = document.getElementById("txtSearch");
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("myUL");
+        li = ul.getElementsByTagName("li");
+
+        for (i = 0; i < li.length; i++) {
+            b = li[i].getElementsByTagName("label")[0];
+            if (b.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+
+            }
+        }
+    }
+
+    //$(document).ready(function () {
+    //    setTimeout(function () {
+    //        $('#CurrencyId').val("");
+    //    }, 500);
+    //});
+
+    $('body').on('change', '#BillTypeId', function () {
+
+        $('#Amount').prop('disabled', false);
+
+        var price = $(this).find("option:selected").attr('data-price');
+        var ifFixed = $(this).find("option:selected").attr('data-isfixed');
+
+        $('#amountField').addClass('is-focused');
+
+        $("#Amount").val(Number(parseFloat(price).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 }));
+        if (ifFixed=="True") {
+            $('#Amount').prop('disabled', true);
+        }
+    });
+
+    $('body').on('change', '#CurrencyId', function () {
+        debugger
+        var selectedCurrencyId = $("#CurrencyId option:selected").val();
+
+        $.ajax({
+            url: '/CashieringAndPosting/PostingBillType/PostingBillTypeCombo',
+            dataType: 'html',
+            data: {
+                name: "BillTypeId",
+                required: true,
+                currencyId: selectedCurrencyId
+            },
+            method: 'POST',
+            success: function (data) {
+                $('#BillTypeId [value=1065]').attr('selected', 'true');
+                $('#BillTypeId').prop('disabled', true);
+                //$('#PostingBillTypeComboContainer').html("");
+                //$('#PostingBillTypeComboContainer').html(data);
+            },
+        });
+    });
+
+    //----------------------------Load Rooms -------------------------------------
+
+    function GetSelectedRooms(Paramsave) {
+
+        $(".checkBoxGroup").each(function (index, elm) {
+
+            if ($(this).prop('checked')) {
+
+                if (Paramsave == "Savepost") {
+
+                    RoomIds.push({
+
+                        RoomId: $(this).attr('roomId'),
+                        RoomName: $(this).parent().html().split('>')[($(this).parent().html().split('>').length - 1)].trim(),
+                        ReservationNo: $(this).attr('reservation-no'),
+                        RoomCode: $(this).attr('room-code'),
+                        GuestName: $(this).attr('name'),
+                        GuestProfileId: $(this).attr('Guest-Id')
+                    });
+                }
+                else {
+
+                    RoomIds.push({
+
+                        RoomId: $(this).val().trim(),
+                        RoomName: $(this).parent().html().split('>')[($(this).parent().html().split('>').length - 1)].trim(),
+                        Name: $(this).attr('name'),
+                        ReservationNo: $(this).attr('reservation-no')
+                    });
+                }
+
+            }
+        });
+        return RoomIds;
+    }
+
+    //-----------------------------end Search room----------------------------------------
+
+
+    //Get posting type price according to the selected currency
+    $('#BillTypeId').change(function () {
+
+        if ($("#CurrencyId option:selected").val() != "") {
+
+            $.ajax({
+                url: '/CashieringAndPosting/Posting/GetPostingTypePrice',
+                dataType: 'Json',
+                data: {
+                    postingTypeId: parseInt($("#BillTypeId option:selected").val()),
+                    CurrencyType: parseInt($("#CurrencyId option:selected").val())
+                },
+                method: 'POST',
+                success: function (data) {
+
+                    if (data.toString().startsWith('ERR-')) {
+
+                        ShowErrorMessage("Sorry, There is an error.");
+
+                    } else {
+
+                        $('#amountField').addClass('is-focused');
+                        $("#Amount").val(Number(parseFloat(data.Amount).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 }));
+                    }
+                },
+            });
+        }
+    })
+
+    //************************************************************************************************Generate --Invoice*****************************************************************************************************************************
+    $('body').on('click', '.checkBoxGroup', function () {
+        AddButtonEnableDisable();
+        $('.checkBoxGroup').not(this).prop('checked', false);//if only select one at a time
+    });
+
+    function AddButtonEnableDisable() {
+
+        if ($('.checkBoxGroup:checked').length > 0) {
+
+            $('#btnAdd').removeClass('disabled');
+        }
+        else {
+            $('#btnAdd').addClass('disabled');
+        }
+    }
+
+    function ClearCheckBoxes() {
+        $('.checkBoxGroup:checked').each(function () {
+
+            $('.checkBoxGroup:checked').prop('checked', false);
+
+        })
+    }
+
+    var currRate,currencyTypeId,CurrencyAmount,ConvertedAmount;
+
+    $('body').off('submit').on('submit', '#Posting-inhouse', function (e) {
+
+        e.preventDefault();
+
+        if (parseFloat($('#Amount').val().trim().replace(/,/g, '')).toFixed(2) == 0.00 && $('#IsComplementary').prop("checked") == false) {
+
+            ShowErrorMessage('Amount is Zero, Please select complementary to save zero bill');
+        }
+
+        else {
+                currRate = $("#CurrencyId option:selected").attr('data-rate');//convertion rate
+                currencyTypeId= $("#CurrencyId option:selected").val()//currency id
+                CurrencyAmount = parseFloat($('#Amount').val().trim().replace(/,/g, '')).toFixed(2);
+                ConvertedAmount = Number(parseFloat(CurrencyAmount * currRate).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 });
+
+                RoomIds = [];
+                invoiceData = '';
+
+                $('.currencyTc').removeClass('hidden');//invoice currency type para
+                $('#btnSave').removeClass('disabled');
+
+                if ($('.checkBoxGroup:checked').length >= 1) {
+
+                    $('#btnbillpayment').removeClass('disabled');
+                }
+                else {
+                    $('#btnbillpayment').addClass('disabled');
+                }
+                $('#easyPaginate2').html("");
+                $('#ReportBody1').html("");
+                $('#ReportLoadingArea').removeClass('hidden');
+                $('#ReportFooter').removeClass('hidden');
+
+                $.ajax({
+                         async:false,
+                         url: '/CashieringAndPosting/TaxCalculation/GetOriginalBillValue',
+                         dataType: 'json',
+                         data: { Amount: parseFloat(ConvertedAmount.replace(/,/g, '')).toFixed(2), TaxGroupId: $("#BillTypeId option:selected").attr('tax-groupid') },
+                         method: 'POST',
+                    success: function (response) {
+
+                        if (response.toString().startsWith('ERR-')) {
+
+                            ShowErrorMessage("Sorry, There is an error.");
+
+                        } else {
+
+                                 AmountwithoutTax = response.Amount;
+                             }
+                         },
+                    error: function (xhr, status, error) {
+
+                             ShowErrorMessage('Sorry, There is an error.');
+                         }
+                });
+
+            invoiceData = {
+
+                           roomIds: GetSelectedRooms("Add"),
+                           billType: $("#BillTypeId option:selected").text(),
+                           TaxGroupId: $("#BillTypeId option:selected").data('tax-groupid'),
+                           PostingCatgNo: $("#BillTypeId option:selected").data('posting-catg'),
+                           folioText: $('#FolioText').val(),
+                           amount: Number(parseFloat(AmountwithoutTax).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 }),
+                           remarks: $("#Remarks").val()
+                }
+
+                //check the taxgrop is all inclusive  then claculate orginal amount
+
+                TaxCalculation(AmountwithoutTax);
+
+                var table = '<table class="col-md-12" id="itemtable" style="width:100%">' +
+                            '<thead style="border-bottom: 1px solid #eee;">' +
+                                '<tr style="width:100%;">' +
+                                    '<th style="width:75%; padding-left:10px;">ITEM</th>' +
+                                     '<th style="width:25%; text-align:right">AMOUNT</th>' +
+                                 '</tr>  ';
+
+                var tableTr = '<tr><td style="width:75%; padding-left:10px; padding-top:10px!important;">' + invoiceData.billType + '-' + invoiceData.folioText + '</td><td style="width:25%; text-align:right; padding-top:10px!important;">' + invoiceData.amount + '</td><tr>'
+                var tableEnd = '</thead>' +
+                        '</table>';
+                var tableAll = table + tableTr + tableEnd;
+                $(tableAll).appendTo($('#ReportBody1'));
+
+                $('#remarkArea').text(invoiceData.remarks);
+                $('<tr>').appendTo($('#chargeCalculation'));
+
+                var a1 = '<div id="sliding-div" style="background-color:none">', a2 = '', a3 = '</div>';
+
+                $(invoiceData.roomIds).each(function (index, roomId) {
+
+                    a2 = a2 + '<table class="col-md-12 table-posting">' +
+                            ' <tr>' +
+                                '<th></th>' +
+                                ' <th></th>' +
+                                        '<td class="" style="width:70%;background-color:#fff!important;">' +
+                                        '<div class="row" style="padding-left:10px;"><b>Room No</b></div>' +
+                                        '<div class="row room-Id-each-table" style="padding-top:10px; padding-bottom:10px; padding-left:10px; font-size:30px" id="roomCode" >' + roomId.RoomId + '</div>' +
+                                        '<div class="row" id="guestName" style="padding-left:10px;"> ' + roomId.Name + '</div>' +
+                                   '</td>' +
+                                   '<td class="" style="width:30%;"background-color:#fff!important;">' +
+                                           '<div class="row"><b>Res#:&nbsp</b>' + roomId.ReservationNo + '</div>' +
+                                           '<div class="row"><b>Receipt#:&nbsp </b></div>' +
+                                           '<div class="row">  <b>Date:&nbsp</b>@DateTime.Now.AddMinutes(55).ToString("dd'/'MM'/'yyyy HH:mm:ss")</div>' +
+                                           '<div class="row">  <b>User:&nbsp</b>@SessionObjects.LoggedUser.Username</div>' +
+                                  ' </td>' +
+                              '</tr>' +
+                        '</table>';
+                });
+
+                var x = a1 + a2 + a3;
+                $(x).appendTo('#easyPaginate2')
+                $('#sliding-div').easyPaginate({
+                    paginateElement: 'table',
+                    elementsPerPage: 1,
+                    effect: 'slide'
+                });
+        }
+    });
+
+    $('body').on('click', '.easyPaginateNav a', function () {
+        $('.table-posting').removeAttr("style");
+    })
+
+    //-----------------End Invoice- In House------------
+
+    // --------------------------walk-in-----------------
+    $('body').on('submit', '#Posting-walkin', function (e) {
+
+        currRate = $("#CurrencyId option:selected").attr('data-rate');//convertion rate
+        currencyTypeId = $("#CurrencyId option:selected").val()//currency id
+        CurrencyAmount = parseFloat($('#Amount').val().trim().replace(/,/g, '')).toFixed(2);
+        ConvertedAmount = Number(parseFloat(CurrencyAmount * currRate).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 });
+        $('#hdnAllowCreditPosting').val($("#CompanyId option:selected").attr('data-allowCreditPosting').toString());
+
+        e.preventDefault();
+
+        $('#ReportBody1').html("");
+        $('#walkin-billheader').html("");
+        $('#ReportLoadingArea').removeClass('hidden');
+        $('#ReportFooter').removeClass('hidden');
+        $('#WalkInGuestName').html("");
+        $('#WalkInGuestAddress').html("");
+
+        $.ajax({
+            async: false,
+            url: '/CashieringAndPosting/TaxCalculation/GetOriginalBillValue',
+            dataType: 'json',
+            data: { Amount: parseFloat(ConvertedAmount.replace(/,/g, '')).toFixed(2), TaxGroupId: $("#BillTypeId option:selected").attr('tax-groupid') },
+            method: 'POST',
+            success: function (response) {
+                if (response.toString().startsWith('ERR-')) {
+
+                    ShowErrorMessage("Sorry, There is an error.");
+
+                } else {
+
+                    AmountwithoutTax = response.Amount;
+                }
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+        });
+
+        invoiceData = {
+            billType: $("#BillTypeId option:selected").text(),
+            TaxGroupId: $("#BillTypeId option:selected").attr('tax-groupid'),
+            PostingCatgNo: $("#BillTypeId option:selected").attr('posting-catg'),
+            folioText: $('#FolioText').val(),
+            amount: Number(parseFloat(AmountwithoutTax).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 }),
+            remarks: $("#Foliotxt").val(),
+            GuestName: $('#WalkInGuestName').val(),
+            address: $('#WalkInGuestAddress').val()
+        }
+
+        TaxCalculation(AmountwithoutTax);
+
+        var elements = '<tr>' +
+                            '<td class="report-width70perc" style="width:70%" >' +
+                                 '<div class="row" style="padding-left:20px"><b>Name:&nbsp</b>' + invoiceData.GuestName + '</div>' +
+                                  '<div class="row" style="padding-left:20px">  <b>Address:&nbsp</b>' + invoiceData.address + '</div>' +
+                            '</td>' +
+                            '<td class="report-width30perc" style="width:30%">' +
+                                '<div class="row" style="padding-left:0px"><b>Receipt#:&nbsp </b> </div>' +
+                                '<div class="row" style="padding-left:0px"><b>Date:&nbsp</b>@DateTime.Now.AddMinutes(55).ToString("dd'/'MM'/'yyyy HH:mm:ss")</div>' +
+                                '<div class="row" style="padding-left:0px">  <b>User:&nbsp</b>@SessionObjects.LoggedUser.Username</div>' +
+                            '</td>' +
+                            '</tr>';
+
+
+        $(elements).appendTo($('#walkin-billheader'));
+        var table = '<table class="col-md-12" id="itemtable" style="width:100%">' +
+               '<thead style="border-bottom: 1px solid #eee;">' +
+                   '<tr style="width:100%;">' +
+                     '<th style="width:75%; padding-left:10px;">ITEM</th>' +
+                       '<th style="width:25%; text-align:right">AMOUNT</th>' +
+                   '</tr>  ';
+
+        var tableTr = '<tr><td style="width:75%; padding-left:10px; padding-top:10px!important;">' + invoiceData.billType + '-' + invoiceData.folioText + '</td><td style="width:25%; text-align:right; padding-top:10px!important;">' + invoiceData.amount + '</td><tr>'
+        var tableEnd = '</thead>' +
+                        '</table>';
+        var tableAll = table + tableTr + tableEnd;
+        $(tableAll).appendTo($('#ReportBody1'));
+
+        $('<tr>').appendTo($('#chargeCalculation'));
+        $('#btnbillpayment').removeClass('disabled');
+
+    });
+
+    //after save show invoice Inhouse
+
+    function ShowInvoiceReportInhouse(response) {
+
+        $('#easyPaginate2').html('');
+
+        var a1 = '<div id="sliding-div" style="background-color:none;">', a2 = '', a3 = '</div>';
+
+        $(response).each(function (index, room) {
+
+            a2 = a2 + '<table class="table-posting report-width100perc" style="width:100%">' +
+                             ' <tr>' +
+                                  '<th></th>' +
+                                 ' <th></th>' +
+                                  '<td class="" style="width:70%;background-color:#fff!important;">' +
+                                      '<div class="row" style="padding-left:20px;"><b>Room#:</b></div>' +
+                                      '<div class="row room-Id-each-table" style="padding-top:10px; padding-bottom:10px; padding-left:20px; font-size:30px" id="roomCode">' + room.RoomCode + '</div>' +
+                                     ' <div class="row" id="guestName" style="padding-left:20px;"> ' + room.GuestName + '</div>' +
+                                  '</td>' +
+                                  '<td class="" style="width:30%;background-color:#fff!important;">' +
+                                          '<div class="row"><b>Res No:&nbsp</b>' + room.ReservationNo + '</div>' +
+                                          '<div class="row RptinvoiceNo"><b>Receipt#:&nbsp </b>' + room.InvoiceNo + '</div>' +
+                                          '<div class="row">  <b>Date:&nbsp</b>' + fomatTime(room.RecordInsertTime, 'd') + '</div>' +
+                                          '<div class="row">  <b>Time:&nbsp</b>' + fomatTime(room.RecordInsertTime, 't') + '</div>' +
+                                          '<div class="row">  <b>User:&nbsp</b>@SessionObjects.LoggedUser.Username</div>' +
+                                 ' </td>' +
+                             '</tr>' +
+                             '</table>';
+
+        });
+        var x = a1 + a2 + a3;
+        $(x).appendTo('#easyPaginate2')
+        $('#sliding-div').easyPaginate({
+            paginateElement: 'table',
+            elementsPerPage: 1,
+            effect: 'slide'
+        });
+
+    }
+
+    //after save show invoice tWalkIn
+    function ShowInvoiceReportWalkIn(response) {
+
+        $('#walkin-billheader').html('');
+
+        var elements = '<tr>' +
+                            '<td class="" style="width:70%;background-color:#fff!important;" >' +
+                                 '<div class="row" style="padding-left:20px"><b>Name:&nbsp</b>' + response.WalkInGuestName + '</div>' +
+                                  '<div class="row" style="padding-left:20px"><b>Address:&nbsp</b>' + response.WalkInGuestAddress + '</div>' +
+                            '</td>' +
+                            '<td class="" style="width:30%;background-color:#fff!important;">' +
+                                '<div class="row RptinvoiceNo" style="padding-left:10px"><b>Receipt#:&nbsp </b>' + response.DocNo + '</div>' +
+                                '<div class="row" style="padding-left:10px">  <b>Date:&nbsp</b>' + fomatTime(response.InvoiceSaveTime, 'd') + '</div>' +
+                                  '<div class="row" style="padding-left:10px">  <b>Time:&nbsp</b>' + fomatTime(response.InvoiceSaveTime, 't') + '</div>' +
+                                  '<div class="row" style="padding-left:10px">  <b>User:&nbsp</b>@SessionObjects.LoggedUser.Username</div>' +
+                            '</td>' +
+                          '</tr>';
+
+        $(elements).appendTo($('#walkin-billheader'));
+
+
+    }
+
+    function TaxCalculation(AmountwithoutTax) {
+        calTax = { TaxGroupId: $("#BillTypeId option:selected").attr('tax-groupid'), Amount: AmountwithoutTax }
+
+        $.ajax({
+            url: '/CashieringAndPosting/TaxCalculation/GetTaxes',
+            dataType: 'html',
+            data: { TaxGroupAmontJson: JSON.stringify(calTax), ResId: 0, FolioNo: 0, Operation: "POSTING" },
+            method: 'POST',
+            success: function (response) {
+                $('#TaxLoadingArea').html(response)
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+        });
+
+    }
+
+    //**************************************************************End Generate Invoice**************************************************
+
+    $('#btnClear').click(function () { window.location.reload(); });
+
+
+    // **********************************************Save POsting-**************************************************************************
+
+
+    $('#btnSave').click(function () {
+        SaveBill();
+    });
+
+    function SaveBill() {
+
+        RoomIds = [];
+        var postingtype = $('#PosringTypehdn').val();
+        var billtoRoom = billpaymentArray.length == 0 ? true : false;
+
+        //----------------------Inhouse posting----------------------
+        if (postingtype == "inhouse") {
+
+            var postinginhouse = {
+
+                BillTypeId: $("#BillTypeId option:selected").val(),
+                TaxGroupId: $("#BillTypeId option:selected").attr('tax-groupid'),
+                FolioText: $("#FolioText").val() == "" ? $("#BillTypeId option:selected").text() : $("#FolioText").val(),
+                Amount: parseFloat(AmountwithoutTax.toString().trim().replace(/,/g, '')).toFixed(2),
+                Remarks: $("#Remarks").val() == "" ? $("#BillTypeId option:selected").text() : $("#Remarks").val(),
+                PostingCategoryId: $("#BillTypeId option:selected").attr('posting-catg'),
+                DRCR: 'D',
+                ChargeCodeId: parseInt($("#BillTypeId option:selected").attr('charge-code')),
+                RoomDetails: GetSelectedRooms("Savepost"),
+                BillPaymentDetails: billpaymentArray,
+                inhousePaymentAmount: parseFloat(AmountwithoutTax.toString().trim().replace(/,/g, '')).toFixed(2),
+                IsBillToRoom: billtoRoom,
+                IsRebate: false,
+                AmountFC: parseFloat($("#Amount").val().trim().replace(/,/g, '')).toFixed(2),
+                ConvertionRate: parseFloat(currRate),
+                CurrencyId: currencyTypeId,
+                IsComplementary: $('#IsComplementary').prop("checked")
+            }
+
+            $.ajax({
+                url: '/CashieringAndPosting/CreditNotes/SaveCreditNote',
+                dataType: 'json',
+                data: postinginhouse,
+                method: 'POST',
+                success: function (response) {
+                    if (response.toString().startsWith('ERR-')) {
+
+                        ShowErrorMessage("Sorry, There is an error in saving this record.");
+
+                    } else {
+
+                        ShowSuccessMessage('Record has been saved successfully.');
+
+                        $('#btnprint').removeClass('disabled');
+
+                        ShowInvoiceReportInhouse(response);
+
+                        $('#btnSave').prop('disabled', true);
+                        $('#preview').text('');
+                        $('.ribbon').addClass('hidden');
+                        $('#BillTypeId').prop('selectedIndex', 0);
+                        $('#Posting-inhouse div').addClass('is-empty');
+                        $('#FolioText').val('');
+                        $("#Amount").val('');
+                        $("#Remarks").val('');
+                        $('#amountField').removeClass('is-focused');
+                        $('#btnbillpayment').addClass('disabled');
+                        $('#CurrencyId').prop('selectedIndex', 0);
+                        $('#btnAdd').addClass('hidden');
+                        $('#CurrencyId').prop("disabled", true);
+                        $('#BillTypeId').prop("disabled", true);
+                        $('#FolioText').prop("disabled", true);
+                        $("#Amount").prop("disabled", true);
+                        $("#Remarks").prop("disabled", true);
+                        $('#IsComplementary').prop("checked", false);
+                        $('#IsComplementary').prop("disabled", true);
+                        $('.checkBoxGroup').prop("disabled", true);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    ShowErrorMessage('Sorry, There is an error in saving this record.');
+                }
+            });
+
+        //------------------------------------End Inhouse Posting-----------------------------------------------------------------------------------------------------------------------
+        }
+                 //------------------------------walkin posting----------------------------------------------------------------------------------------------------------------------------------
+        else if (postingtype == "walkin") {
+
+            var postingwalkin = {
+
+                BillTypeId: $("#BillTypeId option:selected").val(),
+                TaxGroupId: $("#BillTypeId option:selected").attr('tax-groupid'),
+                FolioText: $("#FolioText").val() == "" ? $("#BillTypeId option:selected").text() : $("#FolioText").val(),
+                Amount:parseFloat(AmountwithoutTax.toString().trim().replace(/,/g, '')).toFixed(2),
+                Remarks: $("#Remarks").val() == "" ? $("#BillTypeId option:selected").text() : $("#Remarks").val(),
+                PostingCategoryId: $("#BillTypeId option:selected").attr('posting-catg'),
+                DRCR: 'D',
+                ChargeCodeId: parseInt($("#BillTypeId option:selected").attr('charge-code')),
+                WalkInGuestName: $('#WalkInGuestName').val(),
+                WalkInGuestAddress: $('#WalkInGuestAddress').val(),
+                BillPaymentDetails: billpaymentArray,
+                IsBillToRoom: billtoRoom,
+                IsRebate: false,
+                AmountFC: parseFloat($("#Amount").val().trim().replace(/,/g, '')).toFixed(2),
+                ConvertionRate: parseFloat(currRate),
+                CurrencyId: currencyTypeId,
+                AgentID: $("#CompanyId option:selected").val()
+            }
+            $.ajax({
+                url: '/CashieringAndPosting/Posting/SaveWalkIn',
+                dataType: 'json',
+                data: postingwalkin,
+                method: 'POST',
+                success: function (response) {
+
+                    if (response.toString().startsWith('ERR-')) {
+
+                        ShowErrorMessage("Sorry, There is an error in saving this record.");
+                    } else {
+
+                        ShowSuccessMessage('Record has been saved successfully.');
+
+                        $('#btnprint').removeClass('disabled');
+
+                        ShowInvoiceReportWalkIn(response);
+
+                        $('#btnSave').prop('disabled', true);
+                        $('.ribbon').addClass('hidden');
+                        $('#preview').text('');
+                        $('#BillTypeId').prop('selectedIndex', 0);
+                        $('#CompanyId').prop('selectedIndex', 0);
+                        $('#CurrencyId').prop('selectedIndex', 0);
+                        $('#FolioText').val('');
+                        $('#Posting-walkin div').addClass('is-empty');
+                        $("#Amount").val('');
+                        $("#Remarks").val('');
+                        $('#WalkInGuestName').val('');
+                        $('#WalkInGuestAddress').val('');
+                        $('#amountField').removeClass('is-focused');
+                        $('#btnbillpayment').addClass('disabled');
+                        $('#btnAddwalking').addClass('hidden');
+                        $('#CurrencyId').prop("disabled", true);
+                        $('#BillTypeId').prop("disabled", true);
+                        $('#CompanyId').prop("disabled", true);
+                        $('#FolioText').prop("disabled", true);
+                        $("#Amount").prop("disabled", true);
+                        $("#Remarks").prop("disabled", true);
+                        $("#WalkInGuestName").prop("disabled", true);
+                        $("#WalkInGuestAddress").prop("disabled", true);
+                    }
+                },
+                error: function (xhr, status, error) {
+
+                    ShowErrorMessage('Sorry, There is an error in saving this record.');
+                }
+            });
+        }
+            //-----------------------------------------End walkin posting-------------------
+
+
+            //---------------------------------------------rebate posting---------------------
+        else if (postingtype == "rebate") {
+
+            var rebateposting = {
+
+                BillTypeId: $("#BillTypeId option:selected").val(),
+                TaxGroupId: $("#BillTypeId option:selected").attr('tax-groupid'),
+                FolioText: $("#FolioText").val() == "" ? $("#BillTypeId option:selected").text() : $("#FolioText").val(),
+                Amount: parseFloat(AmountwithoutTax.toString().trim().replace(/,/g, '')).toFixed(2),
+                Remarks: $("#Remarks").val() == "" ? $("#BillTypeId option:selected").text() : $("#Remarks").val(),
+                PostingCategoryId: $("#BillTypeId option:selected").attr('posting-catg'),
+                DRCR: 'C',
+                ChargeCodeId: parseInt($("#BillTypeId option:selected").attr('charge-code')),
+                RoomDetails: GetSelectedRooms("Savepost"),
+                inhousePaymentAmount: parseFloat(AmountwithoutTax.toString().trim().replace(/,/g, '')).toFixed(2),
+                IsBillToRoom: billtoRoom,
+                IsRebate: true,
+                AmountFC: parseFloat($("#Amount").val().trim().replace(/,/g, '')).toFixed(2),
+                ConvertionRate: parseFloat(currRate),
+                CurrencyId: currencyTypeId
+            }
+            $.ajax({
+                url: '/CashieringAndPosting/Posting/RebatePosting',
+                dataType: 'json',
+                data: rebateposting,
+                method: 'POST',
+                success: function (response) {
+
+                    if (response.toString().startsWith('ERR-')) {
+
+                        ShowErrorMessage("Sorry, There is an error in saving this record.");
+
+                    } else {
+
+                        ShowSuccessMessage('Record has been saved successfully.');
+
+                        $('#btnprint').removeClass('disabled');
+
+                        ShowInvoiceReportInhouse(response);
+
+                        $('#btnSave').prop('disabled', true);
+                        $('#preview').text('');
+                        $('.ribbon').addClass('hidden');
+                        $('#BillTypeId').prop('selectedIndex', 0);
+                        $('#Posting-inhouse div').addClass('is-empty');
+                        $('#FolioText').val('');
+                        $("#Amount").val('');
+                        $("#Remarks").val('');
+                        $('#amountField').removeClass('is-focused');
+                        $('#btnbillpayment').addClass('disabled');
+                        $('#btnAdd').addClass('hidden');
+                        $('#BillTypeId').prop("disabled", true);
+                        $('#FolioText').prop("disabled", true);
+                        $("#Amount").prop("disabled", true);
+                        $("#Remarks").prop("disabled", true);
+                    }
+
+                },
+                error: function (xhr, status, error) {
+
+                    ShowErrorMessage('Sorry, There is an error in saving this record.');
+                }
+            });
+        }
+        //-----------------------------End rebate posting--------------------------------------------
+
+        ClearCheckBoxes();
+        $('#btnClear').val('New');
+        $("div .checkbox").prop("disabled", true);
+    }
+
+
+    //*************************************************End Save******************************************************************************
+
+    //Set Bill Total value from tax table last row value
+    $('#btnbillpayment').click(function () {
+
+       // Billtotal = parseFloat($('#taxCalculationTable tr:last td:eq(1)').text().trim().replace(/,/g, '')).toFixed(2);
+        Billtotal = $('#taxCalculationTable tr:last td:eq(1)').text().trim();
+
+        if ($('#hdnAllowCreditPosting').val() != "") {
+
+            AllowCreditPostingInWalkingPosting = $("#CompanyId option:selected").attr('data-allowCreditPosting');
+
+        }
+    });
+
+    $('#btnprint').on('click', function (e) {
+
+        var invoiceNo = "";
+        var postingtype = $('#PosringTypehdn').val();
+
+        if (postingtype == "inhouse") {
+            type = 'I';
+            invoiceNo = $('#ReportHeader .table-posting td .RptinvoiceNo').text().replace('Receipt#:', '').trim();
+        }
+        else if (postingtype == "walkin") {
+            type = 'W'
+            invoiceNo = $('#ReportHeader #walkin-billheader td .RptinvoiceNo').text().replace('Receipt#:', '').trim();
+        }
+        else if (postingtype == "rebate") {
+            type = 'R'
+            invoiceNo = $('#ReportHeader .table-posting td .RptinvoiceNo').text().replace('Receipt#:', '').trim();
+        }
+
+        var reportName = 'PostingInvoice';
+        $('#btnprint').attr("href", '/Reporting/Report/ViewReport?ReportName=' + reportName + '&DocNo=' + invoiceNo + '');
+    });
+
+
+</script>

@@ -1,0 +1,33 @@
+﻿@model Scienter.HotelERP.FrontOffice.WebUIMvc.Areas.Reporting.Models.ReportInfo
+@if (!string.IsNullOrEmpty(ViewBag.Masterfile) && ViewBag.Masterfile == "0")
+{
+    Layout = null; 
+    ViewBag.paddingLeft = "padding-left:250px; height:100%";
+}            
+@{
+    var widthClass = "col-md-12";
+    if (Model.Width == 800)
+    {
+        widthClass = "col-md-8 col-md-offset-2";
+    }
+} 
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-content2" id="contentLoadingArea">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <iframe id="frmReport"
+                                    src="@Model.ReportURL"
+                                    frameborder="0"
+                                    style="min-width:100%; min-height:800px;"
+                                    scrolling="yes"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

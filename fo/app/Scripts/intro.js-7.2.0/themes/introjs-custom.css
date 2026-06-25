@@ -1,0 +1,81 @@
+﻿.popover-card {
+    font-family: century_gothicregular !important;
+}
+
+.popover-card-title, .introjs-tooltip-title {
+    margin: 0 !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #094f70 !important;
+    font-family: century_gothicregular !important;
+    letter-spacing: 1px;
+}
+}
+
+.introjs-dontShowAgain {
+    margin: 0;
+    font-size: 12px !important;
+    color: #666;
+    font-family: century_gothicregular !important;
+}
+
+.popover-card-description {
+    margin: 0;
+    font-size: 12px !important;
+    color: #666;
+    font-family: century_gothicregular !important;
+}
+
+.introjs-button {
+    padding: 0.1rem 1rem !important;
+    font-size: 12px !important;
+   
+}
+
+.introjs-tooltiptext {
+    padding: 5px 20px !important;
+}
+
+
+.introjs-nextbutton {
+    background-color: #094f70 !important;
+    color: #fff !important;
+    text-shadow: 0 0 #fff !important;
+    font-family: century_gothicregular !important;
+}
+
+.introjs-prevbutton {
+    background-color: #808080 !important;
+    color: #fff !important;
+    text-shadow: 0 0 #fff !important;
+    font-family: century_gothicregular !important;
+}
+
+.introjs-button:focus {
+    background-color: #e67e22 !important;
+    color: #fff !important;
+    text-shadow: 0 0 #fff !important;
+    font-family: century_gothicregular !important;
+}
+
+.introjs-dontShowAgain label {
+    font-size: 10px !important;
+}
+
+.step-number {
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    background-color: #094f70;
+    box-shadow: 5px 5px 0 #e67e22, 10px 10px 0 #808080;
+    color: #FFF;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 1px;
+    z-index: 1000;
+}
+
+.introjs-helperLayer {
+    box-shadow: #e67e22 0px 0px 1px 2px, rgba(33, 33, 33, 0.5) 0px 0px 0px 5000px !important;
+}

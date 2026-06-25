@@ -1,0 +1,900 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.ReservationView
+@using Scienter.HotelERP.Common.Domain
+
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+
+    .required:after {
+        content: " *";
+        color: #e32;
+    }
+
+    .form-group-margin-override {
+        margin-top: 5px;
+    }
+
+    .padding-margin-bottom-override {
+        padding-bottom: 0px;
+        margin-bottom: 2px;
+    }
+
+    .disabled {
+        cursor: not-allowed;
+    }
+    /*2024 - 03 - 27 - Anuradha-------------------------*/
+    .modal-dialog-centered {
+        display: flex;
+        align-items: center;
+        min-height: calc(100% - 1rem);
+    }
+
+    @@media (min-width: 576px) {
+        .modal-dialog-centered {
+            min-height: calc(100% - 3.5rem);
+        }
+    }
+    /*--------------------------------------------------*/
+
+    .select2-container .select2-selection--single .select2-selection__rendered {
+        display: block;
+        padding-left: 0px;
+        padding-right: 20px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+
+<input type="hidden" name="reservationFor" id="reservationFor" value="@ViewBag.reservationFor" />
+
+<input type="hidden" name="ApproveAsTentative" id="ApproveAsTentative" value="0" />
+<input type="hidden" name="ApproveVoucherNumberDuplication" id="ApproveVoucherNumberDuplication" value="0" />
+
+<form id="reservationDetail" style="margin-left:-20px; margin-right:-20px;">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6">
+
+                    <fieldset class="the-fieldset" style="height:480px;">
+                        <legend class="the-legend">Company Details</legend>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="required control-label">Company</label>
+                                    <select id="CompanyId" class="form-control" @*data-select-country="@Model.AgentId"*@ required></select>
+                                    @*@{Html.RenderAction("CompaniesCombo", "Companies", new { area = "Administration", name = "CompanyId", requiered = true, value = Model?.AgentId });}*@
+
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-margin-override rate-code-container label-floating">
+                                    <label class="required control-label">Rate code</label>
+                                     @*@{Html.RenderAction("RateCodeHeadersComboByCountryId", "RateCodeHeaders", new { area = "Administration", name = "RateCodeHeaderId", requiered = true, value = Model?.RateCodeHeaderId });}*@
+                                    <select name="RateCodeHeaderId" id="RateCodeHeaderId" class="select2 form-control" required>
+                                        <option>-- Select Company --</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="required control-label">Package Cat.</label>
+                                    <select name="PackageCategoryId" id="PackageCategoryId" class="select2 form-control" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-margin-override label-floating" required>
+                                    <label class="required control-label">Package</label>
+                                    <select name="PackageHeaderId" id="PackageHeaderId" class="select2 form-control" required>
+                                        <option>-- Select Package Category --</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group form-group-margin-override markets-container label-floating" required>
+                                    <label class="required control-label">Market</label>
+                                    @*@{Html.RenderAction("MarketCombo", "Markets", new { area = "Administration", name = "MarketId", requiered = true, value = Model?.MarketId });}*@
+                                    <select name="MarketId" id="MarketId" class="select2 form-control" required>
+                                        <option>-- Select RateCode --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-margin-override segments-container label-floating">
+                                    <label class="required control-label">Segment</label>
+                                    @* @{Html.RenderAction("SegmentCombo", "Segments", new { area = "Administration", name = "SegmentId", requiered = true, value = Model?.SegmentId });}*@
+                                    <select name="SegmentId" id="SegmentId" class="select2 form-control" required>
+                                        <option>-- Select Company --</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row" style="display:none;">
+                            <div class="col-md-6">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="required control-label">Reservation status</label>
+                                    @{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { area = "Administration", name = "StatusId", requiered = false, value = Model?.StatusId });}
+                                </div>
+                            </div>
+                            @*<div class="col-md-6">
+                                    <div class="form-group form-group-margin-override label-floating">
+                                        <label class="required control-label">Sales Person</label>
+                                        @{Html.RenderAction("StaffDetailsCombo", "StaffDetails", new { area = "Administration", name = "SalesPersonId", requiered = false, value = Model?.SalesPersonId });}
+                                    </div>
+                                </div>*@
+                            <div class="col-md-6">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="required control-label">Contact person</label>
+                                    @* @{Html.RenderAction("ContactPersonCombo", "contactPerson", new { area = "Administration", name = "contactPersonId", requiered = true });}*@
+                                    <select name="ContactPerson" id="ContactPersonId" class="select2 form-control">
+                                        <option>-- Select Company --</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group form-group-margin-override BookingSource-container label-floating">
+                                    <label class="required control-label">Booking Sources</label>
+                                    @*@{Html.RenderAction("BookingSourceCombo", "BookingSources", new { area = "Administration", name = "BookingSourceId", requiered = true, value = Model?.BookingSourceId });}*@
+                                    <select name="BookingSourceId" id="BookingSourceId" class="select2 form-control" required>
+                                        <option>-- Select Company --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="required control-label">Sales Person</label>
+                                    <select name="SalesPersonId" id="SalesPersonId" class="select2 form-control label-data"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="control-label">Voucher No</label>
+                                    <input type="text" name="VoucherNo" id="VoucherNo" class="form-control" value="" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="control-label">Tour No</label>
+                                    <input type="text" name="TourNo" id="TourNo" class="form-control" value="" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+
+                            @*<div class="col-md-6">
+                                    <div class="form-group form-group-margin-override label-floating">
+                                        <label class="required control-label">Allotemnt No</label>
+                                        @{Html.RenderAction("AllotementCombo", "Allotments", new { area = "Administration", name = "AllotmentId", requiered = true });}
+                                    </div>
+                                </div>*@
+
+                            <div class="col-md-4">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="required control-label">Guest payment mode</label>
+                                    @{Html.RenderAction("GuestPaymentModesCombo", "GuestPaymentModes", new { area = "Administration", name = "GuestPaymentModes", requiered = true });}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="required control-label">Visit Purpose</label>
+                                    <select name="VisitPurposeId" id="VisitPurposeId" class="select2 form-control" required>
+                                        @*<option value="0">N/A</option>*@
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="row">
+                                    @**/------------Bangaladesh Modification*/*@
+                                    <div class="col-md-12 checkbox" style="margin-top: -20px;">
+                                        <label style="font-size: 9px;">
+                                            <input type="checkbox" class="checkbox isBillPaymentFromLKR" value="">
+                                            Bill Payment LKR (For SSCL)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 checkbox" style="margin-top: -20px;">
+                                        <label style="font-size: 9px;">
+                                            <input type="checkbox" class="checkbox isCreditEnabled" disabled value="">
+                                            Company Credit Enable
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-9">
+                                <div class="form-group form-group-margin-override label-floating" style="margin-top:-5px;">
+                                    <label class="control-label" id="charCount" style="color: #000;text-align: right;">Internal Remark 0/500</label>
+                                    <textarea type="text" maxlength="500" rows="1" id="RemarkId" name="Remark" class="form-control label-data" value=""></textarea>
+                                    @*<input type="text" name="Remark" id="RemarkId" class="form-control" value="" />*@
+                                    @*<div id="charCount" style="color: rgb(102, 102, 102);font-size: 10px;text-align: right;">0/500</div>*@
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <a class="btn btn-default btn-sm call-popup-model full-width-100perc" id="addRemarkPopup" style="font-size:10px;">
+                                    Add More
+                                </a>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                </div>
+                <div class="col-md-6">
+                    <fieldset class="the-fieldset padding-margin-bottom-override">
+                        <legend class="the-legend">Accommodation Details</legend>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="control-label">Arrival</label>
+                                    <input type="text" name="ArrivalDate" id="ArrivalDate" class="form-control" readonly />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="control-label">Departure</label>
+                                    <input type="text" name="DepartureDate" id="DepartureDate" class="form-control" readonly />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="control-label">No Of Nights</label>
+                                    <input type="text" name="NoOfNights" id="NoOfNights" class="form-control" value="" readonly />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    @*<label class="required control-label">Meal plan</label>
+                                        @{Html.RenderAction("MealPlanCombo", "MealPlans", new { area = "Administration", name = "MealPlanId", requiered = true, value = Model?.MealPlanId });}*@
+                                    <label class="required control-label">Meal plan</label>
+                                    <select name="MealPlanId" id="MealPlanId" class="select2 form-control" required>
+                                        <option></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="control-label">Arrive for</label>
+                                    @{Html.RenderAction("MealCombo", "MealPlans", new { area = "Administration", name = "ArriveMeal", requiered = false, value = Model?.ArrivalFor });}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group form-group-margin-override label-floating">
+                                    <label class="control-label">Leave after</label>
+                                    @{Html.RenderAction("MealCombo", "MealPlans", new { area = "Administration", name = "DeparturePlan", requiered = false, value = Model?.DepartureAfter });}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group form-group-margin-override label-floating" id="ExpectedArrivalTimeId">
+                                    <label class="required control-label">Expected Arrival Time</label>
+                                    @{Html.RenderPartial("_TimeRange");}
+
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-margin-override label-floating" id="ExpectedDepartureTimeId">
+                                    <label class="required control-label">Expected Departure Time</label>
+                                    @{Html.RenderPartial("_TimeRange");}
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset class="the-fieldset padding-margin-bottom-override" style="height:200px;" @*style="min-height:247px; max-height:247px; height:247px;"*@>
+                        <legend class="the-legend">Allocated Rooms</legend>
+
+                        @*2024 - 03 - 27 - Anuradha-------------------------*@
+                        <div class="row">
+                                <div class="col-md-12" style="margin-top: -20px; display:flex; justify-content:flex-end;">
+                                    <label for="isChangeRoomRateCheckBox" id="isChangeRoomRateCheckBoxLabel" class="isChangeRoomRateCheckBoxLabel" style="font-size: 10px; display: flex; align-items: center; color:#000;" data-toggle="modal" data-target="#changeRoomRateModal">
+                                        Do you want to change the room rate?
+                                        <input style="margin-left:5px;" type="checkbox" id="isChangeRoomRateCheckBox" readonly class="isChangeRoomRateCheckBoxLabel">
+                                    </label>
+                                </div>
+                            </div>
+
+
+
+
+
+                        <div class="row">
+                            <div class="col-md-12 reservation-detail-table div-scroll">
+                                <table class="table table-striped roomCategoryWise-roomTypeWise-details">
+                                    <thead>
+                                        <tr>
+                                            <th style="font-weight:bold;">Category</th>
+                                            <th style="font-weight:bold;">Type</th>
+                                            <th style="font-weight:bold;">Room</th>
+                                            <th style="font-weight:bold;text-align:center;">Currency</th>
+                                            <th style="font-weight:bold;text-align:right;width:80px;">Room Rate</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody></tbody>
+                                    @*--------------------------------------------------*@
+                                </table>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div class="row" style="padding-left: 10px;">
+                        <div class="col-md-4 text-right">
+                            @*EkhoSurf-------------------------*@
+                            @*<button type="button" class="btn btn-primary" id="showApplicableDiscounts" style="width:100%;">
+                                Discount<span class="glyphicon glyphicon-usd"></span>
+                            </button>*@
+                            @*Palm-------------------------*@
+                            @*<button type="button" class="btn btn-primary" id="addDiscounts" style="width:100%;">
+                                Discount<span class="glyphicon glyphicon-usd"></span>
+                            </button>*@
+                        </div>
+                        <div class="col-md-4 text-right">
+                            @*<button type="button" class="btn btn-info" id="showApplicableExtras" style="width:100%;">
+                                Extra<span class="glyphicon glyphicon-list"></span>
+                            </button>*@
+                        </div>
+                        <div class="col-md-4 text-right">
+                            <button type="submit" class="btn theme-bg-color-2" id="btnStep03Next" style="width:100%;">
+                                Next  <span class="glyphicon glyphicon-arrow-right"></span>
+                            </button>
+                        </div>
+                    </div>
+                    @*2024 - 03 - 27 - Anuradha-------------------------*@
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="modal fade" id="changeRoomRateModal" tabindex="-1" role="dialog" aria-labelledby="changeRoomRateModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content" style="padding:0 15px 15px 15px;">
+                                        <div class="modal-header" style="padding:15px 3px;">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="closeBtn">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body" style="padding:3px;">
+                                            When you change the room rate, it will be applied to the guest's entire stay.
+                                            <br />
+                                            Do you wish to continue?
+                                        </div>
+                                        <div class="modal-footer" style="padding:3px;">
+                                            <button type="button" class="btn btn-success" data-dismiss="modal" id="rateCodeChangeYesBtn">Yes</button>
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal" id="rateCodeChangeNoBtn">No</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*--------------------------------------------------*@
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<script>
+    var roomRateData = '';
+    var remarkJSONArray = [];
+    var mainRemark = $('#RemarkId').val();
+
+    var maxChars = 500;
+
+    var currencyForExtras = "";
+
+    $(function () {
+
+
+        $('#StatusId option').each(function (index, eachOption) {
+            if ($(this).data('isallowinmakereservation') == 'False') {
+                $(this).hide();
+            }
+        })
+    })
+
+    $(document).ready(function () {
+
+        LoadCompaniesInMakeReservationOtherDetails();
+        LoadVisitPurposesInMakeReservationOtherDetails();
+        LoadMealPlansInMakeReservationOtherDetails();
+        //loadVisitPuposeCombo();
+        //LoadMealPlans();
+        LoadSalesPersonsInMakeReservationOtherDetails();
+        LoadPackageCategoriesInMakeReservationOtherDetails();
+        //LoadSalesPersons();
+
+        document.getElementById('RemarkId').addEventListener('input', function () {
+            var userInput = this.value;
+            this.setAttribute('title', userInput);
+        });
+        //LoadMealPlans();
+        // LoadRateCode();
+        // loadRateCodeCombo();
+        setTimeout(function () {
+            //alert('test');
+            var GuestStay = JSON.parse($('.hidden-stringify-json-SelectedStay').val());
+            let countryId = GuestStay.CountryId;
+            var companyId = $('#data-companyid').val();
+            var dateRange = $('#selectedStayRange').html().replace(" ", "");
+            var startDate = dateRange.split('-')[0];
+            var endDate = dateRange.split('-')[1];
+            var s = ChangeDateFormat(startDate);
+            var e = ChangeDateFormat(endDate);
+            var ratecode = $('#data-ratecode-details').attr('data-rate-code');
+            //  var reservationFor = $('#ReseFor').val();
+            //   var reservationFor1 = $('#reservationFor').val();
+            console.log(countryId);
+            console.log(companyId);
+            console.log(startDate);
+            console.log(endDate);
+            console.log(s);
+            //  console.log(reservationFor);
+            //   console.log(reservationFor1);
+            LoadRateCodeCombo(countryId, companyId, ratecode, s, e);
+            //$('#MealPlanId').change();
+        }, 2000);
+
+
+
+
+
+        $('#isChangeRoomRateCheckBox').off('click', true);
+
+        LoadDropdownsStep3();
+
+        $('.time-range').prop('disabled', true);
+        $('.time-range').attr('disabled', true);
+    });
+
+    $('#RemarkId').on('input', function () {
+        var charCount = $(this).val().length;
+        $('#charCount').text("Remark (" + charCount + '/' + maxChars + ")");
+
+        if (charCount > maxChars) {
+            $('#charCount').css('color', 'red');
+        } else {
+            $('#charCount').css('color', '#000');
+        }
+    });
+
+    //$('body').off('click', '.select2').on('click', '.select2', function () {
+    //    setTimeout(function () {
+    //        $('.select2-results ul li').removeClass('select2-results__option--selected');
+    //    }, 200);
+    //});
+
+
+    function LoadCompaniesInMakeReservationOtherDetails() {
+        var dataJson = localStorage.getItem("Companies");
+        var data = JSON.parse(dataJson);
+        $('#CompanyId option').remove();
+        $('#CompanyId').append('<option value="" disabled selected></option>');
+        $(data).each(function (index, item) {
+            $('<option value="' + item.Id + '" data-IsBillPaymentFromLKR="' + item.IsBillPaymentFromLKR + '" data-IsCreditEnable="' + item.IsCreditEnabled + '" data-allowCreditPosting="' + item.AllowCreditPosting + '"  data-Address="' + item.Address + '" data-Name="' + item.Name + '" data-FIT="' + item.FITProfile + '">' + item.Name + '</option>').appendTo($('#CompanyId'));
+        });
+        //$('#CompanyId').val($('#CompanyId').attr('data-select-company'));
+        LoadDropdownsStep3()
+    }
+
+    function LoadSalesPersonsInMakeReservationOtherDetails() {
+        var dataJson = localStorage.getItem("SalesPersons");
+        var data = JSON.parse(dataJson);
+        $('#SalesPersonId option').remove();
+        $(data).each(function (index, item) {
+            $('<option value="' + item.Id + '" selected>' + item.Name + '</option>').appendTo($('#SalesPersonId'));
+        });
+    }
+
+    function LoadPackageCategoriesInMakeReservationOtherDetails() {
+        var dataJson = localStorage.getItem("PackageCategories");
+        var data = JSON.parse(dataJson);
+        var packageCatIdForALL = $('#PackageCategoryId').val();
+        if (packageCatIdForALL==null) {
+            packageCatIdForALL =0;
+        }
+       
+        $('#PackageCategoryId option').remove();
+        if (data != null) {
+            $(data).each(function (index, item) {
+                $('<option value="' + item.Id + '" selected>' + item.Name + '</option>').appendTo($('#PackageCategoryId'));
+            });
+        }
+        else {
+            $('<option value="' + packageCatIdForALL + '" selected>ALL</option>').appendTo($('#PackageCategoryId'));
+            $('#PackageCategoryId').trigger('change');
+        }
+        
+    }
+
+    $('body').on('change', '#PackageCategoryId', function (e) {
+        LoadPackageHeadersInMakeReservationOtherDetails();
+    });
+
+
+
+    function LoadPackageHeadersInMakeReservationOtherDetails() {
+        //debugger;
+        $.ajax({
+            url: '/administration/packageheaders/SelectAllPackageHeadersByPackageCategoryId?packageCategoryId=' + $('#PackageCategoryId option:selected').val(),
+            dataType: 'json',
+            success: function (data) {
+                if ($('#PackageHeaderId').length > 0) {
+                    $('#PackageHeaderId').html('');
+                    $.each(data, function (index, type) {
+                        $(' <option value="' + type.Id + '"> ' + type.Name + ' </option>').appendTo($('#PackageHeaderId'));
+                    });
+                }
+            },
+            complete: function (data) {
+              
+            }
+        });
+    }
+
+    //function LoadSalesPersons() {
+    //    $.ajax({
+    //        url: '/administration/StaffDetails/SelectAllStaffDetails',
+    //        dataType: 'json',
+    //        method: 'get',
+    //        success: function (data) {
+    //            $('#SalesPersonId option').remove();
+    //            $(data).each(function (index, item) {
+    //                $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#SalesPersonId'));
+    //            });
+    //        }, complete: function () {
+
+    //        }
+    //    });
+    //}
+
+    //2024-05-06-Anuradha-------------------------------
+    $('body').off('click', '#addRemarkPopup').on('click', '#addRemarkPopup', function () {
+        CallDetailModelSimple("Add Remarks", "/reservation/reservations/AddRemark", 800);
+    });
+    //--------------------------------------------------
+
+    $('body').on('change', '#MealPlanId', function (e) {
+
+        var mealId2 = 0;
+        if ($(this).val() != "" && $(this).val() != undefined) {
+            mealId2 = $(this).val();
+        }
+
+        $.ajax({
+            url: '/reservation/reservations/ArrivalDepartureForMealsSelect',
+            dataType: 'JSON',
+            method: 'GET',
+            data: { mealId: mealId2 },
+            success: function (data) {
+                $('#ArriveMeal').val(data.ArriveMealId);
+                $('#DeparturePlan').val(data.LeaveMealId);
+                //$('#ArriveMeal').addClass('select2');
+                //$('#DeparturePlan').addClass('select2');
+            },
+            error: function (error) {
+            }
+        });
+        //2024 - 04 - 08 - Anuradha-------------------------
+        loadRoomRateToAllocatedRoomsGrid();
+
+    });
+
+    $('body').on('change', '#RateCodeHeaderId,#MealPlanId', function () {
+        loadRoomRateToAllocatedRoomsGrid();
+    });
+
+    function loadRoomRateToAllocatedRoomsGrid() {
+        var arrivalDate = $('#ArrivalDate').val().split('/').reverse().join('-');
+        var departureDate = $('#DepartureDate').val().split('/').reverse().join('-');
+        var mealPlanId = $('#MealPlanId').val() || 0;
+        var rateCodeHeaderId = $('#RateCodeHeaderId').val() || 0;
+
+        var url = '/administration/roomrates/SelectRoomRatesForDateRange?fromDate=' + arrivalDate + '&toDate=' + departureDate + '&mealPlanId=' + mealPlanId + '&rateCodeId=' + rateCodeHeaderId;
+        console.log(url);
+        var tableDrawingTrDetails = [];
+
+        $.ajax({
+            url: url,
+            dataType: 'JSON',
+            method: 'GET',
+            success: function (data) {
+                if (data.length > 0) {
+                    var reservationTrDetails = JSON.parse($('.hidden-stringify-json-reservation').val());
+                    roomRateData = data;
+                    $('.roomCategoryWise-roomTypeWise-details tbody').html('');
+
+                    $(reservationTrDetails).each(function (index, eachTrDetail) {
+                        $(eachTrDetail.roomTypeArrineachTr).each(function (index, eachRoomDetail) {
+                            var element = {
+                                RoomCategoryName: eachTrDetail.RoomCategoryName,
+                                RoomCategoryId: eachTrDetail.roomCategoryId,
+                                RoomType: eachRoomDetail.roomType,
+                                RoomTypeId: eachRoomDetail.roomTypeId,
+                                Room: eachRoomDetail.count,
+                            };
+                            tableDrawingTrDetails.push(element);
+                        });
+                    });
+
+                    console.log(roomRateData);
+
+                    $(tableDrawingTrDetails).each(function (index, eachRoomDetail) {
+                        $(roomRateData).each(function (index1, eachRoomRateDetail) {
+                            if (eachRoomDetail.RoomCategoryId == eachRoomRateDetail.RoomCategoryId && eachRoomDetail.RoomTypeId == eachRoomRateDetail.RoomTypeId) {
+
+                                eachRoomDetail.Currency = eachRoomRateDetail.Currency;
+                                eachRoomDetail.Rate = eachRoomRateDetail.Rate;
+                            } else {
+                                eachRoomDetail.Currency = eachRoomRateDetail.Currency;
+                            }
+                            console.log(tableDrawingTrDetails);
+                        });
+
+                        var currency = eachRoomDetail.Currency !== undefined && eachRoomDetail.Currency !== null ? eachRoomDetail.Currency : '-';
+                        var rate = eachRoomDetail.Rate !== undefined && eachRoomDetail.Rate !== null ? eachRoomDetail.Rate : 0;
+
+                        currencyForExtras = currency;
+
+                        $('<tr>' +
+                            '<td>' + eachRoomDetail.RoomCategoryName + '</td>' +
+                            '<td>' + eachRoomDetail.RoomType + '</td>' +
+                            '<td>' + eachRoomDetail.Room + '</td>' +
+                            '<td style="text-align:center;">' + currency + '</td>' +
+                            '<td style="text-align:right;" class="isCheckboxDisableTd"><input style="text-align:right; width:100%;" class="isCheckboxDisableTd" type="number" step="any" readonly data-custome-rate-roomcategoryId="' + eachRoomDetail.RoomCategoryId + '" data-custome-rate-roomtypeId="' + eachRoomDetail.RoomTypeId + '" data-custome-rate-currency="' + currency + '" value="' + rate + '" /></td>' +
+                            '</tr>'
+                        ).appendTo('.roomCategoryWise-roomTypeWise-details tbody');
+                    });
+
+                    $('#isChangeRoomRateCheckBox').prop('disabled', false);
+
+                } else {
+                    console.log('Loading...')
+                }
+            },
+            error: function (error) { },
+        });
+    };
+
+    function LoadDropdownsStep3() {
+
+        $('#RateCodeHeaderId').addClass('select2');
+        $('#MarketId').addClass('select2');
+        $('#BookingSourceId').addClass('select2');
+        $('#SegmentId').addClass('select2');
+        $('#CompanyId').addClass('select2');
+        //$('select').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 10);
+
+    }
+
+
+    //--------------------------------------------------
+
+    $('body').on('change', '#CompanyId', function () {
+        if ($(this).val() != undefined && $(this).val() != "") {
+            $.ajax({
+                url: '/Administration/Companies/SelectCompany?id=' + $(this).val(),
+                dataType: 'JSON',
+                method: 'GET',
+                success: function (company) {
+                    $('#GuestPaymentModes').val(company.DefaultPaymentModeId);
+                    LoadDropdownsStep3();
+                    loadRoomRateToAllocatedRoomsGrid();
+                }
+            });
+        }
+    })
+
+    function LoadVisitPurposesInMakeReservationOtherDetails() {
+        var dataJson = localStorage.getItem("VisitPurposes");
+        var data = JSON.parse(dataJson);
+        $(data).each(function (index, item) {
+            $('<option value="' + item.Id + '">' + item.Name + '</option>').appendTo($('#VisitPurposeId'));
+        });
+    }
+
+    //function loadVisitPuposeCombo() {
+    //    $.ajax({
+    //        url: '/administration/VisitPurposes/VisitPurposeCombo',
+    //        dataType: 'json',
+    //        method: 'get',
+    //        success: function (data) {
+    //            $('#VisitPurposeId option').remove();
+    //            $(data).each(function (index, item) {
+    //                $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#VisitPurposeId'));
+    //            });
+    //        }
+    //    });
+    //}
+
+    function loadRateCodeCombo() {
+        //alert('rate code');
+        $.ajax({
+            url: '/administration/RateCodeHeaders/RateCodeHeadersCombo',
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $('.rate-code-container').html('');
+                $('<label class="required control-label">RateCode</label>').appendTo($('.rate-code-container'));
+                $(response).appendTo($('.rate-code-container'));
+
+                LoadMarket(response.RateCodeHeaderId);
+
+            }
+        });
+    }
+
+    function LoadMealPlansInMakeReservationOtherDetails() {
+        var reservationForId = $('#reservationFor').val();
+
+        //var IsDormitory = ;
+        //if (IsDormitory == 1) {
+        //    reservationForId = 2
+        //}
+
+        var rowData = localStorage.getItem("MealPlans");
+        var data = JSON.parse(rowData);
+        $('#MealPlanId option').remove();
+        $('#MealPlanId').append('<option value="" disabled selected></option>');
+        $(data).each(function (index, item) {
+            if (item.IsDormitory && item.DomitoryCategoryId == reservationForId) {
+                $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#MealPlanId'));
+            } else {
+                $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#MealPlanId'));
+            }
+        });
+        //$('#MealPlanId').val($('#ViewMealPlanId').val());
+    }
+
+
+    //hard coded to test domitory type reservation placement
+    //function LoadMealPlans() {
+    //    $.ajax({
+    //        url: '/Administration/MealPlans/SelectMealPlansForAvailability?reservationForId=' + $('#reservationFor').val(),
+    //        dataType: 'json',
+    //        method: 'get',
+    //        success: function (data) {
+    //            $('#MealPlanId option').remove();
+    //            $('#MealPlanId').append('<option value="" disabled selected>Select a meal plan</option>');
+    //            $(data).each(function (index, item) {
+    //                $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#MealPlanId'));
+    //            });
+    //        }
+    //    });
+    //}
+
+    //2024-03-27 - Anuradha-------------------------
+
+    $('#changeRoomRateModal').on('shown.bs.modal', function () {
+        $('#isChangeRoomRateCheckBox').prop('checked', false);
+    });
+
+    $('body').on('click', '#rateCodeChangeYesBtn', function () {
+        $('#isChangeRoomRateCheckBox').prop('checked', true);
+        $('.isCheckboxDisableTd').prop('readonly', false);
+    });
+
+    $('body').on('click', '#rateCodeChangeNoBtn, #closeBtn,.isChangeRoomRateCheckBoxLabel', function () {
+        $('#isChangeRoomRateCheckBox').prop('checked', false);
+        $('.isCheckboxDisableTd').prop('readonly', true);
+    });
+
+    //2024-07-05 - Anuradha-------------------------
+    $(document).off('click', '#showApplicableDiscounts').on('click', '#showApplicableDiscounts', function () {
+        var ratecodeheaderId = $('#RateCodeHeaderId').val();
+        var arrival = $('#ArrivalDate').val();
+        var departure = $('#DepartureDate').val();
+
+        if (ratecodeheaderId > 0) {
+            var url = '/reservation/reservations/DiscountDetailsPopup?ratecodeheaderId=' + ratecodeheaderId + '&arrival=' + arrival + '&departure=' + departure;
+
+            CallDetailModelSimple('Applicable promotions and discounts', url, 800);
+            ShowLoader();
+        } else {
+            ShowWarningMessage('Please select a rate code.');
+        }
+    });
+    //--------------------------------------------------
+
+    $(document).off('click', '#showApplicableExtras').on('click', '#showApplicableExtras', function () {
+        var ratecodeheaderId = $('#RateCodeHeaderId').val(); 
+
+        if (ratecodeheaderId > 0) {
+            var url = '/reservation/reservations/ExtraPostingsPopup?ratecodeheaderId=' + ratecodeheaderId;
+
+            CallDetailModelSimple('Extra Charges (Enter Amount in ' +currencyForExtras+')', url, 800);
+        } else {
+            ShowWarningMessage('Please select a rate code.');
+        }
+    });
+
+    var total = 0;
+
+    $(document).off('click', '#addDiscounts').on('click', '#addDiscounts', function () {
+        var ratecodeheaderId = $('#RateCodeHeaderId').val();
+        var arrival = $('#ArrivalDate').val();
+        var departure = $('#DepartureDate').val();
+
+        getTotalRate();
+
+        if (ratecodeheaderId > 0) {
+            if (confirm('Discounts will be calculated on ' + total + ' ' + currencyForExtras+'. Click "Yes" to continue or "No" to adjust rates.')) {
+                var url = '/reservation/reservations/Discounts?ratecodeheaderId=' + ratecodeheaderId + '&arrival=' + arrival + '&departure=' + departure+'&baseamount=' + total;
+                CallDetailModelSimple('Discount(s) (Enter Amount in ' + currencyForExtras + ')', url, 800);
+            } else {
+                ShowWarningMessage('Please adjust the rate and continue.');
+            }
+        } else {
+            ShowWarningMessage('Please select a rate code.');
+        }
+    });
+
+    function getTotalRate() {
+        total = 0;
+        $('.roomCategoryWise-roomTypeWise-details tbody tr').each(function () {
+            var rate = parseFloat($(this).find('input[type="number"]').val()) || 0;
+            total += rate;
+        });
+    }
+</script>

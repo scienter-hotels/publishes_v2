@@ -1,0 +1,75 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.ReservationNote>
+    @if (Model.Count() > 0)
+    {
+<table class="table table-striped" id="existingReservationNoteGrid">
+    <tr>
+        <th class="text-primary" style="text-align:left">
+            Note Type
+        </th>
+        <th class="text-primary" style="text-align:left">
+            Notes
+        </th>
+
+        <th class="text-primary" style="text-align:left">
+            Reminder Date
+        </th>
+        <th class="text-primary" style="text-align:left">
+            Advance Percentage(%)
+        </th>
+        <th></th>
+    </tr>
+    @{int num = 0;}
+    @foreach (var item in Model)
+    {
+    <tr>
+
+        <td>
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td>
+            @*@(++num). @Html.DisplayFor(modelItem => item.Note)*@
+            @Html.DisplayFor(modelItem => item.Note)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ReminderDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AdvancePercentage)
+        </td>
+        <td width="50px">
+            <a class="btn btn-danger btn-sm" id="btnDelete" data-note-Id="@item.Id">
+                <span class="glyphicon glyphicon-trash"></span>
+            </a>
+        </td>
+    </tr>
+
+    }
+</table>
+    }
+
+
+<script>
+
+    $('body').off('click', '#btnDelete').on('click', '#btnDelete', function (e) {
+
+        if (confirm('Are you sure want to Delete this?')) {
+            var noteId = $(this).attr("data-note-Id");
+
+            $.ajax({
+                url: '/reservation/ReservationList/ReservationNoteDelete?Id=' + noteId,
+                dataType: 'json',
+                method: 'POST',
+                success: function (data) {
+                    if (data.startsWith("OK")) {
+                        FillGrid();
+                        ShowSuccessMessage("Note Deleted");
+                    }
+                    else { }
+                }
+            });
+
+        }
+        
+    });
+
+</script>

@@ -1,0 +1,374 @@
+﻿
+@{
+    ViewBag.Title = "CheckedOut";
+}
+<link href="~/Content/uicons-bold-rounded-2.3.0/css/uicons-bold-rounded.css" rel="stylesheet" />
+<style>
+
+    .panel-default {
+        border: none;
+    }
+
+    .panel-body-padding {
+        padding-top: 0px !important;
+    }
+
+    #reservationGrid {
+        margin-top: -20px;
+    }
+
+    .searchDate .form-group {
+        margin: 0px;
+        padding-bottom: 0px;
+    }
+    /*.highlight {
+        background-color: red;
+    }*/
+    .listLoadingArea td {
+        padding: 0px 4px !important;
+    }
+
+    .listLoadingArea .glyphicon-bell, .listLoadingArea .fa-taxi {
+        padding-left: 5px !important;
+    }
+
+    .highlight {
+        background-color: darkseagreen !important;
+    }
+
+    .listLoadingArea {
+        min-height: 430px;
+    }
+
+    #pageNoLine {
+        text-align: right;
+    }
+
+    .table thead > tr > td, .table tbody > tr > td, .table tfoot > tr > td {
+        font-size: 11px;
+    }
+
+    .current-page-no {
+        margin-right: 20px;
+        font-weight: bold;
+    }
+
+    .listLoadingArea th {
+        padding: 4px 4px !important;
+    }
+
+    .data-page-no-btn {
+        border: 1px solid #b0b0b0 !important;
+        margin-left: 3px !important;
+    }
+
+        .data-page-no-btn:hover {
+            background-color: #b45b23 !important;
+        }
+
+    .listLoadingArea tr:nth-child(even) {
+        background-color: #e9e9e9;
+    }
+
+    .searchPara {
+        width: 100%;
+        border: 1px solid #ccc;
+    }
+
+    .scroll-content ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .scroll-content ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .scroll-content ::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    .reservation-filter-area .checkbox label, .radio label, label {
+        font-size: 10px;
+        line-height: 12px;
+        color: #000000;
+        font-weight: 400;
+    }
+
+    .reservation-filter-area .form-group {
+        padding-bottom: 10px;
+        margin: 10px 0 0 0;
+    }
+
+        .reservation-filter-area .form-group .form-control {
+            margin-top: -46px;
+            font-size: 12px;
+        }
+
+        .reservation-filter-area .form-group input {
+            padding-top: 23px;
+        }
+
+    .input-group .input-group-addon {
+        vertical-align: top;
+        padding-top: 0;
+    }
+
+    .border-margin {
+        border: 1px solid white;
+    }
+
+    .side-button-blue {
+        background-color: #094f70 !important;
+        color: #fff !important;
+    }
+
+    .side-button-orange {
+        background-color: #e67e22 !important;
+        color: #fff !important;
+    }
+
+    .side-button-gray {
+        background-color: #d0d0d0 !important;
+        color: #000 !important;
+        font-weight: 800 !important;
+    }
+
+    #buttons .col-md-6, #buttons .col-md-12 {
+        margin: 0 !important;
+        padding: 2px !important;
+    }
+
+        #buttons .col-md-6 button, #buttons .col-md-6 a {
+            font-size: 11px !important;
+            padding: 6px;
+            word-wrap: break-word !important;
+            line-height: 13px;
+            text-transform: none !important;
+            height: 60px !important;
+        }
+
+        #buttons .col-md-12 button, #buttons .col-md-12 a {
+            padding: 10px;
+            word-wrap: break-word !important;
+        }
+
+    #buttons .btn {
+        margin-top: 0px !important;
+        margin: 0px !important;
+        border-radius: 0px;
+        cursor: pointer !important;
+    }
+
+        #buttons .btn:hover {
+            background: #ffe500 !important;
+            color: #000 !important;
+        }
+</style>
+
+<div class="table-responsive">
+    <table class="table font-size-12px" id="existingCheckedOutGrid">
+        <tr>
+            <th class="text-primary"></th>
+            <th class="text-primary"> </th>
+            <th class="text-primary">Arrival</th>
+            <th class="text-primary"> Departure </th>
+            <th class="text-primary"> Group# </th>
+            <th class="text-primary col-md-1">Res#</th>
+            <th class="text-primary">Guest</th>
+            <th class="text-primary">Company </th>
+            <th class="text-primary">Vouch# </th>
+            <th class="text-primary col-md-1">Category </th>
+            <th class="text-primary">Room Type</th>
+            <th class="text-primary" width="60px">A.#</th>
+            <th class="text-primary">K.#</th>
+            <th class="text-primary col-md-1">Room#</th>
+            <th class="text-primary col-md-1">Status</th>
+            <th class="text-primary hidden">Res. Status </th>
+            <th></th>
+            <th></th>
+            <th class="text-primary"></th>
+            <th class="hidden"></th>
+            <th class="hidden"></th>
+        </tr>
+    </table>
+</div>
+
+<div id="leftSideContent" class="sidenavLeft">
+    <a href="javascript:void(0)" class="closebtn" onclick="closePushContentLeft() ">&times;</a>
+    <hr />
+    <div id="buttons" class="col-md-12" style="width:195px; margin-left:-15px; margin-bottom:8px; margin-top:3px;">
+        <div class="row" id="reservationLevel" style="overflow-y:auto; overflow-x:hidden;">
+            @foreach (var item in Model)
+            {
+                var isShow = (item.IsShow) ? "" : "hidden";
+                <div class="col-md-6 border-margin">
+                    <a style="background-color:@item.ButtonColor; color:@item.IconColor; display: flex; justify-content: center; align-items: center;" class="btn btn-defaultfull-width-100perc @item.ExtraClass" id="@item.BtnId" data-title="@item.DataTitle" href="@item.DataHref" data-width="@item.DataWidth" @isShow target="_blank">
+                        <div style="text-align: center;">
+                            <i class="fi @item.IconName" style="font-size:20px;"></i>
+                            <br />
+                            @Html.Raw(item.BtnName)
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        LoadCheckedOutGrid();
+    });
+
+    function LoadCheckedOutGrid() {
+        $.ajax({
+            url: "/reservation/ReservationList/CheckedOutList",
+            dataType: 'json',
+            method: 'POST',
+            beforeSend: function () {
+            },
+            success: function (data) {
+                CheckedOut(data);
+            },
+            complete: function () {
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+    function CheckedOut(data) {
+        $.each(data, function (index, item) {
+            var NoOfAdults = "";
+            var NoOfKids = "";
+            var HasTraces = "";
+            var HasAlert = "";
+            var HasTravel = "";
+            var groupHighlight = '';
+
+            if (item.GroupColour != 'Single') {
+                groupHighlight = 'style="border-bottom:3px solid ' + item.GroupColour + ' !important;border-top:3px solid ' + item.GroupColour + ' !important;"';
+            }
+
+            if (item.NoOfAdults > 0) {
+                NoOfAdults = '<span class="glyphicon glyphicon-user" style="color:black; font-size:15px;" data-toggle="tooltip"></span> <sup class="superscript">' + item.NoOfAdults + '</sup>';
+            } else {
+                NoOfAdults = '<span class="glyphicon glyphicon-user" style="color:#808080; font-size:15px;" data-toggle="tooltip"></span>';
+            }
+
+            if (item.NoOfKids > 0) {
+                NoOfKids = '<span class="fa fa-child" style="color:black; font-size:15px;" data-toggle="tooltip"></span> <sup class="superscript">' + item.NoOfKids + '</sup>';
+            } else {
+                NoOfKids = '<span font-size:15px;" data-toggle="tooltip"></span>';
+            }
+
+            if (item.HasTraces == 1) {
+                HasTraces = '<span class="fa fa-check" style="color:red; font-size:15px;" data-toggle="tooltip" title="Traces"></span>';
+            } else {
+                HasTraces = '';
+            }
+
+            if (item.HasAlert == 1) {
+                HasAlert = '<span class="glyphicon glyphicon-bell " style="color:red; font-size:15px;" data-toggle="tooltip" title="Alert"></span>';
+            } else {
+                HasAlert = '';
+            }
+
+            if (item.HasTravel == 1) {
+                HasTravel = '<span class="fa fa-taxi" style="color:red; font-size:15px;" data-toggle="tooltip" title="Transport"></span>';
+            } else {
+                HasTravel = '';
+            }
+
+            $(
+                '<tr class="data-row ' + item.GuestProfileType + '" ' + groupHighlight + '>' +
+                '<td>' +
+                '<span class="' + item.ReservationTypeIcon + '" title="' + item.ResevationTypeName + '"></span>' +
+                '</td>' +
+                '<td>' +
+                '<span class="' + item.ReservationForIcon + '" title="' + item.ReservationForIconText + '"></span>' +
+                '</td>' +
+                '<td class="arrival-date">' +
+                item.ArrivalDate +
+                '</td>' +
+                '<td class="depature-date">' +
+                item.DepartureDate +
+                '</td>' +
+                '<td>' +
+                item.GResNo +
+                '</td>' +
+                '<td class="res-no">' +
+                item.ResNo +
+                '</td>' +
+                '<td class="guest-name">' +
+                item.GuestName +
+                '</td>' +
+                '<td>' +
+                item.AgentName +
+                '</td>' +
+                '<td>' +
+                item.VoucherNumber +
+                '</td>' +
+                '<td>' +
+                item.RoomCat +
+                '</td>' +
+                '<td>' +
+                item.RoomTypeCode +
+                '</td>' +
+                '<td>' +
+                NoOfAdults +
+                '</td>' +
+                '<td>' +
+                NoOfKids +
+                '</td>' +
+                '<td>' +
+                item.RoomNo +
+                '</td>' +
+                //'<td>' +
+                //item.IsCreditEnabled + /*Add new*/
+                //'</td>' +
+                '<td>' +
+                item.RoomStatus +
+                '</td>' +
+                '<td class="hidden" style="text-align:center;">' +
+                item.ReservationStatus +
+                '</td>' +
+                '<td style="text-align:center;">' +
+                HasTraces +
+                HasAlert +
+                HasTravel +
+                '</td>' +
+                '<td class="hidden-print text-right" style="text-align:right !important;">' +
+                '<a class="btn btn-theme-color-2 btn-sm call-popup-model" id="" data-title="Reservation Activity Log" data-href="/Reservation/Reservations/ReservationActivityLog/' + item.Id + '" title="Activity Log" data-toggle="tooltip" data-width="500">' +
+                '<span class="glyphicon glyphicon-tags"></span>' +
+                '</a>' +
+                '</td>' +
+                '<td>' +
+                '<div class="form-group checkbox">' +
+                '<label>' +
+                '<input type="hidden" value="Confirmed" class="res-status" />' +
+                '<input type="checkbox" class="data-reservation-no" guestId="' + item.GuestProfileId + '" guestName="' + item.GuestName + '" group-res-no="' + item.GResNo + '" arrival-date="' + item.Arrival + '" departure-date="' + item.Departure + '" room-id="' + item.RoomId + '" room-code="' + item.RoomNo + '" resNo="' + item.ResNo + '" value="' + item.Id + '" res-Uuid="' + item.ResUuid + '" data-PropertyId="' + item.PropertyId + '" data-isDormitory="' + item.IsDormitory + '" data-IsVilla="' + item.IsVilla + '"/>' +
+                '</label>' +
+                '</div>' +
+                '</td>' +
+                '<td class="hidden">' +
+                item.TourNo +
+                '</td>' +
+                '<td class="hidden">' +
+                item.VoucherNumber +
+                '</td>' +
+                '</tr>'
+            ).appendTo("#existingCheckedOutGrid");
+
+        });
+    }
+
+    $('body').on('change', '.data-reservation-no', function () {
+        if ($(this).prop('checked')) {
+            openPushContentLeft();
+        } else {
+            closePushContentLeft();
+        }
+    });
+</script>

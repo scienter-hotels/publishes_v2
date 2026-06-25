@@ -1,0 +1,499 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.RoomsAndFloorsView
+
+<style>
+    h3 {
+        font-weight: bold;
+    }
+
+    .custom-top-padding {
+        padding-top: 5px;
+    }
+
+    .well {
+        font-size: 12px;
+    }
+
+    .override-from-group-margin {
+        margin-top: 0px;
+    }
+
+    .colorBox {
+        height: 12px;
+        width: 12px;
+    }
+
+    .box1 {
+        background-color: #FE0101;
+    }
+
+    .box2 {
+        background-color: #038959;
+    }
+
+    .box3 {
+        background-color: #ff9800;
+    }
+
+    .row-height {
+        padding-top: 5px;
+        height: 25px;
+    }
+
+    .well-height {
+        padding-top: 10px;
+        height: 142px;
+    }
+
+    .col-padding-overide {
+        padding: 1px !important;
+    }
+
+    .room-number-height {
+        height: 50px;
+    }
+
+    .content-align-center {
+        text-align: center;
+    }
+
+    .allocatedWellColor {
+        border: solid 1px #e74c3c;
+        background-color: #e74c3c;
+    }
+
+        .allocatedWellColor h2 {
+            color: white;
+        }
+
+        .allocatedWellColor .deallocate-button {
+            background-color: #e74c3c;
+            opacity: 0.8;
+            border-color: #e74c3c;
+            cursor: pointer;
+        }
+
+            .allocatedWellColor .deallocate-button:hover, .allocatedWellColor .deallocate-button:focus {
+                background-color: transparent;
+                box-shadow: none;
+                opacity: 1;
+                cursor: pointer;
+            }
+
+    .list-group-style {
+        height: 480px;
+    }
+
+    .reservedWellColor {
+        background-color: #eaba00;
+        border-color: #eaba00;
+        opacity: 0.8;
+    }
+
+        .reservedWellColor .reservedButton, .reservedWellColor .reservedButton:hover, .reservedWellColor .reservedButton:focus {
+            background-color: #eaba00;
+            box-shadow: none;
+            opacity: 1;
+            cursor: pointer;
+        }
+
+    .outOfOrderWellColor {
+        background-color: #ff9800;
+        border-color: #ff9800;
+        opacity: 0.5;
+    }
+
+    .outOfOrderButton {
+        background-color: #ff9800;
+        color: #ffffff;
+    }
+
+    .allocateWellColor {
+        background-color: #00a727 !important;
+        cursor: pointer;
+        border-color: #00a727 !important;
+    }
+
+        .allocateWellColor .allocate-button {
+            opacity: 0.8;
+            cursor: pointer;
+        }
+
+            .allocateWellColor .allocate-button:hover, .allocateWellColor .allocate-button:focus {
+                opacity: 1;
+                cursor: pointer;
+            }
+
+            .allocateWellColor .allocate-button, .allocateWellColor .allocate-button:hover, .allocateWellColor .allocate-button:focus {
+                background-color: transparent;
+                box-shadow: none;
+                cursor: pointer;
+            }
+
+    .disabled-well {
+        background-color: #094F70;
+        border-color: #094F70;
+    }
+
+    .btn-primary1 {
+        background-color: transparent !important;
+    }
+
+    .primary1WellColor {
+        background-color: #094F70;
+        border-color: #094F70;
+        opacity: 0.7;
+    }
+</style>
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+<div class="row" style="margin-left:0px; margin-right:0px;">
+    <div>
+        <div class="row">
+            @*<div class="col-md-2">
+                    <div class="row panel panel-default">
+                        <div class="col-md-12 list-group list-group-style panel-body div-scroll">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <ul id="datesUL">
+                                        <li>
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" class="floor-name-check-all" value="" />All
+                                                </label>
+                                            </div>
+                                        </li>
+                                        <hr />
+
+                                        <label class="control-label"> Filteration </label>
+                                        @foreach (var item in Model.Floors)
+                                        {
+                                            <li>
+                                                <div class="checkbox">
+                                                    <label style="font-size:0.8em">
+                                                        <input type="checkbox" class="floor-name-check" value="@item.RoomNameFormattedforClass" />@item.Name
+                                                    </label>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+            <div class="col-md-12">
+                <div class="custom-accordian">
+
+                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                        <div class="panel panel-default">
+                            <div class="panel-heading" role="tab" id="headingOne">
+                                <h4 class="panel-title">
+                                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#accomadationCollape" aria-expanded="true" aria-controls="collapseOne">
+                                        <i class="more-less glyphicon glyphicon-minus"></i>
+                                        <b> Available Rooms</b>
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="accomadationCollape" class="panel-collapse in" role="tabpanel" aria-labelledby="headingOne">
+                                <div class="panel-body">
+
+
+
+                                    <style>
+                                        .searchBox .form-group {
+                                            margin: 0px !important;
+                                        }
+                                    </style>
+                                    <div class="row searchBox">
+                                        <div class="col-md-10">
+                                            <input type="text" id="roomSearchBy" placeholder="Search by room code, name or housekeeping status" class="form-control" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn-primary btn btn-block searchByBtn" style="width: 100%;float: right;">Search<div class="ripple-container"></div></button>
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="row rooms-container" style="margin-left: -13px;margin-right: 0px;margin-top:10px;">
+
+
+                                        @foreach (var item in Model.RoomDetails)
+                                        {
+                                            if (item.Remark == "Same")
+                                            {
+                                                string wellColor = "",
+                                                    buttonText = "",
+                                                    buttonClass = "",
+                                                    disabled = "",
+                                                    btnType = "",
+                                                     btnImage = "";
+
+                                                if (item.IsOutOfOrder)
+                                                {
+                                                    wellColor = "outOfOrderWellColor";
+                                                    buttonText = "OOO";
+                                                    buttonClass = "outOfOrderButton";
+                                                    disabled = "disabled";
+                                                    btnImage = "/Images/close_icon.png";
+                                                }
+                                                else if (item.IsAllocatedForReservation)
+                                                {
+                                                    wellColor = "allocatedWellColor";
+                                                    buttonText = "DE-ALLOCATE";
+                                                    buttonClass = "deallocate-button";
+                                                    btnType = "btn-danger";
+                                                    btnImage = "/Images/bed.png";
+                                                }
+                                                else if (item.IsAllocatedForOtherReservation)
+                                                {
+                                                    wellColor = "reservedWellColor";
+                                                    buttonText = "RESERVED";
+                                                    buttonClass = "reservedButton";
+                                                    disabled = "disabled";
+                                                    btnType = "btn-danger";
+                                                    btnImage = "/Images/bookmark.png";
+                                                }
+                                                else
+                                                {
+                                                    wellColor = "allocateWellColor";
+                                                    btnType = "allocate-btn";
+                                                    buttonText = "ALLOCATE";
+                                                    buttonClass = "allocate-button";
+                                                    btnImage = "/Images/tick.png";
+                                                    //btnType = "btn-primary";
+                                                    //buttonText = "ALLOCATE";
+                                                    //buttonClass = "allocate-button";
+                                                }
+
+
+                                                <div class="custom-width col-md-2 @item.RoomFloorNameFormatted pad-l-r-0 room-block" data-room-text="@item.Name @item.Prefix">
+                                                    <div class="well well-custom override-well @wellColor" style="margin-left: 13px;">
+                                                        <div class="row mar-l-r-0">
+                                                            <div class="col-md-7 pad-l-r-0">
+                                                                <div class="row mar-l-r-0">
+                                                                    <div class="col-md-12 pad-l-r-0 border-bottom" style="padding-top: 0px;">
+                                                                        <span class="item-name" style="width:70px; font-size:14px;">@item.Name</span>
+                                                                    </div>
+                                                                    <div class="col-md-12 pad-l-r-0">
+                                                                        <div class="col-md-6 pad-l-r-0">
+                                                                            <span class="prefix" style="font-size:14px;">@item.Prefix</span>
+                                                                        </div>
+                                                                        @*house keeping status image*@
+                                                                        <div class="col-md-6 pad-l-r-0">
+                                                                            <img src="@item.HouseKeepingStatusImage" alt="" style="border: 1px solid #dddddd;padding: 3px;width:30px;height:30px;" title="@item.RoomStatus" />
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+                                                                <input type="hidden" class="hidden-roomId" id="hidden-roomId" value="@item.Id" />
+                                                                <input type="hidden" class="isAllocatedforReservation" id="isAllocatedforThisReservation" value="@item.IsAllocatedForReservation.ToString()" />
+                                                                <input type="hidden" class="isAllocatedforOtherReservation" id="isAllocatedforOtherReservation" value="@item.IsAllocatedForOtherReservation.ToString()" />
+                                                            </div>
+                                                            <div class="col-md-5 pad-l-r-0 border-left">
+                                                                <div class="row mar-l-r-0">
+                                                                    <div class="col-md-12 pad-l-r-0">
+
+                                                                        <div class="form-group checkbox override-from-group-margin" style="padding-bottom: 3px;margin:0px;">
+                                                                            <a class="btn btn-sm @btnType @disabled full-width-100perc same-cat @buttonClass custom-btn" id="popup-for-room-allocation-@item.Id" name="popup-for-room-allocation-@item.Id">
+                                                                                <img src="@btnImage" alt="" style="border: 1px solid #dddddd;padding: 3px;cursor:pointer;" />
+                                                                            </a>
+                                                                            @*@buttonText*@
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        @*<div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingOne">
+                                    <h4 class="panel-title">
+                                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#extraPostingCollaps" aria-expanded="true" aria-controls="collapseOne">
+                                            <i class="more-less glyphicon glyphicon-minus"></i>
+                                            <b> Other Categories</b>
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="extraPostingCollaps" class="panel-collapse" role="tabpanel" aria-labelledby="headingOne">
+                                    <div class="panel-body">
+                                        <div class="row rooms-container" style="margin-left: -13px;">
+
+
+                                            @foreach (var item in Model.RoomDetails.OrderBy(x => x.RoomCode))
+                                            {
+                                                if (item.Remark == "Other")
+                                                {
+
+                                                    string wellColor = "",
+                                                        buttonText = "ALLOCATE",
+                                                        buttonClass = "allocate-button",
+                                                        disabled = "disabled",
+                                                        btnImage = "",
+                                                    btnType = "";
+
+                                                    if (item.IsOutOfOrder)
+                                                    {
+                                                        wellColor = "outOfOrderWellColor";
+                                                        buttonText = "OOO";
+                                                        buttonClass = "outOfOrderButton";
+                                                        disabled = "disabled";
+                                                        btnImage = "/Images/close_icon.png";
+                                                    }
+                                                    else if (item.IsAllocatedForOtherReservation)
+                                                    {
+                                                        wellColor = "reservedWellColor";
+                                                        buttonText = "RESERVED";
+                                                        buttonClass = "reservedButton";
+                                                        disabled = "disabled";
+                                                        btnType = "btn-danger";
+                                                        btnImage = "/Images/bookmark.png";
+                                                    }
+                                                    else
+                                                    {
+
+                                                        btnType = "btn-primary1";
+                                                        btnImage = "/Images/close_icon.png";
+                                                        wellColor = "primary1WellColor";
+
+                                                    }
+
+                                                    <div class="custom-width col-md-2 @item.RoomFloorNameFormatted pad-l-r-0">
+                                                        <div class="well well-custom override-well @wellColor" style="margin-left: 10px;">
+                                                            <div class="row mar-l-r-0">
+                                                                <div class="col-md-7 pad-l-r-0">
+                                                                    <div class="row mar-l-r-0">
+                                                                        <div class="col-md-12 pad-l-r-0 border-bottom" style="padding-top: 0px;">
+                                                                            <span class="item-name" style="width:70px; font-size:14px;">@item.Name</span>
+                                                                        </div>
+                                                                        <div class="col-md-12 pad-l-r-0">
+                                                                            <span class="prefix" style="font-size:14px;">@item.Prefix</span>
+                                                                        </div>
+                                                                    </div>
+                                                                    <input type="hidden" class="hidden-roomId" id="hidden-roomId" value="@item.Id" />
+                                                                    <input type="hidden" class="isAllocatedforReservation" id="isAllocatedforThisReservation" value="@item.IsAllocatedForReservation.ToString()" />
+                                                                    <input type="hidden" class="isAllocatedforOtherReservation" id="isAllocatedforOtherReservation" value="@item.IsAllocatedForOtherReservation.ToString()" />
+                                                                </div>
+                                                                <div class="col-md-5 pad-l-r-0 border-left">
+                                                                    <div class="row mar-l-r-0">
+                                                                        <div class="col-md-12 pad-l-r-0">
+
+                                                                            <div class="form-group checkbox override-from-group-margin" style="padding-bottom: 3px;margin:0px;">
+                                                                                <a class="btn btn-sm @btnType @disabled full-width-100perc same-cat @buttonClass custom-btn" id="popup-for-room-allocation-@item.Id" name="popup-for-room-allocation-@item.Id">
+                                                                                    <img src="@btnImage" alt="" style="border: 1px solid #dddddd;padding: 3px;cursor:pointer;" />
+                                                                                </a>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>*@
+                    </div>
+                    <div class="row" style="margin-top:10px;" id="hkstatus"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $('body').off('keyup', '#roomSearchBy').on('keyup', '#roomSearchBy', function () {
+        FilterRooms();
+    });
+
+    $('body').off('click', '.searchByBtn').on('click', '.searchByBtn', function () {
+        FilterRooms();
+    });
+
+    function FilterRooms() {
+        debugger;
+        $('.room-block').hide();
+        $('.room-block').each(function (index, item) {
+            if ($(item).attr('data-room-text').toLowerCase().includes($('#roomSearchBy').val().toLowerCase())) {
+                $(item).fadeIn();
+            }
+        });
+    }
+
+    $('body').off('click', '.deallocate-button, .allocate-button').on('click', '.deallocate-button, .allocate-button', function () {
+
+        if ($(this).hasClass('deallocate-button')) {
+            $.ajax({
+                method: 'post',
+                url: '/Reservation/ReservationList/RoomWisePopUp?RoomId=' + $(this).closest('.well').find('.hidden-roomId').val() + '&IsAllocatedForReservation=true' + '&Uuid=' + $('#hidden-Uuid').val(),
+                datatype: 'html',
+                success: function (data) {
+                    $('#contentLoadingAreaRooms').addClass('hide').fadeOut();
+                    $('#contentLoadingAreaForRoomWisePopUp').html(data).removeClass('hide').fadeIn();
+                },
+            })
+        } else if ($(this).hasClass('allocate-button')) {
+            $.ajax({
+                method: 'post',
+                url: '/Reservation/ReservationList/RoomWisePopUp?RoomId=' + $(this).closest('.well').find('.hidden-roomId').val() + '&IsAllocatedForReservation=false' + '&Uuid=' + $('#hidden-Uuid').val(),
+                datatype: 'html',
+                success: function (data) {
+                    $('#contentLoadingAreaRooms').addClass('hide').fadeOut();
+                    $('#contentLoadingAreaForRoomWisePopUp').html(data).removeClass('hide').fadeIn();
+                },
+            })
+        }
+    })
+
+    $(function () {
+        $.ajax({
+            url: '/HKChange/HKHouseKeepingRoomStatusSelect',
+            type: 'POST',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+
+                data.forEach(function (item) {
+
+                    $(
+                        '<div class="col-md-2">' +
+                        '<img src="' + item.Icon + '" alt="' + item.Name + '" style="width:18px;"/>' +
+                        '<span style="margin-left:5px;">' + item.Name + '</span>' +
+                        '</div >'
+                    ).appendTo('#hkstatus');
+
+                });
+
+            },
+            error: function (error) {
+                console.error('Error:', error);
+            }
+        });
+        if ($('input[value=True].isAllocatedforReservation').length > 0) {
+            $('.allocate-button.same-cat').addClass('disabled');
+        } else if ($('input[value=True].isAllocatedforReservation').length = 0) {
+            $('.allocate-button.same-cat').removeClass('disabled');
+        }
+
+        $('.floor-name-check-all').prop('checked', true);
+    });
+
+    $('.floor-name-check-all').change(function () {
+        if ($(this).is(':checked')) {
+            $('.floor-name-check').prop('checked', true);
+        } else {
+            $('.floor-name-check').prop('checked', false);
+        }
+    });
+</script>

@@ -1,0 +1,534 @@
+﻿@model Scienter.HotelERP.Common.Domain.RatePallet
+
+@{
+    ViewBag.Title = "Create / Edit";
+}
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+<style>
+    table, thead, tbody, tr, td {
+        /*background-color: #ffffff !important;*/
+        border: 0px !important;
+        /*border-right: 1px solid #CCC !important;
+        border-bottom: 1px solid #CCC !important;*/
+        font-size: 14px !important;
+    }
+
+    .form-group {
+        margin-top: 10px;
+    }
+
+
+    table .form-group {
+        margin: 0px;
+        padding-bottom: 0px;
+    }
+
+    table [class*="col-"] {
+        padding: 0px !important;
+    }
+
+    h4 {
+        font-size: 14PX;
+    }
+
+    .card form [class*="col-"]:first-child {
+        padding-left: 0px;
+    }
+
+    .card form [class*="col-"]:last-child {
+        padding-right: 0px;
+    }
+
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        overflow-x: hidden;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+</style>
+
+<link href="~/Content/RadioButtonSmallSwitch.css" rel="stylesheet" />
+<div class="col-md-12">
+    <form id="roomRates">
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @*<input type="hidden" value="@Model.Id" name="Id" id="Id" />*@
+
+        <div class="row">
+            <div class="col-md-2" id="filterContainer">
+                <fieldset class="the-fieldset padding-margin-bottom-override" style="padding-top:0px; padding-bottom:0px; min-height:511px;">
+                    <legend class="the-legend">Filtering</legend>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="label-floating">
+                                @*<span style="font-size:13px;">Select Duration Type </span>*@
+
+                                <div class="can-toggle can-toggle--size-small">
+                                    <input id="SeasonToDateWise" type="checkbox">
+                                    <label for="SeasonToDateWise">
+                                        <div class="can-toggle__switch" data-checked="Date" data-unchecked="Season"></div>
+                                        <div class="can-toggle__label-text"></div>
+                                    </label>
+                                </div>
+
+                                <div class="form-group checkbox hidden">
+                                    <label>
+                                        <input type="checkbox" checked name="radioName" value="seasonwise" id="cb01" /> Season Wise
+                                    </label>
+                                </div>
+
+                                <div class="form-group checkbox hidden">
+                                    <label>
+                                        <input type="checkbox" name="radioName" value="datewise" id="cb02" /> Date Wise
+                                    </label>
+                                </div>
+
+                                @*<input type="radio" class="form-group radio-inline" name="radioName" value="seasonwise" checked>
+                                    <br />
+                                    <input type="radio" class="form-group radio-inline" name="radioName" value="datewise">*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="seasonDiv">
+                                @* Seasons Load to combo *@
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Season *</label>
+                                    @{Html.RenderAction("SeasonsCombo", "Seasons", new { name = "SeasonId", requiered = true, value = Model?.SeasonId });}
+                                </div>
+
+                            </div>
+
+                            <div id="dateWiseDiv">
+                                @* Seasons Load to combo *@
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Date Range</label>
+                                    <div class='input-group date' id='dateWiseCalender'>
+                                        <input type='text' class="form-control" name="daterange" />
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            @* Rate code Load to combo *@
+                            <div class="form-group label-floating">
+                                <label class="control-label">Rate Code *</label>
+                                @{Html.RenderAction("RateCodeHeadersCombo", "RateCodeHeaders", new { name = "RateCodeHeaderID", requiered = true, value = Model?.RateCodeHeaderID });}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Package *</label>
+                                @{Html.RenderAction("PackageHeaderCombo", "PackageHeaders", new { name = "PackageHeaderId", requiered = true, value = Model?.PackageHeaderId });}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 disabled">
+                            <div class="form-group label-floating" style="margin-bottom:-10px !important;">
+                                <label class="control-label">Currencies *</label>
+                                @{Html.RenderAction("CurrenciesCombo", "Currencies", new { name = "CurrencyId", requiered = true, value = Model?.CurrencyId, IBEEnable = true });}
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group checkbox">
+                                <label>
+                                    <input class="childAdult" type="checkbox" checked name="IsActive" value="True" id="toggleAdultRate" title="View / hide room rate" data-toggle="tooltip" /> <i title="Room" data-toggle="tooltip" class="fa fa-bed"></i> @*Room*@
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group checkbox">
+                                <label>
+                                    <input class="childAdult" type="checkbox" name="IsActive" value="True" id="toggleChildRate" title="View / Hide adult rate" data-toggle="tooltip" /> <i title="Child" data-toggle="tooltip" class="fa fa-child"></i> @*Child*@
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:right; margin-top:70px;">
+                            <button type="button" class="btn btn-primary" style="text-align:center; width:100%" id="search">Search</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="col-md-10" id="roomRatesContainer">
+                <fieldset class="the-fieldset padding-margin-bottom-override" style="padding-top:0px; padding-bottom:0px; min-height:511px;" id="roomRates">
+                    <legend class="the-legend">Room Rates</legend>
+                    <div class="row">
+                        <div class="col-md-12 ">
+                            @{Html.RenderAction("CategoryWiseRatePalets", "RoomRates");}
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:-20px;">
+                        <div class="col-md-12 text-right" style="padding-top:0px !important; padding-bottom:0px !important;">
+                            <div class="form-group">
+                                <input type="submit" id="btnSaveInRoomRate" value="Save" class="btn btn-primary" />
+                                &nbsp;
+                                <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    $('body').on('change', '#SeasonToDateWise', function () {
+        if ($(this).is(':checked')) {
+            $('#cb02').prop('checked', true);
+            $('#cb01').prop('checked', false);
+            $('#cb02').change();
+        } else {
+            $('#cb01').prop('checked', true);
+            $('#cb02').prop('checked', false);
+            $('#cb01').change();
+        }
+    })
+
+    $('body').on('click', '#toggleAdultRate', function () {
+        $('.adult-rate-cls').toggle();
+    });
+
+    $('body').on('click', '#toggleChildRate', function () {
+        $('.child-rate-cls').toggle();
+    });
+
+
+    // base rate setup
+    $('body').off('submit', '#baseRateSetup').on('submit', '#baseRateSetup', function (e) {
+
+        e.preventDefault();
+        var catCls = $(this).attr('data-category-cls');
+        $('.baseRateSetupCtrl').each(function (index, item) {
+            $('.baseRateSetupCtrlMeal').each(function (index1, item1) {
+                $('.room-category').each(function (a, b) { // reading rate palet categories
+                    if ($(b).attr('data-category-id') == catCls) { // check with popup categoryid
+                        $($(b).find($('.room-rate'))).each(function (c, d) { // reading rate pallet room types
+                            if ($(d).attr('data-roomtype') == $(item).attr('data-roomtype') && $(d).attr('data-roomType-Wise-Basis') == $(item1).attr('data-mealPlan')) {
+                                var ratewithbasis = parseFloat($(item).find('.number').val()) + (parseFloat($(item1).find('.mealamount').val()) * $(item).attr('data-pax-count'));
+                               
+                                $($(d).find('.adult-rate-cls').find('.number')).val(ratewithbasis);
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+        $('#grid-record-detail-model-close').click();
+    });
+
+    // suppliment rate setup
+    $('body').off('submit', '#supplimentRateSetup').on('submit', '#supplimentRateSetup', function (e) {
+
+        e.preventDefault();
+        var catCls = $(this).attr('data-category-cls');
+        $('.supplimentRateSetupCtrl').each(function (index, item) {
+            //console.log($(item).attr('data-mealplan'));
+            //console.log($(item).find('.number').val());
+            $('.room-category').each(function (a, b) { // reading rate palet categories
+                if ($(b).attr('data-category-id') == catCls) { // check with popup categoryid
+                    $($(b).find($('.meal-plan'))).each(function (c, d) { // reading rate pallet mealplans
+                        if ($(d).attr('data-mealplan') == $(item).attr('data-mealplan')) {
+                            $($(d).find($('.room-rate'))).each(function (e, f) { // reading rate pallet room types
+                                var roomRate = Number(($($(f).find('.adult-rate-cls').find('.number')).val()).replace(",", ""));
+                                var supplimentCharge = Number(($(item).find('.number').val()).replace(",", ""));
+                                $($(f).find('.adult-rate-cls').find('.number')).val((roomRate));
+                                $($(f).find('.child-rate-cls').find('.number')).val(supplimentCharge);
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        $('#grid-record-detail-model-close').click();
+    });
+
+    // save
+    $('body').off('submit', '#roomRates').on('submit', '#roomRates', function (e) {
+        e.preventDefault();
+        RemoveFormatNumber();
+
+        var roomCategories = [];
+        var mealPlans = [];
+        var mealPlanWiseRoomTypes = [];
+
+        $('#roomCategoriesInRoomRates tr.room-category').each(function (index, category) {
+            var categoryVar = "";
+            var mealPlanVar = "";
+            var roomTypeVar = "";
+            $(category).find('#ratePalet tr.meal-plan').each(function (index2, mealPlan) {
+                $(mealPlan).find('td.room-rate').each(function (index3, roomType) {
+                    roomTypeVar = {
+                        Id: $(roomType).find('.roomTypes').val(),
+                        Rate: $(roomType).find('.rateValue').val(),
+                        ChildRate: $(roomType).find('.rateValueChild').val()
+                    }
+                    mealPlanWiseRoomTypes.push(roomTypeVar);
+                });
+                mealPlanVar = {
+                    Id: $(mealPlan).find('.mealPlanId').val(),
+                    MealPlanWiseRoomTypeRates: mealPlanWiseRoomTypes
+                };
+                mealPlans.push(mealPlanVar);
+                mealPlanWiseRoomTypes = [];
+            });
+            categoryVar = {
+                Id: $(category).find('.roomCategory').val(),
+                CategoryWiseMealPlans: mealPlans
+            }
+            roomCategories.push(categoryVar);
+            mealPlans = [];
+        });
+
+        var roomRates = {
+            RateCodeId: $('#RateCodeHeaderID option:selected').val(),
+            PackageId: $('#PackageHeaderId option:selected').val(),
+            SeasonId: $('#SeasonId option:selected').val(),
+            CurrencyId: $('#CurrencyId option:selected').val(),
+            RoomCategoriesWiseRates: roomCategories
+        };
+
+
+        var daterangeStart = $('input[name=daterangepicker_start]').val();
+        var daterangeEnd = $('input[name=daterangepicker_end]').val();
+
+
+        $.ajax({
+            url: '/administration/roomrates/Save',
+            dataType: 'json',
+            data: { roomRate: roomRates, daterangeStart: daterangeStart, daterangeEndE: daterangeEnd },
+            method: 'POST',
+            success: function (data) {
+                if (typeof data == 'string') {
+                    if (data.startsWith("ERR-")) {
+                        ShowWarningMessage(data.replace("ERR-", ""));
+                    }
+                    else {
+                        ShowSuccessMessage("Records Saved Successfully!");
+                    }
+                }
+            },
+            complete: function () {
+                FormatNumbers();
+            }
+        });
+    });
+
+
+    ///// when change combo boxes call FillData Method////
+    $("#RateCodeHeaderID").change(function () {
+        $('.rateValue').val('0.00');
+        Filldata();
+    });
+    $('#search').click(function () {
+        $('.rateValue').val('0.00');
+        Filldata();
+    });
+    $("#SeasonId").change(function () {
+        $('.rateValue').val('0.00');
+        Filldata();
+    });
+    $("#PackageHeaderId").change(function () {
+        $('.rateValue').val('0.00');
+        Filldata();
+    });
+    $("#CurrencyId").change(function () {
+        $('.rateValue').val('0.00');
+        Filldata();
+    });
+
+
+    //////////////////FillData Method////////////////////////
+    function Filldata() {
+
+        //if (1 == 1)//$("#RateCodeHeaderID").val() != '' && $("#PackageHeaderId").val() != '' && $("#CurrencyId").val()
+        //{
+        $('input[type=number]').val(0);
+        $('input[type=number]').css({ "background-color": "" });
+        var updatedRate;
+
+        $.ajax({
+            url: '/administration/roomrates/LoadRoomRates',
+            dataType: 'json',
+            data: {
+                rateCodeId: $("#RateCodeHeaderID").val(),
+                packageId: $("#PackageHeaderId").val(),
+                seasonId: $("#SeasonId").val(),
+                currencyId: $("#CurrencyId").val(),
+                fromDate: $('input[name=daterangepicker_start]').val(),
+                endDate: $('input[name=daterangepicker_end]').val()
+            },
+            success: function (data) {
+                $.each(data, function (index, rates) {
+                    var ratesObj = rates;
+                    $('#roomCategoriesInRoomRates tr.room-category').each(function (index, category) {
+                        var categoryVar = category;
+                        if ($(categoryVar).find('.roomCategory').val() == ratesObj.RoomCategoryId) {
+                            $(category).find('#ratePalet tr.meal-plan').each(function (index2, mealPlan) {
+                                var mealPlanVar = mealPlan;
+                                if ($(mealPlanVar).find('.mealPlanId').val() == ratesObj.MealPlanId) {
+                                    $(mealPlan).find('td.room-rate').each(function (index3, roomType) {
+                                        if ($(roomType).find('.roomTypes').val() == ratesObj.RoomTypeId) {
+                                            if ($(roomType).find('.rateValue').val() > 0) {
+                                                $(roomType).find('.rateValue').val(ratesObj.Rate.toFixed(2));
+                                                $(roomType).find('.rateValueChild').val(ratesObj.ChildRate.toFixed(2));
+                                                $(roomType).find('.rateValue').css({ "background-color": "#F4D61A", "border-style": "groove" });
+                                                // $(roomType).find('.rateValueChild').css({ "background-color": "#F4D61A", "border-style": "groove" });
+                                            } else {
+                                                $(roomType).find('.rateValue').val(ratesObj.Rate.toFixed(2));
+                                                $(roomType).find('.rateValueChild').val(ratesObj.ChildRate.toFixed(2));
+                                            }
+                                            return false;
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                });
+            },
+            complete: function () {
+
+                FormatNumbers();
+            }
+        });
+        //}
+    }
+
+    $("body").on('click', '.applyBtn', function () {
+        Filldata();
+    });
+
+    $(document).ready(function () {
+
+        //2023-08-15--------------------------------------------------------------------------
+       // $('#CurrencyId').addClass('select2');
+        $('#PackageHeaderId').addClass('select2');
+        $('#RateCodeHeaderID').addClass('select2');
+        $('#SeasonId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+    //-------------------------------------------------------------------------------------------
+
+
+        $('#CurrencyId').prop("disabled", true);
+        // initially dateWise div is hide
+        $('#dateWiseDiv').hide();
+        $('input[name=daterangepicker_start]').val('');
+        $('input[name=daterangepicker_end]').val('');
+        //load dateRanger
+        $('input[name="daterange"]').daterangepicker({
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        });
+        $('.child-rate-cls').toggle();
+    });
+
+    //change event for radioButtons
+    $("input[name='radioName']").change(function () {
+
+        if ($(this).prop('checked')) {
+            $("input[name='radioName']").not(this).prop('checked', false);
+        } else {
+            $("input[name='radioName']").not(this).prop('checked', true);
+        }
+
+
+        var data = $(this).val();
+        if (data == 'seasonwise') {
+            $('input[name=daterangepicker_start]').val('');
+            $('input[name=daterangepicker_end]').val('');
+            $('#dateWiseDiv').hide();
+            $('#seasonDiv').show();
+            $('#SeasonId').prop('disabled', false);
+            $('input[name=daterange]').prop('disabled', true);
+        } else if (data == 'datewise') {
+            $('#seasonDiv').hide();
+            $('#dateWiseDiv').show();
+            $("#SeasonId").val('');
+            $('#SeasonId').prop('disabled', true);
+            $('input[name=daterange]').prop('disabled', false);
+        }
+
+
+    });
+
+    //----------------------------------------------------------------------
+
+    $('body').on('change', '#RateCodeHeaderID', function () {
+        //var selectedRateCodeCurrId = parseInt($('#RateCodeHeaderID option:selected').attr('data-currid'));
+        //$('<option value="' + selectedRateCodeCurrId + '">' + + '</option>').appendTo($('.#CurrencyId'));
+        $('#CurrencyId').val($('#RateCodeHeaderID option:selected').attr('data-currid'));
+    });
+</script>

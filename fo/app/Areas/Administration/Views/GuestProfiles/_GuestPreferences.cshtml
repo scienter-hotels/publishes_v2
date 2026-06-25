@@ -1,0 +1,299 @@
+﻿<div class="GuestPreferenceDiv">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Alergic Type*</label>
+                        <select class="form-control" id="AlergicTypeCombo" required>
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Remark *</label>
+                        <input type="text" class="form-control" id="remark" value="" required autocomplete="off" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <button id="btnAddAlergies" name="" class="btn btn-success">Add</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" style="height:200px; overflow-y:scroll;">
+                    <table class="table table-striped" id="AlergiesGrid">
+                        <tr>
+                            <th></th>
+                            <th class="">Type</th>
+                            <th class="">Name</th>
+                        </tr>
+                        <tr class="no-record">
+                            <td colspan="4">No Records Found.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Preference Type*</label>
+                        <select class="form-control" id="PreferenceTypeCombo" required>
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Remark *</label>
+                        <input type="text" class="form-control" id="prefrenceRemark" value="" required autocomplete="off" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <button id="btnAddpreference" name="" class="btn btn-success">Add</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" style="height:200px; overflow-y:scroll;">
+                    <table class="table table-striped" id="PreferenceGrid">
+                        <tr>
+                            <th></th>
+                            <th class="">Type</th>
+                            <th class="">Name</th>
+                        </tr>
+                        <tr class="no-record">
+                            <td colspan="4">No Records Found.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" value="@ViewBag.guestID" id="hdnGuestId" />
+
+<script>
+    $(document).ready(function () {
+        LoadAlegies();
+        LoadSavedGuestAlegies();
+
+       LoadPreferences();
+       LoadGuestPreferences();
+    });
+    function LoadAlegies()
+    {
+      $.ajax({
+            method: 'get',
+          url: '/GuestProfiles/SelectAlergies',
+            datatype: 'json',
+            success: function (types) {
+                
+                $('#AlergicTypeCombo option').not(':first-child').remove();
+                $.each(types, function (index, item) {
+                    $('#AlergicTypeCombo').append('<option value="' + item.AlergicID + '">' + item.Name + '</option>');
+                })
+            },
+        })
+    }
+ 
+    function LoadSavedGuestAlegies()
+    {
+        $.ajax({
+            method: 'get',
+            url: '/GuestProfiles/SelectGuestAlergies',
+            datatype: 'json',
+            data: { guestId: $('#hdnGuestId').val() },
+            success: function (data) {
+                
+                $('#AlergiesGrid tr').not(':first-child').remove();
+                if (data != "") {
+                    $.each(data, function (index, item) {
+                        
+                        $('<tr>'
+                            + '<td><button type="button" class="btn btn-danger btn-sm rowitemDelbtn"  guestId=' + item.GuestCode + ' rId=' + item.Id + '> <span class="glyphicon glyphicon-remove"></span>  </button>'
+                           // + '<button type="button" class="btn btn-default btn-sm rowitemEditbtn"  guestId=' + item.GuestCode + ' rId=' + item.Id + '> <span class="glyphicon glyphicon-pencil"></span>  </button></td>'
+                            + '<td>' + item.AlergyType + '</td>'
+                            + '<td>' + item.Remarks + '</td>'
+                            ).appendTo('#AlergiesGrid');
+
+                    });
+                }
+
+            },
+        })
+    }
+
+    $('body').off('click', '#btnAddAlergies').on('click', '#btnAddAlergies', function (e) {
+        e.preventDefault();
+        if ($('#AlergicTypeCombo option:selected').val() != '' && $('#remark').val() != '') {
+            var obj = {
+                GuestCode: $('#hdnGuestId').val(),
+                AlergicID: $('#AlergicTypeCombo option:selected').val(),
+                AlergyType: $('#AlergicTypeCombo option:selected').text(),
+                Remarks: $('#remark').val()                
+            }
+
+            
+            $.ajax({
+                method: 'POST',
+                url: '/GuestProfiles/SaveGuestAlergies',
+                datatype: 'json',
+                data: { obj: obj },
+                success: function (data) {
+                    if (data.startsWith('ERROR')) {
+
+                        ShowErrorMessage(data.replace("ERR-", ""));
+                    }
+                    else {
+                        ShowSuccessMessage('Record saved successfully.');
+                        LoadSavedGuestAlegies()
+                    }
+
+                },
+
+            })
+        }
+        else {
+            ShowErrorMessage("Please Fill all fields")
+        }
+
+
+    });
+
+    $('#AlergiesGrid').on('click', '.rowitemDelbtn', function (e) {
+        var rowID = $(this).closest('tr');
+        
+        $.ajax({
+            url: '/GuestProfiles/DeleteGuestAlergies',
+            dataType: 'JSON',
+            data: { guestId: $(this).attr('guestId'), recordId: $(this).attr('rId') },
+            method: 'get',
+            success: function (data) {
+                if (data.startsWith('ERR-')) {
+                    ShowErrorMessage(data.replace('ERR-', ""));
+                } else {
+
+                    $(rowID).closest('tr').remove();
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    });
+
+    function LoadPreferences() {
+        $.ajax({
+            method: 'get',
+            url: '/GuestProfiles/SelectPreferences',
+            datatype: 'json',
+            success: function (types) {
+                ;
+                $('#PreferenceTypeCombo option').not(':first-child').remove();
+                $.each(types, function (index, item) {
+                    $('#PreferenceTypeCombo').append('<option value="' + item.PreferenceID + '">' + item.Name + '</option>');
+                })
+            },
+        })
+    }
+
+    function LoadGuestPreferences() {
+        $.ajax({
+            method: 'get',
+            url: '/GuestProfiles/SelectGuestPreferences',
+            datatype: 'json',
+            data: { guestId: $('#hdnGuestId').val() },
+            success: function (data) {
+                $('#PreferenceGrid tr').not(':first-child').remove();
+                if (data != "") {
+                    $.each(data, function (index, item) {
+                        $('<tr>'
+                            + '<td><button type="button" class="btn btn-danger btn-sm rowitemDelbtn"  guestId=' + item.GuestCode + ' rId=' + item.Id + '> <span class="glyphicon glyphicon-remove"></span>  </button>'
+                            // + '<button type="button" class="btn btn-default btn-sm rowitemEditbtn"  guestId=' + item.GuestCode + ' rId=' + item.Id + '> <span class="glyphicon glyphicon-pencil"></span>  </button></td>'
+                            + '<td>' + item.PreferenceName + '</td>'
+                            + '<td>' + item.Remarks + '</td>'
+                        ).appendTo('#PreferenceGrid');
+
+                    });
+                }
+
+            },
+        })
+    }
+
+    $('body').off('click', '#btnAddpreference').on('click', '#btnAddpreference', function (e) {
+        e.preventDefault();
+        ;
+        if ($('#PreferenceTypeCombo option:selected').val() != '' && $('#prefrenceRemark').val() != '') {
+            var obj = {
+                GuestCode: $('#hdnGuestId').val(),
+                PreferenceID: $('#PreferenceTypeCombo option:selected').val(),
+                Remarks: $('#prefrenceRemark').val()
+            }
+
+            ;
+            $.ajax({
+                method: 'POST',
+                url: '/GuestProfiles/SaveGuestPreference',
+                datatype: 'json',
+                data: { obj: obj },
+                success: function (data) {
+                    if (data.startsWith('ERROR')) {
+
+                        ShowErrorMessage(data.replace("ERR-", ""));
+                    }
+                    else {
+                        ShowSuccessMessage('Record saved successfully.');                       
+                        LoadGuestPreferences()
+                    }
+
+                },
+
+            })
+        }
+        else {
+            ShowErrorMessage("Please Fill all fields")
+        }
+
+
+    });   
+  
+
+    //prefrences
+    $('#PreferenceGrid').on('click', '.rowitemDelbtn', function (e) {
+        var rowID = $(this).closest('tr');
+        ;
+        $.ajax({
+            url: '/GuestProfiles/DeleteGuestPreference',
+            dataType: 'JSON',
+            data: { guestId: $(this).attr('guestId'), recordId: $(this).attr('rId') },
+            method: 'get',
+            success: function (data) {
+                if (data.startsWith('ERR-')) {
+                    ShowErrorMessage(data.replace('ERR-', ""));
+                } else {
+
+                    $(rowID).closest('tr').remove();
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    });
+    
+</script>

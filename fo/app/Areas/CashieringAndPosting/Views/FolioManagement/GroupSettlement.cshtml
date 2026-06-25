@@ -1,0 +1,997 @@
+﻿@model Scienter.HotelERP.Common.Domain.FolioBillPaymentView
+
+@{
+    Layout = null;
+}
+
+<style>
+    .selected-room-list table {
+        width: 100%;
+    }
+
+    .btn.btn-sm, .btn-group-sm .btn, .navbar .navbar-nav > li > a.btn.btn-sm, .btn-group-sm .navbar .navbar-nav > li > a.btn {
+        padding: 2px 20px;
+        font-size: 10px;
+    }
+
+    #InhouseRoomNumberListToGroupSettlement::-webkit-scrollbar {
+        width: 5px !important;
+    }
+
+    #InhouseRoomNumberListToGroupSettlement::-webkit-scrollbar-track {
+        background: #f1f1f1 !important;
+    }
+
+    #InhouseRoomNumberListToGroupSettlement::-webkit-scrollbar-thumb {
+        background: #c1c1c1 !important;
+    }
+
+        #InhouseRoomNumberListToGroupSettlement::-webkit-scrollbar-thumb:hover {
+            background: #8E8E8E !important;
+        }
+
+    .td-background-color {
+        background-color: #094F70 !important;
+        color: #fff !important;
+    }
+
+    .selected-room-list .checkbox .checkbox-material .check {
+        border: 1px solid #fff;
+    }
+
+    .ribbon {
+        top: 0;
+        left: 15px;
+        rotate: 270deg;
+    }
+    .margin-top-10px {
+        margin-top: 10px;
+        padding: 0 5px;
+    }
+</style>
+
+<input type="hidden" id="IsGroupSettlementScreen" value="" />
+<input type="hidden" id="IsGroupMergeOnly" value="@ViewBag.IsGroupMergeOnly" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+
+
+<div class="row">
+    @*Anuradha 2024-07-01*@
+    <div class="col-md-3">
+        <fieldset class="the-fieldset" style="padding: 0 18px 8px 10px;">
+            <div class="row">
+                <div class="col-md-12" style="height:50px; margin-left: -15px;" id="InhouseGroupReservationNoToGroupSettlement">
+
+                </div>
+            </div>
+           
+      
+        </fieldset>
+
+        <fieldset class="the-fieldset" style="padding: 0 18px 8px 10px;">
+            <div class="row">
+                <div class="col-md-8">
+                    <input type="text" class="form-control" placeholder="Room Number or Name" id="searchRoomNumber" style="margin-right:10px;" />
+                    <div id="noRecordsMessage" style="display: none; color: red; margin-top: 5px; font-size: 12px;">No records to show</div>
+                </div>
+                <div class="col-md-4" style="padding-left:10px; padding-top:10px;">
+                    <div class="form-group checkbox" style="">
+                        <label>
+                            All
+                            <input type="checkbox" class="checkbox selectAllRoom disabled">
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="height:350px; overflow-x:hidden; overflow-y:scroll;" id="InhouseRoomNumberListToGroupSettlement">
+
+            </div>
+            @*<div class="col-md-12"
+            </div>*@
+        </fieldset>
+    </div>
+
+    <div class="col-md-9" style="padding-left:0;">
+
+        <div class="row" id="SelectedInhouseRooms" style="height:345px;overflow-x:hidden; overflow-y:auto">
+
+        </div>
+        @*modified By ishara on 2024-10-08*@
+        @*<div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-4 form-group label-floating margin-top-10px">
+                    <label style="color:#1a1515;">Settlement</label>
+                    <input type="text" class="form-control number" disabled id="GroupSettlementAmount" min="0" style="text-align:right !important;font-size:20px;" data-actual-settlement-amount="0.00" value="0.00" />
+                </div>
+                <div class="col-md-3 form-group label-floating margin-top-10px">
+                    <button type="button" class="btn btn-primary disabled" style="margin-top:25px; width:100%;" id="GroupSettlement">Merge & Settle</button>
+                </div>
+                <div class="col-md-3 form-group label-floating margin-top-10px" style="padding-right: 0;">
+                    <button type="button" class="btn btn-success disabled" style="background-color:#e67e22 !important; margin-top:25px; width:100%;text-decoration: line-through;" id="GroupMerge">Merge</button>
+                </div>
+            </div>*@
+
+        <div class="row">
+            @*<div class="col-md-2"></div>*@
+            <div class="col-md-3  margin-top-10px">
+                <label class="label-floating" style="color:#1a1515;">Settlement</label>
+                <input type="text" class="form-control number" disabled id="GroupSettlementAmount" min="0" style="text-align:right !important;font-size:20px;" data-actual-settlement-amount="0.00" value="0.00" />
+            </div>
+            <div class="col-md-3  margin-top-10px" id="GroupSettlementDiv">
+                <button type="button" class="btn btn-primary disabled" style="margin-top:25px; width: 100%;" id="GroupSettlement">Merge & Settle</button>
+            </div>
+            <div class="col-md-2 margin-top-10px">
+                <button type="button" class="btn btn-success disabled hidden" style="background-color:#e67e22 !important; margin-top:25px;text-decoration: line-through;width:100%;" id="GroupMerge">Merge</button>
+            </div>
+            <div class="col-md-3  margin-top-10px">
+                <a id="btnPreview" class="btn btn-success" role="button" style="margin-top: 25px; height: 32px; font-size: 9px;width:100%;">Outstanding Settlement</a>
+            </div>
+        @*</div>*@
+
+        @*<div class="row">*@
+            <div class="col-md-2 margin-top-10px">
+                <button type="button" class="btn btn-primary disabled hidden" style="margin-top: 25px;width:100%; text-align: center;" id="GroupSettlementAfterMerge">Settle</button>
+            </div>
+            <div class="col-md-2 margin-top-10px">
+                <button type="button" class="btn btn-success disabled hidden" style="background-color:#22a3e6 !important; text-align: center;width:100%;margin-top: 25px;" id="addNewGroup">New</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var mainRoomName;
+    var checkedRoomId;
+    var checkedRoomNumberArray = [];
+    var roomArray = [];
+    var mergeResultJsonArray = [];
+    var isMergeOnly;
+    var isGroupMergeOnly;
+    var folioNo;
+    var resHeaderId;
+    var IsFinalSettlementAfterMerge = false;
+
+    $(document).ready(function () {
+        EnableGroupMergeButton();
+        LoadInhouseRoomNumberListToGroupSettlement();
+
+
+        $('body').on('change', '#groupReservationCombo', function () {
+
+            var selectedReservationNo = $(this).val();
+
+            FilterRoomsByReservation(selectedReservationNo);
+            //checkComboAndSelectAll(selectedReservationNo);
+        });
+
+
+        $('.selectAllRoom').prop('disabled', true).addClass('disabled');
+
+
+
+    });
+
+
+    //$('body').on('change', '.selectAllRoom', function () {
+    $('.selectAllRoom').change(function(){
+        var isChecked = $(this).is(':checked');
+
+        //checkIfAllVisibleRoomsSelected();
+
+        //$('#InhouseRoomNumberListToGroupSettlement .inhouse-room-list:visible .inhouse-rooms').each(function () {
+        //    //$(this).prop('checked', isChecked);
+        //    // Check and disable the checkbox if isChecked is true
+        //    $(this).prop('checked', isChecked).prop('disabled', isChecked).addClass('disabled');
+        //});
+
+       $('#InhouseRoomNumberListToGroupSettlement .inhouse-room-list:visible .inhouse-rooms').prop('checked', isChecked).prop('disabled', isChecked).addClass('disabled');
+  
+        SetSelectedRoomsForMergeProcess();
+
+
+    });
+
+    function EnableGroupMergeButton() {
+
+        $('#btnPreview').addClass('hidden').hide();
+
+        isGroupMergeOnly = $('#IsGroupMergeOnly').val();
+
+        isGroupMergeOnly = parseInt(isGroupMergeOnly, 10);
+
+        if (isGroupMergeOnly === 1) {
+            $('#GroupMerge').css('text-decoration', 'none'); // Remove line-through
+            $('#GroupSettlement').css('text-decoration', 'line-through !important');
+            $('#GroupMerge').removeClass('hidden').show();
+            $('#GroupSettlementDiv').addClass('hidden').hide();
+            $('#GroupSettlementAfterMerge').addClass('hidden').hide();
+            //$('#GroupSettlementAfterMerge').removeClass('hidden').show();
+        } else {
+            $('#GroupSettlementAfterMerge').addClass('hidden').hide();
+            $('#GroupSettlement').removeClass('hidden').show();
+            $('#GroupMerge').removeClass('hidden').show().css('text-decoration', 'line-through !important');
+        }
+
+    }
+
+    function LoadInhouseRoomNumberListToGroupSettlement() {
+        clearPreviousRecords();
+
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/ReservationList',
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+                //Anuradha 2024-07-01
+                //Added by Ishara  on 2024-10-09
+                AppendGroupReservationCombo();
+
+                PopulateGroupReservationCombo(data);
+
+                $.each(data, function (index, room) {
+                    var reservationNo = room.GResNo && room.GResNo.trim() !== '' ? room.GResNo : room.ResNo;
+                    var AllowCreditPosting = 1;  @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger allowCreditPosting  sp -ReservationNOs_T_Select modified room.AllowCreditPosting value Commented and harcoded the value for aravinda ayya request*@
+                    $(
+                        '<div class="inhouse-room-list room-number-name col-md-12" data-reservation-no="' + reservationNo +'" style="cursor:pointer !important; margin-bottom:10px;box-shadow: 0px 2px 5px #0000004a; ">' +
+                        '<div class="row">' +
+                        '<div class="col-md-9">' +
+                        '<div class="row">' +
+                        '<div class="col-md-12" style="margin-right:10px;color:#094f70;">' + room.RoomName + '</div>' +
+                        '</div>' +
+                        '<div class="row">' +
+                        '<div class="col-md-12" style="margin-right:10px; font-size:10px;color:#094f70;">' + room.Name + '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="col-md-3 checkbox">' +
+                        '<label >' +
+                          @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger allowCreditPosting  sp -ReservationNOs_T_Select modified room.AllowCreditPosting value Commented and harcoded the value for aravinda ayya request*@
+                        '<input type="checkbox" class="inhouse-rooms"  data-inhouse-AllowCreditPosting="' + AllowCreditPosting + '"    data-inhouse-roomName="' + room.RoomName + '" data-inhouse-roomId="' + room.RoomNo + '">' +
+                        '</label>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>'
+                    ).appendTo('#InhouseRoomNumberListToGroupSettlement');
+                })
+            },
+            complete: function () {
+                $('#GroupSettlement').attr('disabled', true);
+                $('#GroupMerge').attr('disabled', true);
+            },
+            error: function (error) {
+                $('#GroupSettlement').attr('disabled', true);
+                $('#GroupMerge').attr('disabled', true);
+            }
+        });
+    }
+
+
+    function AppendGroupReservationCombo() {
+        var comboBoxHtml = `
+        <div class="col-md-12" style="margin-bottom: 10px;">
+            <select id="groupReservationCombo" class="form-control">
+                <option value="">All Reservations</option>
+            </select>
+        </div>`;
+        $('#InhouseGroupReservationNoToGroupSettlement').prepend(comboBoxHtml);
+    }
+
+
+    function PopulateGroupReservationCombo(data) {
+        var comboBox = $('#groupReservationCombo');
+        var distinctReservationNos = new Set();
+
+        $.each(data, function (index, room) {
+            if (room.GResNo && room.GResNo.trim() !== '') {
+                $('.selectAllRoom').prop('disabled', false).removeClass('disabled');
+                var reservationNo = room.GResNo;
+                distinctReservationNos.add(reservationNo);
+                //var reservationNo = room.GResNo && room.GResNo.trim() !== '' ? room.GResNo : room.ResNo;
+                //distinctReservationNos.add(reservationNo);
+            }
+        });
+
+        comboBox.empty();
+        comboBox.append('<option value="">All Reservations</option>');
+
+        distinctReservationNos.forEach(function (reservationNo) {
+            comboBox.append(`<option value="${reservationNo}">${reservationNo}</option>`);
+        });
+    }
+
+
+    function FilterRoomsByReservation(selectedReservationNo) {
+        $('#InhouseRoomNumberListToGroupSettlement .inhouse-room-list').each(function () {
+            var roomReservationNo = $(this).data('reservation-no');
+            var isSelectAllChecked = $('.selectAllRoom').is(':checked');
+
+
+
+            if (selectedReservationNo.length === 0 && !isSelectAllChecked) {
+                //$('.selectAllRoom').prop('checked', false).prop('disabled', true).addClass('disabled');
+                $('.selectAllRoom').prop('checked', false);
+            } else {
+
+                $('.selectAllRoom').prop('disabled', false).removeClass('disabled');
+            }
+
+            if (selectedReservationNo === "") {
+                $(this).show();
+
+            } else {
+                if (roomReservationNo === selectedReservationNo) {
+                    $(this).show();
+                    $('.selectAllRoom').prop('checked', false);
+
+                } else {
+                    $(this).hide();
+                }
+            }
+
+            checkIfAllVisibleRoomsSelected();
+        });
+    }
+
+
+    function checkComboAndSelectAll(selectedReservationNo) {
+        var selectedReservationNo = $('#groupReservationCombo').val();
+        var isSelectAllChecked = $('.selectAllRoom').is(':checked');
+
+        var anyNotChecked = $('.inhouse-rooms:not(:checked)').length > 0;
+
+        if (selectedReservationNo.length === 0 && !isSelectAllChecked) {
+            //clearPreviousRecords();
+            checkedRoomId = null;
+        }
+
+
+
+        //if (!anyNotChecked && selectedReservationNo.length === 0) {
+        //    clearPreviousRecords();
+        //    checkedRoomId = null;
+        //}
+
+        //if (selectedReservationNo.length === 0 && !isSelectAllChecked) {
+
+        //    $('.selectAllRoom').prop('disabled',false).removeClass('disabled');
+        //}
+    }
+
+
+
+    $('body').off('change', '.inhouse-rooms').on('change', '.inhouse-rooms', function () {
+        var selectedRoomIdList = [];
+        var roomId = $(this).attr('data-inhouse-roomId');
+        var roomName = $(this).attr('data-inhouse-roomName');
+
+        @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger allowCreditPosting *@
+        var allowCreditPosting = $(this).attr('data-inhouse-AllowCreditPosting');
+
+        var allowCreditPostingValue = 0;
+
+        if (allowCreditPosting === true || allowCreditPosting === 'true' || allowCreditPosting === 1) {
+            allowCreditPostingValue = 1;
+        }
+
+        if ($(this).prop('checked')) {
+            $(this).attr('disabled', true);
+            var selectedRoom = {
+                RoomId: roomId
+            };
+            selectedRoomIdList.push(selectedRoom);
+
+            checkedRoomNumberArray.push(parseInt(roomId, 10));
+        }
+
+
+
+        if (selectedRoomIdList.length > 0) {
+            var roomIds = JSON.stringify(selectedRoomIdList);
+            LoadRoomsWithFolioTotal(roomIds, roomName, allowCreditPostingValue); @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger allowCreditPosting *@
+        }
+
+        var IsFinalSettlement = 0
+        GetActualFolioTotal(IsFinalSettlement);
+
+    });
+
+
+
+    var previouslySelectedGroups = [];
+
+    function SetSelectedRoomsForMergeProcess() {
+
+
+        clearPreviousRecords();
+
+        var selectedRoomIdList = [];
+  
+        var selectedGroupReservationNo = null;
+
+
+
+
+        $('.inhouse-rooms:checked').each(function () {
+            var roomId = $(this).attr('data-inhouse-roomId');
+            var roomName = $(this).attr('data-inhouse-roomName');
+            var groupReservationNo = $(this).attr('data-group-reservation-no');
+
+            @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger allowCreditPosting *@
+            var allowCreditPosting = $(this).attr('data-inhouse-AllowCreditPosting');
+
+            var allowCreditPostingValue = 0;
+
+            if (allowCreditPosting === true || allowCreditPosting === 'true' || allowCreditPosting === 1) {
+                allowCreditPostingValue = 1;
+            }
+
+            if (!selectedGroupReservationNo) {
+
+                selectedGroupReservationNo = groupReservationNo;
+
+            }
+
+            var alreadySelected = selectedRoomIdList.some(function (room) {
+                return room.RoomId === roomId;
+            });
+
+            if (!alreadySelected) {
+                var selectedRoom = {
+                    RoomId: roomId
+                };
+                selectedRoomIdList.push(selectedRoom);
+
+                var roomIds = JSON.stringify([selectedRoom]);
+                //console.log('Processing Room:', roomName);
+                @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger allowCreditPosting *@
+                LoadRoomsWithFolioTotal(roomIds, roomName, allowCreditPosting);
+            }
+        });
+
+        var IsFinalSettlement = 0;
+        GetActualFolioTotal(IsFinalSettlement);
+    }
+
+
+
+    function clearPreviousRecords() {
+        $('#SelectedInhouseRooms').empty();
+    }
+
+
+    @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger allowCreditPosting *@
+    function LoadRoomsWithFolioTotal(roomIds, roomName, allowCreditPosting) {
+
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/SelectRoomWiseFolioTotal?roomIds=' + roomIds + '&roomName=' + roomName,
+            dataType: 'json',
+            method: 'GET',
+            beforeSend: function () {
+                ShowLoader();
+            },
+            success: function (data) {
+                var checkedRoomIdStr = JSON.parse(roomIds);
+                //console.log('checkedRoomIdStr',checkedRoomIdStr)
+
+                checkedRoomId = checkedRoomIdStr[0].RoomId;
+                //setTimeout(function () {
+                @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger allowCreditPosting *@
+                DrawTags(data, roomName, checkedRoomId, allowCreditPosting);
+                //}, 3000);
+
+            },
+            complete: function (error) {
+                HideLoader();
+                roomArray = []
+                $('.selected-room-list').each(function (index, item) {
+                    var roomId = $(item).find('.btn-remove-room').data('room-id');
+                    roomArray.push(roomId);
+                });
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+    @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger allowCreditPosting *@
+    function DrawTags(data, roomName, checkedRoomId, allowCreditPosting) {
+
+        $.each(data, function (index, roomtag) {
+            $(
+                '<div class="col-md-4 selected-room-list">' +
+                '<table style="margin:10px;" >' +
+                '<div class="ribbon hidden" style="position:absolute;"><span style="width:80px !important; top:15px !important; right:-15px !important; background-color:#e67e22 !important" >Base</span></div>' +
+                '<tr class="td-background-color">' +
+                '<td class="col-md-2" style="font-size:11px;padding-left:10px;padding-top:10px;">Room</td>' +
+                '<td class="col-md-1" style="padding-top:10px;padding-left:5px;">|</td>' +
+                  @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger *@
+                '<td class="col-md-4 inhouse-room-no text-right" style="font-weight:bold;padding-top:10px;padding-right: 0px;"  data-room-allowCreditPosting="' + allowCreditPosting + '"  data-room-name="' + roomName + '">' + roomName + '</td>' +
+
+                //'<td class="col-md-4 inhouse-room-no text-right" style="font-weight:bold;padding-top:10px;padding-right: 0px;"  data-room-allowCreditPosting="' + allowCreditPosting + '"  data-room-name="' + roomName + '">' + roomName + '</td>' +
+                '<td rowspan="2" style="padding: 10px 0px 7px 30px;">' +
+                '<div class="checkbox">' +
+                '<label >' +
+                '<input type="checkbox" class="select-main-room">' +
+                '</label>' +
+                '</div>' +
+                '</td>' +
+                '</tr>' +
+                '<tr class="folio-total td-background-color" data-folio-total="' + roomtag.FolioTotal + '">' +
+                '<td  style="font-size:11px;padding-left:10px;">Amount</td>' +
+                '<td  style="padding-left:5px;">|</td>' +
+                '<td class="formatNumber room-folio-total  text-right" style="">' + roomtag.FolioTotalToDisplay + '</td>' +
+                '</tr>' +
+                '<tr class="td-background-color" style="border-top:1px solid #fff;">' +
+                '<td colspan="4" style="font-size:11px;padding-top:3px;padding-left:10px;padding-right:13px;padding-bottom:5px;text-align:right;"><button class="btn btn-danger btn-sm btn-remove-room" data-room-id="' + checkedRoomId + '">Remove <span class="glyphicon glyphicon-trash"></span></button></td>' +
+                '</tr>' +
+                '</table >' +
+                '</div >').appendTo('#SelectedInhouseRooms');
+
+        })
+    }
+
+    var roomIds = "";
+
+    function GetActualFolioTotal(IsFinalSettlement) {
+        var currentSettlementAmount = 0
+        var screenSettlementAmount = $("#GroupSettlementAmount").val();
+        var roomList = [];
+        $('.inhouse-rooms').each(function (index, item) {
+            if ($(item).prop('checked')) {
+                var roomObj = {
+                    RoomId: $(item).attr('data-inhouse-roomId')
+                };
+                roomList.push(roomObj);
+            }
+        });
+
+        if (roomList.length >= 0) {
+            roomIds = JSON.stringify(roomList);
+
+            $.ajax({
+                url: '/CashieringAndPosting/FolioManagement/RoomWiseFolioTotal?roomIds=' + roomIds,
+                dataType: 'json',
+                method: 'GET',
+                success: function (data) {
+                    if (IsFinalSettlement == 1) {
+                        currentSettlementAmount = Number(parseFloat(data.FolioTotalToDisplay).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 });
+
+                        //console.log(currentSettlementAmount);
+                        //console.log(screenSettlementAmount);
+
+                        if (currentSettlementAmount != screenSettlementAmount) {
+                            ShowWarningMessage('Folio total and settlement total mismatch.');
+                            return;
+                        } else {
+                            LoadSettlementScreen();
+                        }
+                    } else {
+                        $('#GroupSettlementAmount').val(data.FolioTotalToDisplay);
+                        $("#GroupSettlementAmount").attr('data-actual-settlement-amount', data.FolioTotal);
+                    }
+                },
+                error: function (error) {
+
+                },
+                complete: function () {
+                    HideLoader();
+                },
+            });
+
+        }
+    }
+
+    function selectMergeSettle() {
+        ShowLoader();
+        if ($('.selected-room-list').length >= 2) {
+
+            if ($('.select-main-room:checked').length > 0) {
+
+                @* modified By ishara on 2024 - 10 - 08 old*@
+                //var userConfirmed = confirm('Are you sure you want to merge these?');
+
+                @* modified By ishara on 2024 - 10 - 08 New *@
+                if (IsFinalSettlementAfterMerge) {
+                    var userConfirmed = confirm('Are you sure you want to settle these folios?');
+                } else {
+                    var userConfirmed = confirm('Are you sure you want to merge these?');
+                }
+
+                if (userConfirmed) {
+
+                    @* modified By ishara on 2024 - 10 - 08 old *@
+                    //var IsFinalSettlement = 1;
+                    //GetActualFolioTotal(IsFinalSettlement);
+
+                    mergeResultJsonArray = [];
+                    $('.selected-room-list').each(function (index, item) {
+                        var roomId = $(item).find('.btn-remove-room').attr('data-room-id');
+                        var roomAmount = $(item).find('.folio-total').attr('data-folio-total');
+                        var isBaseRoom = $(item).find('.select-main-room').prop('checked');
+
+                        var element = {
+                            RoomId: roomId,
+                            Amount: roomAmount,
+                            IsBaseRoom: isBaseRoom,
+                        }
+                        mergeResultJsonArray.push(element);
+                    });
+
+
+                    @* modified By ishara on 2024 - 10 - 08 NEW *@
+                    setTimeout(function () {
+
+                        if (isMergeOnly) {
+                            GroupMergeOnly();
+                        }
+                        else {
+
+                            var IsFinalSettlement = 1;
+
+                            GetActualFolioTotal(IsFinalSettlement);
+                        }
+
+                    }, 3000);
+
+                } else {
+                    //console.log('Merge operation was cancelled.');
+                    HideLoader();
+                }
+            } else {
+                alert('Please select a Base room to merge..');
+                HideLoader();
+            }
+        } else {
+            alert('Select atleast two or more rooms');
+            HideLoader();
+        }
+
+    }
+
+
+
+    $('body').off('click', '#GroupSettlement').on('click', '#GroupSettlement', function () {
+        selectMergeSettle();
+        isMergeOnly = false;
+        IsFinalSettlementAfterMerge = false;
+        $('#GroupSettlement').addClass('disabled');
+    });
+
+    $('body').off('click', '#GroupMerge').on('click', '#GroupMerge', function () {
+        selectMergeSettle();
+        isMergeOnly = true;
+        IsFinalSettlementAfterMerge = false;
+    });
+
+    $('body').off('click', '#GroupSettlementAfterMerge').on('click', '#GroupSettlementAfterMerge', function () {
+
+        isMergeOnly = false;
+        IsFinalSettlementAfterMerge = true;
+        selectMergeSettle();
+
+    });
+
+    $('body').off('click', '#addNewGroup').on('click', '#addNewGroup', function () {
+
+        isMergeOnly = false;
+        IsFinalSettlementAfterMerge = false;
+        clearPreviousRecords();
+
+        $('.selectAllRoom').removeClass('disabled').prop('disabled', false);
+        $('.inhouse-rooms').prop('checked', false).removeClass('disabled').prop('disabled', false);
+
+
+
+    });
+
+    //function LoadSettlementScreen() {
+    //    $('#IsGroupSettlementScreen').val("Yes");
+    //    //var url = '/CashieringAndPosting/Posting/BillPayment/';
+    //    var reservationHeaderId = 10348;
+    //    var SelectedFolioNumber = 3;
+
+    //    Billtotal = $("#GroupSettlementAmount").val();
+    //    alert(Billtotal);
+    //    var url = '/CashieringAndPosting/FolioManagement/BillSettlement?ReservationHeaderId=' + reservationHeaderId + '&FolioNo=' + SelectedFolioNumber
+    //    //Billtotal = $("#GroupSettlementAmount").val();
+
+    //    CallDetailModelSimple('Group Settlement', url, 800);
+    //};
+
+
+    ////Exisiting Correct function
+    function LoadSettlementScreen() {
+        $('#IsGroupSettlementScreen').val("Yes");
+        var url = '/CashieringAndPosting/Posting/BillPayment/';
+        Billtotal = $("#GroupSettlementAmount").val();
+
+        CallDetailModelSimple('Group Settlement', url, 800);
+    };
+
+
+    @* modified By ishara on 2024 - 10 - 08  OLD*@
+
+    //Anuradha 2024-07-01
+    //function SaveBill() {
+    //    //var rooms = roomIds;
+    //    //var payments = JSON.stringify(billpaymentArray);
+    //    //var mainRoomNameToSettle = mainRoomName;
+
+    //    //$.ajax({
+    //    //    url: '/CashieringAndPosting/FolioManagement/GroupSettlementSave?rooms=' + rooms + '&payments=' + payments,
+    //    //    dataType: 'json',
+    //    //    method: 'GET',
+    //    //    success: function (response) {
+    //    //        if (response.startsWith('Err-')) {
+    //    //            ShowWarningMessage(response.replace("Err-", ""));
+    //    //        } else {
+    //    //            ShowSuccessMessage('Record has been saved successfully.');
+    //    //        }
+    //    //    },
+    //    //    error: function (error) {
+
+    //    //    }
+    //    //});
+    //    var rooms = JSON.stringify(mergeResultJsonArray);
+    //    var payments = JSON.stringify(billpaymentArray);
+    //    var isMergeOnlySend = isMergeOnly;
+
+    //    $.ajax({
+    //        url: '/CashieringAndPosting/FolioManagement/GroupSettlementSave?rooms=' + rooms + '&payments=' + payments + '&isMergeOnly=' + isMergeOnlySend,
+    //        dataType: 'json',
+    //        method: 'GET',
+    //        //success: function (response) {
+    //        //    if (response.startsWith('Err-')) {
+    //        //        ShowWarningMessage(response.replace("Err-", ""));
+    //        //    } else {
+    //        //        ShowSuccessMessage('Record has been saved successfully.');
+    //        //    }
+    //        //},
+    //        success: function (response) {
+    //            if (response.startsWith('Err-')) {
+    //                ShowWarningMessage(response.replace("Err-", ""));
+    //            } else {
+    //                ShowSuccessMessage('Record has been saved successfully.');
+    //            }
+    //        },
+    //        error: function (error) {
+    //            ShowErrorMessage('An error occurred while attempting to save the record.');
+    //        }, complete: function () {
+    //            setTimeout(function () {
+    //                window.location.reload();
+    //            }, 3000);
+    //        }
+    //    });
+    //};
+
+    @* modified By ishara on 2024 - 10 - 08 NEW*@
+    function SaveBill() {
+
+        var rooms = JSON.stringify(mergeResultJsonArray);
+        var payments = JSON.stringify(billpaymentArray);
+        var isMergeOnlySend = isMergeOnly;
+        var IsFinalSettlementAfterMergeSend = IsFinalSettlementAfterMerge
+
+        if (IsFinalSettlementAfterMerge) {
+
+            $.ajax({
+                url: '/CashieringAndPosting/FolioManagement/GroupSettlementAfterMergeSave?rooms=' + rooms + '&payments=' + payments + '&IsMerged=' + IsFinalSettlementAfterMergeSend,
+                dataType: 'json',
+                method: 'GET',
+                success: function (response) {
+                    if (response.startsWith('Err-')) {
+                        ShowWarningMessage(response.replace("Err-", ""));
+                    } else {
+                        ShowSuccessMessage('Record has been saved successfully.');
+
+                        @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger *@
+                        GroupMergeAllowCreditPosting = 0;
+                        IsGroupSettlement = 0;
+                    }
+                },
+                error: function (error) {
+                    ShowErrorMessage('An error occurred while attempting to save the record.');
+                }, complete: function () {
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 3000);
+                }
+            });
+
+        } else {
+
+            $.ajax({
+                url: '/CashieringAndPosting/FolioManagement/GroupSettlementSave?rooms=' + rooms + '&payments=' + payments + '&isMergeOnly=' + isMergeOnlySend,
+                dataType: 'json',
+                method: 'GET',
+
+                success: function (response) {
+                    if (response.startsWith('Err-')) {
+                        ShowWarningMessage(response.replace("Err-", ""));
+                    } else {
+                        ShowSuccessMessage('Record has been saved successfully.');
+                        //setTimeout(function () {
+                        //    LoadAllTransactions(4, 10348)
+                        //}, 3000);
+
+                        @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger *@
+                        GroupMergeAllowCreditPosting = 0;
+                        IsGroupSettlement = 0;
+                    }
+                },
+                error: function (error) {
+                    ShowErrorMessage('An error occurred while attempting to save the record.');
+                    @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger *@
+                    GroupMergeAllowCreditPosting = 0;
+                    IsGroupSettlement = 0;
+
+                }, complete: function () {
+                    //setTimeout(function () {
+                    //    window.location.reload();
+                    //}, 3000);
+                }
+            });
+        }
+
+    };
+    @* Added By ishara on 2024 - 10 - 08 NEW *@
+    function GroupMergeOnly() {
+        var rooms = JSON.stringify(mergeResultJsonArray);
+        var isMergeOnlySend = isMergeOnly;
+
+        if (rooms.length >= 0) {
+            $.ajax({
+                url: '/CashieringAndPosting/FolioManagement/GroupMerge?rooms=' + rooms + '&isMergeOnly=' + isMergeOnlySend,
+                dataType: 'json',
+                method: 'GET',
+
+                success: function (response) {
+                    if (response.startsWith && response.startsWith('Err-')) {
+                        ShowWarningMessage(response.replace("Err-", ""));
+                    } else {
+                        resHeaderId = response.ReservationID;
+                        folioNo = response.FolioNo;
+                        $('#btnPreview').removeClass('hidden').show();
+                        $('#GroupMerge').addClass('disabled');
+                        $('#GroupSettlementAfterMerge').removeClass('hidden');
+                        $('#GroupSettlementAfterMerge').removeClass('disabled').show();
+                        $('#btnPreview').css('box-shadow', 'none');
+                        $('.selectAllRoom').addClass('disabled').prop('disabled', true);
+                        $('.inhouse-rooms').addClass('disabled').prop('disabled', true);
+                        $('#addNewGroup').removeClass('hidden').removeClass('disabled').show();
+
+
+
+                        ShowSuccessMessage('Folio Merged successfully.');
+
+                        // Set the href dynamically
+                        $('#btnPreview').attr('href', '/Reporting/Report/ViewReport?ReportName=FolioInvoiceDetail&ReservationHeaderId='
+                            + encodeURIComponent(resHeaderId)
+                            + '&FolioNo=' + encodeURIComponent(folioNo)
+                            + '&IsPreview=0&IsLKROnlyInvoice=0');
+
+                    }
+                },
+                error: function (error) {
+                    ShowErrorMessage('An error occurred while attempting to merge the record.');
+                    //setTimeout(function () {
+                    //    window.location.reload();
+                    //}, 3000);
+                }, complete: function () {
+                    HideLoader();
+
+                }
+            });
+        }
+
+    }
+
+    $('#searchRoomNumber').on('input', function () {
+        let searchKeyWord = $(this).val().toLowerCase();
+        let isAnyRoomVisible = false;
+        $('#InhouseRoomNumberListToGroupSettlement .room-number-name').each(function () {
+            if ($(this).text().toLowerCase().includes(searchKeyWord)) {
+                $(this).show();
+                isAnyRoomVisible = true;
+            } else {
+                $(this).hide();
+            }
+            if (!isAnyRoomVisible) {
+                $('#noRecordsMessage').show();
+            } else {
+                $('#noRecordsMessage').hide();
+            }
+        });
+    });
+
+    $(document).off('change', '.select-main-room').on('change', '.select-main-room', function () {
+        mainRoomName = $(this).closest('.selected-room-list').find('.inhouse-room-no').data('room-name');
+        $('.selected-room-list').find('.ribbon').addClass('hidden');
+        $('.select-main-room').prop('checked', false);
+        $(this).prop('checked', true);
+        $(this).closest('.selected-room-list').find('.ribbon').removeClass('hidden');
+        //$('#GroupSettlement').removeClass('disabled');
+        //$('#GroupMerge').removeClass('disabled');
+
+
+        @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger *@
+        var allowCreditPosting = $(this).closest('.selected-room-list').find('.inhouse-room-no').attr('data-room-allowCreditPosting'); // Use .attr() instead of .data()
+
+
+        @* Added By ishara on 2024 - 10 - 08 *@
+        if (isGroupMergeOnly === 1) {
+            $('#GroupMerge').removeClass('disabled');
+            $('#GroupSettlement').hide();
+            //$('#GroupSettlementAfterMerge').removeClass('hidden').show();
+        } else {
+            $('#GroupSettlement').removeClass('disabled');
+            $('#GroupSettlement').show();
+            $('#GroupSettlementAfterMerge').addClass('hidden').hide();
+
+
+            @* Added By ishara on 2024 - 12 - 06 -- Modification for anable City Ledger *@
+            GroupMergeAllowCreditPosting = allowCreditPosting;
+            IsGroupSettlement = 1;
+        }
+    });
+
+    $('body').off('click', '.btn-remove-room').on('click', '.btn-remove-room', function () {
+        ShowLoader();
+        //$('.selectAllRoom').prop('checked', false).addClass('disabled').prop('disabled', true);
+
+        $('.selectAllRoom').prop('checked', false);
+
+        var removedRoom = $(this).data('room-id');
+
+        $('.inhouse-room-list').each(function (index, item) {
+            var roomId = $(item).find('.inhouse-rooms').data('inhouse-roomid');
+
+            if (removedRoom === roomId) {
+                $(item).find('.inhouse-rooms').prop('checked', false);
+                $(item).find('.inhouse-rooms').prop('disabled', false);
+            }
+        });
+
+        if (roomArray.includes(removedRoom)) {
+            $(this).closest('.selected-room-list').remove();
+        }
+
+        checkIfAllVisibleRoomsSelected();
+
+        var IsFinalSettlement = 0
+        GetActualFolioTotal(IsFinalSettlement);
+
+    });
+
+    function checkIfAllVisibleRoomsSelected() {
+        // Get all visible records
+        var visibleRooms = $('.inhouse-room-list:visible');
+
+        // Get all visible checkboxes that are checked
+        var visibleCheckedRooms = visibleRooms.find('.inhouse-rooms:checked');
+
+        // If the number of checked visible rooms matches the number of total visible rooms, check the "Select All" box
+        if (visibleCheckedRooms.length === visibleRooms.length && visibleRooms.length > 0) {
+            $('.selectAllRoom').prop('checked', true); // Check the "Select All" checkbox
+
+        } else {
+            $('.selectAllRoom').prop('checked', false); // Uncheck the "Select All" checkbox
+        }
+    }
+
+
+
+    @* Added By ishara on 2024 - 10 - 08 *@
+    $('#btnPreview').on('click', function (event) {
+        event.preventDefault(); // Prevent the default anchor behavior
+
+        var url = $(this).attr('href'); // Get the dynamically set href URL
+
+        if (url) {
+            window.open(url, '_blank'); // Open the URL in a new tab
+        } else {
+            ShowWarningMessage("Preview URL is not available.");
+        }
+    });
+
+</script> 

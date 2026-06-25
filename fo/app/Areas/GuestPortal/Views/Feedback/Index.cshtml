@@ -1,0 +1,240 @@
+﻿
+@{
+    ViewBag.Title = "Guest Portal Feedback";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model  IEnumerable<Scienter.HotelERP.Common.Domain.GuestPortal_Feedback>
+
+<style>
+    .modal-title {
+        font-weight: 800;
+    }
+
+    .modal-content .modal-body {
+        padding-top: 0px;
+        padding-right: 24px;
+        padding-bottom: 16px;
+        padding-left: 24px;
+    }
+
+    #tblFeedback thead tr th {
+        font-weight: 800;
+    }
+
+    #tblFeedback {
+        width: 100%;
+        border-collapse: collapse;
+    }
+</style>
+
+<div class="modal fade" id="feedback" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document" style="width:80%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="row">
+                    <div class="col-md-10">
+                        <h5 class="modal-title" id="exampleModalLabel">Guest Portal Feedback Answers</h5>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top:-10px !important;">
+                            <span aria-hidden="true" style="font-size:30px;">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body" style="">
+                <div class="white_card_body">
+
+                    <form id="feedbackForm">
+                        <div class="row">
+                            <h5 class="modal-title" id="exampleModalLabel">@ViewBag.ReservationNo</h5>
+                        </div>
+                        <table class="table table-striped fixed-header-table" id="tblFeedback">
+                            <thead>
+                                <tr>
+                                    <th class="col-md-2 text-primary">
+                                        Feedback
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Answer
+                                    </th> @*<th style="width:100px">
+                                        Date/Time
+                                    </th>*@
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+
+                    </form>
+                </div>
+            </div>
+            @*<div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSave">Save changes</button>
+                </div>*@
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="guestPortalFeedback">
+                            @*2022-10-20*@
+                            <thead>
+                                <tr>
+                                    <th class="col-md-1 text-primary">
+                                        Res / No
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Arrival
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Departure
+                                    </th>
+                                    <th class="col-md-3 text-primary">
+                                        Overall Exp. Remark
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Feedback Time
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                <tr style="height: 36px !important;">
+                                    <td>
+                                        @item.ReservationNo
+                                    </td>
+                                    <td>
+                                        @item.ArrivalFormatted
+                                    </td>
+                                    <td>
+                                        @item.DepartureFormatted
+                                    </td>
+                                    <td>
+                                        @item.AdditionalNotes
+                                    </td>
+                                    <td>
+                                        @item.CreatedDateTime
+                                    </td>
+                                    <td class="hidden-print text-right" style="text-align:right !important;">
+                                        <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="feedbackAnswers" data-ResId="@item.ReservationHeaderId" data-feedback-datetime="@item.CreatedDateTime" data-title="Reservation Activity Log" data-href="" title="Activity Log" data-toggle="modal" data-target="#feedback" data-width="500">
+                                            <span class="glyphicon glyphicon-tags"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                @*@Html.Partial("_Loading")*@
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        debugger;
+        $('#guestPortalFeedback').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ],
+                scrollY: '58vh',
+            });
+    });
+
+    $('body').on('click', '#feedbackAnswers', function () {
+        debugger;
+
+        let dateTimeString = $(this).data('feedback-datetime'); // "20/03/2025 13:23:03"
+        let [date, time] = dateTimeString.split(' ');           // ["20/03/2025", "13:23:03"]
+        let [day, month, year] = date.split('/').map(Number);   // [20, 3, 2025]
+        let [hour, minute, second] = time.split(':').map(Number); // [13, 23, 3]
+        let dateTime = new Date(year, month - 1, day, hour, minute, second);
+
+        var feedback = {};
+        var ReservationHeaderId = parseInt($(this).attr('data-ResId'));
+        //var a = dateTime;
+        var a = $(this).data('feedback-datetime');
+        //feedback.CreatedDateTime = new Date(year, month - 1, day, hour, minute, second);
+        //feedback.a = dateTime;
+
+        console.log(ReservationHeaderId,a);
+
+        //LoadExistingFeedbackAnswers(feedback)
+        LoadExistingFeedbackAnswers(ReservationHeaderId, a)
+    });
+
+    function LoadExistingFeedbackAnswers( ReservationHeaderId,a) {
+        debugger;
+        $.ajax({
+            url: '/GuestPortal/Feedback/ExistingFeedbackAnswers',
+            //dataType: 'json',
+            //data: { reservationHeaderId: reservationHeaderId },
+            data: { reservationHeaderId: ReservationHeaderId,a:a },
+            beforeSend: function () {
+                $('#tblFeedback td').remove();
+            },
+            success: function (response) {
+                //$('.tblComplaint').remove();
+                $(response).each(function (index, item) {
+                    var answerLevels = ["-", "Very Poor", "Poor", "Neutral", "Good", "Excellent"];
+                    var answerLevelColors = ["", "text-danger", "text-warning", "text-secondary", "text-info", "text-success"];
+                    var answerLevel = answerLevels[item.AnswerId] || "-";
+                    var answerColor = answerLevelColors[item.AnswerId] || "";
+
+                    $('<tr>' +
+                        '<td>' + item.Name + '</td>' +
+                        '<td class="' + answerColor + '"><b>' + answerLevel + '</b></td>' +
+                        '</tr>').appendTo('#tblFeedback tbody');
+                });
+            },
+            error: function () {
+                ShowWarningMessage('Sorry! There is an Error');
+            },
+            complete: function (item) {
+
+            }
+        });
+    }
+
+
+</script>

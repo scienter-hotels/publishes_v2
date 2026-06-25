@@ -1,0 +1,93 @@
+﻿
+@{
+    ViewBag.Title = "Guest Complains";
+}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+
+                        <h4 class="title">
+                            @ViewBag.Title For @ViewBag.ResNo
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12" id="reservationGrid">
+                <div class="card-content" id="contentLoadingArea" style="padding-left:20px">
+                    <div id="content">
+                        <div class="override-card-padding override-card-two-height form-group">
+                            <div class="panel panel-default">
+                                <input type="hidden" value="@ViewBag.ResNo" id="reservationno" />
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        
+                                            <div class="roomratechangedetails">
+                                                <table class="table table-striped" id="complaintable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Complain Code</th>
+                                                            <th>Subject</th>
+                                                            <th>Description</th>
+                                                            
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                        
+                                    </div>
+                                </div>
+                               
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+       
+        FillComplainTable();
+        
+    });
+
+    function FillComplainTable() {
+       
+        var reservationno = $('#reservationno').val();
+        $.ajax({
+            url: '/GuestInformation/SelectGuestComplain',
+            dataType: 'json',
+            method: 'POST',
+            data : {reservationno : reservationno},
+            success: function (data) {
+                if (data.length == 0) {
+                    $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#complaintable'));
+                }
+                $('#complaintable tr:not(:first)').empty();
+                $.each(data, function (index, item) {
+
+
+                    $('<tr>' +
+                        '<td>' + item.ComplainCode + '</td>' +
+                        '<td>' + item.Subject + '</td>' +
+                        '<td>' + item.Description + '</td>' +
+                        
+                        '</tr>').appendTo($('#complaintable'));
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
+    
+</script>
+
+
+

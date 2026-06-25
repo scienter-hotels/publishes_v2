@@ -1,0 +1,19 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.ReservationTraces
+<div class="row">
+    <div class="col-md-12" id="datesInReservationTraces" style="overflow-y:auto;max-height:315px;">
+        <div class="row">
+            <ul id="datesUL">
+                @foreach (DateTime date in Model.ReservationTracesDates)
+                {
+                    <li>
+                        <div class="checkbox col-md-12">
+                            <label>
+                                <input type="checkbox" class="Res-dates-checkBoxGroup" data-date-value="@string.Format("{0:yyyy-MM-dd}", date.Date).ToString().Substring(0,10)" value="@date.Date" />@string.Format("{0:MMM dd yyyy}", date.Date).ToString()
+                            </label>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

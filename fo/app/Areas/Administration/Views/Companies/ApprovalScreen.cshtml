@@ -1,0 +1,278 @@
+﻿@*@model Scienter.HotelERP.Common.Domain.Company*@
+@model  List<Scienter.HotelERP.Common.Domain.Company>
+
+@{
+    //ViewBag.Title = "Approval Screen";
+    ViewBag.Title = "Company Approvals";
+}
+
+<input type="hidden" id="Id" value="" />
+<input type="hidden" id="hnddate-Id" value="" />
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="col-md-12" style="padding-left: 0px;">
+                    <div class="row">
+                        <div id="main-grid-content" class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="table font-size-12px" id="approveTbl" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th class=" text-primary">
+                                                Name
+                                            </th>
+                                            <th class=" text-primary">
+                                                Address
+                                            </th>
+                                            <th class=" text-primary">
+                                                Country
+                                            </th>
+                                            <th class="text-primary">
+                                                Telephone No
+                                            </th>
+                                            <th class=" text-primary">
+                                                Username
+                                            </th>
+                                            <th class=" text-primary">
+                                                Created D/T
+                                            </th>
+                                            <th class=" text-primary">
+                                                Action
+
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td class="name">
+                                                    @item.Name
+                                                </td>
+                                                <td class="address">
+                                                    @item.Address
+                                                </td>
+                                                <td class="country">
+                                                    @item.CountryName
+                                                </td>
+                                                <td class="telno">
+                                                    @item.TelNo
+                                                </td>
+                                                <td class="username">
+                                                    @item.UserName
+                                                </td>
+                                                <td class="dateTime">
+                                                    @item.CreateDateTimeFormatted
+                                                </td>
+                                                <td class="button">
+                                                    <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="" data-title="Company Activity Log" data-href="/Administration/Companies/CompaniesActivityLog/@item.Id" title="Activity Log" data-toggle="tooltip" data-width="500">
+                                                        <span class="glyphicon glyphicon-tags"></span>
+                                                    </a>
+                                                    <button type="button" data-id="@item.Id" id="btnA" class="btn btn-sm btn-success btnApproval btnActionButtons" title="A">A</button>
+                                                    <button type="button" data-id="@item.Id" id="btnR" class="btn btn-sm btn-danger btnReject btnActionButtons" title="R">R</button>
+
+                                                    <a class="btn btn-theme-color-2 btn-sm btn-Edit" data-id="@item.Id" data-company-id="@item.CompanyId" href="">
+                                                        <span class="glyphicon glyphicon-pencil"></span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+       // SelectCompanyApprovals();
+        ShowForm();
+     //   EditUserWise();
+
+        $('#approveTbl').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ],
+                scrollY: '58vh',
+            });
+
+        setInterval(function () {
+            $('.btnActionButtons').attr('disabled', false);
+        }, 1000);
+    });
+
+    // save --------------------------------------
+    $('body').on('submit', '#companies', function (e) {
+
+        e.preventDefault();
+        var backclr;
+        var company = {
+            __RequestVerificationToken: $('__RequestVerificationToken').val(),
+            Id: $('#Id').val(),
+            Name: $('#Name').val(),
+            NameAlias: $('#NameAlias').val(),
+            Address: $('#Address').val(),
+            CountryId: $('#CountryId').val(),
+            CurrencyId: $('#CurrencyId').val(),
+            CompanyProfileTypeId: $('#CompanyProfileTypeId').val(),
+            ReferenceNo: $('#ReferenceNo').val(),
+            ProfileRemarks: $('#ProfileRemarks').val(),
+            ConfirmationRemaks: $('#ConfirmationRemaks').val(),
+            VATRegistrationNo: $('#VATRegistrationNo').val(),
+            SVATRegistrationNo: $('#SVATRegistrationNo').val(),
+            MappingCode1: $('#MappingCode1').val(),
+            MappingCode2: $('#MappingCode2').val(),
+            MappingCode3: $('#MappingCode3').val(),
+            SegmentId: $('#SegmentId').val(),
+            ProfileCode: $('#profilecode').val(),
+            Email: $('#email').val(),
+            ContactPerson: $('#contactperson').val(),
+            TelNo: $('#telno').val(),
+            Fax: $('#faxno').val(),
+            CreditLimit: parseFloat($('#creditlimit').val().trim().replace(/,/g, '')).toFixed(2),
+            RateCodeId: $('#RateCodeId').val(),
+            CancellationPolicy: $('#cancellationpolicy').val(),
+            Promotion: $('#promotion').val(),
+            FITProfile: $('#FITProfile').prop("checked"),
+            AddToOccupancy: 1,
+            IsActive: $('#IsActive').prop("checked"),
+            ShowRatesOnGRC: $('#ShowRatesOnGRC').prop("checked"),
+            CompanyType: $("input[name='CompanyType']:checked").val(),
+            BackColor: $('#hiddenColor').val(),
+            BookingPolicyId: $('#BookingPolicyId').val(),
+            creditPeriod: $('#creditPeriod').val(),
+            IsForeignCurrencyBillRequested: $('#IsForeignCurrencyBillRequested').prop("checked"),
+            DefaultPaymentModeId: $('#DefaultPaymentModeId').val(),
+            DefaultBookingSourceId: $('#DefaultBookingSourceId').val(),
+            IsCreditEnabled: $('#IsCreditEnabled').prop("checked"),
+            CompanyEmailTemplateId: $('#CompanyEmailTemplateId').val()
+        };
+
+        $.ajax({
+            url: '/administration/companies/save',
+            dataType: 'html',
+            data: company,
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+                setTimeout(function () {
+                    window.location.reload();
+                }, 3000);
+
+            }
+
+        });
+
+    });
+    
+
+
+    $('body').on('click', '.btn-Edit', function (e) {
+        e.preventDefault();
+        
+        var id = $(this).attr('data-company-id');
+        var approvalId = $(this).attr('data-id');
+        var id=1
+        //alert(approvalId);
+        var url = "/administration/companies/landing?id=" + id + '&approvalId=' + approvalId;
+        window.location.href = url;
+        //ShowForm();
+        
+    });
+
+    
+
+    function ShowForm() {
+        $.ajax({
+            url: '/administration/companies/form?id=' + $('#hdnSelectedCompanyId').val() + '&approvalId=' + $('#hdnSelectedApprovalId').val(),
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+
+        });
+    }
+
+    $('body').on('click', '.btnApproval', function (e) {
+        var obj = {};
+        var id = $(this).attr('data-id');
+        obj.id = id;
+        $('#hnddate-Id').val(id);
+        if (confirm("Are you sure you want to Approve ?")) {
+            $.ajax({
+                url: '/administration/companies/SelectCompanyToApprovById',
+                dataType: 'json',
+                data: { id: id },
+                method: 'POST',
+                success: function (response) {
+                    ShowSuccessMessage('Record has been approved.');
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 3000);
+                }
+            });
+        }
+        else {
+            window.location.reload();
+        }
+        console.log(id);
+    });
+
+    $('body').on('click', '.btnReject', function (e) {
+        var obj = {};
+        var id = $(this).attr('data-id');
+        obj.id = id;
+        $('#hnddate-Id').val(id);
+        if (confirm("Are you sure you want to Reject ?")) {
+            $.ajax({
+                url: '/administration/companies/SelectCompanyToRejectById',
+                dataType: 'json',
+                data: { id: id },
+                method: 'POST',
+                success: function (response) {
+                    ShowSuccessMessage('Record has been rejected.');
+                    setTimeout(function () {
+                        window.location.reload();
+                    }, 3000);
+                }
+
+            });
+        }
+        else {
+            window.location.reload();
+        }
+        console.log(id);
+    });
+
+</script>

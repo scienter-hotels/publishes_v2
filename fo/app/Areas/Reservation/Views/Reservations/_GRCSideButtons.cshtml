@@ -1,0 +1,557 @@
+﻿
+<style>
+    #buttons .col-md-6, #buttons .col-md-12 {
+        margin: 0 !important;
+        min-height: 65px !important;
+        padding: 0px 0px 0px 0px !important;
+        /*padding-right: 2px !important;
+        padding-left: 2px !important;*/
+    }
+
+        #buttons .col-md-6 button, #buttons .col-md-6 a {
+            height: 65px !important;
+            font-size: 12px !important;
+            padding: 6px;
+            word-wrap: break-word !important;
+            line-height: 13px;
+            text-transform: none !important;
+        }
+
+        #buttons .col-md-12 button, #buttons .col-md-12 a {
+            height: 75px !important;
+            padding: 10px;
+            word-wrap: break-word !important;
+        }
+
+    #buttons .btn {
+        margin-top: 0px !important;
+        margin: 0px !important;
+        border-radius: 0px;
+        cursor: pointer !important;
+    }
+
+        #buttons .btn:hover {
+            background: rgba(98,125,77,1) !important;
+            background: -moz-linear-gradient(top, rgba(98,125,77,1) 0%, rgba(7,122,101,1) 100%) !important;
+            background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(98,125,77,1)), color-stop(100%, rgba(7,122,101,1))) !important;
+            background: -webkit-linear-gradient(top, rgba(98,125,77,1) 0%, rgba(7,122,101,1) 100%) !important;
+            background: -o-linear-gradient(top, rgba(98,125,77,1) 0%, rgba(7,122,101,1) 100%) !important;
+            background: -ms-linear-gradient(top, rgba(98,125,77,1) 0%, rgba(7,122,101,1) 100%) !important;
+            background: linear-gradient(to bottom, rgba(98,125,77,1) 0%, rgba(7,122,101,1) 100%) !important;
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#627d4d', endColorstr='#077a65', GradientType=0 ) !important;
+        }
+</style>
+
+<div id="buttons" class="col-md-12" style="width:195px; margin-left:-15px; margin-bottom:20px; margin-top:3px;">
+    @if (ViewBag.type == "inhouse")
+    {
+        <div id="mainOptions">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <a style="background-color:#e84118 !important;" class="btn btn-default guestReservationClass btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        GRC
+                    </a>
+                </div>
+
+                <a style="background-color:#2f9b04 !important;" class="btn btn-default guestReservationgroupgrc btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                    <span class="glyphicon glyphicon-transfer"></span>
+                    <br />
+                    Group GRC
+                </a>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <a style="background-color:#008890 !important;" class="btn btn-default guestReservationrategrc btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        GRC With Rates
+                    </a>
+                </div>
+
+                <div class="col-md-12">
+                    <a style="background-color:#c21b1b !important;" class="btn btn-default guestReservationgroupgrcwithrates btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        Group GRC With Rates
+                    </a>
+                </div>
+                <div class="col-md-12">
+                    <a style="background-color:#e49c09 !important;" class="btn btn-default guestReservationblankgrc btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        Blank GRC
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+    }
+    else if (ViewBag.type == "checkout")
+    {
+        <div id="mainOptions">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <a style="background-color:#e84118 !important;" class="btn btn-default guestReservationClass btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        GRC
+                    </a>
+                </div>
+
+                <div class="col-md-12">
+                    <a style="background-color:#2f9b04 !important;" class="btn btn-default guestReservationgroupgrc btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        Group GRC
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <a style="background-color:#008890 !important;" class="btn btn-default guestReservationrategrc btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        GRC With Rates
+                    </a>
+                </div>
+
+                <div class="col-md-12">
+                    <a style="background-color:#c21b1b !important;" class="btn btn-default guestReservationgroupgrcwithrates btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        Group GRC With Rates
+                    </a>
+                </div>
+                <div class="col-md-12">
+                    <a style="background-color:#e49c09 !important;" class="btn btn-default guestReservationblankgrc btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        Blank GRC
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+
+    }
+    else
+    {
+        <div id="mainOptions">
+            <div class="row">
+                <div class="col-md-12">
+                    <a style="background-color:#e84118 !important;" class="btn btn-default guestReservationClass btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        GRC
+                    </a>
+                </div>
+
+                <div class="col-md-12">
+                    <a style="background-color:#2f9b04 !important;" class="btn btn-default guestReservationgroupgrc btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        Group GRC
+                    </a>
+                </div>
+          
+                <div class="col-md-12">
+                    <a style="background-color:#008890 !important;" class="btn btn-default guestReservationrategrc btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        GRC With Rates
+                    </a>
+                </div>
+
+                <div class="col-md-12">
+                    <a style="background-color:#c21b1b !important;" class="btn btn-default guestReservationgroupgrcwithrates btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        GRC Group With Rates
+                    </a>
+                </div>
+
+                <div class="col-md-12">
+                    <a style="background-color:#e49c09 !important;" class="btn btn-default guestReservationblankgrc btn-theme-color-2 full-width-100perc" id="btnGuestReservation" target="_blank">
+                        <span class="glyphicon glyphicon-transfer"></span>
+                        <br />
+                        Blank GRC
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+
+    }
+</div>
+
+<script>
+
+    $('body').on('click', '#btnOptions', function () {
+        $('#mainOptions').hide();
+        $('#moreOption').fadeIn('slow');
+    });
+
+    $('body').on('click', '#btnHideOptions', function () {
+        $('#moreOption').hide();
+        $('#mainOptions').fadeIn('slow');
+    });
+
+    var reservationHeaderId;
+    $(document).ready(function () {
+
+        var segment_str = window.location.pathname; // return segment1/segment2/segment3/segment4
+        var segment_array = segment_str.split('/');
+        var last_segment = segment_array[segment_array.length - 1];
+
+        $('#btnReinstateFromInhouse').removeClass('hidden');
+        $('#btnCheckOutReinstate, #btnReservationTraces').removeClass('hidden');
+        $('#btnInhouseDetails, #btnAlerts').removeClass('hidden');
+
+        //if (last_segment == "list") {
+
+        $('#btnRoomAllocation').removeClass('hidden');
+        $('#btnResUpdate').removeClass('hidden');
+        $('#newGuest').removeClass('hidden');
+        $('#btnAddNewRoom').removeClass('hidden');
+        $('#btnPostSetting').removeClass('hidden');
+        $('#btnManFolio').removeClass('hidden');
+        $('#btnPerformaInvoice').removeClass('hidden');
+        $('#btnResConfirm').removeClass('hidden');
+        $('#btnCancelReservation').removeClass('hidden');
+        $('#btnAttachToGroup').removeClass('hidden');
+        $('#btnDetach').removeClass('hidden');
+        $('#btnAdvancedPayments').removeClass('hidden');
+        $('#btnTransport').removeClass('hidden');
+        $('#btnReservationTraces').removeClass('hidden');
+        $('#btnConfSetup').removeClass('hidden');
+        $('#btnReinstateFromInhouse').removeClass('hidden');
+        $('#btnAlerts').removeClass('hidden');
+        $('#btnReservationNote').removeClass('hidden');
+        $('#btnSchedulePosting').removeClass('hidden');
+        $('#btnResUpdate').removeClass('hidden');
+        //}
+        //else if (last_segment == "inhouse") {
+
+        $('#btnRoomAllocation').removeClass('hidden');
+        $('#btnResUpdate').removeClass('hidden');
+        $('#newGuest').removeClass('hidden');
+        $('#btnPostSetting').removeClass('hidden');
+        $('#btnManFolio').removeClass('hidden');
+        $('#btnAttachToGroup').removeClass('hidden');
+        $('#btnDetach').removeClass('hidden');
+        $('#btnAdvancedPayments').removeClass('hidden');
+        $('#btnTransport').removeClass('hidden');
+        $('#btnReservationTraces').removeClass('hidden');
+        $('#btnAlerts').removeClass('hidden');
+        $('#btnReservationNote').removeClass('hidden');
+        $('#btnSchedulePosting').removeClass('hidden');
+        $('#btnResUpdate').removeClass('hidden');
+        //}
+        //else if (last_segment == "checkout") {
+
+
+        //}
+        //else {
+        //    alert("error");
+        //}
+
+    });
+
+    $('body').off('click', '#existingReservationGrid tr').on('click', '#existingReservationGrid tr', function () {
+
+
+        if ($(this).find('input.data-reservation-no').prop('checked')) {
+            $(this).find('input.data-reservation-no').prop('checked', false);
+        } else {
+            $(this).find('input.data-reservation-no').prop('checked', true);
+        }-
+
+
+        $('#existingReservationGrid tr').not(this).find('input.data-reservation-no').prop('checked', false);
+        $('#existingReservationGrid tr').not(this).closest('tr').removeClass('selectdRecord');
+        $(this).addClass('selectdRecord');
+
+        if ($('input.data-reservation-no:checked').length > 0) {
+            //$('#btnInhouseDetails').removeClass('disabled');
+            setUrlToRelevetReservation(this);
+            $('#reservationGrid').fadeIn().removeClass('col-md-12').addClass('col-md-10');
+            $('#reservationOptions').fadeIn();
+
+        }
+        else {
+            $('#reservationGrid').removeClass('col-md-10').hide().addClass('col-md-12').fadeIn();
+            $('#reservationOptions').hide();
+        }
+
+    });
+
+
+    function setUrlToRelevetReservation(e) {       
+       
+        var GuestName = $(e).find('input.data-reservation-no').attr('guestName')
+        var GuestProfileId = $(e).find('input.data-reservation-no').attr('guestId')
+        var roomNo = $(e).find('input.data-reservation-no').attr('room-id')
+        var roomCode = $(e).find('input.data-reservation-no').attr('room-code')
+        var ResheaderId = $('input[class="data-reservation-no"]:checked').val();
+        var arrivalDate = $('input[class="data-reservation-no"]:checked').parents().eq(3).find('.arrival-date').html().trim();
+
+        var departureDate = $('input[class="data-reservation-no"]:checked').parents().eq(3).find('.depature-date').html().trim();
+        var resNo = $('input[class="data-reservation-no"]:checked').parents().eq(3).find('.res-no').html().trim();
+        var groupResNo = $('input[class="data-reservation-no"]:checked').parents().eq(3).find('.group-res-no').html().trim();
+        var ResUuid = $('input[class="data-reservation-no"]:checked').attr('res-Uuid');
+        var IsAllowCheckOut = $('input[class="data-reservation-no"]:checked').attr('isAllowCheckOut');
+        var IsCheckOutToday = $('input[class="data-reservation-no"]:checked').attr('data-isCheckoutToday');
+        var roomCategoryId = $('input[class="data-reservation-no"]:checked').attr('roomCategoryId');
+        var mealPlanId = $('input[class="data-reservation-no"]:checked').attr('data-mealPlanId');
+        var rateCodeHeaderId = $('input[class="data-reservation-no"]:checked').attr('data-rateCodeHeaderId');
+        var roomTypeId = $('input[class="data-reservation-no"]:checked').attr('data-roomTypeId');
+        var IsLocalRate = $('input[class="data-reservation-no"]:checked').attr('data-isLocalRate');
+
+
+        var grUrl = '/Reporting/Report/ViewReport?ReportName=GuestRegistrationForm&ResNo=' + resNo + '&RoomRate=0';
+        $('.guestReservationClass').attr('href', grUrl);
+
+        var grUrlwithrates = '/Reporting/Report/ViewReport?ReportName=GuestRegistrationForm&ResNo=' + resNo + '&RoomRate=1';
+        $('.guestReservationrategrc').attr('href', grUrlwithrates);
+
+        var grgroupUrlwithrates = '/Reporting/Report/ViewReport?ReportName=GroupGuestRegistrationForm&GroupReservationNo=' + groupResNo + '&RoomRate=1';
+        $('.guestReservationgroupgrcwithrates').attr('href', grgroupUrlwithrates);
+
+        var grgroupUrl = '/Reporting/Report/ViewReport?ReportName=GroupGuestRegistrationForm&GroupReservationNo=' + groupResNo + '&RoomRate=0';
+        $('.guestReservationgroupgrc').attr('href', grgroupUrl);
+
+        var blankgrcUrl = '/Reporting/Report/ViewReport?ReportName=GuestRegistrationForm&ResNo=' + '000000000' + '&RoomRate=0';
+        $('.guestReservationblankgrc').attr('href', blankgrcUrl);
+
+                                    
+        //var IsAllowedToCancel = $('input[class="data-reservation-no"]:checked').attr('data-isAllowedToCancel');
+
+        //var rooomCategoryName = $('input[class="data-reservation-no"]:checked').attr('data-roomCategoryName');
+       
+        //var GuestMessageUrl = '/Reservation/GuestMessage/GuestMessageByRoom?roomId=' + roomNo + '&roomCode=' + roomCode;
+        //$('.guestMessageClass').attr('data-href', GuestMessageUrl);
+        //$('.guestMessageClass').attr('data-title', "Guest Message For : " + resNo);
+
+        //var ReservationTracesUrl = '/Reservation/ReservationTraces/ReservationTracesByDates?arrivalDate=' + arrivalDate + '&departureDate=' + departureDate + '&reservationHeaderId=' + ResheaderId;
+        //$('.reservationTracesClass').attr('data-href', ReservationTracesUrl);
+        //$('.reservationTracesClass').attr('data-title', "Traces For : " + resNo);
+
+        //var reservationNoteUrl = '/Reservation/Reservations/ReservationNote?ResNo=' + ResheaderId;
+        //$('.reservationnote').attr('data-href', reservationNoteUrl);
+        //$('.reservationnote').attr('data-title', "Guest Message For: " + resNo);
+
+
+        //var advancedPaymentUrl = '/CashieringAndPosting/AdvancedPayment/InvoiceForReservationList?ResNo=' + resNo + '&GResNo=' + groupResNo + '&GuestName=' + GuestName + '&RoomNo=' + roomCode + '&RoomId=' + roomNo + '&GuestProfileId=' + GuestProfileId + '&fromReservationScreen=true';
+        //$('.advancedPaymentsClass').attr('data-href', advancedPaymentUrl);
+        //$('.advancedPaymentsClass').attr('data-title', "Advance Payment For : " + resNo);
+
+        //var schedulePostingUrl = '/CashieringAndPosting/SchedulePosting/SchedulePostingForReservationList?ResNo=' + resNo + '&GResNo=' + groupResNo + '&GuestName=' + GuestName + '&RoomNo=' + roomCode + '&RoomId=' + roomNo + '&GuestProfileId=' + GuestProfileId + '&Arrival=' + arrivalDate + '&Departure=' + departureDate + '&fromReservationScreen=true';
+        //$('.schedulePostingClass').attr('data-href', schedulePostingUrl);
+        //$('.schedulePostingClass').attr('data-title', "Schedule Posting For : " + resNo);
+
+        //var attachToGroupUrl = '/Reservation/Reservations/AttachToGroup?ResNo=' + resNo + '&GResNo=' + groupResNo + '&reservationHeaderId=' + ResheaderId;
+        //$('.attachToGroupClass').attr('data-href', attachToGroupUrl);
+        //$('.attachToGroupClass').attr('data-title', "Attach : " + resNo + ", " + GuestName);
+
+        //var detachUrl = '/Reservation/Reservations/Detach?reservationHeaderId=' + ResheaderId + '&GResNo=' + groupResNo;
+        //$('.detachClass').attr('data-href', detachUrl);
+        //$('.detachClass').attr('data-title', "Detach " + resNo + " from " + groupResNo + " group.<br/>" + GuestName + " (" + arrivalDate + " - " + departureDate + ")");
+
+        //var changeStayUrl = '/Reservation/Reservations/ChangeStay?GuestName=' + GuestName + '&departureDate=' + departureDate + '&arrivalDate=' + arrivalDate + '&roomCode=' + roomCode + '&ResheaderId=' + ResheaderId + '&RoomCategoryId=' + roomCategoryId + '&RateCodeHeaderId=' + rateCodeHeaderId + '&MealPlanId=' + mealPlanId + '&RoomTypeId=' + roomTypeId + '&isLocalRate=' + IsLocalRate;
+        //$('.changeStayClass').attr('data-href', changeStayUrl);
+        //$('.changeStayClass').attr('data-title', "Change Stay For : " + resNo);
+
+       
+
+
+        //var guestName = $('input[class="data-reservation-no"]:checked').parents().eq(3).find('.guest-name').html().trim();
+        //$('#btnPostSetting').attr('data-href', '/Reservation/Reservations/PostingSettings?reservationHeaderId=' + ResheaderId + '');
+        //$('#btnPostSetting').attr('data-title', "Posting Settings For: " + resNo);
+
+        //$('#btnTransport').attr('data-href', '/Reservation/Transport/TransportFormControls?reservationHeaderId=' + ResheaderId + '&isFromReservation=1');
+        //$('#btnTransport').attr('data-title', 'Transport allocation for ' + resNo);
+        //$('#btnTransport').removeClass('disabled');
+
+        //$('#btnRoomAllocation').attr('data-href', '/Reservation/Reservations/RoomAllocation?reservationHeaderId=' + ResheaderId + '&arrivalDate=' + arrivalDate + '&depatureDate=' + departureDate + '&resNo=' + resNo + '&guestName=' + guestName + '');
+        //$('#btnRoomAllocation').attr('data-title', 'Room allocation for ' + resNo);
+
+        //$('#btnAlerts').attr('data-href', '/Reservation/Reservations/Alerts?reservationHeaderId=' + ResheaderId + '&arrivalDate=' + arrivalDate + '&depatureDate=' + departureDate + '&resNo=' + resNo + '&guestName=' + guestName + '');
+        //$('#btnAlerts').attr('data-title', 'Reservation Alerts for ' + resNo + '');
+
+        //$('#btnReservationNote').attr('data-href', '/Reservation/Reservations/ReservationNote?reservationHeaderId=' + ResheaderId + '');
+        //$('#btnReservationNote').attr('data-title', 'Reservation note for ' + resNo + '');
+
+        //$('#btnResUpdate').attr('data-href', '/Reservation/Reservations/ReservationUpdateSelect?reservationHeaderId=' + ResheaderId + '');
+        //$('#btnResUpdate').attr('data-title', 'Update reservation detail for ' + resNo + '');
+
+        //$('#btnAddNewRoom').attr('data-href', '/Reservation/Reservations/AddMoreRooms?groupReservationNo=' + groupResNo + '&reservationHeaderId=' + ResheaderId + '');
+        //$('#btnAddNewRoom').attr('data-title', 'Add new room for reservation - ' + resNo + '');
+
+
+        //$('#newGuest').attr('data-href', '/Reservation/Reservations/ManageGuests?reservationHeaderId=' + ResheaderId + '');
+        //$('#newGuest').attr('data-title', 'Add new guest for ' + resNo + '');
+
+        //$('#btnResConfirm').attr('href', '/Reporting/Report/ViewReport?ReportName=ReservationConfirmation&Uuid=' + ResUuid + '');
+       
+        //$('#btnPerformaInvoice').attr('href', '/Reporting/Reservation/ProformaInvoice?ResheaderId=' + ResheaderId + '&uuid=' + ResUuid + '');
+        //$('#btnPerformaInvoice').attr('href', '/Reporting/Report/ViewReport?ReportName=ProformaInvoice&Uuid=' + ResUuid + '');
+
+        //$('#btnConfSetup').attr('data-href', '/Reservation/Reservations/ConfirmationSetupSelect?resNo=' + ResheaderId + '');
+        //$('#btnConfSetup').attr('data-title', 'Cofirmation setup for ' + resNo + '');
+
+        //$('#btnManFolio').attr('data-title', 'Manage folio for ' + resNo + '');
+        //$('#btnManFolio').attr('data-href', '/Reservation/Reservations/ManageFolio?resId=' + ResheaderId + '');
+
+        //$('#guestReservationClass').attr('data-href', '/Reporting/Report/ViewReport?ReportName=GuestRegistrationForm&ResNo=' + resNo + '');
+        //$('#newGuest').attr('data-title', 'Add new guest for ' + resNo + '');
+
+        if ($('.data-reservation-no:checked').attr('room-Id') > 0) {
+            //$('#btnManFolio').removeClass('disabled');
+            $('#btnGuestMessage').removeClass('disabled');
+
+        }
+        else {
+            //$('#btnManFolio').addClass('disabled');
+            $('#btnGuestMessage').addClass('disabled');
+        }
+
+    }
+
+    $('body').off('click', '#btnReinstateFromInhouse').on('click', '#btnReinstateFromInhouse', function () {
+       
+        var ResheaderId = $('input[class="data-reservation-no"]:checked').val();
+        $.ajax({
+            url: '/Reservation/Reservations/ReinstateInHouseReservations?reservationHeaderId=' + ResheaderId,
+            dataType: 'json',
+            method: 'POST',
+            success: function (response) {
+               
+                if (response == "success") {
+                    ShowSuccessMessage('Reservation reinstate successfully.');
+                    FillGrid();
+                } else {
+                    ShowWarningMessage(response);
+                }
+               
+            },
+            error: function (error) {
+                ShowErrorMessage('There is an error.');
+            }
+        });
+    });
+
+    $('body').off('click', '#btnQuickCheckIn').on('click', '#btnQuickCheckIn', function () {
+
+        var headerIdArray = [];
+
+        headerIdArray.push({ Id: reservationHeaderId });
+        $.ajax({
+            // url: '/Reservation/QuickCheckIns/QuickCheckIn/qCheckIns?=' + { qCheckIn: headerIdArray },
+            url: '/Reservation/QuickCheckIns/QuickCheckIn',
+            data: { qCheckIns: headerIdArray, CheckInRemark: null },
+            dataType: 'json',
+            method: 'POST',
+            success: function (response) {
+            },
+        });
+    });
+
+    $('body').off('click', '#btnCheckOutReinstate').on('click', '#btnCheckOutReinstate', function () {
+        
+        var ResheaderId = $('input[class="data-reservation-no"]:checked').val();
+        $.ajax({
+            url: '/Reservation/Reservations/ReinstateCheckOutReservations?reservationHeaderId=' + ResheaderId,
+            dataType: 'json',
+            method: 'POST',
+            success: function (response) {
+                console.log(response);
+                //if (response == "success")
+                //    ShowSuccessMessage('Reservation reinstate successfully.');
+                //else
+                //    ShowErrorMessage(response);
+                FillGrid();
+            },
+            error: function (error) {
+                ShowErrorMessage('There is an error.');
+            }
+        });
+    });
+
+    $('#btnCheckIn').on('click', function (e) {
+       
+        e.preventDefault();
+        var qCheckInsList = [];
+        var ckInRemark = "Success";
+
+        $('.data-reservation-no').each(function (index, item) {
+            if ($(this).is(':checked')) {
+                qCheckInsList.push({ Id: $(this).val() });
+            }
+        });
+
+        if ($('.data-reservation-no:checked').attr('room-Id') > 0) {
+
+            $.ajax({
+                url: '/reservation/QuickCheckIns/QuickCheckIn',
+                dataType: 'JSON',
+                data: { qCheckIns: qCheckInsList, CheckInRemark: ckInRemark },
+                method: 'POST',
+                success: function (response) {
+                    ShowSuccessMessage('Guest cheked in successfully..');
+                    FillGrid();
+                },
+                error: function (xhr, status, error) {
+                    ShowErrorMessage('Sorry, There is an error in check in this reservation.');
+                }
+            });
+        } else {
+            ShowErrorMessage('Sorry, Allocate Room Before CheckIn reservation.');
+            qCheckInsList = [];
+        }
+
+    });
+    function checkCheckoutDate() {
+       
+        var ResheaderId = $('input[class="data-reservation-no"]:checked').val();
+        var IsAllowCheckOut = $('input[class="data-reservation-no"]:checked').attr('isAllowCheckOut');
+        var IsCheckOutToday = $('input[class="data-reservation-no"]:checked').attr('data-isCheckoutToday');
+        if (IsCheckOutToday=='False') {
+            if (confirm('Departure date is not hotel current date.'))
+            {
+                $('#btnCheckOut').attr('data-href', '/Reservation/Reservations/CheckOutReservation?reservationHeaderId=' + ResheaderId + '&isAllowCheckOut=' + IsAllowCheckOut + '');
+                $('#btnCheckOut').attr('data-title', 'Check Out reservation - ' + resNo + '');
+
+            }
+        } else {
+            $('#btnCheckOut').attr('data-href', '/Reservation/Reservations/CheckOutReservation?reservationHeaderId=' + ResheaderId + '&isAllowCheckOut=' + IsAllowCheckOut + '');
+            $('#btnCheckOut').attr('data-title', 'Check Out reservation - ' + resNo + '');
+
+        }
+    }
+    function CheckCancelRequest() {
+       
+        var ResheaderId = $('input[class="data-reservation-no"]:checked').val();
+        var IsAllowedToCancel = $('input[class="data-reservation-no"]:checked').attr('data-isAllowedToCancel');
+        var resNo = $('input[class="data-reservation-no"]:checked').parents().eq(3).find('.res-no').html().trim();
+        var cancelReservationUrl = '/Reservation/CancelReservation/CancelReservationByHeaderId?ReservationHeaderId=' + ResheaderId;
+        if (IsAllowedToCancel == 'False') {
+            $('.cancelReservation').attr('data-title', "NA");
+           ShowErrorMessage('The arrival date is passed');
+        } else {
+            $('.cancelReservation').attr('data-href', cancelReservationUrl);
+            $('.cancelReservation').attr('data-title', "Cancel Reservation : " + resNo);
+
+        }
+
+    }
+</script>
+

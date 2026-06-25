@@ -1,0 +1,252 @@
+﻿@{
+    Layout = null;
+}
+
+<style>
+    .panel-heading {
+        background-color: #e6e9ed !important;
+    }
+
+    .panel-title {
+        font-size: 14px;
+    }
+
+    .panel {
+        border: 1px solid #ccc;
+    }
+</style>
+
+<input type="hidden" name="reservationHeaderId" id="reservationHeaderId" value="@ViewBag.ReservationHeaderId" />
+<input type="hidden" name="name" value="@ViewBag.reservationNo" id="reservationNo" />
+<input type="hidden" name="roomId" value="@ViewBag.roomId" id="roomId" />
+<div class="panel-group">
+    <div class="panel panel-default" id="Div-Add-To-Queue">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a data-toggle="collapse" href="#collapse1">Add to queue</a>
+            </h4>
+        </div>
+        <div id="collapse1" class="panel-collapse collapse in">
+            <div class="">
+                <div class="col-md-6">
+                    <div class="form-group checkbox"><label><input type="checkbox" id="isQueueReservation" class="isQueueReservation" /> Add To Queue</label></div>
+                </div>
+                <div class="col-md-6" style="padding-top:10px">
+                    <div class="form-group" style="margin-top:5px;"><button type="button" class="btn btn-primary" id="btnAddReservationToQueue">Add<span class="glyphicon"></span></button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default" id="Div-Prioritize">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a data-toggle="collapse" href="#collapse2">Change Priority</a>
+            </h4>
+        </div>
+        <div id="collapse2" class="panel-collapse collapse in">
+            <div class="">
+                <div class="form-group label-floating col-md-6">
+                    <label class="control-label">Change Priority *</label>
+                    <select name="ChangePriority" id="ChangePriority" class="form-control" required></select>
+                </div>
+                <div class="col-md-6" style="padding-top:10px">
+                    <div class="form-group" style="margin-top:5px;"><button type="button" class="btn btn-primary" id="btnChangePriority">Change<span class="glyphicon"></span></button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default" id="Div-Send-SMS">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a data-toggle="collapse" href="#collapse3">Send SMS</a>
+            </h4>
+        </div>
+        <div id="collapse3" class="panel-collapse collapse in">
+            <div class="">
+                <div class="form-group label-floating col-md-6">
+                    <label class="control-label">Mobile No *</label>
+                    <select name="MobileNo" id="MobileNo" class="form-control disabled" required></select>
+                    <div class="form-group" style="margin-top:5px;"><button type="button" class="btn btn-primary" id="btnSendSMS">Send<span class="glyphicon"></span></button></div>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" name="name" value="" id="telephonenumber" class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#Div-Prioritize').fadeOut();
+        $('#Div-Send-SMS').fadeOut();
+
+        setTimeout(function () {
+            LoadExistingDetails();
+            LoadPriorities();
+
+            if ($('#isQueueReservation').prop("checked") == true) {
+                $('#Div-Prioritize').fadeIn();
+                $('#Div-Send-SMS').fadeIn();
+            }
+        }, 1000);
+
+        LoadDepartmentContactNumbers();
+
+    });
+
+    $('body').off('click', '#btnAddReservationToQueue').on('click', '#btnAddReservationToQueue', function () {
+        var isAddedToQueue;
+        var reservationHeaderId = $('#reservationHeaderId').val();
+        var roomId = $('#roomId').val();
+
+        if ($('#isQueueReservation').prop("checked") == true) {
+
+            isAddedToQueue = true;
+        } else {
+            //$('#Div-Prioritize').fadeOut();
+            //$('#Div-Send-SMS').fadeOut();
+            isAddedToQueue = false;
+        }
+
+        $.ajax({
+            url: '/reservation/reservations/AddToQueue',
+            dataType: 'JSON',
+            data: { reservationHeaderId: reservationHeaderId, isAddedToQueue: isAddedToQueue, roomId: roomId },
+            method: 'POST',
+            success: function (data) {
+                $('#Div-Prioritize').fadeIn();
+                $('#Div-Send-SMS').fadeIn();
+                if (data.startsWith("ERR")) {
+                    ShowWarningMessage(data.replace("Err", ""));
+                    $('#Div-Prioritize').fadeOut();
+                    $('#Div-Send-SMS').fadeOut();
+                } else {
+                    ShowSuccessMessage("Successfully Queued.");
+                    LoadPriorities();
+                }
+
+            },
+            complete: function () {
+
+            }
+        })
+
+    });
+
+    function LoadPriorities() {
+        $.ajax({
+            url: '/HouseKeeping/HKChange/ReservationPrioritySelect',
+            dataType: 'JSON',
+            data: {},
+            method: 'POST',
+            beforeSend: function () {
+                $('#ChangePriority option').remove();
+            },
+            success: function (data) {
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.PrioritizedQueueNo + '" >' + item.PrioritizedQueueNo + '</optoin>').appendTo($('#ChangePriority'));
+                });
+            },
+            complete: function () {
+                LoadExistingDetails();
+            }
+        })
+    }
+
+    $('body').off('click', '#btnChangePriority').on('click', '#btnChangePriority', function () {
+        var reservationHeaderId = $('#reservationHeaderId').val();
+        var prioritizedQueueNo = $('#ChangePriority').val();
+
+        $.ajax({
+            url: '/reservation/reservations/ChangePriorityLevel',
+            dataType: 'JSON',
+            data: { reservationHeaderId: reservationHeaderId, prioritizedQueueNo: prioritizedQueueNo },
+            method: 'POST',
+            success: function (data) {
+                if (data.startsWith("ERR")) {
+                    ShowWarningMessage(data.replace("Err", ""));
+                } else {
+                    ShowSuccessMessage("Successfully Prioritized.");
+                    LoadPriorities();
+                }
+            },
+            complete: function () {
+
+            }
+        })
+    });
+
+    $('body').off('click', '#btnSendSMS').on('click', '#btnSendSMS', function () {
+        var reservationHeaderId = $('#reservationHeaderId').val();
+        var telephoneNo = $('#telephonenumber').val();
+        var department = $("#MobileNo option:selected").text();
+        var reservationNo = $('#reservationNo').val();
+
+        $.ajax({
+            url: '/reservation/reservations/SendSMS',
+            dataType: 'JSON',
+            data: { reservationHeaderId: reservationHeaderId, telephoneNo: telephoneNo, department: department, reservationNo: reservationNo },
+            method: 'POST',
+            success: function (data) {
+                if (data.startsWith("ERR")) {
+                    ShowWarningMessage(data.replace("Err", ""));
+                } else {
+                    ShowSuccessMessage("Sent Successfully.");
+                }
+            },
+            complete: function () {
+
+            }
+        })
+    });
+
+    function LoadDepartmentContactNumbers() {
+        $.ajax({
+            url: '/HouseKeeping/HKChange/DepartmentContactNumbersSelect',
+            dataType: 'JSON',
+            data: {},
+            method: 'POST',
+            beforeSend: function () {
+                $('#MobileNo option').remove();
+            },
+            success: function (data) {
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.TelephoneNo + '" >' + item.Name + '</optoin>').appendTo($('#MobileNo'));
+                });
+            },
+            complete: function () {
+                $('#telephonenumber').val($('#MobileNo').val());
+            }
+        })
+    }
+
+    $("#MobileNo").change(function () {
+        var mobilenumber = $(this).val();
+        $('#telephonenumber').val(mobilenumber);
+    });
+
+    function LoadExistingDetails() {
+        var reservationHeaderId = $('#reservationHeaderId').val();
+        $.ajax({
+            url: '/reservation/reservations/SelectExistingQueueReservationDetails',
+            dataType: 'JSON',
+            data: { reservationHeaderId: reservationHeaderId },
+            method: 'POST',
+            success: function (data) {
+                if (data.Id > 0) {
+                    $('#isQueueReservation').not(':disabled').prop('checked', true);
+                    $('#ChangePriority').val(data.PrioritizedQueueNo);
+                }
+            },
+            complete: function () {
+                if ($('#isQueueReservation').prop("checked") == true) {
+                    $('#Div-Prioritize').fadeIn();
+                    $('#Div-Send-SMS').fadeIn();
+                }
+            }
+        })
+    }
+</script>

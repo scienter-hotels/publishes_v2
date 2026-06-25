@@ -1,0 +1,83 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.PostingCategory>
+
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+<div id="postsettingArea" class="postDetail">
+    <div class="row">
+       
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 postSet">
+                <div class="form-group label-floating">
+                    <div class="catHeadId"><label class="control-label">@item.Name</label> <input type="hidden" name="postCategory" class="postCategory" value="@item.Id"></div>
+
+                    <div><input type="number" min="1" max="10" name="" required class="form-control folioNo" value="@item.FolioNo" /> </div>
+                </div>
+                </div>
+                
+        }
+
+
+    </div>
+
+
+    <div class="row" style="margin-top:30px;">
+      
+        <div class="col-md-12 text-right ">
+            <p><button id="postSettings" class="btn theme-bg-color-1 ">Save</button></p>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $('body').off('click', '#postSettings').on('click', '#postSettings', function (e) {
+   
+        var ResheaderId = $('input[class="data-reservation-no"]:checked').val();
+        var ResHeaderWisePostcategory = [];
+
+        $(".postDetail").each(function (index, eachDiv) {
+            var catHead = $('.postDetail').find('.postSet');
+             
+            $(catHead).each(function (index, eachInDiv) {
+            catWiseFolioNo = {
+                category: $(eachInDiv).find('.postCategory').val(),
+                folio: $(eachInDiv).find('.folioNo').val()
+            }
+            ResHeaderWisePostcategory.push(catWiseFolioNo);
+        });
+
+        });
+    
+        $.ajax({
+            url: '/reservation/reservations/postsettingCategories',
+            dataType: 'HTML',
+            data: { ReservationHeaderId: ResheaderId, ResHeaderWisePostcategory: ResHeaderWisePostcategory },
+            method: 'POST',
+            success: function (response) {
+                var Type = $('#resType').val();
+                ShowSuccessMessage('Record has been saved successfully.');
+                setTimeout(function () {
+                    if (Type == "reservation") {
+                        //Update Uuid
+                        window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+                        //console.log("Uuid");
+
+                        
+
+                    } else {
+                        //location.reload()
+                        LoadInhouseReservationGrid();
+                    }
+                    
+
+                }, 2500);
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in saving this record.');
+            }
+        });
+
+     
+    });
+
+</script>

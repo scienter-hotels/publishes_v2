@@ -1,0 +1,92 @@
+﻿
+@model IEnumerable<Scienter.DestinityHorizon.Common.Domain.MenuItem>
+@{
+    ViewBag.Title = "MenuItem Wise Modifiers";
+}
+<style>
+    .form-group-marging {
+        margin-top: 0px;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Description
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="row">
+                    <div class="col-md-12 master-file-form">
+                        <form id="menuitemwisemodifiersform" class="form" enctype="multipart/form-data">
+                            <input type="hidden" id="ID" name="ID" value="0" />
+                            <input type="hidden" id="MainMenuCodes" name="MainMenuCodes" value="@ViewBag.Code" />
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group form-group-marging">
+                                                <label for="email">Action Button *</label>
+                                                <select class="form-control form-group-marging" id="ActionID" required>
+                                                    <option value="">-- Select --</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12" style="max-height:350px; overflow-y:scroll;">
+                                        <table class="" id="tablemenuitemmodifiers">
+                                            <tr>
+                                                <th class="col-md-2">Item</th>
+                                                <th class="col-md-1">Select</th>
+                                                <th class="col-md-2">SeqNo</th>
+                                            </tr>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @item.Description
+                                                    </td>
+
+                                                    <td class="form-group form-group-marging checkbox" style="margin-top:10px;">
+                                                        <label>
+                                                            <input type="checkbox" class="menuitem " id="menuCheckbox" value="@item.ItemCode" />
+                                                        </label>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-group form-group-marging">
+                                                            <input type="number" class="SeqNo form-control" id="SeqNo" value="@item.ItemCode" />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button type="submit" class="btn btn-success btn-width-100px" id="btnmenuitemmodofierSubmit" disabled>
+                                            Save
+                                        </button>
+                                        <button type="reset" class="btn btn-default btn-width-100px btn-shadow" onclick="ClearForm()">
+                                            Clear
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/scripts/UI/Scienter.menuitemwisemodifier.js"></script>

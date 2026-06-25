@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Scienter.HotelERP.FrontOffice.WebUIMvc.Areas.CashieringAndPosting.Models.ProfitCenterViewModel>
+
+<table id="ProfitCenterWisePostingTable" class="table">
+    <tr>
+        <th class="col-md-1"></th>
+        <th>
+            @Html.DisplayNameFor(model => model.ItemId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ChargeTypeId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Remarks)
+        </th>
+        <th style="text-align:right;">
+            @Html.DisplayNameFor(model => model.Rate)
+        </th>
+        <th style="text-align:right;">
+            @Html.DisplayNameFor(model => model.Quantity)
+        </th>
+        <th style="text-align:right;">
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+
+
+
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td class="hidden-print text-right"></td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ChargeTypeId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Remarks)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td class="priceInGrid">
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+        </tr>
+    }
+</table>

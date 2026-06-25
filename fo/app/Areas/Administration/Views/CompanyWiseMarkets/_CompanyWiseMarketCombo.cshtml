@@ -1,0 +1,34 @@
+﻿@model Scienter.HotelERP.FrontOffice.WebUIMvc.Areas.Administration.Models.CompanyWiseMarketViewModel
+
+@foreach (var item in Model.Markets)
+{
+    <div class="col-md-4">
+        @if (Model.CompanyWiseMarkets.Count(x => x.MarketId == item.Id) > 0)
+        {
+            <div class="row" style="margin-left:1px;">
+                <div class="col-md-12">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" value="@item.Id" checked name="SelectedMarketIds" class="data-selected-market" />
+                            @item.Name
+                        </label>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row" style="margin-left:1px;">
+                <div class="col-md-12">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" value="@item.Id" name="SelectedMarketIds" class="data-selected-market" />
+                            @item.Name
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+}

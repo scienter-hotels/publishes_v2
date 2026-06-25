@@ -1,0 +1,183 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.ViewModels.ActivityLog>
+<link href="~/Content/scienter.timeline.css" rel="stylesheet" />
+<!------ Include the above in your HEAD tag ---------->
+<div class="">
+    <div class="qa-message-list" id="wallmessages">
+
+        <div class="well" style="padding:4px">
+            <div class="row">
+                <div class="col-md-6" style="font-size:10px;">
+                    Created By : @ViewBag.CreatedUser </br>
+                    Created At : @ViewBag.CreatedDateTime
+                </div>
+
+                <div class="col-md-6" style="font-size:10px;">
+                    Modified By : @ViewBag.LastModifiedUser </br>
+                    Modified At : @ViewBag.LastModifiedDateTime
+                </div>
+            </div>
+        </div>
+
+
+        @foreach (var item in Model)
+        {
+            <div class="message-item" id="@item.Id">
+                <div class="message-inner">
+                    <div class="message-head clearfix">
+                        <div class="avatar pull-left">
+                            <a><img src="~/Images/avatar_2x.png"></a>
+                        </div>
+                        <div class="user-detail">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <h5 class="handle" style="text-transform:capitalize;">@item.Title</h5>
+                                </div>
+                                @*@if (ViewBag.IsReservation == "Yes")
+                                {*@
+                                    <div class="col-md-2">
+                                        <a class="btn btn-primary btn-theme-color-2 btn-sm btnShowDetails @item.Id" id="btn-show-detail" data-trailId="@item.Id"><span class="glyphicon glyphicon-arrow-down"></span></a>
+                                    </div>
+                                @*}*@
+
+                            </div>
+                            <div class="post-meta">
+                                <div class="asker-meta">
+                                    <span class="qa-message-what"></span>
+                                    <span class="qa-message-when">
+                                        <span class="qa-message-when-data">@item.TxnDateTime</span>
+                                    </span>
+                                    <span class="qa-message-who">
+                                        <span class="qa-message-who-pad">by </span>
+                                        <span class="qa-message-who-data"><a>@item.Username</a></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="qa-message-content detail-View show-class @item.Id" id="detail-View" style="font-size:13px;">
+                     
+                        <div class="alert alert-info data-loading-div" style="
+                            background-color: #296d8d;
+                            padding: 5px 10px;
+                            font-size: 12px;">
+
+                            Loading changes ...
+                        </div>
+                    </div>
+                 
+                    <div class="qa-message-content" style="font-size:13px;">
+                        @Html.Raw(item.Description)
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.Count == 0)
+        {
+            <p>No log details found.</p>
+        }
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function (e) {
+        $('.detail-View').hide();
+    });
+
+    $('body').off('click', '.btnShowDetails').on('click', '.btnShowDetails', function (e) {
+        e.preventDefault();
+        var trailId = $(this).attr('data-trailId');
+
+        if ($('.detail-View').hasClass('show-class')) {
+
+            if ($('.detail-View.' + trailId+'').is(':visible')) {
+                $('.detail-View.' + trailId + '').hide();
+            } else {
+                $('.' + trailId).show();
+                $('.detail-View:not(.' + trailId + ')').hide();
+
+                DetailList = "";
+                //$('.detail-View').html('');
+                $('.message-item').find('.detail-View-table').remove();
+                DetailList = '<table class="table table-striped detail-View-table" id="detail-View-table" style="max-width:600px !important;">' +
+                    '<tr>' +
+                    '<th>Change</th>' +
+                    '<th>Prev. Value</th>' +
+                    '<th>New Value</th>' +
+                    '</tr>' +
+                    '</table >';
+                $(DetailList).appendTo(".detail-View");
+
+                setTimeout(function () {
+                    LoadDetails(trailId);
+                }, 500);
+            }
+           
+        } else {
+            
+            $('.detail-View').html('');
+            $('.detail-View').hide();
+            $('.detail-View').addClass('show-class');
+        }
+       
+    });
+
+    function LoadDetails(trailId) {
+        $.ajax({
+            url: '/Reservation/Reservations/ReservationActivityByTrailId',
+            dataType: 'json',
+            data: { trailId: trailId },
+            method: 'POST',
+            beforeSend: function () {
+                $('.data-loading-div').show();
+                $('.data-audit-detail-row').remove();
+            },
+            success: function (data) {
+                console.log(data);
+                $.each(data, function (index, item) {
+
+                    let oldVal;
+                    if (item.OldValue !== null && item.OldValue !== "" && !isNaN(item.OldValue)) {
+                        if (item.OldValue.toString().includes('.')) {
+                            oldVal = parseFloat(item.OldValue).toFixed(2); 
+                        } else {
+                            oldVal = item.OldValue;
+                        }
+                    } else {
+                        oldVal = item.OldValue;
+                    }
+
+                    let newVal;
+                    if (item.NewValue !== null && item.NewValue !== "" && !isNaN(item.NewValue)) {
+                        if (item.NewValue.toString().includes('.')) {
+                            newVal = parseFloat(item.NewValue).toFixed(2);
+                        } else {
+                            newVal = item.NewValue;
+                        }
+                    } else {
+                        newVal = item.NewValue;
+                    }
+
+
+                    $('<tr class="data-audit-detail-row">' +
+                        '<td style="vertical-align: top !important;">' +
+                        item.DisplayName +
+                        '</td>' +
+                        '<td style="vertical-align: top !important;">' +
+                        oldVal +
+                        '</td>' +
+                        '<td style="vertical-align: top !important;">' +
+                        newVal +
+                        '</td>' +
+                        '</tr>'
+                    ).appendTo(".detail-View-table");
+                });
+            },
+            complete: function () {
+                $('.data-loading-div').hide();
+                $('.detail-View').addClass('show-class');
+            }
+
+        });
+    }
+</script>

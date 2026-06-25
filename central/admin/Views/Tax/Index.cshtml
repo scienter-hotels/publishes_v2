@@ -1,0 +1,176 @@
+﻿
+@{
+    ViewBag.Title = "Central Tax Management";
+}
+
+<style>
+    .mt-11 {
+        margin-top: 11px !important;
+    }
+
+    .custom-padding{
+        padding:5px 15px 5px 5px;
+    }
+
+</style>
+
+
+<div class="card">
+    <div class="card-header" data-background-color="purple">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="title">
+                    @ViewBag.Title
+                    <hr class="visible-print" />
+                </h4>
+            </div>
+            <div class="col-md-4 text-right hidden-print">
+                @*<button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>*@
+
+                <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                    <span class="glyphicon glyphicon-th-list"></span>
+                </button>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-content form" id="contentLoadingArea">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="accordion" class="panel-group">
+                    <div class="panel">
+                        @*<div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a href="#panelBodyOne" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion">Tax Group Details</a>
+                            </h4>
+                        </div>*@
+                        <div id="panelBodyOne" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <form id="tax-details">
+                                    <input type="hidden" id="hdn-Id" name="Id" value="" />
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Tax Group *</label>
+                                                <input autocomplete="off" class="form-control text-box single-line TaxGroup" maxlength="100" type="text" value="" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Tax Break Value *</label>
+                                                <input autocomplete="off" class="form-control text-box single-line TaxBreakValue" min="1" step="0.000000000000001" type="number" value="" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" id="InclusiveExclusive" style="display:none;">
+                                        <div class="col-md-5">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Inclusive/Exclusive </label>
+                                                <select id="TaxInclusiveExclusive" class="form-control InclusiveExclusive">
+                                                    <option value="true">Inclusive</option>
+                                                    <option value="false">Exclusive</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group checkbox" style="margin: 22px 0 0 -8px;">
+                                        <label>
+                                            <input type="checkbox" class="isActive" checked name="IsActive" value="True" />Is Active
+                                        </label>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div style="max-height:410px; overflow-y:auto;">
+                                                <br />
+                                                <table class="table table-striped" id="taxTypeGrid">
+                                                    <tr>
+                                                        <th></th>
+                                                        <th class="custom-padding">Tax Type</th>
+                                                        <th class="custom-padding">From Sub Total</th>
+                                                        <th class="text-right custom-padding">Order</th>
+                                                        <th class="text-right custom-padding">Perc. (%)</th>
+                                                    </tr>
+                                                </table>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <br />
+                                    <div class="row" style="display:none;">
+                                        <div class="col-md-5">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Res Net Value</label>
+                                                <span class="control-label ResNetVal"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="">
+                        <div class="panel">
+                            <div class="panel-heading" id="taxTypeDetails">
+                                <h4 class="panel-title">
+                                    <a href="#panelBodyFour" class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">Tax type Details</a>
+                                </h4>
+                            </div>
+                            
+                        </div>
+                    </div>*@
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="submit" value="Save" class="btn btn-primary tax-save" />
+                                &nbsp;
+                                <input type="reset" value="Clear" class="btn btn-default tax-clear" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row grid">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-8">
+                    <input class="txtSearch" type="text" id="searchby" placeholder="Search by any Column" title="Search by any Column">
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="applyBtn btn-primary btn btn-default btn-sm mt-11">Search</button>
+                </div>
+            </div>
+            <div style="max-height:410px; overflow-y:auto;">
+                <br />
+                <table class="table table-striped" id="grid">
+                    <tr>
+                        <th>Tax Group</th>
+                        <th>Created D/T</th>
+                        <th>Created By</th>
+                        <th>Active</th>
+                        <th class="text-right custom-padding">Tax Breakup Value</th>
+                        <th></th>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/UI/Scienter.TaxDetails.js"></script>
+
+
+
+
+
+
+

@@ -1,0 +1,629 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.HotelConfirmationView
+<style>
+    .disabled {
+        cursor: not-allowed;
+    }
+
+    .dataTables_filter {
+        width: 29% !important;
+        float: left !important;
+    }
+
+    .dt-buttons {
+        width: 70% !important;
+    }
+
+    .superscript {
+        font-size: 0.8em;
+    }
+
+    .form-group {
+        margin-top: 5px;
+    }
+
+    .table .radio, .table .checkbox {
+        margin-right: 10px;
+    }
+
+    #guestGroupGrid {
+        font-size: 12px !important;
+    }
+
+        #guestGroupGrid input, select {
+            font-size: 12px !important;
+        }
+
+    .control-label,
+    .label-data {
+        font-size: 11px !important;
+    }
+
+    .area-two,
+    .area-one,
+    .area-three {
+        background: #F7F7F7;
+        box-shadow: 2px 2px 3px #808080;
+        padding: 10px;
+    }
+
+    .area-one {
+        margin-right: 15px
+    }
+
+    .the-legend {
+        font-size: 10px
+    }
+</style>
+
+@*-----------Hidden fields for reservation update-----------------*@
+<input type="hidden" id="GuestName" value="@ViewBag.GuestName" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+<input type="hidden" id="ReservationType" value="@ViewBag.ReservationType" />
+<input type="hidden" id="resHeadId" value="@ViewBag.ResheaderId" />
+<input type="hidden" class="ReseNo" value="@Model.ReservationNo" />
+<input type="hidden" class="segmentId-hidden" value="@Model.SegmentId" />
+<input type="hidden" class="rateCodeId-hidden" value="@Model.RateCodeHeaderId" />
+<input type="hidden" class="marketId-hidden" value="@Model.MarketId" />
+<input type="hidden" class="reservation-country" value="@Model.CountryID" />
+<input type="hidden" class="reservation-status" value="@Model.StatusId" />
+<input type="hidden" class="reservation-bookingSource" value="@Model.BookingSourceId" />
+<input type="hidden" class="reservation-company" value="@Model.AgentId" />
+<input type="hidden" class="reservation-rateCode" value="@Model.RateCodeHeaderId" />
+<input type="hidden" class="reservation-segment" value="@Model.SegmentId" />
+<input type="hidden" class="reservation-market" value="@Model.MarketId" />
+<input type="hidden" id="ExistingVisitPurposeId" value="@Model.VisitPurposeId" />
+@*--------Hidden fields for reservation update end----------*@
+
+@*----------Hidden fields for stay change------------------*@
+<input type="hidden" id="roomCategoryId" value="@ViewBag.RoomCategoryId" />
+<input type="hidden" id="ViewRateCodeHeaderId" value="@ViewBag.RateCodeHeaderId" />
+<input type="hidden" id="ViewMealPlanId" value="@ViewBag.MealPlanId" />
+<input type="hidden" id="ViewRoomTypeId" value="@ViewBag.RoomTypeId" />
+<input type="hidden" id="IsChangeRoom" value="@ViewBag.IsChangeRoom" />
+<input type="hidden" id="CurrentDate" value="@ViewBag.CurrentDate" />
+<input type="hidden" id="ViewCompanyId" value="@ViewBag.CompanyId" />
+<input type="hidden" id="ViewCountryId" value="@ViewBag.CountryId" />
+<input type="hidden" id="isDormitory" name="isDormitory" value="@ViewBag.IsDormitory" required />
+@*----------Hidden fields for stay change end--------------*@
+@*-----------Hidden fields for guest update------------------*@
+<input type="hidden" id="groupReservationNo" value="@ViewBag.GroupReservationNo" />
+@*-----------------------------------------------------------*@
+
+<div class="row">
+    <ul class="nav nav-tabs" style="width: 25%;float: right;position: absolute;margin-left: 941px;margin-top: -56px;">
+        <li class="res-Change active"><a data-toggle="tab" href="#res-Change">Reservation Change</a></li>
+        <li class="guest-Update"><a data-toggle="tab" href="#guest-Update">Guest Update</a></li>
+    </ul>
+    <div class="col-md-12">
+        <div class="tab-content">
+            <div id="res-Change" class="tab-pane fade in active">
+                <br />
+                <div class="row">
+                    <div class="col-md-2">
+                        <fieldset class="the-fieldset" style="padding:3px; height:475px;overflow-y:scroll;margin-top: -23px;">
+                            <legend class="the-legend">Reservation No</legend>
+                            <div class="col-md-12 label-data" id="reservationNumbersLoadingArea"></div>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-10" style="padding:0; margin-top:-14px;overflow:hidden">
+
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <div class="area-one">
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="required control-label">Status</label>
+                                                <select name="StatusId" id="StatusId" class="form-control label-data" required>
+                                                    <option value="0" class="label-data">N/A</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="required control-label">Company</label>
+                                                <select name="CompanyId" id="CompanyId" class="form-control  label-data" required>
+                                                    <option value="0">N/A</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="required control-label">Rate Code</label>
+                                                <select name="RateCodeId" id="RateCodeId" class="form-control  label-data" required>
+                                                    <option value="0">N/A</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="required control-label">Market</label>
+                                                <select name="MarketId" id="MarketId" class="form-control  label-data" required>
+                                                    <option value="0">N/A</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="required control-label">Booking Source</label>
+                                                <select name="BookingSourceId" id="BookingSourceId" class="form-control  label-data" required>
+                                                    <option value="0">N/A</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="required control-label">Segment</label>
+                                                <select name="SegmentId" id="SegmentId" class="form-control  label-data" required>
+                                                    <option value="0">N/A</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="required control-label">Sales Person</label>
+                                                <select name="SalesPersonId" id="SalesPersonId" class="form-control label-data" required>
+                                                    <option value="0">N/A</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="control-label">S.Person Contact</label>
+                                                <input type="text" name="SalesPersonContact" id="SalesPersonContact" class="form-control label-data" value="@Model.SalesPersonContactNo" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="control-label">Voucher No</label>
+                                                <input type="text" name="VoucherNo" id="VoucherNo" class="form-control label-data" value="@Model.VoucherNo" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="control-label">Tour No</label>
+                                                <input type="text" name="TourNo" id="TourNo" class="form-control label-data" value="@Model.TourNo" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="required control-label">Visit Purpose</label>
+                                                <select name="VisitPurposeId" id="VisitPurposeId" class="form-control label-data" required>
+                                                    <option value="0">N/A</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="required control-label">Package</label>
+                                                <select name="PackageId" id="PackageId" class="form-control label-data" required>
+                                                    <option value="0">N/A</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="required control-label">Guest payment mode</label>
+                                                <select name="GuestPaymentModeId" id="GuestPaymentModeId" class="form-control label-data" required>
+                                                    <option value="0">N/A</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="control-label">Reservation remark</label>
+                                                <input type="text" name="Remark" id="RemarkId" maxlength="500" class="form-control label-data" value="@Model.BookingRemark" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-5 area-two" style="margin-top:15px; padding-left:20px">
+                                <div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group  label-floating change-departure-container" style="margin-top:5px;">
+                                                <label class="control-label">Reason*</label>
+                                                <div id="StayChangeReasonComboContainer">
+                                                    <select name="StayChangeReasonId" id="StayChangeReasonId" class="form-control label-data" required style="font-size:10px !important">
+                                                        <option class="label-data"> </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="control-label">Arrival*</label>
+                                                @if (ViewBag.ReservationType == "reservation")
+                                                {
+                                                    <input type="text" name="From" id="StayChange-ArrivalDate" class="form-control label-data dateSelect inhouse-start-date-picker ArrivalDate disabled" value="@Convert.ToDateTime(ViewBag.arrivalDate).ToShortDateString()" />
+
+                                                }
+                                                else
+                                                {
+                                                    <input type="text" name="From" id="StayChange-ArrivalDate" class="form-control label-data dateSelect ArrivalDate disabled" value="@Convert.ToDateTime(ViewBag.arrivalDate).ToShortDateString()" />
+
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="control-label">Departure*</label>
+                                                <input type="text" name="To" id="StayChange-DepartureDate" class="form-control label-data dateSelect end-date-picker DepartureDate" value="@Convert.ToDateTime(ViewBag.departureDate).ToShortDateString()" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group form-group-margin-override label-floating resArrivalTime" id="ExpectedArrivalTimeId">
+                                                <label class="required control-label">Expected Arrival Time</label>
+                                                <input type="hidden" class="timeArrival label-data" value="@Model.ExpectedArrivalTime" />
+                                                @{Html.RenderPartial("_TimeRange");}
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group form-group-margin-override label-floating resDepartureTime" id="ExpectedDepartureTimeId">
+                                                <input type="hidden" class="timeDeparture" value="@Model.ExpectedDepartureTime" />
+                                                <label class="required control-label">Expected Departure Time</label>
+                                                @{Html.RenderPartial("_TimeRange");}
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="control-label">Meal Plan</label>
+                                                <select name="MealPlanId" id="MealPlanId" class="form-control label-data" required>
+                                                    <option value="0">N/A</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="control-label">Arrive For</label>
+                                                <select name="ArriveMealPlanId" id="ArriveMealPlanId" class="form-control label-data" required>
+                                                    <option value="0">N/A</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="control-label">Leave After</label>
+                                                <select name="LeaveMealPlanId" id="LeaveMealPlanId" class="form-control label-data" required>
+                                                    <option value="0">N/A</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="control-label">No Of Adults</label>
+                                                <input type="number" name="NoOfAdults" id="NoOfAdults" class="form-control label-data" value="@Model.NoOfAdults" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group form-group-margin-override label-floating">
+                                                <label class="control-label">No Of Kids</label>
+                                                <input type="number" name="NoOfKids" id="NoOfKids" class="form-control label-data" value="@Model.NoOfKids" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group label-floating" style="margin-top:5px;">
+                                                <label class="control-label">Stay change remark</label>
+                                                <textarea maxlength="1000" rows="1" id="StayChange-Remark" name="StayChange-Remark" class="form-control label-data"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-7 area-three" style="margin-top:15px; height:267.28px; width:606px; overflow-y:scroll; margin-left:5px">
+                                <div class="table-responsive">
+                                    <table class="table roomDetail table-striped" data-grid-sortable="true">
+                                        <tr>
+                                            <th class="text-primary label-data text-left table-data" style=" width:60px">
+                                                Category
+                                            </th>
+                                            <th class="text-primary label-data text-left" style=" width:60px">
+                                                Availability
+                                            </th>
+
+                                            <th class="text-primary text-right" style=" width:60px"></th>
+                                            <th class="text-primary label-data text-right" style="  width:60px">SGL</th>
+                                            <th class="text-primary label-data text-right" style=" width:60px">DBL</th>
+                                            <th class="text-primary label-data text-right" style="width:60px">TPL</th>
+                                            <th class="text-primary label-data text-right" style="width:60px">QUD</th>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-data" style=" width:60px">DLT</td>
+
+                                            <td class="label-data" style=" width:60px">10</td>
+                                            <td class="label-data" style=" width:60px">
+                                                <div class="form-group checkbox">
+                                                    <label>
+                                                        <input class="guest-checkBox" id="Id" type="checkbox" value="" style="padding-left:5px; width:60px" />
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-data" style=" width:60px">DLX</td>
+
+                                            <td class="label-data" style=" width:60px">5</td>
+                                            <td class="label-data" style=" width:60px">
+                                                <div class="form-group checkbox">
+                                                    <label>
+                                                        <input class="guest-checkBox" id="Id" type="checkbox" value="" style="padding-left:5px; width:60px" />
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-data" style=" width:60px">LUX</td>
+
+                                            <td class="label-data" style=" width:60px">2</td>
+                                            <td class="label-data" style=" width:60px">
+                                                <div class="form-group checkbox">
+                                                    <label>
+                                                        <input class="guest-checkBox" id="Id" type="checkbox" value="" style="padding-left:5px; width:60px" />
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-data" style=" width:60px">KSU</td>
+
+                                            <td class="label-data" style=" width:60px">0</td>
+                                            <td class="label-data" style=" width:60px">
+                                                <div class="form-group checkbox">
+                                                    <label>
+                                                        <input class="guest-checkBox" id="Id" type="checkbox" value="" style="padding-left:5px; width:60px" />
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="label-data" style=" width:60px">RSU</td>
+
+                                            <td class="label-data" style=" width:60px">8</td>
+                                            <td class="label-data" style=" width:60px">
+                                                <div class="form-group checkbox">
+                                                    <label>
+                                                        <input class="guest-checkBox" id="Id" type="checkbox" value="" style="padding-left:5px; width:60px" />
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                            <td class="label-data">
+                                                <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" style="float: right; width:60px; font-size:10px" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2 col-md-offset-9">
+                                <button type="submit" class="btn btn-primary pull-right" id="">
+                                    Update Reservation  <span class="glyphicon "></span>
+                                </button>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-primary pull-right" id="" data-dismiss="modal">
+                                    <span class="glyphicon glyphicon-floppy-remove"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="guest-Update" class="tab-pane fade">
+                <div class="row">
+                    <div class="col-md-12">
+                        <fieldset class="the-fieldset">
+                            <legend class="the-legend">Guest Update</legend>
+
+                            <div class="manage-group">
+                                <div class="table-responsive">
+                                    <form id="guestGroup">
+                                        <table class="table table-striped table-hover" id="guestGroupGrid" cellspacing="5">
+
+                                            <tr>
+                                                <th width="50px"></th>
+                                                <th class="text-primary " input type="text" width="100px">
+                                                    Res.No
+                                                </th>
+                                                <th class="text-primary " input type="text" width="80px">
+                                                    Room
+                                                </th>
+                                                <th class="text-primary " width="80px">
+                                                    Salutation
+                                                </th>
+                                                <th class="text-primary " width="100px">
+                                                    First Name
+                                                </th>
+                                                <th class="text-primary " width="100px">
+                                                    Last Name
+                                                </th>
+                                                <th class="text-primary " width="150px">
+                                                    Email
+                                                </th>
+                                                <th class="text-primary " width="100px">
+                                                    ContactNo
+                                                </th>
+                                                <th class="text-primary " width="120px">
+                                                    DOB
+                                                </th>
+                                                <th class="text-primary " width="120px">
+                                                    Country
+                                                </th>
+                                                <th class="text-primary " width="120px">
+                                                    Nationality
+                                                </th>
+                                            </tr>
+
+                                        </table>
+                                        <div class="form-group ">
+                                            <input type="submit" id="btnUpdate" disabled="disabled" value="Update" class="btn btn-primary " />
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.frontoffice.layout2.js"></script>
+<script src="~/Scripts/ui/common/Scienter.Common.ComboBoxes.js"></script>
+<script src="~/Scripts/ui/common/scienter.common.datatimepicker.js"></script>
+<script src="~/Scripts/ui/ReservationEdit.js"></script>
+
+@if (Model.Area == "I")
+{
+    <script>
+        $(document).ready(function () {
+            setInterval(function () {
+
+                $('#StatusId').prop('disabled', true);
+                $('#CompanyId').prop('disabled', true);
+                $('#MarketId').prop('disabled', true);
+                //$('#SegmentId').prop('disabled', true);
+                $('#StatusId').prop('disabled', true);
+                $('#NoOfAdults').prop('disabled', true);
+                $('#NoOfKids').prop('disabled', true);
+                $('#Timerange').prop('disabled', true);
+                $('#PackageHeaderId').prop('disabled', true);
+                $('#ArriveMeal').prop('disabled', true);
+            }, 200);
+            LoadReservationStatus();
+        });
+
+    </script>
+}
+
+<script>
+    var countryId = 0;
+    $(document).ready(function () {
+
+        LoadCompanies();
+        LoadRateCodes();
+        LoadMarkets();
+        LoadSegments();
+        loadVisitPuposeCombo();
+        LoadReservationStatus();
+        $('#RoomCategory').attr("disabled", true);
+        $('#RoomType').attr("disabled", true);
+
+        timeArrival = $('.timeArrival').val();
+        $('.resArrivalTime .time-range').val(timeArrival);
+
+        timeDeparture = $('.timeDeparture').val();
+        $('.resDepartureTime .time-range').val(timeDeparture);
+
+        $('#ArrivalDate').prop("disabled", true);
+        $('#DepartureDate').prop("disabled", true);
+        $('#MealPlanId').prop("disabled", true);
+    });
+
+    function searchReservation() {
+
+        var input, filter, count, tt, b, i, li;
+
+        input = document.getElementById("txtSearch");
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("myUL");
+        li = ul.getElementsByTagName("li");
+
+        for (i = 0; i < li.length; i++) {
+            b = li[i].getElementsByTagName("label")[0];
+            if (b.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+
+            }
+        }
+    }
+</script>

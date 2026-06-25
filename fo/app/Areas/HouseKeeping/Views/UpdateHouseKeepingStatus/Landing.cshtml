@@ -1,0 +1,400 @@
+﻿@model Scienter.HotelERP.Common.Domain.RoomStatusCategory
+@{
+    ViewBag.Title = "Update "+Model.Name;
+}
+
+<style>
+    .rooms-container .well {
+        padding:0px;
+    }
+    .flip-card {
+        /*margin-right: -19px;
+        margin-top: -19px;*/
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input type="hidden" value="@Model.Id" id="roomStatusCategory" class="hidden-room-status-category" />
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content form-control-area" id="div-status" style="padding: 8px 20px;">
+
+                <div class="row">
+                    <div class="col-md-7" style="padding-right:0px;">
+                        <div style="padding:10px; background-color:#f2f2f2; border-radius:3px; padding-bottom:3px; margin-bottom:5px; margin-left:-5px; border: 2px solid #ccc;">
+                            <div class="row">
+                                @if (Model.Id == 2)
+                                {
+                                    <div class="col-md-4 form-group label-floating">
+                                        <label class="control-label" for="House_Keeping_Status">Status Category</label>
+                                        <select class="form-control" id="FrontOfficeStatusId"></select>
+                                    </div>
+                                }
+                                <div class="col-md-4">
+                                    <div class="form-group label-floating">
+                                        <label class="control-label" for="House_Keeping_Status">Floor</label>
+                                        @{Html.RenderAction("FloorCombo", "Floors", new { area = "Administration", name = "FloorId", requiered = true });}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <div class="form-group label-floating">
+                                        <label class="control-label" for="House_Keeping_Status">Room No</label>
+                                        <input type="text" maxlength="4" id="RoomNo" class="form-control" value="Any" />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div style="padding:10px; background-color:#f2f2f2; border-radius:3px; padding-bottom:3px; margin-bottom:5px;  margin-right:-8px; border: 2px solid #ccc;">
+                            <div class="row">
+                                @if (Model.Id == 2)
+                                {
+
+                                    <div class="col-md-5 form-group label-floating">
+                                        <label class="control-label" for="House_Keeping_Status">House Keeping Status</label>
+                                        <select class="form-control new-room-status" id="HouseKeepingStatusId"></select>
+                                    </div>
+                                }
+
+                                else
+                                {
+                                    <div class="col-md-5">
+                                        <div class="form-group label-floating">
+                                            @Html.Label(Model.Name, htmlAttributes: new { @class = "control-label" })
+                                            @{Html.RenderAction("RoomStatusCombo", "RoomStatus", new { area = "HouseKeeping", categoryId = Model.Id, isApplicableforOutOfOrderEntry = 0, name = "Room Status", requiered = true });}
+                                        </div>
+                                    </div>
+                                }
+
+
+                                <div class="col-md-4" style="padding-right: 0px;padding-top:30px;">
+                                    <div class="form-group checkbox override-from-group-margin custom-top-padding">
+                                        <label>
+                                            <input type="checkbox" id="select-all" /> Select all
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3" style="padding-top:25px;">
+                                    <button id="update-room-status" class="btn btn-primary">Update</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                  
+               
+
+                    
+
+
+
+                <div class="rooms-container" style="padding-left:5px; padding-right:5px;">
+                    @*@{Html.RenderAction("RoomStatusDetails");}*@
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/isotope.pkgd.min.js"></script>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+
+    $(function () {
+        LoadRooms();
+        LoadFrontOfficeStatus();
+        calculateWellHeightOnPageLoad();
+        CheckEachRoomSpecialDetail();      
+       
+    })
+
+    function LoadFrontOfficeStatus() {
+        $.ajax({
+            method: 'post',
+            url: '/HouseKeeping/RoomStatus/FrontOfficeStatus',
+            datatype: 'json',
+            success: function (response) {
+                $('<option  value="0">-- Select --</option>').appendTo('#FrontOfficeStatusId');
+                $(response).each(function (index,item) {
+                    $('<option value="' + item.Id + '">' + item.Name + '</option>').appendTo('#FrontOfficeStatusId');
+                });
+            },
+        })
+    }
+
+    function LoadFrontHouseKeepingStatus() {
+        $.ajax({
+            method: 'post',
+            url: '/HouseKeeping/RoomStatus/FrontOfficeStatusWiseHouseKeepingStatus?frontOfficeStatusId=' + $('#FrontOfficeStatusId').val(),
+            datatype: 'json',
+            success: function (response) {
+                $('#HouseKeepingStatusId option').remove();
+                $('<option value="0">-- Select --</option>').appendTo('#HouseKeepingStatusId');
+                $(response).each(function (index, item) {
+                    $('<option value="' + item.Id + '">' + item.Name + '</option>').appendTo('#HouseKeepingStatusId');
+                });
+            },
+        })
+    }
+
+    $('body').on('change', '#FrontOfficeStatusId', function () {
+        $('#FloorId').val(0);
+        $('#RoomNo').val('Any');
+        $('#HouseKeepingStatusId option').remove();
+        $('.rooms-container').html('');       
+        if ($('#FrontOfficeStatusId').val() != undefined && $('#FrontOfficeStatusId').val() != "0") {
+            $('.rooms-container').html('Please wait loading ....');
+            LoadFrontHouseKeepingStatus();
+            LoadRooms();
+        }
+        //RoomStatusDetails
+    });
+
+    function LoadRooms()
+    {
+        $.ajax({
+            method: 'post',
+            url: '/HouseKeeping/UpdateHouseKeepingStatus/RoomStatusDetails?frontOfficeStatusId=' + $('#FrontOfficeStatusId').val(),
+            datatype: 'html',
+            success: function (response) {
+                $('.rooms-container').html('');
+                $('.rooms-container').html(response);
+                CheckEachRoomSpecialDetail();
+            },
+        });
+    }
+
+    //Check Each room for out of order reason or back to back status
+    function CheckEachRoomSpecialDetail() {
+        $('.well').each(function (index, eachWell) {
+            var isOutOfOrder = $(eachWell).find($('.hidden-isOutOfOrder')).val();
+            var outOfOrderReason = $(eachWell).find($('.hidden-outOfOrderReason')).val();
+            var isBackToBack = $(eachWell).find($('.hidden-isBackToBack')).val();
+
+            if (isOutOfOrder == '1') {
+                $(eachWell).css('background-color', '#c5c5c5', 'important');
+                $(eachWell).find('.front-card').css('background-color', '#c5c5c5', 'important');
+                $(eachWell).find('.back-card').css('background-color', '#c5c5c5', 'important');
+                $(eachWell).find('.flip-icon').prop('title', outOfOrderReason);
+                $(eachWell).find('.check-on-each').prop('disabled', true);
+            } else if (isBackToBack == '1') {
+                $(eachWell).find('.room-number').addClass('blink_me');
+            }
+        })
+    }
+
+    function RoomStatusCatChange(val) {
+        $.ajax({
+            method: 'get',
+            url: '/HouseKeeping/UpdateHouseKeepingStatus/FilteringCheckBox?categoryId=' + val,
+            datatype: 'html',
+            success: function (htmlContent) {
+                $('#filterng-checkbox-area').html('');
+                $('#filterng-checkbox-area').html(htmlContent);
+            },
+        })
+    }
+
+    $('#select-all').click(function () {
+        $('.check-on-each').not(':disabled').prop('checked', $(this).prop('checked'));
+        $('#RoomStatusCategoryId').val(2);
+    });
+
+    $('#update-room-status').click(function () {
+        var roomStatusList = [];
+        var roomStatusEach;
+        if ($('.new-room-status').val() != undefined && $('.new-room-status').val() != "0") {
+
+            if ($('.check-on-each:checked').length > 0) {
+                if ($('.new-room-status').val().length > 0) {
+                    $('.check-on-each:checked').each(function (index, eachCheckedBox) {
+
+                        if ($(this).closest('.room-box').hasClass('hidden') == false) { // not filtered and hidden
+                            nearestWell = $(this).closest('.well');
+                            roomStatusEach = {
+                                RoomId: parseInt($(nearestWell).find($('.hidden-roomId')).val()),
+                                RoomStatusCategoryId: $('.hidden-room-status-category').val(),
+                                RoomStatusId: parseInt($('.new-room-status').val()),
+                            }
+                            roomStatusList.push(roomStatusEach);
+                        }
+                       
+                    });
+                    $.ajax({
+                        method: 'post',
+                        url: '/HouseKeeping/UpdateHouseKeepingStatus/UpdateRoomStatus',
+                        data: { listHouseKeepingStatusUpdateTXN: roomStatusList },
+                        datatype: 'html',
+                        success: function (htmlContent) {
+                            $('#select-all').prop('checked', false);
+                            $('#area-roomDetails').html('');
+                            $('#area-roomDetails').html(htmlContent);
+                            calculateWellHeightOnPageLoad();
+                            CheckEachRoomSpecialDetail();
+                            ShowSuccessMessage("Room Status Updated");
+                            setTimeout(function () { window.location.reload(); }, 1500);  
+                        },
+                    })
+                } else {
+                    ShowWarningMessage('Select room status');
+                }
+            } else {
+                ShowWarningMessage('Select at leaste one room to update status');
+            }
+        }
+        else {
+            ShowWarningMessage('Select house keeping status.');
+        }
+    })
+
+    $('body').on('change', '#RoomStatusCategoryId', function () {
+        RoomStatusCatChange($(this).val());
+    })             
+
+    $('body').on('click', '#clear-room-filter', function () {
+        $.ajax({
+            method: 'get',
+            url: '/HouseKeeping/UpdateHouseKeepingStatus/RoomStatusDetails',
+            datatype: 'html',
+            success: function (htmlContent) {
+                $('#area-roomDetails').html('');
+                $('#area-roomDetails').html(htmlContent);
+                $('#RoomStatusCategoryId').val(2);
+                RoomStatusCatChange($('#RoomStatusCategoryId').val());
+                $('#room-number-from').val('');
+                $('#room-number-to').val('');
+                $('.floor-number-checkbox').prop('checked', false);
+                calculateWellHeightOnPageLoad();
+                CheckEachRoomSpecialDetail();
+            },
+        })
+    });
+
+    function calculateWellHeightOnPageLoad()
+    {
+        $('.well').each(function (index, eachWell) {
+            changeWellHeight(eachWell);
+        })
+    }
+
+    function changeWellHeight(well) {    
+        var numberOfRows = $(well).find('.front-card .row-height').length;
+        var wellHeight = 25 * numberOfRows + 2 + 'px';
+        var cardHeight = 25 * numberOfRows + 'px';
+        $(well).css('height', wellHeight, 'important');
+        $(well).find('.front-card').css('height', cardHeight, 'important');
+        $(well).find('.back-card').css('height', cardHeight, 'important');
+    }
+
+    $(window).on('load', function () {
+
+        target = $('.right-side').height();
+        $('.left-side').height(target);
+
+    });
+
+    //ISOTOPE FILTERATION
+    $('body').on('change', '.floor-number-checkbox-all, .status-typs-checkbox-all', function () {
+        if ($(this).hasClass('status-typs-checkbox-all')) {   
+            if ($(this).prop('checked')) {
+                $('.status-typs-checkbox').prop('checked', true);
+            } else {
+                $('.status-typs-checkbox').prop('checked', false);
+            }  
+        } else {
+            if ($(this).prop('checked')) {
+                $('.floor-number-checkbox').prop('checked', true);
+            } else {
+                $('.floor-number-checkbox').prop('checked', false);
+            }  
+        }
+
+        $('.status-typs-checkbox').change();
+        $('.floor-number-checkbox').change();
+    })
+
+    $('body').on('change', '.floor-number-checkbox, .status-typs-checkbox', function () {
+
+        if ($(this).hasClass('status-typs-checkbox')) {
+            if ($('.status-typs-checkbox').length == $('.status-typs-checkbox:checked').length) {
+                $('.status-typs-checkbox-all').prop('checked', true);
+            } else {
+                $('.status-typs-checkbox-all').prop('checked', false);
+            }
+        } else {
+            if ($('.floor-number-checkbox').length == $('.floor-number-checkbox:checked').length) {
+                $('.floor-number-checkbox-all').prop('checked', true);
+            } else {
+                $('.floor-number-checkbox-all').prop('checked', false);
+            }
+        }
+
+        FilterRooms();
+    })
+
+    function FilterRooms() {     
+        var inclusives = [];
+             
+        $('.floor-number-checkbox:checked').each(function (i, elem) {
+            inclusives.push($(elem).data('filter-value'));
+        });
+
+        $('.status-typs-checkbox:checked').each(function (i, elem) {
+            inclusives.push($(elem).data('filter-value'));
+        });
+
+        var filterValue = inclusives.length ? inclusives.join(',') : '*';
+            
+        $('.room-wise-status-area').isotope({ filter: filterValue })
+    }
+
+    $('body').on('change', '#FloorId', function () {
+        $('#RoomNo').val('Any');
+        $('.room-box').hide();
+        $('.room-box').addClass('hidden');
+        if ($('#FloorId option:selected').attr('data-class') == "all") {
+            $('.room-box').fadeIn();
+        } else {
+            $('.room-box').each(function (index, item) {
+                if ($(item).hasClass($('#FloorId option:selected').attr('data-class'))) {
+                    $(item).removeClass('hidden');
+                    $(item).fadeIn();
+                }
+            });
+        }
+    });
+
+    $('body').on('keyup', '#RoomNo', function () {
+       
+        $('#FloorId').val(0);
+        $('.room-box').hide();
+        $('.room-box').addClass('hidden');
+        if ($('#RoomNo').val().toLowerCase() == "all" || $('#RoomNo').val().toLowerCase() == "any" || $('#RoomNo').val() == "") {
+            $('.room-box').fadeIn();
+        } else {
+            var roomNoClass = $('#RoomNo').val().toLowerCase();
+            $('.room-box').each(function (index, item) {
+                if ($(item).attr('data-class').includes(roomNoClass)) {
+                    $(item).removeClass('hidden');
+                    $(item).fadeIn();
+                }
+            });
+        }
+    });
+
+</script>

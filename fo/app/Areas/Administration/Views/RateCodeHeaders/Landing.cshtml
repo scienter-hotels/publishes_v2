@@ -1,0 +1,302 @@
+﻿
+@{
+    ViewBag.Title = "Manage Rate Code";
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        FillGrid();
+    });
+
+    // show form --------------------------------
+    $('body').on('click', '.showForm', function (e) {
+        $.ajax({
+            url: '/administration/ratecodeheaders/form',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+
+        });
+    });
+
+    // show grid --------------------------------
+
+    $('body').on('click', '.showGrid', function (e) {
+        FillGrid();
+    });
+
+
+    // save --------------------------------------
+    $('body').on('submit', '#rateCodeHeaders', function (e) {
+
+        e.preventDefault();
+        var rateCodeHeader = {
+            __RequestVerificationToken: $('__RequestVerificationToken').val(),
+            Id: $('#Id').val(),
+            Name: $('#Name').val(),
+            FolioName: $('#FolioName').val(),
+            PromoCode: $('#PromoCode').val(),
+            //MinStayThrough: $('#MinStayThrough').val(),
+            //MaxStayThrough: $('#MaxStayThrough').val(),
+            //MinOccupancy: $('#MinOccupancy').val(),
+            //MaxOccupancy: $('#MaxOccupancy').val(),
+            //MinRooms: $('#MinRooms').val(),
+            //MaxRooms: $('#MaxRooms').val(),
+            //BookBeforeDays: $('#BookBeforeDays').val(),
+            IsFixedRate: $('#IsFixedRate').prop("checked"),
+            IsDayUse: $('#IsDayUse').prop("checked"),
+            IsComplementary: $('#IsComplementary').prop("checked"),
+            IsHouseUse: $('#IsHouseUse').prop("checked"),
+            IsApplicableForIBE: $('#IsApplicableForIBE').prop("checked"),
+            IsLocalRate: $('#IsLocalRate').prop("checked"),
+            IsPromotion: $('#IsPromotion').prop("checked"),
+            IsActive: $('#IsActive').prop("checked"),
+            IsInclusiveRate: $('#IsInclusiveRate').prop("checked"),
+            CurrencyId: $('#CurrencyId').val(),
+            HotelRateCode: $('#HotelRateCode').val(),
+            ConfirmationRateRemark: $('#confirmationrateremarks').val(),
+            DefaultMarketId: $('#DefaultMarketId').val(),
+            Properties: selectedProperties,
+            //RateCodeWiseFreeNights: FreeNightArr
+        };
+
+        if (selectedProperties.length > 0) {
+            if ($('#CurrencyId').val() != 0) {
+                if ($('#DefaultMarketId').val() != null) {
+                    $.ajax({
+                        url: '/administration/ratecodeheaders/save',
+                        dataType: 'html',
+                        data: rateCodeHeader,
+                        method: 'POST',
+                        success: function (response) {
+
+                            ShowSuccessMessage('Record has been saved successfully.');
+                            FillGrid();
+                        }
+
+                    });
+                } else {
+                }
+                ShowWarningMessage('Market field is mandatory.');
+
+            } else {
+                ShowWarningMessage('Currency field is mandatory.');
+            }
+
+        }
+        else {
+            ShowWarningMessage('Select at least one property to be continue.');
+        }
+    });
+
+
+    // fill grid -----------------------------------
+    function FillGrid() {
+        var gridId = "#existingRateCodeHeaderGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/administration/ratecodeheaders/selectforgrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+
+            }
+
+        });
+    }
+
+    //--------------------------------------------------------------------
+
+    $('body').on('change', '#PromoCode', function () {
+
+        if ($(this).val().length > 0) {
+            $('#IsPromotion').prop('checked', true);
+        }
+        else {
+            $('#IsPromotion').prop('checked', false);
+        }
+
+
+    });
+
+
+
+    $('body').on('click', '#btnAdd', function () {  
+        var reservationNightsCount = $('#ResNight').val();
+        var freenightCount = $('#FreeNight').val();
+
+        var isAlreadyExists = false;
+
+        $.each(FreeNightArr, function (index, freeNight) {     
+            if (parseInt(freeNight.NoOfReservationNights) == parseInt(reservationNightsCount) && parseInt(freeNight.FreeNights) == parseInt(freenightCount)) {
+                isAlreadyExists = true;
+                ShowWarningMessage('Record for same values already exists.');
+            }
+        }); 
+
+        if (!isAlreadyExists) {
+            FreeNightArr.push({
+                rowId: create_UUID(), //Just to generate a unique id
+                RateCodeHeaderId: $('#Id').val(),
+                NoOfReservationNights: $('#ResNight').val(),
+                FreeNights: $('#FreeNight').val(),
+            });
+        }
+
+        DrawFreenightsGrid(FreeNightArr);
+    });
+
+    function DrawFreenightsGrid(freeNights) {
+        $('#CurrencyEncashmentTable tr').not(':first').remove();
+
+        $.each(freeNights, function (index, freeNightItem) {
+            $('<tr>'
+                + '<td class="hdnResNight"><input type="hidden" class="hidden-row-id" value="' + freeNightItem.rowId + '"/>' + freeNightItem.NoOfReservationNights + '</td>'
+                + '<td class="hdnResFreeNight">' + freeNightItem.FreeNights + '</td><td>' +
+
+                '<button type="button" class="btn btn-danger btn-sm hidden-print rowDelbtn" id="rowDelbtn"> <span class="glyphicon glyphicon-minus"></span>  </button>' +
+                '</td></tr>').appendTo($('#CurrencyEncashmentTable'));
+        })
+    }
+
+    $('body').on('click', '.rowDelbtn', function () {  
+        var i = FreeNightArr.length;
+        var itemId = $(this).closest('tr').find('.hidden-row-id').val();
+
+        while (i--) {       
+            if (itemId.indexOf(FreeNightArr[i].rowId) != -1) {
+                FreeNightArr.splice(i, 1);
+            }
+        } 
+
+        DrawFreenightsGrid(FreeNightArr);
+    });
+
+    $('body').on('click', '.btnEdit', function (e) {
+
+        $.ajax({
+            async: false,
+            url: '/administration/RateCodeHeaders/edit',
+            dataType: 'html',
+            data: { id: $(this).attr('data-id') },
+            method: 'POST',
+            success: function (response) {
+
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+
+        });
+
+        //$.ajax({
+        //    async: false,
+        //    url: '/administration/RateCodeHeaders/SelectbyId',
+        //    dataType: 'json',
+        //    data: { Id: $(this).attr('data-id') },
+        //    method: 'POST',
+        //    success: function (data) {  
+                
+        //        FreeNightArr = [];
+        //        var itemId = 1;
+
+        //        $.each(data, function (index, item) {                
+        //            FreeNightArr.push({
+        //                rowId: create_UUID(),
+        //                NoOfReservationNights: item.NoOfReservationNights,
+        //                FreeNights: item.FreeNights
+        //            });      
+        //            itemId++;
+        //        })    
+
+        //        DrawFreenightsGrid(FreeNightArr);
+        //    }  
+        //});
+    });
+
+    $('body').on('change', '#FreeNight', function () {
+        var reservationNight = $('#ResNight').val();
+        var freeNights = $(this).val();
+
+        if (reservationNight < freeNights) {
+            ShowWarningMessage('Free night count cannot exceed reservation night count');
+            $(this).val(reservationNight);
+        }
+    })
+
+    $('body').off('click', '#existingRateCodeHeaderGrid tr').on('click', '#existingRateCodeHeaderGrid tr', function () {
+        var check = $(this).find('input.rateCode-checkBox').prop('checked');
+        if (check) {
+            $(this).find('input.rateCode-checkBox').prop('checked', false);
+            if (!$('#main-grid-content').hasClass('col-md-12')) {
+                $('#main-grid-content').removeClass('col-md-10');
+                $('#main-grid-content').addClass('col-md-12');
+                $('#side-buttons').addClass('hidden').removeClass('col-md-2');
+                $('input.rateCode-checkBox:checked').closest('tr').removeClass('selectdRecord');
+            }
+        }
+        else {
+            $(this).find('input.rateCode-checkBox').prop('checked', true);
+            if (!$('#main-grid-content').hasClass('col-md-10')) {
+                $('#main-grid-content').removeClass('col-md-12');
+                $('#main-grid-content').addClass('col-md-10');
+                $('#side-buttons').removeClass('hidden').addClass('col-md-2');
+            }
+            $('#existingRateCodeHeaderGrid tr').not(this).find('input.rateCode-checkBox').prop('checked', false);
+            $('#existingRateCodeHeaderGrid tr').not(this).closest('tr').removeClass('selectdRecord');
+            $(this).addClass('selectdRecord');
+        }
+    });
+</script>
+

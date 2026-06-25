@@ -1,0 +1,33 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.LostAndFoundImage>
+@{
+    Layout = null;
+}
+
+@foreach (var item in Model)
+{
+    <div class="form-group label-floating col-md-6">
+        @if (@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("FilesUploadTo") == "AzureBlobStorage")
+        {
+        <div style="margin-bottom:5px;">
+
+            @{
+                string imageUrl = "/Attachments/" + item.Image;
+                if (item.Image.Contains("windows.net"))
+                {
+                    imageUrl = item.Image;
+                }
+            }
+
+            <img class="img img-thumbnail show-popup-image" src="@imageUrl" style="width: 80px; height: 80px;">
+            <input type="file" name="Images" id="Images" accept="image/*" multiple style="display:none;">
+        </div>
+        }
+        else
+        {
+            <img class="img img-thumbnail show-popup-image" src="/Attachments/@item.Image" style="width: 80px; height: 80px;">
+            <input type="file" name="Images" id="Images" accept="image/*" multiple style="display:none;">
+        }
+    </div>
+}
+
+

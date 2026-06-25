@@ -1,0 +1,83 @@
+﻿@using Scienter.HotelERP.Common.Domain
+@model Scienter.HotelERP.Common.Domain.ViewModels.RoomAvailabilityView
+
+@{ 
+    int rowCount = 0;
+    string firstRow = "first-row";
+    string skipRow = "skip-tr";
+}
+
+@foreach (DateTime date in Model.DateRange)
+{
+    <tr class="tr-bottom-border @firstRow @skipRow">
+        <td class="col-md-1 dynamic-td">
+            <input type="hidden" value="@date.ToString("yyyy-MM-dd")" id="hiddenDate" class="hidden-date-forRow" />
+            <h3 style="font-weight:bold;"> @date.ToString("dd/MM/yyyy")</h3>
+            @if (rowCount == 0)
+            {
+                <button id="coptToAllDates" class="btn btn-primary">APPLY TO ALL DATES</button>
+            }
+            
+        </td>
+        <td class="col-md-1 dynamic-td">
+            <input type="text" class="form-control remove-margin-top" readonly value="Available" />
+            <input type="text" class="form-control remove-margin-top" readonly value="Occupied" />
+            <input type="text" class="form-control remove-margin-top" readonly value="Total" />
+        </td>
+        @foreach (RoomCategory roomCategory in Model.RoomCategories)
+        {
+            List<RoomAvailability> rm = Model.RoomAvailabilities.Where(x => x.AvailabilityDate.Equals(date.Date.ToString("yyyy-MM-dd")) && x.RoomTypeId == roomCategory.Id).ToList();
+            if (rm.Count() > 0)
+            {
+                RoomAvailability roomAvailability = rm.FirstOrDefault();
+                <td class="col-md-1 dynamic-td">
+                    <input type="number" min="0" max="60" class="available-value form-control remove-margin-top available-value-@roomCategory.Id" value="@roomAvailability.Available" />
+                    <input type="number" class="occupied-value form-control remove-margin-top occupied-value-@roomCategory.Id" readonly value="@roomAvailability.Occupied" />
+                    <input type="number"  class="total-value form-control remove-margin-top total-value-@roomCategory.Id" readonly value="@roomAvailability.Total" />
+                </td>
+            }
+            else
+            {
+                <td class="col-md-1 dynamic-td">
+                    <input type="number" min="0" max="60" class="available-value form-control remove-margin-top available-value-@roomCategory.Id"  value="" />
+                    <input type="number" class="occupied-value form-control remove-margin-top occupied-value-@roomCategory.Id" readonly value="" />
+                    <input type="number" class="total-value form-control remove-margin-top total-value-@roomCategory.Id" readonly value="" />
+                </td>
+            }
+        }
+    </tr>
+    firstRow = "";
+    skipRow = "";
+    rowCount = rowCount + 1;
+}
+
+<script>
+    $('body').on('click', '#coptToAllDates', function () {
+        var available = $('.available-value').val();
+        var occupied = $('.occupied-value').val();
+        var total = $('.total-value').val();
+
+        var thIdList = [];
+        $('#availability-Table th').each(function (index, th) {
+            if (index == 0 || index == 1) 
+                return;
+            else {
+                thIdList.push($(th).find('#hiddenRoomType').val());
+            }
+        })
+
+        var availableClasswithCat, occupiedClasswithCat, totalClasswithCat;
+
+        $('#availability-Table tr').not('.skip-tr').each(function (index, eachTr) {
+            $.each(thIdList, function (index, eachCatId) {
+                availableClasswithCat = '.available-value-' + eachCatId;
+                occupiedClasswithCat = '.occupied-value-' + eachCatId;
+                totalClasswithCat = '.total-value-' + eachCatId;
+
+                $(eachTr).find(availableClasswithCat).val($('#availability-Table .first-row').find(availableClasswithCat).val());
+                $(eachTr).find(occupiedClasswithCat).val($('#availability-Table .first-row').find(occupiedClasswithCat).val());
+                $(eachTr).find(totalClasswithCat).val($('#availability-Table .first-row').find(totalClasswithCat).val());
+            })
+        })
+    });
+</script>

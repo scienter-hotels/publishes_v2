@@ -1,0 +1,532 @@
+﻿
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+<style>
+    .available-room {
+        background-color: #027159;
+        border: 2px solid #00352a;
+        cursor: pointer !important;
+    }
+
+        .available-room h3 {
+            color: white;
+        }
+
+    .room-allocated {
+        background-color: #ff0000;
+        border: 2px solid #9b0000;
+        cursor: pointer !important;
+    }
+
+    .room-allocated-other-reservation {
+        background-color: #808080;
+        border: 2px solid #9b0000;
+        cursor: not-allowed !important;
+    }
+
+    .room-allocated h3 {
+        color: white;
+    }
+
+    .room-allocated-other-reservation h3 {
+        color: white;
+    }
+
+    .btnQuickRoomAllocationAlreadyAllocated {
+        cursor: pointer !important;
+    }
+
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+</style>
+
+<input type="hidden" id="hdnArrivalDate" value="@ViewBag.arrivalDate" />
+<input type="hidden" id="hdnGroupReservationNo" value="@ViewBag.groupReservationNo" />
+<input type="hidden" id="hidden-reservationNo" value="@ViewBag.ReservationNo" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+<input type="hidden" id="isEnableOtherCategoryRoomAllocation" name="name"
+       value="@Scienter.HotelERP.Common.Domain.SessionObjects.SystemSettingsWiseProperties.Find(x=> x.Code == "SS031" && x.PropertyId == Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id).IsEnable" />
+
+@{
+    DateTime hotelDate = Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <label style="font-size: 11px;color: #000;font-style: italic;">* Note: This dropdown lists only group numbers with arrival dates between @hotelDate.ToString("dd/MM/yyyy") and @hotelDate.AddDays(60).ToString("dd/MM/yyyy").</label>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group label-floating">
+            <label class="control-label">Arrival Date</label>
+            <div id="dobContainerInGuestProfiles" class="input-group date">
+                <input autocomplete="off" class="form-control text-box single-line datePicker" maxlength="100" name="ArrivalDateFilter" id="ArrivalDateFilter" type="text">
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group form-group-margin-override label-floating">
+            <label class="required control-label">Group Res.#</label>
+            <select name="GroupReservationNoFilter" id="GroupReservationNoFilter" class="select2 form-control">
+                <option value="N/A" class="do-not-delete">N/A</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-2" style="padding-top:23px;">
+        <input type="submit" id="btnFilterReservations" value="search" class="btn btn-primary do-not-disable" style="width:100%" />
+    </div>
+    <div class="col-md-4">
+        <div class="form-group form-group-margin-override label-floating">
+            <label class="required control-label">Floor</label>
+            <select name="FloorId" id="FloorId" class="select2 form-control">
+                <option value="N/A" class="do-not-delete">N/A</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div id="fileredReservationList" style="height:76vh; overflow-x:hidden; overflow-y:auto;">
+            <table class="table table-striped table-hover" id="listWithFilterationGrid" cellspacing="5">
+                <tr>
+                    <th class="text-primary " input type="text" width="150px">
+                        Stay
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Res.#
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Guest
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Company
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Cat.
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Type
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Basis
+                    </th>
+                    <th class="text-primary " input type="text">
+                        Room
+                    </th>
+                    <th></th>
+                </tr>
+            </table>
+        </div>
+
+        <center id="loadingPot">
+            <br /> <br /> <br /> <br />
+            <img src="~/Images/loading_pot.gif" width="180px" />
+            <br /> <br /> <br /> <br />
+        </center>
+    </div>
+
+
+    @{
+        if (@Scienter.HotelERP.Common.Domain.SessionObjects.SystemSettingsWiseProperties.Find(x => x.Code == "SS031" && x.PropertyId == Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id).IsEnable)
+        {
+
+            <div class="col-md-4">
+                <label style="font-size: 12px;"><b>Rooms From Same Category</b></label>
+                <div class="row" id="availableRoomsContainer" style="height:33vh; overflow-x:hidden; overflow-y:auto;margin-left:0;">
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label style="font-size: 12px;"><b>Rooms From Other Category</b></label>
+                <div class="row" id="availableRoomsOtherCategoriesContainer" style="height:33vh; overflow-x:hidden; overflow-y:auto;margin-left:0;">
+
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-md-4">
+                <label style="font-size: 12px;"><b>Rooms From Same Category</b></label>
+                <div class="row" id="availableRoomsContainer" style="height:72vh; overflow-x:hidden; overflow-y:auto;margin-left:0;">
+
+                </div>
+            </div>
+        }
+    }
+
+
+</div>
+
+<script src="~/Scripts/ui/reservation-list/side-buttons/bulkroom-allocation.js"></script>
+
+@*<script>
+        $(document).ready(function () {
+            var selectedReservationHeaderId = 0;
+            var selectedReservationRoomCategory = 0;
+
+            //2023-08-16--------------------------------------------------------------------------
+            $('.select2').select2();
+
+            setTimeout(function () {
+                $('.select2.select2-container').addClass('form-control');
+                $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+                $('.select2-selection__arrow').css('display', 'none');
+                $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+            }, 900);
+
+            $('body').off('click', '.select2').on('click', '.select2', function () {
+                setTimeout(function () {
+                    $('.select2-results ul li').removeClass('select2-results__option--selected');
+                }, 200);
+            });
+
+            //-------------------------------------------------------------------------------------------
+            setTimeout(function () {
+                LoadGroupReservationNoSelectCombo();
+            }, 1000);
+
+            $('.datePicker').daterangepicker({
+                "showDropdowns": true,
+                "showWeekNumbers": true,
+                "showISOWeekNumbers": true,
+                "singleDatePicker": true,
+                "minDate": $('#hotelDate').val(),
+                "changeYear": true,
+                "changeMonth": true,
+                "opens": "right",
+                "applyClass": "btn-primary",
+                "dateLimit": {
+                    "days": false
+                },
+                locale: {
+                    format: 'YYYY-MM-DD'
+                }
+            });
+            $('#loadingPot').show();
+            $('#ArrivalDateFilter').val('');
+            LoadReservationList();
+        });
+
+        function LoadGroupReservationNoSelectCombo() {
+            $.ajax({
+                url: '/Reservation/ReservationList/GroupReservationNoSelectCombo',
+                dataType: 'json',
+                method: 'get',
+                success: function (data) {
+
+                    $('#GroupReservationNoFilter option').not('.do-not-delete').remove();
+                    $(data).each(function (index, item) {
+                        $('<option value="' + item.GroupReservationNo + '" >' + item.GroupReservationNo + '</optoin>').appendTo($('#GroupReservationNoFilter'));
+                    });
+                }
+
+            });
+        }
+
+        function LoadReservationList() {
+
+            var arrivalDate = $('#ArrivalDateFilter').val();
+            if (arrivalDate == '') {
+                arrivalDate = '1900-01-01';
+            }
+            $.ajax({
+                url: '/Reservation/ReservationList/ReservationListWithFilterationDataTable?arrivalDate=' + arrivalDate + '&groupReservationNo=' + $('#GroupReservationNoFilter').val(),
+                dataType: 'json',
+                method: 'post',
+                beforeSend: function () {
+                    $('#loadingPot').show();
+                    $('#listWithFilterationGrid tr').not(':first-child').remove();
+                },
+                success: function (data) {
+                    $.each(data, function (index, item) {
+                        $('<tr class="data-single-filteration">' +
+                            '<td>' +
+                            item.ArrivalDate + ' - ' + item.DepartureDate +
+                            '</td>' +
+                            '<td>' +
+                            item.ReservationNo +
+                            '</td>' +
+                            '<td>' +
+                            item.GuestName +
+                            '</td>' +
+                            '<td>' +
+                            item.AgentName +
+                            '</td>' +
+                            '<td>' +
+                            item.RoomCat +
+                            '</td>' +
+                            '<td>' +
+                            item.RoomType +
+                            '</td>' +
+                            '<td>' +
+                            item.MealPlanName +
+                            '</td>' +
+                            '<td>' +
+                            item.RoomNo +
+                            '</td>' +
+                            '<td style="margin-right:0.2em">' +
+                            '    <div class="form-list checkbox">' +
+                            '        <label>' +
+                            '            <input class="list-checkBox chkSelectReservation" type="checkbox" value="' + item.Id + '" data-room-category="' + item.RoomCat + '" />' +
+                            '        </label>' +
+                            '    </div>' +
+                            '</td>' +
+                            '</tr>').appendTo("#listWithFilterationGrid");
+                    });
+
+                    console.log(data);
+                },
+                complete: function () {
+                    $('#loadingPot').hide();
+                }
+            });
+        }
+
+        $('body').off('click', '#btnFilterReservations').on('click', '#btnFilterReservations', function () {
+            LoadReservationList();
+        });
+
+        $('body').off('click', '.chkSelectReservation').on('click', '.chkSelectReservation', function () {
+            $('.chkSelectReservation').not(this).prop('checked', false);
+            LoadAvailableRooms();
+        });
+
+        function LoadAvailableRooms() {
+            if ($('.chkSelectReservation:checked') != undefined && $('.chkSelectReservation:checked').length > 0) {
+                selectedReservationHeaderId = $('.chkSelectReservation:checked').val(); // for load rooms after allocation or deallocation
+                selectedReservationRoomCategory = $('.chkSelectReservation:checked').attr('data-room-category');
+            } else {
+                $('.chkSelectReservation').each(function (index, item) {
+                    if ($(item).val() == selectedReservationHeaderId) {
+                        $(item).prop('checked', true);
+                    }
+                });
+            }
+
+            var isAllocated = "";
+            var isDisabled = "";
+            var floorNames = [];
+
+            $.ajax({
+                url: '/reservation/ReservationList/RoomListForRoomAllocation?reservationHeaderId=' + selectedReservationHeaderId + '&roomAllocationType=N',
+                dataType: 'json',
+                method: 'get',
+                beforeSend: function () {
+                    $('#availableRoomsContainer').html('');
+                    $('#availableRoomsContainer').html('Loading rooms ...');
+                },
+                success: function (response) {
+
+                    $('#availableRoomsContainer').html('');
+                    $('#availableRoomsOtherCategoriesContainer').html('');
+                    $(response).each(function (index, item) {
+                        isAllocated = "";
+                        isDisabled = "";
+
+                        if (item.IsAllocatedForReservation) {
+                            isAllocated = "btnQuickRoomAllocation room-allocated";
+                            isDisabled = "";
+                        }
+                        else if (item.IsAllocatedForOtherReservation) {
+                            isAllocated = "room-allocated-other-reservation";
+                            isDisabled = "disabled";
+                        } else {
+                            isAllocated = "available-room btnQuickRoomAllocation";
+                            isDisabled = "";
+                        }
+
+                        if (item.RoomCode == selectedReservationRoomCategory) {
+
+                        }
+                        if (selectedReservationRoomCategory.includes('>')) { // if room category changes
+                            selectedReservationRoomCategory = selectedReservationRoomCategory.split('>')[1].replace(" ", "");
+                        }
+                        if (selectedReservationRoomCategory == item.Prefix) {
+                            isFromDiffCategory = "room-from-samecategory";
+
+                            $('<div class="col-md-3 single-room-container ' + item.RoomFloorName.replace(" ", "-") + '" style="padding-right:5px;padding-left:0px;">' +
+                                '<div style="padding:10px;border:1px solid #ccc; margin: 0px 0px 5px 0px;" class="' + isFromDiffCategory + ' ' + isAllocated + '" ' + isDisabled + ' data-room-id="' + item.Id + '">' +
+                                '<div class="row">' +
+                                '<div class="col-md-5 roomCode"><h3 style="margin:0px; font-size:14px; font-weight:bold;">' + item.RoomCode + '</h3> </div>' +
+                                '<div class="col-md-7" style="border-left:1px solid #ccc"><h3 style="margin:0px; font-size:14px !important;">' + item.Prefix + '</h3> </div>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>').appendTo('#availableRoomsContainer');
+                        } else {
+                            isFromDiffCategory = "room-from-differentcategory";
+
+                            $('<div class="col-md-3 single-room-container ' + item.RoomFloorName.replace(" ", "-") + '" style="padding-right:5px;padding-left:0px;">' +
+                                '<div style="padding:10px;border:1px solid #ccc; margin: 0px 0px 5px 0px;" class="' + isFromDiffCategory + ' ' + isAllocated + '" ' + isDisabled + ' data-room-id="' + item.Id + '">' +
+                                '<div class="row">' +
+                                '<div class="col-md-5 roomCode"><h3 style="margin:0px; font-size:14px; font-weight:bold;">' + item.RoomCode + '</h3> </div>' +
+                                '<div class="col-md-7" style="border-left:1px solid #ccc"><h3 style="margin:0px; font-size:14px !important;">' + item.Prefix + '</h3> </div>' +
+                                '</div>' +
+                                '</div>' +
+                                '</div>').appendTo('#availableRoomsOtherCategoriesContainer');
+                        }
+
+                        floorNames.push(item.RoomFloorName);
+
+                    });
+                },
+                complete: function () {
+
+                    $('.btnQuickRoomAllocation').removeClass('btnQuickRoomAllocationAlreadyAllocated');
+                    if ($('.btnQuickRoomAllocation').hasClass('room-allocated')) { // if one room allocated
+                        $('.btnQuickRoomAllocation').each(function (index, item) {
+                            if ($(item).hasClass('room-allocated') == false) {
+                                $(item).removeClass('btnQuickRoomAllocation');
+                                $(item).addClass('btnQuickRoomAllocationAlreadyAllocated');
+                            }
+                        });
+                    }
+
+                    var uniqueNames = [];
+                    $.each(floorNames, function (i, el) {
+                        if ($.inArray(el, uniqueNames) === -1) uniqueNames.push(el);
+                    });
+
+
+                    $('#FloorId option').remove();
+                    $('<option value="all">All</option>').appendTo('#FloorId');
+                    $.each(uniqueNames, function (index, element) {
+                        $('<option value="' + element.replace(" ", "-") + '">' + element + '</option>').appendTo('#FloorId');
+                    });
+                }
+            });
+        }
+
+        $('body').off('click', '.btnQuickRoomAllocationAlreadyAllocated').on('click', '.btnQuickRoomAllocationAlreadyAllocated', function () {
+            ShowWarningMessage('Please de-allocate the allocated room first.');
+        });
+
+        $('body').off('change', '#FloorId').on('change', '#FloorId', function () {
+
+            $('.single-room-container').hide();
+
+            if ($('#FloorId').val() == "all") {
+                $('.single-room-container').fadeIn();
+            }
+            else {
+                $('.single-room-container').each(function (index, item) {
+                    if ($(item).hasClass($('#FloorId').val())) {
+                        $(item).fadeIn();
+                    }
+                });
+            }
+        });
+
+        $('body').off('click', '.btnQuickRoomAllocation').on('click', '.btnQuickRoomAllocation', function () {
+            if ($('.chkSelectReservation:checked').length == 0 || $('.chkSelectReservation:checked') == undefined || $('.chkSelectReservation:checked').val() == undefined) {
+                ShowWarningMessage('Please select a reservation to continue.');
+            }
+            else {
+                var operation = 'insert';
+                if ($(this).hasClass('room-allocated')) {
+                    operation = 'delete';
+                }
+
+
+                if (operation == 'insert' || (operation == 'delete' && confirm('Are you sure you want to de-allocated the room?'))) {
+                    if ($(this).hasClass('room-from-differentcategory') && confirm('Are you sure you want to allocate the room from differnt category?')) {
+                        var reservtionHeaderId = $('.chkSelectReservation:checked').val();
+                        var currentRoomId = $(this).attr('data-room-id');
+
+                        $.ajax({
+                            method: 'post',
+                            url: '/reservation/ReservationList/SaveQuickRoomAllocation?roomId=' + currentRoomId + '&reservationHeaderId=' + reservtionHeaderId + '&operation=' + operation,
+                            datatype: 'html',
+                            success: function (data) {
+                                console.log(data);
+                                if (data == "OK") {
+                                    if (operation == "insert") {
+                                        ShowSuccessMessage('Room allocated.');
+                                    } else {
+                                        ShowSuccessMessage('Room deallocated.');
+                                    }
+                                    LoadAvailableRooms();
+                                } else {
+                                    ShowErrorMessage(data);
+                                }
+
+                            },
+                            complete: function () {
+                                LoadReservationList();
+                                $('#loadingPot').hide();
+                            }
+                        });
+                    } else if ($(this).hasClass('room-from-samecategory')) {
+                        var reservtionHeaderId = $('.chkSelectReservation:checked').val();
+                        var currentRoomId = $(this).attr('data-room-id');
+
+                        $.ajax({
+                            method: 'post',
+                            url: '/reservation/ReservationList/SaveQuickRoomAllocation?roomId=' + currentRoomId + '&reservationHeaderId=' + reservtionHeaderId + '&operation=' + operation,
+                            datatype: 'html',
+                            success: function (data) {
+                                console.log(data);
+                                if (data == "OK") {
+                                    if (operation == "insert") {
+                                        ShowSuccessMessage('Room allocated.');
+
+                                    } else {
+                                        ShowSuccessMessage('Room deallocated.');
+                                    }
+                                    LoadAvailableRooms();
+                                } else {
+                                    ShowErrorMessage(data);
+                                }
+
+                            },
+                            complete: function () {
+                                LoadReservationList();
+                                $('#loadingPot').hide();
+                            }
+                        });
+                    }
+
+                }
+
+            }
+        });
+
+    </script>*@

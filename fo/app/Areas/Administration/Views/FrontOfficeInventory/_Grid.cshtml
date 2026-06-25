@@ -1,0 +1,90 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.FrontOfficeInventory>
+
+<div class="table-responsive">
+    <table id="existing-inventory-items" class="table table-striped">
+        <thead>
+            <tr>
+                <th class="text-primary">
+                    Name
+                </th>
+                <th class="col-md-1 text-primary">
+                    Description
+                </th>
+                <th class="text-primary">
+                    Actual Quantity
+                </th>
+                <th class="col-md-1 text-primary">
+                    OBR Quantity
+                </th>
+                <th class="col-md-1 text-primary">
+                    Active
+                </th>
+                <th class="col-md-1 hidden-print"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.Description
+                </td>
+                <td>
+                    @item.ActualQty
+                </td>
+                <td>
+                    @item.OverBookingQty
+                </td>
+                <td class="text-right">
+                    @{
+                        string check = "";
+                        if (item.IsActive)
+                        {
+                            check = "checked";
+                        }
+                    }
+                    <div class="form-group checkbox">
+                        <label>
+                            <input type="checkbox" @check disabled/> 
+                        </label>
+                    </div>
+                </td>
+                <td class="hidden-print text-right">
+                    <a class="btn btn-theme-color-2 btn-sm" id="btnEdit"  data-id="@item.Id">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+
+                    <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete"  data-href="/administration/FrontOfficeInventory/delete/@item.Id">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#existing-inventory-items').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+</script>

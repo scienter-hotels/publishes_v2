@@ -1,0 +1,86 @@
+﻿@model  IEnumerable < Scienter.HotelERP.Common.Domain.ViewModels.AlertTypeView>
+
+@{
+    ViewBag.Title = "Existing Alert Types";
+}
+
+<div class="table-responsive grid-container">
+    <table class="table table-striped"
+           id="existingAlertTypeGrid"
+           data-page-index="1"
+           data-page-size="5"
+           data-page-count="@Model.FirstOrDefault().PageCount"
+           data-filter-type="2"
+           data-search-keyword=""
+           data-grid-top-functionalities="true"
+           data-grid-pageable="true"
+           data-grid-sortable="true">
+        <tr>
+            <th class="col-md-1 text-primary">
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th class="col-md-1 text-primary">
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th class="col-md-1 text-primary">
+                Color
+            </th>
+            <th class="col-md-1 text-primary">
+                Active
+            </th>
+            <th class="col-md-1 hidden-print"></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="col-md-1">
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td class="col-md-1">
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+
+                <td class="col-md-1">
+                    <div width:20px; height:20px; style="background-color:@item.ColorCode; overflow: auto;">@Html.DisplayFor(modelItem => item.ColorName)</div>
+
+                </td>
+
+                <td class="col-md-1">
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.DisplayFor(modelItem => item.IsActive)
+                            <span class="hidden">
+                                @if (item.IsActive)
+                                {
+                                    @:Active
+                                    }
+                                else
+                                {
+                                    @:Inactive
+                                    }
+                            </span>
+                        </label>
+                    </div>
+
+                </td>
+
+
+                <td class="hidden-print text-right">
+                    @*<a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Alert Type - @item.Name" data-href="/administration/alerttypes/print/@item.Id">
+                        <span class="glyphicon glyphicon-print"></span>
+                    </a>*@
+
+                    <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/alerttypes/edit/@item.Id">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+
+                    <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/administration/alerttypes/delete/@item.Id">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>

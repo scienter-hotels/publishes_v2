@@ -1,0 +1,156 @@
+﻿
+@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.ReservationHeaderView>
+
+@{
+    ViewBag.Title = "Quick Checkout";
+   
+}
+
+<input type="hidden" id="data-fos-current-date" />
+<table class="table table-striped"
+       id="existingReservationHeaderGridCheckOut">
+    <thead>
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                Group#
+            </th>
+            <th>
+                Res#
+            </th>
+            <th>
+                Guest
+            </th>
+            <th>
+                Arrival
+            </th>
+            <th>
+                Departure
+            </th>
+            <th>
+                Category
+            </th>
+            <th>
+                Type
+            </th>
+            <th>
+                Room
+            </th>
+            <th>
+
+            </th>      
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @if (item.UnSettledBill > 0 || item.PendingPOSBill)
+                {
+                    <div class="form-group checkbox">
+                        <label>
+                            <input class="quickCheckOut-checkBox" disabled room-No="@item.RoomNo" guest-Name=" @item.GuestName" reservation-no="@item.ResNo" type="checkbox" value="@item.Id" />
+                        </label>
+                    </div>
+                    <input type="hidden" name="IsAllowCheckOut" class="isAllowToCheckOut" value="@item.IsAllowToCheckOut.ToString()" />
+                }
+                else
+                {
+                    <div class="form-group checkbox">
+                        <label>
+                            <input class="quickCheckOut-checkBox" room-No="@item.RoomNo" guest-Name=" @item.GuestName" reservation-no="@item.ResNo" type="checkbox" value="@item.Id" />
+                        </label>
+                    </div>
+                    <input type="hidden" name="IsAllowCheckOut" class="isAllowToCheckOut" value="@item.IsAllowToCheckOut.ToString()" />
+                }
+
+            </td>
+
+            <td>
+                @item.GResNo
+            </td>
+            <td>
+                @item.ResNo
+            </td>
+            <td>
+                @item.GuestName
+            </td>
+            <td>
+                @item.ArrivalDate
+            </td>
+            <td>
+                @item.DepartureDate
+            </td>
+            <td>
+                @item.RoomCat
+            </td>
+            <td>
+                @for (int i = 0; i < item.MaxHeadCount; i++)
+                {
+                    <span class="glyphicon glyphicon-user display-inline font-size-18" data-toggle="tooltip"></span>
+                }
+            </td>
+            <td>
+                @item.RoomNo
+            </td>
+            <td>
+                @if (item.UnSettledBill > 0)
+                {
+                    <span class="label label-danger">UNS.Folio</span>
+
+                }
+                else
+                {
+                    <span class="label label-default" style="background-color:#f2f2f2">UNS.Folio</span>
+                }
+            </td>
+            
+
+            <td>
+                @if (item.PendingPOSBill)
+                {
+                    <span class="label label-danger">UNS.POS</span>
+
+                }
+               else
+                {
+                    <span class="label label-default" style="background-color:#f2f2f2">UNS.POS</span>
+
+                }
+            </td>            
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $('.showForm').hide();
+        }, 500);
+        $('#existingReservationHeaderGridCheckOut').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                "lengthMenu": [[14, 10,25, 50, -1], [15, 10,25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '50vh',
+                //scrollCollapse: false
+            } );
+    });
+</script>

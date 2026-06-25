@@ -1,0 +1,179 @@
+﻿
+@{
+    ViewBag.Title = "Guest Profiles";
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" value="@ViewBag.editId" id="hdnEditrecordId" />
+@*<script src="~/Scripts/ui/common/scienter.grid2.js"></script>*@
+<script>
+         // form load --------------------------------
+        $(document).ready(function () {
+            FillGrid();
+        });
+
+        // show form --------------------------------
+        $('body').on('click', '.showForm', function (e) {
+            $.ajax({
+                url: '/administration/guestprofiles/form',
+                dataType: 'html',
+                method: 'POST',
+                success: function (response) {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+               
+            });
+        });
+
+        // show grid --------------------------------
+
+        $('body').on('click', '.showGrid', function (e) {
+            FillGrid();
+        });
+
+        // save --------------------------------------
+        $('body').on('submit', '#guestProfiles', function (e) {
+            guestProfiles
+            e.preventDefault();
+           
+            var guestprofile = {                   
+                    __RequestVerificationToken: $('__RequestVerificationToken').val(),
+                    Id:                           $('#Id').val(),
+                    FirstName:                    $('#FirstName').val(),
+                    MiddleName:                   $('#MiddleName').val(),
+                    LastName:                     $('#LastName').val(),
+                    DOB:                          $('#DOB').val(),
+                    HomeAddress:                  $('#HomeAddress').val(),
+                    BillingAddress:               $('#BillingAddress').val(),
+                    IdNum:                        $('#IdNum').val(),
+                    PassportNo:                   $('#PassportNo').val(),
+                    SalutationId:                 $('#SalutationId').val(),
+                    ProfileStatusId:              $('#ProfileStatusId').val(),
+                    GenderId:                     $('#GenderId').val(),
+                    CountryId:                    $('#CountryId').val(),
+                    NationalityId:                $('#NationalityId').val(),
+                    VipLevelId:                   $('#VipLevelId').val(),
+                    LanguageId:                   $('#LanguageId').val(),
+                    SegmentId:                    $('#SegmentId').val(),
+                    CompanyId:                    $('#CompanyId').val(),
+                    DesignationId:                $('#DesignationId').val(),
+                    PreferredRoomId:              $('#PreferredRoomId').val(),
+                    PreferredRoomCategoryId:      $('#PreferredRoomCategoryId').val(),
+                    DefaultRateCodeId:            $('#DefaultRateCodeId').val(),
+                    LaundryPatternId:             $('#LaundryPatternId').val(),
+                    GuestImage:                   $('#GImg1').attr('src'),
+                    IsActive:                     $('#IsActive').prop("checked"),
+                   
+            };
+
+            $.ajax({
+                url: '/administration/guestprofiles/save',
+                dataType: 'html',
+                data: guestprofile,
+                method: 'POST',
+                success: function (response) {                    
+                    ShowSuccessMessage('Record has been saved successfully.');
+                    FillGrid();
+                }
+
+            });
+            });
+      
+        // fill grid -----------------------------------
+    function FillGrid() {   
+            var gridId = "#existingGuestProfileGrid"; // change this - relevent grid id
+            var paginations = {
+                PageIndex: $(gridId).attr('data-page-index'),
+                PageSize: $(gridId).attr('data-page-size'),
+                FilterType: $(gridId).attr('data-filter-type'),
+                SearchKeyword: $(gridId).attr('data-search-keyword')
+            }
+            $.ajax({
+                url: '/administration/guestprofiles/selectforgrid',
+                dataType: 'html',
+                data: paginations,
+                method: 'POST',              
+                success: function (response) {
+                   
+                    if ($('.grid-container').length > 0) {
+                        $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                        $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                    } else {
+                        $('#contentLoadingArea #content').html('').fadeOut();
+                        $('#contentLoadingArea #content').html(response).fadeIn();
+                    }
+                   
+                }
+               
+            });
+        }
+
+
+        $('#CompanyId').change(function () {
+            if ($(this).val().length) {
+                $('#cmbSegmentIdContainer *').prop('disabled', false);
+                $.ajax({
+                    url: 'Administration/CompanyWiseSegments/SegmentsByCompanyCombo?companyId=' + $(this).val() + '&name=SegmentId',
+                    dataType: 'html',
+                    success: function (data) {
+                        $('#cmbSegmentIdContainer').html(data);
+                    },
+
+                });
+            } else {
+                $('#cmbSegmentIdContainer *').prop('disabled', true);
+            }
+        });
+
+        $('#PreferredRoomCategoryId').change(function () {
+            if ($(this).val().length) {
+                $('#cmbPreferedRoomContainer *').prop('disabled', false);
+                $.ajax({
+                    url: 'Administration/RoomDetails/RoomDetailCombo?RoomCategoryId=' + $(this).val() + '&name=PreferredRoomId',
+                    dataType: 'html',
+                    success: function (data) {
+                        $('#cmbPreferedRoomContainer').html(data);
+                    },
+
+                });
+            } else {
+                $('#cmbPreferedRoomContainer *').prop('disabled', true);
+            }
+        });
+
+    
+
+</script>

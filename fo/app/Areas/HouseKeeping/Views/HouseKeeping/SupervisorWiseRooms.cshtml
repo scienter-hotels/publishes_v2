@@ -1,0 +1,440 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.HouseKeepingRoomBoyViewModel
+@{
+
+    ViewBag.Title = "Supervisor Wise Room Allocation";
+}
+
+
+<style>
+    .search-col {
+        margin-top: 20px;
+        padding-left: 5px !important;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                    <div class="row">
+                        <div class=" col-md-4">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Supervisor *</label>
+
+                                <select id="SupervisorId" name="" class="form-control" required>
+                                    <option value=""></option>
+
+                                    @foreach (var option in Model.Supervisors)
+                                    {
+                                        <option value="@option.Id" selected>@option.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button id="btnSearchSupervisorWiseRooms" value="Search" class="btn btn-primary" style="margin:30px 0 0 0;width:100%;">SEARCH<div class="ripple-container"></div></button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-2">
+                            <fieldset class="the-fieldset" style="padding:3px; ">
+                                <legend class="the-legend">Floors</legend>
+                                <div class="input-group searchdiv col-md-12" style="width:97%;margin-top: -20px; margin-bottom: 10px;">
+                                    <input type="text" class="form-control text-box single-line" placeholder="Search Floors" onkeyup="searchFloor()" id="floorSearch" />
+                                </div>
+                                <div class="col-md-12 label-data" id="Floors-Area" style="overflow-y:auto;"></div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-6">
+                            <fieldset class="the-fieldset" style="padding:3px;">
+                                <legend class="the-legend">Rooms</legend>
+                                <div class="input-group searchdiv col-md-12" style="width:97%;margin-top: -20px; margin-bottom: 10px;">
+                                    <input type="text" class="form-control text-box single-line" placeholder="Search Rooms" onkeyup="searchRoom()" id="roomSearch" />
+                                </div>
+                                <div class="col-md-12 label-data" id="Existing-Rooms-Area" style="overflow-y:auto;">
+                                    <table class="table table-striped" id="Data-Existing-Rooms-Supervisor">
+
+                                        <tr>
+                                            <th>Room</th>
+                                            <th>Category</th>
+                                            <th>Type</th>
+                                            <th>House Keeping Status</th>
+                                            <th>Floor</th>
+                                            <th></th>
+                                        </tr>
+
+                                        <tbody class="all-existing-rooms-Supervisor">
+                                            <tr>
+                                                <td class="" colspan="5">No records available.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-4">
+                            <fieldset class="the-fieldset" style="padding:3px;">
+                                <legend class="the-legend">Added Rooms</legend>
+                                <div class="input-group searchdiv col-md-12" style="width:96%;margin-top: -20px; margin-bottom: 10px;">
+                                    <input type="text" class="form-control text-box single-line" placeholder="Search Rooms" onkeyup="searchAddedRoom()" id="addedRoomSearch" />
+                                </div>
+                                <div class="col-md-12 label-data" id="Added-Rooms-Area" style="overflow-y:auto;">
+                                    <table class="table table-striped" id="Data-Added-Rooms-Supervisor">
+
+                                        <tr>
+                                            <th>Room</th>
+                                            <th>Category</th>
+                                            <th></th>
+                                        </tr>
+
+
+                                        <tbody class="all-Added-rooms">
+                                            <tr class="data-row-c">
+                                                <td colspan="3">No records available.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </fieldset>
+                            <div class="row">
+                                <div class="col-md-4 col-md-offset-8">
+                                    <button type="submit" class="btn btn-primary btn-save-Supervisor-wise-rooms" style="width:100%;">Save</button>
+                                </div>
+                                @*<div class="col-md-4">
+                                    <button type="button" class="btn btn-info btn-print" id="btnPrint" style="width:100%;">Print</button>
+                                </div>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var windowHeight = window.innerHeight;
+        var windowOuterHeight = window.outerHeight - 77;
+        var bookmarkBarHeight = windowOuterHeight - windowHeight - 30;
+
+        console.log(windowHeight)
+        console.log(windowOuterHeight)
+        console.log(bookmarkBarHeight)
+        console.log($('.card').height())
+
+        if (windowHeight === windowOuterHeight) {
+            $('#Floors-Area').height(windowHeight - 315);
+            $('#Existing-Rooms-Area').height(windowHeight - 315);
+            $('#Added-Rooms-Area').height(windowHeight - 365);
+        }
+        else {
+            $('#Floors-Area').height(windowHeight - 315 + bookmarkBarHeight);
+            $('#Existing-Rooms-Area').height(windowHeight - 315 + bookmarkBarHeight);
+            $('#Added-Rooms-Area').height(windowHeight - 365 + bookmarkBarHeight);
+        }
+
+        if (windowHeight > 661) {
+            $('#roomSearch').parent('div').css('width', '98%')
+            $('#addedRoomSearch').parent('div').css('width', '100%')
+        }
+
+        $('#SupervisorId').val('');
+        $('.room-id-supervisor').prop('checked', false);
+        setTimeout(function () {
+            $('#btnPrint').prop("disabled", true);
+        }, 1000);
+
+        LoadFloors();
+        LoadRooms();
+
+        
+    });
+
+    function searchFloor() {
+        var searchTerm = $("#floorSearch").val().toUpperCase();
+
+        $("#myUL li").each(function () {
+            var label = $(this).find("label").eq(0);
+            var listItem = $(this);
+
+            if (searchTerm === "") {
+                listItem.show();
+            } else {
+                if (label.text().toUpperCase().indexOf(searchTerm) > -1) {
+                    listItem.show();
+                } else {
+                    listItem.hide();
+                }
+            }
+        });
+    }
+
+    function searchRoom() {
+        var searchTerm = $("#roomSearch").val().toUpperCase();
+
+        $("#Data-Existing-Rooms-Supervisor tr").each(function () {
+            var row = $(this);
+            var rowMatch = false;
+
+            if (searchTerm === "") {
+                row.show();
+            } else {
+                row.find("td").each(function () {
+                    var cellContent = $(this).text().toUpperCase();
+                    if (cellContent.indexOf(searchTerm) > -1) {
+                        rowMatch = true;
+                        return false;
+                    }
+                });
+                if (rowMatch) {
+                    row.show();
+                } else {
+                    row.hide();
+                }
+            }
+        });
+    }
+
+    function searchAddedRoom() {
+        var searchTerm = $("#addedRoomSearch").val().toUpperCase();
+
+        $("#Data-Added-Rooms-Supervisor tr").each(function () {
+            var row = $(this);
+            var rowMatch = false;
+
+            if (searchTerm === "") {
+                row.show();
+            } else {
+                row.find("td").each(function () {
+                    var cellContent = $(this).text().toUpperCase();
+                    if (cellContent.indexOf(searchTerm) > -1) {
+                        rowMatch = true;
+                        return false;
+                    }
+                });
+                if (rowMatch) {
+                    row.show();
+                } else {
+                    row.hide();
+                }
+            }
+        });
+    }
+
+    $('#btnSearchSupervisorWiseRooms').off('#btnSearchSupervisorWiseRooms').on('click', function () {
+        $('.data-added-rows-supervisor').remove();
+        LoadSavedRooms();
+
+        setTimeout(function () {
+            if ($('.data-added-rows-supervisor').length === 0) {
+                $('.data-row-c').show();
+                $('#btnPrint').prop("disabled", true);
+            }
+        }, 500);
+    });
+
+    $('.btn-save-Supervisor-wise-rooms').off('click').on('click', function () {
+        var selectedSupervisorRoomIds = [];
+
+        if ($('#SupervisorId').val() == undefined || $('#SupervisorId').val().length == 0) {
+            ShowWarningMessage('Please select a supervisor.');
+            return false;
+        }
+        else {
+            $('.data-added-rows-supervisor').each(function (index, item) {
+                var selectedSupervisorRoom = {};
+                selectedSupervisorRoom.RoomId = $(item).find('.room-id-supervisor').attr('data-added-roomid');
+                selectedSupervisorRoom.SupervisorId = $('#SupervisorId').val();
+                selectedSupervisorRoomIds.push(selectedSupervisorRoom);
+            });
+
+            if (selectedSupervisorRoomIds.length==0) {
+                var selectedSupervisorRoom = {};
+                selectedSupervisorRoom.RoomId = 0;
+                selectedSupervisorRoom.SupervisorId = $('#SupervisorId').val();
+                selectedSupervisorRoomIds.push(selectedSupervisorRoom);
+            }
+
+            $.ajax({
+                url: '/HouseKeeping/HouseKeeping/SaveSupervisorWiseRooms',
+                method: 'POST',
+                data: { supervisorwiserooms: selectedSupervisorRoomIds },
+                success: function (response) {
+                    if (response.startsWith("ERR-")) {
+                        ShowErrorMessage(response);
+                    } else {
+
+                        ShowSuccessMessage('Saved Successfully');
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1000); // reload after 1 second
+                    }
+
+                    $('#RoomBoyId').val('');
+                    $('#btnPrint').prop('disabled', false);
+                },
+                error: function () {
+                    ShowErrorMessage('Sorry there is an error.');
+                }
+            });
+
+        }
+    });
+
+    $(document).on('click', '.remove-room', function () {
+        $(this).closest('.data-added-rows-supervisor').remove();
+    });
+
+    $(document).on('change', '.checkBoxGroup', function () {
+        filterData();
+    });
+
+    function filterData() {
+        var selectedValues = $('.checkBoxGroup:checked').map(function () {
+            return $(this).val();
+        }).get();
+
+        if (selectedValues.length === 0) {
+            $('#Data-Existing-Rooms-Supervisor tr').show();
+            return;
+        }
+
+        $('#Data-Existing-Rooms-Supervisor tr').hide();
+
+        $.each(selectedValues, function (index, value) {
+            console.log(value);
+            $('#Data-Existing-Rooms-Supervisor').find('.roomfloorname[data-roomfloorid="' + value + '"]').closest('tr').show();
+        });
+    }
+
+    function LoadSavedRooms() {
+        debugger;
+        $('.room-id-supervisor').prop('checked', false);
+        var SupervisorId = $('#SupervisorId').val();
+        var hotelDate = $('#HotelDate').val();
+        var inspectionTimeId = $('#RoomInspectionId').val();
+
+        if (SupervisorId == undefined || SupervisorId == "") {
+            SupervisorId = 0;
+        }
+
+        if (hotelDate == undefined || hotelDate == "") {
+            hotelDate = '2000-01-01';
+        }
+
+        if (inspectionTimeId == undefined || inspectionTimeId == "") {
+            inspectionTimeId = 0
+        }
+
+        $.ajax({
+            url: '/HouseKeeping/HouseKeeping/SelectSupervisorWiseAssignedRooms?supervisorId=' + SupervisorId,
+            method: 'POST',
+            success: function (data) {
+                LoadAddedRooms(data);
+            },
+            error: function () {
+                ShowErrorMessage('Sorry there is an error.');
+            }
+        });
+    }
+
+    function LoadFloors() {
+        $.ajax({
+            method: 'GET',
+            url: '/Administration/Floors/SelectFloor',
+            datatype: 'html',
+            success: function (data) {
+                $.each(data, function (index, item) {
+                    $(
+                        '<ul id="myUL">' +
+                        '<li>' +
+                        '<div class="checkbox">' +
+                        '<label>' +
+                        '<input type="checkbox" class="checkBoxGroup checbox-floor" id="FloorId" value="' + item.Id + '" />' +
+                        item.Name +
+                        '</label>' +
+                        '</div>' +
+                        '</li>' +
+                        '</ul>'
+                    ).appendTo("#Floors-Area");
+                });
+
+            }
+        });
+    }
+
+    function LoadRooms() {
+        $.ajax({
+            method: 'GET',
+            url: '/Administration/RoomDetails/SelectRoomsJson',
+            datatype: 'html',
+            beforeSend: function () {
+                $('.all-existing-rooms-Supervisor tr').remove();
+            },
+            success: function (data) {
+                $.each(data, function (index, item) {
+                    $('.all-existing-rooms-Supervisor').append(
+                        '<tr class="data-existingroom-rows-Supervisor">' +
+                        '<td class="roomcode-Supervisor">' + item.RoomCode + '</td>' +
+                        '<td class="roomcategory-Supervisor">' + item.RoomCategoryCode + '</td>' +
+                        '<td class="roomtype-Supervisor">' + item.RoomTypeCode + '</td>' +
+                        '<td class="HKStatus-Supervisor">' + item.HKStatus + '</td>' +
+                        '<td class="roomfloorname" data-roomfloorid=' + item.RoomFloorId + '>' + item.RoomFloorName + '</td>' +
+                        '<td><button class="btn btn-sm btn-primary add-room" data-roomcategory-Supervisor="' + item.RoomCategoryCode + '" data-roomCode-Supervisor="' + item.RoomCode + '" data-roomId="' + item.Id + '">Add</button></td>' +
+                        '</tr>'
+                    );
+                });
+            }
+        });
+    }
+
+    var arrAddedRooms = [];
+    $('body').off('click', '.add-room').on('click', '.add-room', function () {
+        arrAddedRooms = [];
+        var obj = {
+            RoomId: $(this).attr('data-roomId'),
+            RoomCode: $(this).attr('data-roomCode-Supervisor'),
+            RoomCategory: $(this).attr('data-roomcategory-Supervisor')
+        }
+        arrAddedRooms.push(obj);
+
+        LoadAddedRooms(arrAddedRooms);
+
+    });
+
+    function LoadAddedRooms(arrAddedRooms) {
+        $('.data-row-c').remove();
+
+        $.each(arrAddedRooms || [], function (_, item) {
+            
+            var $tr = $('<tr class="data-added-rows-supervisor">')
+                .append($('<td class="roomcode-Supervisor">').text(item.RoomCode))
+                .append($('<td class="roomcategory-Supervisor">').text(item.RoomCategory))
+                .append(
+                    $('<td>').append(
+                        $('<button class="btn btn-sm btn-danger remove-room room-id-supervisor">')
+                            .attr('data-added-roomId', item.RoomId)
+                            .html('<span class="glyphicon glyphicon-trash"></span>')
+                    )
+                );
+
+            $('.all-Added-rooms').append($tr);
+        });
+    }
+
+
+</script>

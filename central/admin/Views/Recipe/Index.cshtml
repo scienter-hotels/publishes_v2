@@ -1,0 +1,126 @@
+﻿@{
+
+    ViewBag.Title = "Recipe Header";
+}
+
+<style>
+    .form-group-marging {
+        margin-top: 0px;
+    }
+
+    .card {
+        padding: 10px !important;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header" data-background-color="purple">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="title">
+                    @ViewBag.Title
+                    <hr class="visible-print" />
+                </h4>
+            </div>
+            <div class="col-md-4 text-right hidden-print">
+                <button type="button" class="btn btn-sm btn-theme-color-2 showForm" title="Add New">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </button>
+                <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid" title="Show Grid">
+                    <span class="glyphicon glyphicon-th-list"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-content" id="contentLoadingArea">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row grid">
+                    <div class="col-md-12 table-responsive">
+                        <input type="text" id="searchby" onkeyup="SearchGrid()" placeholder="Search by any Column" title="Search by any Column">
+                        <div id="loadingProjects" class="well">
+                            <center>
+                                <img src="~/Images/loading.gif" style="width:50px; margin-top:20px; margin-bottom:0px;" />
+                            </center>
+                        </div>
+
+                        <table class="table table-striped" id="grid" style="display:none;">
+                            <tr>
+                                <th></th>
+                                <th>Code</th>
+                                <th>Description</th>
+                                @*<th>LowerVariencePerc</th>
+                                    <th>HigherVariencePerc</th>*@
+                                <th class="col-md-2"></th>
+                            </tr>
+                            <tr class="no-record">
+                                <td colspan="4">No Records Found.</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+                <form id="form" class="form" enctype="multipart/form-data">
+                    <input type="hidden" id="Id" name="Id" value="0" />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <div class="form-group label-floating">
+                                        <label class="control-label">Code*</label>
+                                        <input type="text" class="form-control" id="RecipeCode" name="RecipeCode" required maxlength="6" autocomplete="off" pattern="[a-zA-Z0-9-]+" title="Special characters are not allowed">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group label-floating">
+                                        <label class="control-label">Description *</label>
+                                        <input type="text" class="form-control" id="Description" name="Description" required maxlength="50" autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">Low Varience *</label>
+                                            <input type="text" class="form-control" id="LowerVarience" name="Description" required maxlength="25" autocomplete="off" title="maximum length 25">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">High Varience *</label>
+                                            <input type="text" class="form-control" id="HighVarience" name="Description" required maxlength="25" autocomplete="off" title="maximum length 25">
+                                        </div>
+                                    </div>
+                                </div>*@
+                        </div>
+                        <div class="col-md-6">
+                            @**RECIPE details *@                           
+                          
+                        </div>
+
+                    </div>
+
+
+                    <div class="row">
+                        <button type="submit" class="btn btn-success btn-width-100px" id="btnSubmit">
+                            Save
+                        </button>
+                        <button type="reset" class="btn btn-default btn-width-100px btn-shadow clearbtn" onclick="ClearForm()">
+                            Clear
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<input type="hidden" value="" id="hdnAction" />
+<script src="~/scripts/UI/Scienter.Recipe.js"></script>
+

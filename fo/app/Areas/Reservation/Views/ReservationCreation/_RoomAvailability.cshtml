@@ -1,0 +1,239 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.RoomCategory>
+<style>
+    .label {
+        color: black;
+        padding: 8px;
+    }
+
+    .actualAvailability {
+        background-color: #f1c40f;
+        padding: 4px !important;
+    }
+
+    .totalAvailability {
+        background-color: #e74c3c;
+        padding: 4px !important;
+    }
+
+    .allotmentDash {
+        font-size: 14px;
+    }
+</style>
+
+<script src="~/Scripts/ui/reservation-creation/reservation-creation.js"></script>
+
+<div class="table-responsive">
+    <table class="table roomDetail table-striped" data-grid-sortable="true">
+
+        <tr>
+            <th class="text-primary text-left">
+                Category
+            </th>
+            <th class="text-primary  text-right">
+                Av.Without OBR
+            </th>
+            <th class="text-primary  text-right">
+                Availability
+            </th>
+            <th class="text-primary text-right">
+                Tent.
+            </th>
+            <th class="text-primary text-right">
+                OBR
+            </th>
+            <th class="text-primary text-right">
+                Alt. Avl.
+            </th>
+
+            @if (Model.Count() > 0)
+            {
+                foreach (var roomType in Model.FirstOrDefault().RoomTypes)
+                {
+                    <th class="col-md-1 room-type-inEach-tr text-right">
+                        <input type="hidden" data-room-name="@roomType.Name" id="roomTypeId" value="@roomType.Id" />
+                        @roomType.Name
+
+
+                    </th>
+                }
+            }
+        </tr>
+
+
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td style="padding:0 6px;">
+                <input type="hidden" class="hidden-room-cat-name" id="roomCatId" value="@item.Id" data-itrm-name="@item.Name" min="0" />
+                <input type="hidden" class="hidden-promo-val" id="promoval" value="0" min="0" />
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td class="text-right" style="padding:0 6px;">
+                <input type="hidden" class="hidden-room-cat-name" id="roomCatId" value="@item.Id" data-itrm-name="@item.AvailableWithoutOBR" />
+                @item.AvailableWithoutOBR
+            </td>
+            <td class="text-right" style="padding:0 6px;">
+                <input type="hidden" class="hidden-room-cat-name" id="roomCatId" value="@item.Id" data-itrm-name="@item.ActualAvailable+item.OBR" />
+                @item.FinalAvailable
+            </td>
+            <td class="text-right" style="padding:0 6px;">
+                <input type="hidden" class="hidden-room-cat-name" id="roomCatId" value="@item.Id" data-itrm-name="@item.Tentative" />
+                @item.Tentative
+            </td>
+            <td class="text-right" style="padding:0 6px;">
+                <input type="hidden" class="hidden-room-cat-name" id="roomCatId" value="@item.Id" data-itrm-name="@item.OBR" min="0" />
+                @item.OBR
+            </td>
+            <td class="text-right" style="padding:0 6px;">
+                <input type="hidden" class="hidden-room-cat-name" id="roomCatId" value="@item.Id" data-item-name="@item.AllotmentAvailability" min="0" />
+                @Html.Raw(item.AllotmentAvailability)
+            </td>
+
+            @if (Model.Count() > 0)
+            {
+                foreach (var roomType in Model.FirstOrDefault().RoomTypes)
+                {
+                    <td data-cat-id="@item.Id" data-type-id="@roomType.Id">
+
+
+                        <input type="hidden" class="data-room-type" id="roomTypeId" value="@roomType.Id" data-room-type-name="@roomType.Name" min="0" />
+                        <input type="number" class="form-control room-count text-right" value="0" min="0" id="roomCount" data-max-availability="@item.ActualAvailable" data-maxheadcount="@roomType.MaxAdultCount" data-max-adult-count="@roomType.MaxAdultCount" data-max-child-count="@roomType.MaxChildCount" />
+
+                    </td>
+                }
+            }
+        </tr>
+        }
+
+    </table>
+</div>
+
+
+<script>
+   
+    function StayDetailsFillForReservationCreation() {
+        var typeWiseNumbersInTr = [];
+        var trWiseRoomCategory = [];
+        var trWiseRoomDetail;
+
+        if ($('#ReseFor').val() == 1) {
+
+            const roomList = $('.room-wise-counts tr').not(':first');
+            const result = [];
+            const map = new Map();
+            for (const item of roomList) {
+
+                if (!map.has($(item).find('.room-category').val())) {
+                    map.set($(item).find('.room-category').val(), true);
+                    result.push({
+                        RoomcategoryId: $(item).find('.room-category').val(),
+                        RoomcategoryName: $(item).find('.room-category-name').val(),
+                        RoomTypeId: $(item).find('.room-type').val(),
+                        RoomTypeName: $(item).find('.room-type-name').val(),
+                        count: $(item).find('.room-type-Count').val()
+                    });
+                }
+            }
+
+            $(result).each(function (index, eachTh) {
+                let tempCount = eachTh.count;
+                var trWiseRoomDetail = "";
+                if (eachTh.count == 1) {
+
+                    tdWiseRoomDetail = {
+                        roomTypeId: eachTh.RoomTypeId,
+                        roomType: eachTh.RoomTypeName,
+                        count: 1
+                    }
+                    typeWiseNumbersInTr.push(tdWiseRoomDetail);
+                } else {
+                    for (var i = 1; i <= tempCount; i++) {
+
+                        tdWiseRoomDetail = {
+                            roomTypeId: eachTh.RoomTypeId,
+                            roomType: eachTh.RoomTypeName,
+                            count: 1
+                        }
+                        typeWiseNumbersInTr.push(tdWiseRoomDetail);
+                    }
+                }
+
+                var trWiseRoomDetail = {
+                    RoomCategoryName: eachTh.RoomcategoryName,
+                    roomCategoryId: eachTh.RoomcategoryId,
+                    roomTypeArrineachTr: typeWiseNumbersInTr,
+                }
+                trWiseRoomCategory.push(trWiseRoomDetail);
+                typeWiseNumbersInTr = []
+
+                SelectedStay = {
+                    CountryId: $('#CountryCombo').val(),
+                    Adults: $('#NoOfAdults').val(),
+                    Kids: $('#NoOfChildrens').val(),
+                    ReservationType: $('#ReservationCreationReservationType').val(),
+
+                }
+
+            });
+        } else {
+
+            $('.roomDetail tr').not(':first-child').each(function (index, EachTr) {
+                var thList = $('.roomDetail').find('.room-type-inEach-tr');
+                var valuesInEachTr = $(EachTr).find('.room-count');
+
+                $(thList).each(function (index, eachTh) {
+                    if (parseInt($(valuesInEachTr[index]).val()) > 0) {
+                        tdWiseRoomDetail = {
+                            roomTypeId: $(eachTh).find('#roomTypeId').val(),
+                            roomType: $(eachTh).find('input[type=hidden]').data('room-name'),
+                            count: $(valuesInEachTr[index]).val()
+                        }
+                        typeWiseNumbersInTr.push(tdWiseRoomDetail);
+                    }
+                })
+
+                trWiseRoomDetail = {
+                    RoomCategoryName: $(EachTr).find('.hidden-room-cat-name').data('itrm-name'),
+                    roomCategoryId: $(EachTr).find('#roomCatId').val(),
+                    IsPromotion: $(EachTr).find('#promoval').val(),
+                    roomTypeArrineachTr: typeWiseNumbersInTr,
+                };
+
+                trWiseRoomCategory.push(trWiseRoomDetail);
+                typeWiseNumbersInTr = [];
+                //----------------------------------------------------------------------------
+                SelectedStay = {
+                    CountryId: $('#CountryCombo').val(),
+                    Adults: $('#NoOfAdults').val(),
+                    Kids: $('#NoOfChildrens').val(),
+                    ReservationType: $('#ReservationCreationReservationType').val(),
+                }
+
+            });
+
+        }
+
+        $('.hidden-singlepage-stringify-json-reservation').val(JSON.stringify(trWiseRoomCategory));
+        console.log(JSON.parse($('.hidden-singlepage-stringify-json-reservation').val()));
+
+        $('.hidden-singlepage-stringify-json-SelectedStay').val(JSON.stringify(SelectedStay));
+    }
+
+    $('body').on('change', '.room-count', function (e) {
+        e.preventDefault();
+        var thisController = $(this);
+        var maxAvailability = $(this).attr('data-max-availability');
+        var currentRow = $(this).closest('tr');
+        var currrentRoomSelectedCount = 0;
+        $.each(currentRow.find('.room-count'), function (index, item) {
+            currrentRoomSelectedCount = currrentRoomSelectedCount + Number($(item).val());
+        });
+
+        if (maxAvailability < currrentRoomSelectedCount) {
+            $(thisController).val(Number($(thisController).val()) - 1);
+            ShowWarningMessage('You have selected maximum available rooms.');
+            return false;
+        } 
+    });
+
+</script>

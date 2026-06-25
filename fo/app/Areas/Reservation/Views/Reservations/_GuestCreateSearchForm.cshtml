@@ -1,0 +1,265 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.GuestProfileView
+
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+    .required:after {
+        content: " *";
+        color: #e32;
+    }
+
+    .row-mt-custom {
+        margin-bottom: -16px;
+    }
+
+    .searchBox {
+        margin-top: -26px;
+    }
+
+    .form-group {
+        padding-bottom: 10px;
+        margin: 24px 0 0 0;
+    }
+</style>
+
+<div class="searchBox">
+
+    <div class="row row-mt-custom">
+        <div class="col-md-12">
+            <div class="form-group label-floating">
+                <label class="control-label required">First Name</label>
+                <input type="text" name="FirstName" id="FirstName" class="form-control ignore-textfeild-special-characters" value="@Model.FirstName" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-mt-custom">
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label required">Last Name</label>
+                <input type="text" name="LastName" id="LastName" class="form-control ignore-textfeild-special-characters" value="@Model.LastName" />
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label">VIP Levels  </label>
+                <select id="VipLevelId" class="form-control" data-select-vip="@Model.VipLevelId" required></select>
+                @*@{Html.RenderAction("VIPLevelCombo", "VIPLevels", new { area = "Administration", name = "VipLevelId", requiered = false, value = Model?.VipLevelId });}*@
+            </div>
+
+            @*<div class="form-group label-floating">
+                    <label class="control-label required">VIP Level</label>
+                    @{Html.RenderAction("SalutationCombo", "Salutations", new { area = "Administration", name = "SalutationId", requiered = true, value = Model.SalutationId });}
+                </div>*@
+        </div>
+    </div>
+
+    <div class="row row-mt-custom">
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label required">Salutation</label>
+                <select id="SalutationId" class="form-control" data-select-salutation="@Model.SalutationId" required></select>
+                @*@{Html.RenderAction("SalutationCombo", "Salutations", new { area = "Administration", name = "SalutationId", requiered = true, value = Model.SalutationId });}*@
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label">NIC / Passport</label>
+                @{
+                    string nICPassport = Model.PassportNo.Length == 0 ? Model.IdNum : Model.PassportNo;
+                }
+                <input type="text" name="NICPassport" id="NICPassport" class="form-control" value="@nICPassport" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-mt-custom">
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label required">Country</label>
+                <select id="CountryId" class="form-control country-combo" data-select-country="@Model.CountryId" required></select>
+                @*@{Html.RenderAction("CountriesCombo", "Countries", new { area = "Administration", name = "CountryId", requiered = true, value = Model.CountryId });}*@
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label required">Nationality</label>
+                <select id="NationalityId" class="form-control nationality" data-select-nationality="@Model.NationalityId" required></select>
+                @*@{Html.RenderAction("NationalityCombo", "Nationalities", new { area = "Administration", name = "NationalityId", requiered = true, value = Model.NationalityId });}*@
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-mt-custom">
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label">Email</label>
+                <input type="email" name="Email" id="Email" class="form-control" value="@Model.Email" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label">Contact No</label>
+                <input type="text" name="ContactNo" id="ContactNo" class="form-control data-telephone" value="@Model.ContactNo" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <button type="button" id="btnSearch" class="btn btn-warning">
+                Search  <span class="glyphicon glyphicon-search"></span>
+            </button>
+        </div>
+        <div class="col-md-6">
+            <input type="reset" id="resetBtn" class="resetBtn btn btn-default" value="Clear" />
+        </div>
+        @*<button type="button" id="btnCreateGuest" class="btn theme-bg-color-1">
+                Create <span class="glyphicon glyphicon-floppy-saved"></span>
+            </button>*@
+        <input type="hidden" id="data-guest-id" value="@Model.Id" />
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <i style="font-size: 8px;font-weight: bold;">*Please press the 'Search' button or the 'Enter' key to initiate the search.</i>
+        </div>
+    </div>
+
+</div>
+<script>
+    //$('body').on('change','.searchBox' function (e) {
+
+    //2024 - 03 - 27 - Anuradha-------------------------
+    $(document).ready(function () {
+        LoadVipLevelsInMakeReservationGuestDetails()
+        LoadSalutationsInMakeReservationGuestDetails();
+        LoadCountriesInMakeReservationGuestDetails();
+        LoadNationalitiesInMakeReservationGuestDetails();
+        var countryIdValue = $('#countryComboValue').val();
+        //$('#CountryId').val(countryIdValue);
+
+        //$('#NationalityId').addClass('select2');
+        //$('#SalutationId').addClass('select2');
+        //$('#CountryId').addClass('select2');
+        //$('#VipLevelId').addClass('select2');
+
+        //$('.select2').select2();
+
+        //setTimeout(function () {
+        //    $('.select2.select2-container').addClass('form-control');
+        //    $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+        //    $('.select2-selection__arrow').css('display', 'none');
+        //    $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        //}, 100);
+    });
+    //--------------------------------------------------
+
+    //});
+    $('#resetBtn').click(function (e) {
+
+        $('#FirstName').val('');
+        $('#LastName').val('');
+        $('#NICPassport').val('');
+        $('#Email').val('');
+        $('#ContactNo').val('');
+        $('#SalutationId').val('');
+        $('#NationalityId').val('');
+        $('#CountryId').val('');
+        $('.guest-checkBox').each(function (index, element) {
+            $(element).prop('checked', false);
+        });
+        SearchCustomer();
+    });
+
+
+    function LoadVipLevelsInMakeReservationGuestDetails() {
+        var dataJson = localStorage.getItem("VIPLevels");
+        var data = JSON.parse(dataJson);
+        $('#VipLevelId option').remove();
+        $(data).each(function (index, item) {
+            $('<option value="' + item.Id + '" selected>' + item.Name + '</option>').appendTo($('#VipLevelId'));
+        });
+        $('#VipLevelId').val($('#VipLevelId').attr('data-select-vip'));
+    }
+
+    function LoadSalutationsInMakeReservationGuestDetails() {
+        var dataJson = localStorage.getItem("Salutations");
+        var data = JSON.parse(dataJson);
+        $('#SalutationId option').remove();
+        $(data).each(function (index, item) {
+            $('<option value="' + item.Id + '" selected>' + item.Name + '</option>').appendTo($('#SalutationId'));
+        });
+        $('#SalutationId').val($('#SalutationId').attr('data-select-salutation'));
+    }
+
+    function LoadCountriesInMakeReservationGuestDetails() {
+        var dataJson = localStorage.getItem("Countries");
+        var data = JSON.parse(dataJson);
+        $('#CountryId option').remove();
+        $(data).each(function (index, item) {
+            $('<option value="' + item.Id + '" selected>' + item.Name + '</option>').appendTo($('#CountryId'));
+        });
+        $('#CountryId').val($('#CountryId').attr('data-select-country'));
+    }
+
+    function LoadNationalitiesInMakeReservationGuestDetails() {
+        var dataJson = localStorage.getItem("Nationalities");
+        var data = JSON.parse(dataJson);
+        $('#NationalityId option').remove();
+        $(data).each(function (index, item) {
+            $('<option value="' + item.Id + '" selected>' + item.Name + '</option>').appendTo($('#NationalityId'));
+        });
+        $('#NationalityId').val($('#NationalityId').attr('data-select-nationality'));
+    }
+
+    //$('#FirstName').on('keyup', function () {
+    //    var text = $(this).val();
+    //    IgnoreSpecialCharacters(text);
+    //});
+
+    //$('#LastName').on('keyup', function () {
+    //    var text = $(this).val();
+    //    IgnoreSpecialCharacters(text);
+    //});
+
+</script>

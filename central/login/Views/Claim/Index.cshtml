@@ -1,0 +1,94 @@
+﻿
+@{
+    ViewBag.Title = "Entra User Mapping Error";
+}
+
+<style>
+    td {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+</style>
+
+<center>
+    <br />
+    <br />
+    <br />
+    <div class="well" style="width:600px; margin:0 auto;">
+
+        @if (ViewBag.ErrorMessage != null)
+        {
+
+
+            <br />
+            <h2>  Sorry !  </h2>
+
+            <h4>
+                @ViewBag.ErrorMessage
+            </h4>
+            <br />
+            <table class="table table-striped">
+                <tr>
+                    <td>Tenant Id</td>
+                    <td> : </td>
+                    <td> @ViewBag.TenantId</td>
+                </tr>
+                <tr>
+                    <td>Entra User</td>
+                    <td> : </td>
+                    <td> @ViewBag.Name</td>
+                </tr>
+            </table>
+
+            <b>
+                <a href="/login/signout" style="padding:10px 25px; background-color:#0094ff; color:white;">Sign out from Microsoft</a>
+            </b>
+            <br /><br />
+
+            <input type="hidden" id="hdnEntraID" value="@ViewBag.Name" />
+
+            <br />
+        }
+        else
+        {
+            <br />
+            <h2>  Sorry !  </h2>
+
+            <h4>
+                Following user has not been mapped with Azure Entra Tenant.
+            </h4>
+            <br />
+            <table class="table table-striped">
+                <tr>
+                    <td>Tenant Id</td>
+                    <td> : </td>
+                    <td> @ViewBag.TenantId</td>
+                </tr>
+                <tr>
+                    <td>Entra User</td>
+                    <td> : </td>
+                    <td> @ViewBag.Name</td>
+                </tr>
+                <tr>
+                    <td>Employee No</td>
+                    <td> : </td>
+                    <td> @ViewBag.EmployeeId</td>
+                </tr>
+            </table>
+
+            <b>
+                <a href="/login/signout" style="padding:10px 25px; background-color:#0094ff; color:white;">Sign out from Microsoft</a>
+            </b>
+            <br /><br />
+
+            <input type="hidden" id="hdnEntraID" value="@ViewBag.Name" />
+
+            <br />
+
+        }
+
+
+    </div>
+    <br />
+    <br />
+</center>

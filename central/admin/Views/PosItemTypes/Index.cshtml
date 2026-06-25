@@ -1,0 +1,112 @@
+﻿
+@{
+    ViewBag.Title = "POS Item Types";
+}
+
+<style>
+    .form-group-marging {
+        margin-top: 0px;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm" title="Add New">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid" title="Show Grid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="row">
+                    <div class="col-md-12 master-file-grid">
+                        @*Grid comes here*@
+                        <div class="row grid">
+                            <div class="col-md-12 table-responsive">
+                                <input type="text" id="searchby" onkeyup="SearchGrid()" placeholder="Search by any Column" title="Search by any Column">
+                                <div id="loadingProjects" class="well">
+                                    <center>
+                                        <img src="~/Images/loading.gif" style="width:50px; margin-top:20px; margin-bottom:0px;" />
+                                    </center>
+                                </div>
+                                <input type="hidden" id="hdnActionFlg" />
+                                <table class="table table-striped" id="grid" style="display:none;">
+                                    <tr>
+                                        <th class="col-md-1">Code</th>
+                                        <th>Name</th>
+                                        <th class="col-md-1">Active</th>
+                                        <th class="col-md-2"></th>
+                                    </tr>
+                                    <tr class="no-record">
+                                        <td colspan="4">No Records Found.</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-12 master-file-form ">
+                        @*Form Comes here*@
+                        <div class="row">
+                            <div class="col-md-12">
+                                <form id="form" class="form" enctype="multipart/form-data" hidden>
+                                    <input type="hidden" id="hdncode" name="Code" value="" />
+
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Code *</label>
+                                                <input type="text" class="code form-control" id="code" value="" required autocomplete="off" maxlength="1"title="Special characters are not allowed"  />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group label-floating">
+                                                <label class="control-label">Name *</label>
+                                                @*<input type="text" class="form-control description" id="name" value="" required autocomplete="off" maxlength="50" />*@
+                                                <input type="text" class="form-control" id="name" value="" required autocomplete="off" title="Special characters are not allowed" maxlength="50" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <div class="form-group checkbox">                                              
+                                                <label><input type="checkbox" id="is-active" class="is-active" name="is-active" />Active</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <button type="submit" class="btn btn-success btn-width-100px" id="btnSubmit">
+                                                Save
+                                            </button>
+                                            <button type="button" class="btn btn-default btn-width-100px btn-shadow" id="btnClear" onclick="ClearForm()">
+                                                Clear
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/scripts/UI/Scienter.PosItemTypes.js"></script>

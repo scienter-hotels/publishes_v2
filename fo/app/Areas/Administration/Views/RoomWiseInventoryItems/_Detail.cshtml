@@ -1,0 +1,72 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.RoomWiseInventoryItemView
+
+<div>
+ 
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedUserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedUserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedDateTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedDateTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastEditedUserId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastEditedUserId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastEditedDateTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastEditedDateTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PageCount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PageCount)
+        </dd>
+
+        <dt>
+           Room
+
+        <dd>
+            @Html.DisplayFor(model => model.RoomName)
+        </dd>
+
+        <dt>
+            Inventory Items
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.InventoryItemName)
+        </dd>
+
+        <dt>
+           Quantity
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Quantity)
+        </dd>
+
+ 
+
+    </dl>
+</div>

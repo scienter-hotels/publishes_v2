@@ -1,0 +1,64 @@
+﻿@{
+    ViewBag.Title = "Lost and Found Inquiry";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <a class="btn btn-sm  btn-theme-color-2 showGrid" href="~/Administration/lostandfound/Landing">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                        <a class="btn btn-sm  btn-theme-color-2 showGrid" href="~/Administration/lostandfound/Inquiry">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="card-content ">
+                <ul class="nav nav-tabs ">
+                    <li class="active"><a class="pendingTab" data-toggle="tab" href="#home">Pending</a></li>
+                    <li><a data-toggle="tab" class="releaseTab" href="#menu1">Released</a></li>
+                </ul>
+                <div class="card-content div-scroll">
+                    <div id="home" class="tab-pane fade in active datapending">
+                        <div class="col-md-12">
+                            @{Html.RenderAction("LostAndFoundPendingSelect", "LostAndFound");}
+                        </div>
+                    </div>
+                    <div id="menu1" class="tab-pane fade datareleased">
+                        <div class="col-md-12">
+                            @{Html.RenderAction("LostAndFoundReleasedSelect", "LostAndFound");}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    $('.releaseTab').on('click', function () {
+        $('.datapending').hide();
+        $('.datareleased').show();
+    });
+
+    $('.pendingTab').on('click', function () {
+        $('.datareleased').hide();
+        $('.datapending').show();
+    });
+
+    //------------------------------------------------------------------------------------------------
+
+
+    
+</script>

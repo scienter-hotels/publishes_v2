@@ -1,0 +1,146 @@
+﻿
+@model  IEnumerable<Scienter.HotelERP.Common.Domain.ServiceJob>
+
+@{
+    /**/
+
+    ViewBag.Title = "Existing Service Jobs";
+}
+
+<div class="table-responsive serviceJobGrid">
+    <table class="table table-striped"
+           id="existingServiceHubJobGrid">
+        <thead>
+            <tr>
+                <th class="  text-primary">
+                    @Html.DisplayNameFor(model => model.ReservationNo)
+                </th>
+                <th class="  text-primary">
+                    @Html.DisplayNameFor(model => model.ServiceCategory)
+                </th>
+                <th class="  text-primary">
+                    @Html.DisplayNameFor(model => model.ServiceType)
+                </th>
+                <th class="  text-primary">
+                    @Html.DisplayNameFor(model => model.ServiceLocation)
+                </th>
+                <th class="  text-primary">
+                    @Html.DisplayNameFor(model => model.ServiceAction)
+                </th>
+                <th class="  text-primary">
+                    @Html.DisplayNameFor(model => model.AssignDepartment)
+                </th>
+                <th class="  text-primary">
+                    @Html.DisplayNameFor(model => model.AssignEmployee)
+                </th>
+                <th class="  text-primary">
+                    @Html.DisplayNameFor(model => model.RoomNo)
+                </th>
+                <th class="  text-primary">
+                    @Html.DisplayNameFor(model => model.GuestName)
+                </th>
+                <th class="hidden-print"></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReservationNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ServiceCategory)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ServiceType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ServiceLocation)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ServiceAction)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AssignDepartment)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AssignEmployee)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GuestName)
+                </td>
+
+                <td class="hidden-print text-right">
+                    <a class="btn btn-theme-color-2 btn-sm btn-edit" id="btnEdit" @*data-id="@item.Id"*@ data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content"  href="/reservation/servicehub/ServiceJobEdit/@item.Id">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+
+                    <a class="btn btn-success btn-sm call-popup-model btn-Take" id="btnTake" data-job-id="@item.Id" @*data-href="/reservation/servicehub/ServiceJobEdit/@item.Id"*@>
+                        <span class="glyphicon glyphicon-arrow-up"></span>
+                    </a>
+
+                    <a class="btn btn-danger btn-sm call-popup-model-delete btn-delete" id="btnDelete" data-href="/reservation/servicehub/ServiceJobDelete/@item.Id">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $('#serviceJobGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+
+    //$('body').off('click', '.btn-edit').on('click', '.btn-edit', function (e) {
+    //    e.preventDefault();
+    //    $.ajax({
+    //        method: 'post',
+    //        url: '/reservation/servicehub/ServiceJobEdit/' + $(this).attr('data-id'),
+    //        dataType: 'json',
+    //        success: function (data) {
+    //            var selectedServiceCatId = $('#hdnServiceCategoryId').val();
+    //            var selectedServiceTypeId = $('#hdnServiceTypeId').val();
+    //            var selectedServiceActionId = $('#hdnServiceActionId').val();
+    //            var selectedServiceLocationId = $('#hdnServiceLocationId').val();
+    //            var selectedServiceDeptId = $('#hdnAssignToDepartmentId').val();
+
+    //        }
+    //    });
+    //});
+
+    //$('body').on('click', '.btn-Take', function (e) {
+    //    alert($(this).attr('data-job-id'));
+    //    var id = $(this).attr('data-job-id');
+    //    var serviceJobTakenURL = '/reservation/servicehub/ServiceJobTaken?id=' + id;
+    //    var title = 'Service Job Taken';
+
+    //    CallDetailModelSimple(title, serviceJobTakenURL, 1000);
+    //});
+
+</script>
+

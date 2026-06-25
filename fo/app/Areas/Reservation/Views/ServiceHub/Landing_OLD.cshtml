@@ -1,0 +1,197 @@
+﻿@model Scienter.HotelERP.Common.Domain.ServiceJob
+@*<script src="~/Scripts/ui/common/scienter.common.datatimepicker.js"></script>*@
+
+@{
+    ViewBag.Title = "Service Jobs";
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+
+<script>
+    $(document).ready(function () {
+        FillGrid();
+    });
+
+   
+
+    // fill grid -----------------------------------
+    function FillGrid() {
+        var gridId = "#existingServiceHubJobGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/reservation/servicehub/ServiceJobListGrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+
+
+            }
+
+        });
+    }
+
+    // show form --------------------------------
+    $('body').on('click', '.showForm', function (e) {
+
+        debugger;
+        $.ajax({
+            url: '/reservation/servicehub/ServiceJob',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+
+        });
+    });
+
+    // show grid --------------------------------
+
+    $('body').on('click', '.showGrid', function (e) {
+        FillGrid();
+    });
+
+    $('body').off('click', '#btnSearch').on('click', '#btnSearch', function (e) {
+        e.preventDefault();
+        $('.reservation-search-model').modal("show");
+    });
+
+    //$('body').off('click', '#btnSearch').on('click', '#btnSearch', function (e) {
+    //    //alert('search');
+    //    //e.preventDefault();
+    //    var reservationNo = $('#reservationNo').val();
+    //    $.ajax({
+    //        url: '/reservation/servicehub/SelectReservationDetailsByReservationNo?reservationNo=' + reservationNo,
+    //        dataType: 'json',
+    //        success: function (data) {
+    //            console.log(data);
+
+    //            if (data.ReservationHeaderId === 0) {
+    //                $('.reservationDetails').hide();
+    //                $('#roomNo').val('');
+    //                $('#guest').val('');
+    //                ShowWarningMessage('Reservation No is not exists');
+    //                //if (data.startsWith("ERR-")) {
+    //                //ShowErrorMessage(data.replace("ERR-", ""));
+
+    //            } else {
+    //                $('.reservationDetails').show();
+    //                $('.resDeatilsSearch').html('');
+    //                $('#roomNo').val(data.RoomNo);
+    //                $('#guest').val(data.GuestName);
+    //                $('<tr class="resDeatilsSearch">' +
+    //                    '<td>' + reservationNo + '</td>' +
+    //                    '<td>' + data.Arrival + '</td>' +
+    //                    '<td>' + data.Departure + '</td>' +
+    //                    '<td>' + data.RoomNo + '</td>' +
+    //                    '<td>' + data.GuestName + '</td>' +
+    //                    ' <input type="hidden" value="' + data.ReservationHeaderId + '" name="hdnReservationHeaderId" id="hdnReservationHeaderId" />' +
+    //                    ' <input type="hidden" value="' + data.RoomId + '" name="hdnRoomId" id="hdnRoomId" />' +
+    //                    ' <input type="hidden" value="' + data.RoomNo + '" name="hdnRoomNo" id="hdnRoomNo" />' +
+    //                    ' <input type="hidden" value="' + data.GuestName + '" name="hdnGuestName" id="hdnGuestName" />' +
+    //                    ' </tr>').appendTo('#tblReservationDetails')
+
+    //            }
+    //        },
+    //        complete: function (data) {
+    //            //var selectedServiceCatId = $('#hdnServiceCatId').val();
+    //            //if (selectedServiceCatId > 0) {
+    //            //    $('#serviceCat').val(selectedServiceCatId);
+    //            //    $('#serviceCat').trigger('change');
+    //            //}
+    //        }
+    //    });
+    //});
+
+    // save --------------------------------------
+    $('body').on('submit', '#serviceJob', function (e) {
+        e.preventDefault();
+
+        var serviceCategoryId = $('#serviceCategory:checked').val();
+        var serviceTypeId = $('#serviceType option:selected').val();
+        var serviceActionId = $('#serviceAction option:selected').val();
+        var serviceLocationId = $('#serviceLocation option:selected').val();
+        var asgDepartmentId = $('#asgDepartment option:selected').val();
+        var assigneeId = $('#assignee option:selected').val();
+
+        var type = {
+            Id: $('#Id').val(),
+            ServiceCategoryId: serviceCategoryId,
+            ServiceTypeId: serviceTypeId,
+            ServiceActionId: serviceActionId,
+            ServiceLocationId: serviceLocationId,
+            AssignToDepartmentId: asgDepartmentId,
+            AssignToEmployeeId: assigneeId,
+            ReferenceNo: $('#RefNo').val(),
+            Remark: $('#Remark').val(),
+            ReservationNo: $('#reservationNo').val(),
+            ReservationHeaderId: $('#hdnReservationHeaderId').val(),
+            RoomId: $('#hdnRoomId').val(),
+            RoomNo: $('#roomNo').val(),
+            GuestName: $('#guest').val()
+            //RoomNo: $('#hdnRoomNo').val(),
+            //GuestName: $('#hdnGuestName').val()
+
+        };
+        $.ajax({
+            url: '/reservation/servicehub/ServiceJobSave',
+            dataType: 'html',
+            data: type,
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+                FillGrid();
+            }
+
+        });
+    });
+
+</script>

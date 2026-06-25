@@ -1,0 +1,111 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.ProfitCenterItemCategory>
+@{
+    ViewBag.Title = "Exising Profit Center Item Categories";
+}
+<div class="table-responsive">
+    <table class="table table-striped" id="existingItemCategoriesGrid">
+        <thead>
+            <tr>
+                <th class="text-primary">
+                    Profit Center Name
+                </th>
+                <th class="text-primary">
+                    Name
+                </th>
+                <th class="col-md-1 text-primary">
+                    Is Active
+                </th>
+                <th class="col-md-1 hidden-print">
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProfitCenterName)
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td class="col-md-1">
+                        <div class="form-group checkbox">
+                            <label>
+                                @Html.DisplayFor(modelItem => item.IsActive)
+                                <span class="hidden">
+                                    @if (item.IsActive)
+                                    {
+                                        @:Active
+                                    }
+                                    else
+                                    {
+                                        @:Inactive
+                                    }
+                                </span>
+                            </label>
+                        </div>
+                    </td>
+                    <td class="hidden-print text-right">
+                        <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/ProfitCenter/Edit_ProfitCenterItemCategory/@item.Id">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+
+                        <a class="btn btn-danger btn-sm" id="btnDelete" data="@item.Id">
+                            @*data-href="/administration/ProfitCenter/Delete_ProfitCenterItemCategory/@item.Id">*@
+                            <span class="glyphicon glyphicon-trash"></span> @*call-popup-model-delete*@
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#existingItemCategoriesGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ],
+                scrollY: '58vh',
+            });
+    });
+
+
+    //row delete codes
+    $('body').on('click', '#btnDelete', function () {
+        debugger;
+        if (confirm("Do you want to delete this row?")) {
+            var id = $(this).attr('data');
+            console.log(id);
+            $.ajax({
+                method: "POST",
+                data: { id: id },
+                url: "/administration/ProfitCenter/Delete_ProfitCenterItemCategory",
+                success: function (data) {
+                    debugger;
+                    if (data.startsWith("ERR-")) {
+                        ShowWarningMessage(data.replace("ERR-", ""));
+                    } else {
+                        ShowSuccessMessage("Record has been deleted successfully.");
+                        FillGrid();
+                    }
+                }
+            });
+        }
+    });
+</script>

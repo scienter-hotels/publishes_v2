@@ -1,0 +1,117 @@
+﻿@{ 
+    ViewBag.Title = "User wise quick naviagtions";
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                          Quick Navigations Setup
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="row">
+                    <div class="col-md-7">
+                        @{Html.RenderAction("SelctGridQuickNavigationArea", "UserWiseQuickNavigations");}
+                    </div>
+
+                    <div id="contentLoadingArea" class="col-md-5">
+                        <div class="well"><h4>Select area to load pages.</h4></div> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+
+    //--------------------------------------------------------------------
+    $('body').on('click', '#areaSaveBtn', function (e) {
+       
+        e.preventDefault();
+        var quickNavigationAreaDetails = [];
+
+        $('#UserAreas tr.areaDetails').each(function (index, area) {
+            areaDetails = {
+                areaId: $(area).find('#areaId').val(),
+                areaText: $(area).find('.areaText').val(),
+                displayOrder: $(area).find('.displayOrder').val(),
+                IsActive: $(area).find('#IsActive').prop("checked")
+            }
+        });
+            quickNavigationAreaDetails.push(areaDetails);
+        
+
+        $.ajax({
+            url: '/administration/UserWiseQuickNavigations/QuickNavigationAreaSave',
+            dataType: 'JSON',
+            data: { quickNavigationArea: quickNavigationAreaDetails },
+            method: 'POST',
+            success: function (data) {             
+                //$('#contentLoadingArea').html('').fadeOut();
+                //$('#contentLoadingArea').html(response).fadeIn();
+                ShowSuccessMessage('Record has been saved successfully.');
+            }
+        });
+
+     
+    });
+
+    //----------------------------------------------------------------------------------------
+    $('body').on('click', '#getpages', function () {
+        var areaId = $(this).val();
+ 
+        $.ajax({
+            url: '/administration/UserWiseQuickNavigations/SelectGridQuickNavigationPage',
+            dataType: 'html',
+            data:{areaId:areaId},
+            method: 'GET',
+            success: function (data) {
+                $('#contentLoadingArea').html(data).fadeIn();
+            }
+
+        });
+   });
+
+//-------------------------------------------------------------------------------------------
+    $('body').on('click', '#pageSaveBtn', function (e) {
+        e.preventDefault();
+        var quickNavigationPageDetails = [];
+        var AreaId = $('#areasId').val();
+
+        $('#UserPages tr.pagesDetails').each(function (index, area) {
+            pageDetails = {
+               
+                PageId: $(area).find('#pagesId').val(),
+                displayOrder: $(area).find('.displayOrder').val(),
+                IsActive: $(area).find('#IsActive').prop("checked")
+            }
+            quickNavigationPageDetails.push(pageDetails);
+        });    
+
+        $.ajax({
+            url: '/administration/UserWiseQuickNavigations/QuickNavigationPageSave',
+            dataType: 'JSON',
+            data: { quickNavigationPage: quickNavigationPageDetails, AreaId: AreaId },
+            method: 'POST',
+            success: function (response) {                
+                ShowSuccessMessage('Record has been saved successfully.');              
+            }
+          
+        });
+    });
+
+</script>

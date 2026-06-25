@@ -1,0 +1,157 @@
+﻿
+<div class="GuestNoteDiv">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group label-floating">
+                    <label class="control-label">Note Type*</label>
+                    <select class="form-control" id="NoteTypeCombo" required>
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group label-floating">
+                    <label class="control-label">Remark *</label>
+                    <input type="text" class="form-control" id="remarks" value="" required autocomplete="off" />
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <button id="btnAdd" name="" class="btn btn-success">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12" style="height:200px; overflow-y:scroll;">
+            <table class="table table-striped" id="GuestNoteGrid">
+                <tr>
+                    <th></th>
+                    <th class="">Note Type</th>
+                    <th class="">Description</th>                  
+                </tr>
+                <tr class="no-record">
+                    <td colspan="4">No Records Found.</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+
+<input type="hidden" value="@ViewBag.guestID" id="hdnGuestId" />
+
+<script>
+    $(document).ready(function () {
+        LoadNoteType();
+        LoadSavedGuestNotes();
+    });
+
+    function LoadSavedGuestNotes() {
+        $.ajax({
+            method: 'get',
+            url: '/GuestProfiles/SelectGuestNoteTypes',
+            datatype: 'json',
+            data: { guestId: $('#hdnGuestId').val() },
+            success: function (data) {
+
+                $('#GuestNoteGrid tr').not(':first-child').remove();
+                if (data != "") {
+                    $.each(data, function (index, item) {
+                        ;              
+                        $('<tr>'
+                            + '<td><button type="button" class="btn btn-danger btn-sm rowitemDelbtn"  guestId=' + item.GuestCode + ' recordId=' + item.Id + '> <span class="glyphicon glyphicon-remove"></span>  </button></td>'
+                            + '<td>' + item.NoteName + '</td>'
+                            + '<td>' + item.Remarks + '</td>'                        
+                        ).appendTo('#GuestNoteGrid');
+
+                    });
+                }
+
+            },
+        })
+    }
+    function LoadNoteType() {
+        $.ajax({
+            method: 'get',
+            url: '/GuestProfiles/SelectNoteTypes',
+            datatype: 'json',
+            success: function (types) {
+                $('#NoteTypeCombo option').not(':first-child').remove();
+                $.each(types, function (index, item) {
+                    $('#NoteTypeCombo').append('<option value="' + item.NoteID + '">' + item.Name + '</option>');
+                })
+            },
+        })
+    }
+
+
+    $('body').off('click', '#btnAdd').on('click', '#btnAdd', function (e) {
+
+        if ($('#NoteTypeCombo option:selected').val() != '' && $('#remarks').val() != '') {
+            var obj = {
+                GuestCode: $('#hdnGuestId').val(),
+                NoteID: $('#NoteTypeCombo option:selected').val(),                
+                Remarks: $('#remarks').val()
+                
+            }
+
+
+            $.ajax({
+                method: 'POST',
+                url: '/GuestProfiles/SaveGuestNotes',
+                datatype: 'json',
+                data: { obj: obj },
+                success: function (data) {
+                    if (data.startsWith('ERROR')) {
+
+                        ShowErrorMessage(data.replace("ERR-", ""));
+                    }
+                    else {
+                        ShowSuccessMessage('Record saved successfully.');
+                        LoadSavedGuestNotes()
+                    }
+
+                },
+
+            })
+        }
+        else {
+        ShowErrorMessage("Please Fill all fields")
+    }
+
+
+    });
+
+    $('#GuestNoteGrid').on('click', '.rowitemDelbtn', function (e) {
+        ;
+        var rowID = $(this).closest('tr');
+        $.ajax({
+            url: '/GuestProfiles/DeleteGuestNotes',
+            dataType: 'JSON',
+            data: { guestId: $(this).attr('guestId'), recordId: $(this).attr('recordId') },
+            method: 'get',
+            success: function (data) {
+                if (data.startsWith('ERR-')) {
+                    ShowErrorMessage(data.replace('ERR-', ""));
+                } else {
+
+                    $(rowID).closest('tr').remove();
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    });
+</script>
+
+
+

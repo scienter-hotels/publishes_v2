@@ -1,0 +1,36 @@
+﻿@model Scienter.HotelERP.FrontOffice.WebUIMvc.Areas.Administration.Models.CompanyWiseSegmentViewModel
+
+@foreach (var item in Model.Segments)
+{
+    <div class="col-md-4">
+        @if (Model.CompanyWiseSegments.Count(x => x.SegmentId == item.Id) > 0)
+        {
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group checkbox">
+                        <label>
+                            <input type="checkbox" value="@item.Id" checked id="SelectedSegmentIds" class="data-selected-segment" />
+                            @item.Name
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6"></div>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group checkbox">
+                        <label>
+                            <input type="checkbox" value="@item.Id" id="SelectedSegmentIds" class="data-selected-segment" />
+                            @item.Name
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6"></div>
+            </div>
+        }
+    </div>
+}

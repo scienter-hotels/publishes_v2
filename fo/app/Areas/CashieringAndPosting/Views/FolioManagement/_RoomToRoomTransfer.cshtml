@@ -1,0 +1,218 @@
+﻿<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        overflow-x: hidden;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+
+    .reservation-titile {
+            font-size: 1em;
+    font-weight: 600;
+    color: #094f70;
+    }
+    .reservation-no {
+        font-size: 1em;
+        font-weight: 600;
+        color: #e67e22;
+        padding-bottom:0em;
+    }
+</style>
+<form id="RoomToRoomTransfer">
+
+    <div class="row">
+        @*IShara 2024-09-27*@
+        <div class="col-md-12">
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#normalR2RTransfer">R2R</a></li>
+                <li class="group-folio-merge"><a data-toggle="tab" href="#groupFolioMerge">Group Folio Merge</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div id="normalR2RTransfer" class="tab-pane fade in active">
+                    <br />
+                    <div class="row">
+                        <div class="col-md-4" style="margin-bottom:10px;">
+                            <div class="row">
+                                <div class="col-md-8 form-group label-floating" style="margin-top:1em;">
+                                    <label class="control-label">Folio No</label>
+                                    <input type="text" readonly value="@ViewBag.FolioNo" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4" style="margin-bottom:10px;">
+                            <div class="row">
+                                <div class="col-md-12 form-group label-floating" style="margin-top:1em;">
+                                    <label class="control-label">Transfer To Room</label>
+                                    @{Html.RenderAction("GetInHouseRoomsWithoutSelectedReservations", "RoomDetails", new { area = "Administration", name = "data-rooms", reservatioNo = ViewBag.ResNo });}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="groupFolioMerge" class="tab-pane fade">
+                    <div class="row same-group-reservation-merge hidden">
+                        <div class="col-md-10" style="margin-bottom:0px;">
+                            <div class="row">
+                                <div class="col-md-10" style="margin-bottom:0px;">
+                                    <table class="table merge-multiple" style="margin-top:1em;">
+                                        <tr>
+                                            <th><input type="checkbox" class="checkbox merge-all" /></th>
+                                            <th>From</th>
+                                            <th></th>
+                                            <th>To</th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-12" style="margin: 0em 0 0 0;">
+            <input type="submit" id="btnRoomTransfer" value="Transfer" class="btn btn-primary" />
+        </div>
+    </div>
+
+</form>
+<input type="hidden" id="folioNo" value="@ViewBag.FolioNo" />
+<input type="hidden" id="reservatioNo" value="@ViewBag.ResNo" />
+
+<script>
+
+    $(document).ready(function () {
+        //2023-08-16--------------------------------------------------------------------------
+        $('#data-rooms').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+    });
+    $('#RoomToRoomTransfer').ready(function () {
+        //alert($('#reservatioNo').val());
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/SameGroupReservations?ReservationNo=' + $('#reservatioNo').val(),
+            dataType: 'JSON',
+            method: 'GET',
+            success: function (groupReservations) {
+                $.each(groupReservations, function (index, item) {
+                    $('.merge-multiple').append('<tr>' +
+                        '<td><input type="checkbox" data-reservationHeaderId ="' + item.Id + '" class="checkbox merge-reservation"/></td>' +
+                        '<td>' + item.ResNo + '(' + item.RoomNo + ')' + '</td>' +
+                        '<td><input type="checkbox" class="checkbox master-reservation" data-roomId="' + item.RoomId + '"/></td>' +
+                        '<td>' + item.ResNo + '(' + item.RoomNo + ')' + '</td></tr > ');
+                });
+
+                if (groupReservations.length > 0) {
+                    $('.same-group-reservation-merge').removeClass('hidden');
+                    //$('.group-folio-merge').addClass('hidden');
+                }
+            },
+        });
+    })
+
+    //$('body').on('change', '.merge-reservation', function () {
+    //    if ($('.merge-reservation:checked').length > 0) {
+    //        $('.inhouseRoom-combo').attr('disabled', true);
+    //    } else {
+    //        $('.inhouseRoom-combo').attr('disabled', false);
+    //    }
+    //})
+
+    $('body').on('change', '.merge-all', function () {
+
+        if ($('.merge-all').is(':checked')) {
+            $('.merge-reservation').prop('checked', true);
+            $('.master-reservation').prop('checked', false);
+            $('.inhouseRoom-combo').prop('disabled', true);
+        } else {
+            $('.merge-reservation').prop('checked', false);
+            $('.inhouseRoom-combo').prop('disabled', false)
+        }
+    })
+
+    $('body').on('change', '.master-reservation', function () {
+        $('.master-reservation').prop('checked', false);
+        $(this).prop('checked', true);
+        $(this).closest('tr').find('.merge-reservation').prop('checked', false);
+        //if ($($(this).closest('tr').find('.merge-reservation')).is(':checked')) {
+        //    $(this).prop('checked', true);
+        //}
+    })
+
+    $('body').on('change', '.merge-reservation', function () {
+        $(this).closest('tr').find('.master-reservation').prop('checked', false);
+    });
+
+    function TabNavigation() {
+
+        $('ul.nav-tabs a').on('shown.bs.tab', function (e) {
+            // Get the href attribute of the clicked tab's anchor tag
+            var activeTab = $(e.target).attr('href');
+
+            // Update the currentTab variable based on the active tab
+            if (activeTab === '#normalR2RTransfer') {
+                currentTab = 'R2R';
+            } else if (activeTab === '#groupFolioMerge') {
+                currentTab = 'GroupFolioMerge';
+            }
+            $('#currentTab').val(currentTab);
+
+
+        });
+    }
+
+</script>
+

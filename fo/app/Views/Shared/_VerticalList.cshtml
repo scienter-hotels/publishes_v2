@@ -1,0 +1,31 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.StaffDetailView
+@{
+    string isChecked = "";
+}
+<fieldset class="the-fieldset" style="height:170px;">
+    <legend class="the-legend">Assignees</legend>
+    @foreach (var item in Model.StaffDetails)
+    {
+        isChecked = "";
+        if (Model.SelectedStaffDetails !=null && Model.SelectedStaffDetails.Where(x => x.Id == item.Id).Count() > 0)
+        {
+            isChecked = "checked";
+        }
+
+        <div class="col-md-3">
+            <div class="checkbox form-group">
+                <label>
+                    <input type="checkbox" class="staffs" name="AssigneesIds" id="AssigneesIds" value="@item.Id" @isChecked />@item.Name.Split(' ')[0]
+                </label>
+               
+            </div>
+        </div>
+
+    }
+</fieldset>
+
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>

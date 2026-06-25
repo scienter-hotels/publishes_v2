@@ -1,0 +1,333 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.Document>
+
+@{
+    ViewBag.Title = "Document Upload";
+}
+
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+
+    
+</style>
+
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+<div class="row">
+    <div class="col-md-12 pad-l-r-0" style="height: 40px;">
+        <div class="card">
+            <div class="card-header" data-background-color="purple" >
+                <div class="row">
+                    <div class="col-md-10">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-2 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showDocUploadForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showDocumentGrid" id="showDocumentGrid" style="margin-right: 10px;">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-content" id="contentLoadingArea" style="padding: 5px 50px;">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form id="DocumentUploadFrom" hidden>
+                            <div class="form-horizontal">
+                                <input type="hidden" class="ReservationHeaderId" value="@ViewBag.reservationHeaderId" />
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group form-group-margin-override label-floating" style="margin-left:-7px;">
+                                            <label class="required control-label">Process</label>
+                                            <select name="DocumentProcess" id="DocumentProcessId" class="select2 form-control" required>
+                                                <option value="N/A" class="do-not-delete">N/A</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group form-group-margin-override  label-floating">
+                                            <label class="required control-label">Document</label>
+                                            <div class="documentwisedocument-container">
+                                                <select name="DocumentProcessWiseDocumentId" id="DocumentProcessWiseDocumentId" class="select2 form-control" required>
+                                                    <option>-- Select Process --</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top: 1em;">
+                                    <div class="col-md-4" style="padding-left:0px">
+                                        <div style="margin-bottom:5px;">
+                                            <input type="file" name="DocumentUpload" id="DocumentUpload" accept="" required />
+                                            <input type="hidden" name="docBytes" id="docBytes" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="">
+                                    <div class="col-md-8" style="padding-left:0px; padding-right:0px">
+                                        <div class="form-group label-floating" style="margin-left:0px;">
+                                            <label class="required control-label">Remark</label>
+                                            <textarea maxlength="500" rows="2" id="Remark" name="Remark" class="form-control" required></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top: 1em;">
+                                    <div class="col-md-2" style="padding-left:0px; padding-right:0px;">
+                                        <button type="submit" id="btnSubmitDoc" class="btn theme-bg-color-1 btn-width-100">
+                                            Save 
+                                        </button>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="reset" id="btnClear" class="btn btn-default btn-width-100" >
+                                            Clear
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="row" style="margin-top:1em" id="documentGrid">
+                            <div class="col-md-12 pad-l-r-0">
+                                <div id="existingReservationDocumentArea">
+                                    <div id="content">@Html.Partial("_Loading")</div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+        $(document).ready(function () {
+            //2023-08-16--------------------------------------------------------------------------
+            $('.select2').select2();
+
+            setTimeout(function () {
+                $('.select2.select2-container').addClass('form-control');
+                $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+                $('.select2-selection__arrow').css('display', 'none');
+                $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+            }, 900);
+
+            $('body').off('click', '.select2').on('click', '.select2', function () {
+                setTimeout(function () {
+                    $('.select2-results ul li').removeClass('select2-results__option--selected');
+                }, 200);
+            });
+
+            //-------------------------------------------------------------------------------------------
+            LoadDocumentProcessSelectCombo();
+            FillDocumentGrid();
+        });
+
+        function LoadDocumentProcessSelectCombo() {
+            $.ajax({
+                url: '/Reservation/Document/DocumentProcessSelectCombo',
+                dataType: 'json',
+                method: 'get',
+                success: function (data) {
+                    $('#DocumentProcessId option').not('.do-not-delete').remove();
+                    $(data).each(function (index, item) {
+                        $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#DocumentProcessId'));
+                    });
+                }
+            });
+        }
+
+        $('body').off('change', '#DocumentProcessId').on('change', '#DocumentProcessId', function () {
+            $.ajax({
+                url: '/Reservation/Document/DocumentWiseDocumentCombo?name=DocumentProcessWiseDocumentId&documentProcessId=' + $(this).val() + '&requiered=true',
+                dataType: 'html',
+                method: 'get',
+                success: function (response) {
+                    $('.documentwisedocument-container').html('');
+                    $(response).appendTo($('.documentwisedocument-container'));
+                }
+            });
+        });
+
+        $('body').off('submit', '#DocumentUploadFrom').on('submit', '#DocumentUploadFrom', function (e) {
+            e.preventDefault();
+
+            $('#btnSubmitDoc').text('Please Wait ...');
+            $('#btnSubmitDoc').attr('disabled', true);
+
+            var ReservationHeaderId = $('input[class="data-reservation-no"]:checked').val();
+            var DocumentProcessId = $('#DocumentProcessId').val();
+            var DocumentProcessWiseDocumentId = $('#DocumentProcessWiseDocumentId').val();
+            var DocumentUrl = $('#docBytes').val();
+            var Remark = $('#Remark').val();
+            var FolderName = $('#DocumentProcessWiseDocumentId option:selected').attr('data-folder-name');
+
+            $.ajax({
+                url: '/Reservation/Document/SaveReservationDocument',
+                dataType: 'json',
+                data: { ReservationHeaderId: ReservationHeaderId, DocumentProcessId: DocumentProcessId, DocumentProcessWiseDocumentId: DocumentProcessWiseDocumentId, DocumentUrl: DocumentUrl, Remark: Remark, FolderName: FolderName  },
+                method: 'POST',
+                beforeSend: function () {
+                 
+                },
+                complete: function () {
+                    $('#btnSubmitDoc').text('SAVE');
+                    $('#btnSubmitDoc').attr('disabled', false);
+                },
+                success: function (response) {
+                    var Type = $('#resType').val();
+                    //FillDocumentGrid();
+                    if (response == "success") {
+                        ShowSuccessMessage('Record has been saved successfully.');
+                        $("#DocumentUploadFrom").hide();
+                        FillDocumentGrid();
+
+                        $("#documentGrid").show();
+                        $("#DocumentProcessId").val('');
+                        $("#DocumentProcessWiseDocumentId").val('');
+                        $("#docBytes").val('');
+                        $("#Remark").val('');
+                        setTimeout(function () {
+                            if (Type == "reservation") {
+                                //Update Uuid
+                                //window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+                                //console.log("Uuid");
+                            } else {
+                                //location.reload()
+                                LoadInhouseReservationGrid();
+                            }
+                        }, 2500);
+
+
+                    } else {
+                        $('#btnSubmitDoc').text('SAVE');
+                        $('#btnSubmitDoc').attr('disabled', false);
+                        ShowWarningMessage(response);
+                    }
+
+
+
+                }
+            });
+        });
+
+        //------Delete Document----------------------------------------------------------------
+
+
+
+        //-- file upload ------------------------------------------------------------------
+        function readDocURL(input) {
+            console.log(input.files);
+            console.log(input.files[0]);
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+
+                    var docBytes = e.target.result;
+                    $('#btnSubmit').attr('disabled', false);
+
+                    if (
+                        docBytes.toLowerCase().indexOf("pdf") < 0 &&
+                        docBytes.toLowerCase().indexOf("jpg") < 0 &&
+                        docBytes.toLowerCase().indexOf("jpeg") < 0 &&
+                        docBytes.toLowerCase().indexOf("png") < 0 &&
+                        docBytes.toLowerCase().indexOf("xlx") < 0 &&
+                        docBytes.toLowerCase().indexOf("doc") < 0
+                    ) {
+                        ShowWarningMessage('Invalid file type. Only WORD, EXCELL, PDF, JPG, PNG files are allowed.');
+                        $('#btnSubmit').attr('disabled', true);
+                        docBytes = "";
+                    }
+                    $('#docBytes').val(docBytes);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#DocumentUpload").change(function (e) {
+            readDocURL(this);
+        });
+        //-- end of file upload ----------------------------------------------------------------
+
+        function FillDocumentGrid() {
+
+            $.ajax({
+                url: '/reservation/Document/ExistingReservationDocuments?reservationHeaderId=' + $('input[class="data-reservation-no"]:checked').val(),
+                dataType: 'HTML',
+                method: 'POST',
+                success: function (response) {
+                    $('#existingReservationDocumentArea #content').html('').fadeOut();
+                    $('#existingReservationDocumentArea #content').html(response).fadeIn();
+
+                },
+                error: function (xhr, status, error) {
+                    ShowErrorMessage('Sorry, There is an error loading existing notes.');
+                }
+            });
+
+        }
+
+        $('body').on('click', '.showDocumentGrid', function (e) {
+            $("#DocumentUploadFrom").hide();
+            $("#documentGrid").show()
+        });
+
+        $('body').on('click', '.showDocUploadForm', function (e) {
+            $("#DocumentUploadFrom").show();
+            $("#documentGrid").hide();
+        });
+
+    </script>
+
+

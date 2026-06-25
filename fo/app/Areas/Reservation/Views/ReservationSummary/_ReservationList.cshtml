@@ -1,0 +1,115 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.ReservationHeaderView>
+
+@{
+    ViewBag.Title = "Reservation List";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table class="table font-size-12px"
+                   id="existingReservationGrid"
+                   data-page-index="1"
+                   data-page-size="10"
+                   data-page-count="5"
+                   data-filter-type="2"
+                   data-search-keyword=""
+                   data-grid-top-functionalities="true"
+                   data-grid-pageable="true"
+                   data-grid-sortable="false" style="max-height:450px; overflow-y:scroll; overflow-x:hidden;">
+                <tr>
+                    <th class="text-primary">
+                     Type
+                    </th>
+
+                    <th class="text-primary">
+                        Arrival
+                    </th>
+
+                    <th class="text-primary">
+                        Departure
+                    </th>
+                    <th class="text-primary">
+                        Group#
+                    </th>
+             
+                    <th class="text-primary col-md-1">
+                        Res#
+                    </th>                   
+
+                    <th class="text-primary">
+                        Guest
+                    </th>  
+
+                    <th class="text-primary col-md-1">
+                        Category
+                    </th>
+
+                    <th class="text-primary col-md-1">
+                        Code
+                    </th>
+
+                    <th class="text-primary col-md-1">
+                        Status
+                    </th> 
+                    <th class="text-primary">
+                      
+                    </th>
+                </tr>
+
+
+
+                @foreach(var item in Model)
+                {
+                    <tr>
+                        <td>
+                                @for (int i = 0; i < item.MaxHeadCount; i++)
+                                {
+                                    <span class="glyphicon glyphicon-user display-inline font-size-18" data-toggle="tooltip"></span>
+                                }
+                         
+                        <td class="arrival-date">
+                            @Html.DisplayFor(modelItem => item.ArrivalDate)
+                        </td>
+
+                        <td class="depature-date">
+                            @Html.DisplayFor(modelItem => item.DepartureDate)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.GResNo)
+                        </td>
+                       
+                        <td class="res-no">
+                            @Html.DisplayFor(modelItem => item.ResNo)
+                        </td>
+                                               
+                        <td class="guest-name">
+                            @Html.DisplayFor(modelItem => item.GuestName)
+                        </td>                     
+                        
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RoomCat)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RoomNo)
+                        </td>
+                      
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ReservationStatus)
+                        </td>
+                        <td>
+                            <a target="_blank" href="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("IBEConfirmationPageURL")@item.ResUuid" class="btn btn-sm btn-primary">
+                                <span class="glyphicon glyphicon-new-window"></span>
+                            </a>
+                        </td>
+
+                    </tr>
+                }
+
+            </table>
+        </div>
+
+    </div>
+
+</div>

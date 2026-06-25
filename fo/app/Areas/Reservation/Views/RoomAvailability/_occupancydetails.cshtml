@@ -1,0 +1,138 @@
+﻿
+<input type="hidden" id="dateView" value="@ViewBag.Date" />
+<div class="row">
+    <ul class="nav nav-tabs">
+        <li id="occupiedLst">
+            <a data-toggle="tab" href="#occupiedList">Occupied Rooms<div class="ripple-container"></div></a>
+        </li>
+        <li id="availableLst" class="active">
+            <a data-toggle="tab" href="#availableList">Available Rooms<div class="ripple-container"></div></a>
+        </li>
+    </ul>
+
+    <div class="tab-content" style="padding: 0px 15px;">
+        <div id="occupiedList" class="tab-pane">
+            <div class="col-md-12" id="OccupiedLoadingArea" style="padding-left: 0px; padding-right: 0px;">
+                <div class="row">
+                    <div class="col-md-12" id="OccupiedAreaContent">
+                        <table class="table table-striped" id="gridOcc" style="overflow-y:scroll;">
+                            <tr>
+                                <th class="">Reservation No</th>
+                                <th class="">Guest Name</th>
+                                <th>Room Category</th>
+                                <th>Reservation Status</th>
+                                <th>Confirmation</th>
+                            </tr>
+                            <tr class="no-record">
+                                <td colspan="4">No Records Found.</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div id="availableList" class="tab-pane active" >
+            <div class="col-md-12" id="AvailableLoadingArea" style="padding-left: 0px; padding-right: 0px;">
+                <div class="row">
+                    <div class="col-md-12" id="AvailabilityAreaContent">
+                        <table class="table table-striped" id="gridAvai" style="overflow-y:scroll;">
+                            <tr>
+                                <th class="">Room Category</th>
+                                <th class="">Available</th>  
+                            </tr>
+                            <tr class="no-record">
+                                <td colspan="4">No Records Found.</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>   
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+        var date = $('#dateView').val();
+        Filldata(date);
+    });
+
+
+    function Filldata(date) {     
+        $.ajax({
+            url: '/reservation/AvailabilityChart/AvailabilityListDetails',
+            dataType: 'json',
+            method: 'POST',
+            data: { Date: date },
+            success: function (data) {
+                $('#gridOcc tr').not(':first-child').remove();
+                $('#gridAvai tr').not(':first-child').remove();
+                var OccupiedDetails = jQuery.parseJSON(data.OccupiedList);
+                var AvailabilityDetails = jQuery.parseJSON(data.AvailableList);
+
+                if (OccupiedDetails == null) {                
+
+                    $('.nav-tabs a[href="#availableList"]').tab('show');
+                    $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#gridOcc'));
+
+                } else {             
+                    $('.nav-tabs a[href="#occupiedList"]').tab('show');                    
+                }
+
+
+                if (AvailabilityDetails == null) {               
+                    $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#gridOcc'));
+                }
+
+                $.each(OccupiedDetails, function (index, details) {
+
+
+                    $.each(details, function (index2, innerDetails) {
+
+                        var url = "";
+                        if (innerDetails.GroupRes == '1') {
+                            url = "/Reporting/Report/ViewReport?ReportName=ReservationConfirmation&Uuid=" + innerDetails.Uuid
+                        }
+                        else {
+                            url = "/Reporting/Report/ViewReport?ReportName=ReservationConfirmationWithoutGroupReservation&Uuid=" + innerDetails.Uuid
+                        }
+                        
+                        $(
+                            '<tr>' +
+                            '<td>' + innerDetails.ReservationNo + '</td>' +
+                            '<td>' + innerDetails.GuestName + '</td>' +
+                            '<td>' + innerDetails.RoomCategory + '</td>' +
+                            '<td>' + innerDetails.ReservationStatus + '</td>' +
+                            '<td>'+
+                            ' <a class="btn btn-theme-color-2 btn-sm" title="View Confirmation" data-toggle="tooltip" href="'+url+'" target="_blank">'+
+                            '<span class="glyphicon glyphicon-file"></span>'+
+                              '</a>'+
+
+                            '</td>' +
+
+                            '</tr >'                      
+                        ).appendTo('#gridOcc');
+                    });
+                });
+
+                $.each(AvailabilityDetails, function (key, value) {
+                    $.each(value, function (key2, innervalue) {
+
+                    $(
+                        '<tr>' +
+                        '<td>' + innervalue.Name + '</td>' +
+                        '<td>' + innervalue.Available + '</td>' +
+                        '</tr >'
+                    ).appendTo('#gridAvai');
+                    });
+                });
+
+            },
+            error: function (error) {
+            }
+        });
+    }
+</script>

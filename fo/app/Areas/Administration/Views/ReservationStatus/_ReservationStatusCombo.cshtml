@@ -1,0 +1,53 @@
+﻿@using Scienter.HotelERP.FrontOffice.WebUIMvc.Models
+@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.Common.Utility
+
+
+@model ComboBoxViewModel<ReservationStatus>
+@{
+    string required = "";
+    if (Model.Required) { required = "required"; }
+}
+@if (Model.SelectedValue == null || Model.SelectedValue == "")
+{
+    Model.SelectedValue = SessionObjects.FOSettings.DefaultReservationStatus.ToString();
+}
+
+<select id="@Model.Id" name="@Model.Name" @required class="form-control reservation-status">
+    <option value="@ComboBoxes.DefaultOptionValue">@ComboBoxes.DefaultOptionMessage</option>
+
+    @foreach (var option in Model.Options)
+    {
+
+        if (option.Id.ToString() == Model.SelectedValue)
+        {
+            <option class="res-status" value="@option.Id" selected data-isAllowInMakeReservation="@option.IsAllowInMakeReservation"> @option.Name</option>
+        }
+        else
+        {
+            <option class="res-status" value="@option.Id" data-IsAllowInMakeReservation="@option.IsAllowInMakeReservation" data-isAllowInMakeReservation="@option.IsAllowInMakeReservation">@option.Name</option>
+        }
+    }
+</select>
+<script>
+    setTimeout(function () {
+
+        var selectedStatus = $('#data-res-status').val();
+
+
+        if (selectedStatus !== undefined) {
+            if (selectedStatus.length > 0) {
+                $('.res-status').removeAttr('selected');
+                $('.res-status').each(function () {
+                    if ($(this).val() == selectedStatus) {
+                        $(this).attr('selected', true);
+                    }
+                });
+            }
+        }
+
+
+    },2000);
+</script>
+
+

@@ -1,0 +1,241 @@
+﻿@using Scienter.DestinityHorizon.Common.Domain
+<style>
+    a:hover {
+        text-decoration: none !important;
+    }
+
+    body {
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
+    }
+
+    /*2024-04-05-Anuradha---------------------------------------------------------------------------------------- */
+    .cd-secondary-nav::-webkit-scrollbar {
+        width: 5px !important;
+    }
+
+    .cd-secondary-nav::-webkit-scrollbar-track {
+        background: #f1f1f1 !important;
+    }
+
+    .cd-secondary-nav::-webkit-scrollbar-thumb {
+        background: #c1c1c1 !important;
+    }
+
+        .cd-secondary-nav::-webkit-scrollbar-thumb:hover {
+            background: #8E8E8E !important;
+        }
+
+    .navigation-area-image {
+        width: 46px;
+    }
+
+    .cd-primary-nav .cd-secondary-nav > li {
+        overflow-y: hidden;
+    }
+
+        .cd-primary-nav .cd-secondary-nav > li > a {
+            font-size: 1.4rem;
+        }
+
+    .cd-primary-nav .cd-secondary-nav a {
+        font-size: 1.2rem;
+    }
+
+    #secondUl {
+        line-height: 1;
+    }
+
+        #secondUl li {
+            margin-bottom: -6px;
+        }
+
+    /*-----------------------------------------------------------------------------------------------------------*/
+</style>
+<div class="cd-overlay hidden-print"></div>
+<nav class="cd-nav hidden-print">
+    <ul id="cd-primary-nav" class="cd-primary-nav is-fixed container">
+        @foreach (NavigationMain item in ((List<NavigationMain>)SessionObjects.UserWiseNavigations).OrderBy(X => X.DisplayOrder))
+        {
+            if (item.Areas?.Count > 0)
+            {
+                if (item.TemplateId == 1)
+                {
+        <li class="has-children top-menu-item" id="search-@item.Id">
+            @*@if (SessionObjects.LoggedUser.LoggedProperty == null)
+            {*@
+                @*<a href="@item.Url" title="@item.Description" style="cursor:pointer;" class="data-main-navigation"></a>*@
+                @*<a href="@item.Url" disabled title="@item.Description" style="cursor:pointer;" class=""></a>*@
+            @*  *@
+            @*}
+            else
+            {*@
+                <a href="@item.Url" title="@item.Description" style="cursor:pointer;" class="data-main-navigation">@item.Name</a>
+            @*}*@
+
+
+                <ul class="cd-secondary-nav is-hidden data-main-navigation-areas" style="max-height:600px; overflow-y:scroll;">
+                    <li class="go-back"><a href="">Menu</a></li>
+
+                    @*2023-08-31-Anuradha----------------------------------------------------------------------------------------*@
+                    <li class="" style="display:block; width:97.3%;margin-top: -20px; margin-bottom: 35px;">
+                        <div class="row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-6">
+                                <div style="padding:5px; border-radius:50px; border:2px solid rgba(220, 223, 228, 0.75)">
+                                    <table border="0" cellspacing="1" style="border:0px; width:100%;">
+                                        <tbody>
+                                            <tr style="background-color:transparent;">
+                                                <td style="padding-right:10px; padding-left:10px; width:10%;">
+                                                    <img src="~/Images/mag.png" alt="search" />
+                                                </td>
+                                                <td width="100%">
+                                                    <input type="text" id="searchBox" placeholder="Search..." style="border:none; width:100%;" />
+                                                </td>
+                                                <td width="20%">
+                                                    <button type="submit" class="btn btn-primary btn-sm" style="border-radius:30px !important;font-weight: 300;letter-spacing: 2px;font-size: 11px;padding: 7px 25px;margin: 7px 10px; line-height:15px;">Search</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-3"></div>
+                        </div>
+                    </li>
+                    @*--------------------------------------------------------------------------------------------------------------------*@
+
+                    @foreach (var area in item.Areas)
+                    {
+                        if (area.Pages?.Count > 0)
+                        {
+                            <li class="has-children" style="margin-bottom:30px;">
+                                <img src="@area.ImageUrl" alt="@area.Name" title="@area.Name" class="navigation-area-image" />
+                                <a href="@area.Url" title="@area.Description">@area.Name</a>
+                                <ul class="is-hidden">
+                                    <li class="go-back"><a href="javascript:preventDefault();">@area.Name</a></li>
+                                    @{
+                                        int temp;
+                                        //var rootPages = area.Pages.Where(x => x.RootPageId == 0).OrderBy(a => a.DispayOrder).ToList();
+                                        var rootPages = area.Pages.Where(x => x.RootPageId == 0).OrderBy(a => int.TryParse(a.DispayOrder, out temp) ? temp : 0).ToList();
+                                        foreach (var page in rootPages)
+                                        {
+                                            if (area.Pages.Exists(x => x.RootPageId == page.Id))
+                                            {
+                                                <li class="has-children search">
+                                                    <a href="javascript:preventDefault();">@page.Name</a>
+                                                    <ul class="is-hidden">
+                                                        <li class="go-back"><a href="javascript:preventDefault();">@page.Name</a></li>
+                                                        @foreach (var innerPage in area.Pages.Where(x => x.RootPageId == page.Id).OrderBy(x => x.DispayOrder).ToList())
+                                                        {
+                                                            <li class="search">
+                                                                <a class="linkNavigation"
+                                                                   href="@innerPage.Url"
+                                                                   title="@innerPage.Name"
+                                                                   hidefocus="hidefocus"
+                                                                   data-toggle="tooltip">@innerPage.Name</a>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class="search">
+                                                    <a class="linkNavigation"
+                                                       href="@page.Url"
+                                                       title="@page.Name"
+                                                       hidefocus="hidefocus"
+                                                       data-toggle="tooltip">@page.Name</a>
+                                                </li>
+                                            }
+                                        }
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="search">
+                                <img src="@area.ImageUrl" alt="@area.Name" title="@area.Name" class="navigation-area-image" />
+                                <a class="linkNavigation"
+                                   href="@area.Url"
+                                   title="@area.Name"
+                                   hidefocus="hidefocus"
+                                   data-toggle="tooltip">@area.Name</a>
+                            </li>
+                        }
+                    }
+                </ul>
+        </li>
+                }
+                else if (item.TemplateId == 2)
+                {
+                    <li class="has-children top-menu-item">
+                        <a href="@item.Url">@item.Name</a>
+                        <ul class="cd-nav-icons is-hidden">
+
+                            <li class="go-back"><a href="javascript:preventDefault();">@item.Name</a></li>
+                            @foreach (var area in item.Areas)
+                            {
+                                int index = 1;
+                                if (item.Areas.FirstOrDefault().Pages?.Count > 0)
+                                {
+                                    foreach (var reportPages in item.Areas.FirstOrDefault().Pages)
+                                    {
+                                        <li>
+                                            <a class="cd-nav-item item-@index linkNavigation" href="@reportPages.Url" title="@reportPages.Name" hidefocus="hidefocus" data-toggle="tooltip">
+                                                <h3>@reportPages.Name</h3>
+                                                <p>Restaurent Report</p>
+                                            </a>
+                                        </li>
+                                        index = index + 1;
+                                        if (index > 8)
+                                        {
+                                            index = 1;
+                                        }
+                                    }
+                                }
+                            }
+                        </ul>
+                    </li>
+                }
+            }
+            else
+            {
+                <li class="top-menu-item">
+                    <a href="@item.Url" title="@item.Name">@item.Name</a>
+                </li>
+            }
+        }
+    </ul> <!-- primary-nav -->
+</nav>
+<div id="cd-search" class="cd-search">
+    <form>
+        <input type="search" placeholder="Search...">
+    </form>
+</div>
+
+<script>
+    //2024-04-05-Anuradha----------------------------------------------------------------------------------------
+    $(document).ready(function () {
+        var menuHeight = $(window).height() - 65;
+        var menuWidth = $(window).width() - 24;
+        //$('.cd-secondary-nav').css({ 'overflow-y': 'auto', 'max-height': menuHeight, 'overflow-y': 'auto', 'overflow-y': 'auto', 'overflow-y': 'auto', 'overflow-y': 'auto', 'width': menuWidth });
+       
+        $('[id^="search-"] #searchBox').on("input", function () {
+            console.log(0);
+            var searchTerm = $(this).val().toLowerCase();
+            var ulliId = $(this).closest('[id^="search-"]').attr('id');
+
+            $('#' + ulliId + ' .search').each(function () {
+                var itemName = $(this).text().toLowerCase();
+                if (itemName.includes(searchTerm)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+    });
+    //-----------------------------------------------------------------------------------------------------------
+</script>

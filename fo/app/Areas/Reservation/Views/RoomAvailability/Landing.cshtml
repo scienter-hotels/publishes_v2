@@ -1,0 +1,52 @@
+﻿@{
+    ViewBag.Title = "Room Availability";
+}
+
+<style>
+    .tr-bottom-border {
+        border-bottom: 2px #868383 solid;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                        <hr class="visible-print" />
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <div class="card-content" id="contentLoadingArea">
+
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+        $(function () {
+            Init_RoomAvailability();
+        })
+
+        function Init_RoomAvailability()
+        {
+           
+            $.ajax({
+                method: 'get',
+                datatype: 'html',
+                url: '/reservation/roomavailability/roomavailability',
+                success: function (loadingContent) {
+                   
+                    $('#contentLoadingArea').html('');
+                    $('#contentLoadingArea').html(loadingContent);
+                }
+            })
+        }
+</script>
+

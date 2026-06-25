@@ -1,0 +1,107 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.Document>
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("FilesUploadTo")" name="" id="FilesUploadTo" />
+
+<style>
+    #existingReservationDocumentGrid tr th, #existingReservationDocumentGrid tr td{
+        padding:0 10px;
+    }
+
+    .card .title {
+        font-size: 15px !important;
+        text-transform: uppercase;
+        padding-top: 3px;
+    }
+</style>
+
+@if (Model.Count() > 0)
+{
+
+    <table class="table table-striped" id="existingReservationDocumentGrid">
+        <tr style="height:30px;">
+            <th class="text-primary" style="text-align:left">
+                Process
+            </th>
+            <th class="text-primary" style="text-align:left">
+                Document
+            </th>
+            <th class="text-primary" style="text-align:left">
+                Remark
+            </th>
+            @*<th class="text-primary" style="text-align:left">
+                    Download
+                </th>*@
+            <th></th>
+        </tr>
+        @{int num = 0;}
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @item.DocumentProcessName
+            </td>
+            <td>
+                @item.DocumentProcessWiseDocument
+            </td>
+            <td>
+                @item.Remark
+            </td>
+            @if (@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("FilesUploadTo") == "AzureBlobStorage")
+            {
+                <td width="120px">
+                    @{
+                        string imageUrl = "/Reservation/Document/Download?DocumentUrl=" + item.DocumentUrl;
+                        if (item.DocumentUrl.Contains("windows.net"))
+                        {
+                            imageUrl = item.DocumentUrl;
+                        }
+                    }
+                    <a class="btn btn-download" href="@imageUrl" download target="_blank" style="padding:8px 10px;">
+                        <i class="fa fa-download" style="font-size: 13px;"></i>
+                    </a>
+                    <a class="btn btn-danger" id="btnDeleteDocument" style="padding:8px 10px;" data-document-Id="@item.Id">
+                        <i class="fa fa-trash" style="font-size: 13px;"></i>
+                    </a>
+                </td>
+            }
+            else
+            {
+                <td width="120px" class="text-right">
+                    <a class="btn btn-download" href="@item.DocumentUrl" download target="_blank" style="padding:8px 10px;">
+                        <i class="fa fa-download" style="font-size: 13px;"></i>
+                    </a>
+                    <a class="btn btn-danger" id="btnDeleteDocument" style="padding:8px 10px;" data-document-Id="@item.Id">
+                        <i class="fa fa-trash" style="font-size: 13px;"></i>
+                    </a>
+                </td>
+            }
+
+        </tr>
+        }
+    </table>
+
+}
+<script>
+    $('body').off('click', '#btnDeleteDocument').on('click', '#btnDeleteDocument', function (e) {
+
+        if (confirm('Are you sure want to Delete this?')) {
+            var Id = $(this).attr("data-document-Id");
+
+            $.ajax({
+                url: '/Reservation/Document/DeleteReservationDocument?Id=' + Id,
+                dataType: 'json',
+                method: 'POST',
+                success: function (data) {
+                    if (data.startsWith("OK")) {
+                        FillDocumentGrid();
+                        ShowSuccessMessage("Successfully Document Deleted");
+                    }
+                    else { }
+                }
+            });
+
+        }
+
+    });
+
+</script>
+

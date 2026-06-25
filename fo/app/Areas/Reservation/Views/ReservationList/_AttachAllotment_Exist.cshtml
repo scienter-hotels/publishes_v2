@@ -1,0 +1,354 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.AllotmentDetails>
+
+<style>
+    element.style {
+        width: 800px;
+    }
+
+    .container-padding {
+        padding: 50px 250px;
+    }
+</style>
+
+<input type="hidden" id="ReservationHeaderIdForAllotment" value="@ViewBag.ReservationHeaderId" />
+<input type="hidden" id="roomCategoryIdForAllotment" value="@ViewBag.roomCategoryId" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+<div class="container container-padding">
+
+    <form id="allotmentDetailList">
+        <div class="row">
+            <div class="col-md-12">
+                <fieldset class="the-fieldset">
+                    <legend class="the-legend"><font size="2"></font> Allotment Details</legend>
+                    <div id="AllotmentList" overflow-x:hidden; overflow-y:scroll;">
+                        @if (Model.Count > 0)
+                        {
+                            <input type="hidden" id="AllotmentHeader" name="AllotmentHeader" value="@Model.FirstOrDefault().AllotmentHeaderId">
+                            <input type="hidden" id="RoomCategory" name="RoomCategory" value="@Model.FirstOrDefault().RoomCategoryId">
+                            <input type="hidden" id="ReservationRoomCategoryId" name="ReservationRoomCategoryId" value="@Model.FirstOrDefault().ReservationRoomCategoryId">
+                            <input type="hidden" id="Model" name="Model" value="@Model">
+                        }
+                        else
+                        {
+
+                        }
+
+                        <table class="table table-striped table-hover" id="allotmentDetailGrid" cellspacing="5">
+                            <tr>
+                                <th>Allotment</th>
+                                <th>Room Category</th>
+                                <th class="number">Tot.</th>
+                                <th class="number">Balance</th>
+                                <th hidden></th>
+                            </tr>
+
+                            @*@foreach (var item in Model)
+                            {
+                                if (Model.Count > 0)
+                                {
+                                    <tr>
+                                        <td>@item.Name</td>
+                                        <td>@item.RoomCategoryName</td>
+                                        <td>@item.NoOfRooms</td>
+                                        <td>@item.RoomBalance</td>
+                                        <td hidden>
+                                            @if (item.IsAlreadyAttachedAllotment)
+                                            {
+                                                if (item.ReservationRoomCategoryId == item.RoomCategoryId)
+                                                {
+                                                    <button class="btn btn-sm btn-danger btn-remove-allotment" RoomCategoryId="@item.RoomCategoryId" AllotmentHeaderId="@item.AllotmentHeaderId">Remove</button>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (item.RoomBalance <= 0 || item.ReservationRoomCategoryId != item.RoomCategoryId)
+                                                {
+                                                    <button class="btn btn-sm btn-primary" style="text-decoration:line-through">Apply</button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn btn-sm btn-primary btn-apply-allotment" RoomCategoryId="@item.RoomCategoryId" AllotmentHeaderId="@item.AllotmentHeaderId">Apply</button>
+                                                }
+                                            }
+
+                                        </td>
+                                    </tr>
+                                }
+                            }*@
+                        </table>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <fieldset class="the-fieldset">
+                    <legend class="the-legend"><font size="2"></font> Reservation Details </legend>
+                    <div id="ReservationList" overflow-x:hidden; overflow-y:scroll;">
+                        <table class="table table-striped table-hover" id="reservationGridForAllotment" cellspacing="5">
+                            <tr class="data-single-record">
+                                <th><div><div class="form-group checkbox"><label><input type="checkbox" id="isAll" class="isAll" /></label></div></div></th>
+                                <th class="text-primary " input type="text">
+                                    Reservation No
+                                </th>
+                                <th class="text-primary " input type="text">
+                                    Group Reservation No
+                                </th>
+                                <th class="text-primary " input type="text">
+                                    Company
+                                </th>
+                                <th class="text-primary " input type="text">
+                                    Market
+                                </th>
+                                <th class="text-primary " input type="text">
+
+                                </th>
+                            </tr>
+                        </table>
+
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        @if (Model.Count > 0)
+        {
+            if (Model.FirstOrDefault().IsAlreadyAttachedAllotment)
+            {
+                if (Model.FirstOrDefault().ReservationRoomCategoryId == Model.FirstOrDefault().RoomCategoryId)
+                {
+                    <button class="btn btn-sm btn-danger btn-remove-allotment" style="visibility:hidden;" disabled RoomCategoryId="@Model.FirstOrDefault().RoomCategoryId" AllotmentHeaderId="@Model.FirstOrDefault().AllotmentHeaderId">Remove</button>
+                }
+            }
+            else
+            {
+                if (Model.FirstOrDefault().RoomBalance <= 0 || Model.FirstOrDefault().ReservationRoomCategoryId != Model.FirstOrDefault().RoomCategoryId)
+                {
+                    <button class="btn btn-sm btn-primary" style="text-decoration:line-through">Apply</button>
+                }
+                else
+                {
+                    <button class="btn btn-sm btn-primary btn-apply-allotment" RoomCategoryId="@Model.FirstOrDefault().RoomCategoryId" AllotmentHeaderId="@Model.FirstOrDefault().AllotmentHeaderId">Apply</button>
+                }
+            }
+
+        }
+        else
+        {
+            <button class="btn btn-sm btn-primary" style="text-decoration:line-through">Apply</button>
+        }
+    </form>
+
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            LoadReservationList();
+            LoadAllotmnetDetailList();
+        });
+
+        $('body').off('click', '.btn-remove-allotment').on('click', '.btn-remove-allotment', function (e) {
+
+            e.preventDefault();
+            var a = $(this).attr('data-reservation-heaader-id');
+            var b = $(this).attr('AllotmentHeaderId');
+            var c = $(this).attr('RoomCategoryId');
+
+            $.ajax({
+                url: '/Reservation/ReservationList/RemoveAllotment?ReservationHeaderId=' + a + '&AllotmentHeaderId=' + b + '&RoomCategoryId=' + c,
+                dataType: 'json',
+                method: 'get',
+                success: function (data) {
+                    $('#grid-record-detail-model').modal('hide');
+                    ShowSuccessMessage('Allotment removed.');
+                    setTimeout(function () {
+                        //closeFullContent();
+                        LoadReservationGrid();
+                        LoadReservationList()
+                        LoadAllotmnetDetailList();
+                    }, 2500);
+                },
+                error: function (aa, bb, cc) {
+
+                }
+            });
+        });
+
+        $('body').off('click', '.btn-apply-allotment').on('click', '.btn-apply-allotment', function (e) {
+
+            e.preventDefault();
+            var ReservationHeaderId = $('#ReservationHeaderIdForAllotment').val();
+            var AllotmentHeaderId = $(this).attr('AllotmentHeaderId');
+            var RoomCategoryId = $(this).attr('RoomCategoryId');
+
+            var selectedReservationList = [];
+            var isRecordSelected = false;
+
+            $('.data-single-filteration').each(function (index, item) {
+                if ($($(item).find('.list-checkBox')).prop('checked')) {
+                    isRecordSelected = true;
+                    return false;
+                }
+            });
+
+            if (isRecordSelected == false) {
+                ShowWarningMessage('Please select at least reservation.');
+            }
+            else {
+                $('.data-single-filteration').each(function (index, item) {
+                    var res = {};
+                    if ($($(item).find('.list-checkBox')).prop('checked')) {
+
+                        res = {
+                            Id: $($(item).find('.list-checkBox')).val(),
+                            ReservationHeaderId: ReservationHeaderId,
+                            AllotmentHeaderId: AllotmentHeaderId,
+                            RoomCategoryId: RoomCategoryId,
+                        }
+                        selectedReservationList.push(res);
+                    }
+                });
+
+                $.ajax({
+                    url: '/Reservation/ReservationList/AttachAllotment',
+                    dataType: 'JSON',
+                    data: { selectedReservationListForAllotment: selectedReservationList },
+                    method: 'POST',
+                    success: function (response) {
+                        if (response.startsWith("ERR")) {
+                            ShowWarningMessage(response.replace("ERR", ""));
+                        } else {
+                            $('#grid-record-detail-model').modal('hide');
+                            ShowSuccessMessage('Allotment Applied');
+                        }
+
+                        setTimeout(function () {
+                            // closeFullContent();
+                            LoadReservationList();
+                            LoadReservationGrid();
+                            LoadAllotmnetDetailList();
+
+                        }, 2500);
+                    }
+                });
+            }
+        });
+
+        function LoadReservationList() {
+            var ReservationHeaderId = $('#ReservationHeaderIdForAllotment').val();
+            var roomCategoryId = $('#roomCategoryIdForAllotment').val();
+
+            console.log(ReservationHeaderId);
+            $.ajax({
+                url: '/Reservation/ReservationList/SelectReservationListForAttachAllotment?ReservationHeaderId=' + ReservationHeaderId + '&roomCategoryId=' + roomCategoryId,
+                dataType: 'json',
+                method: 'get',
+                success: function (data) {
+                    $.each(data, function (index, item) {
+                        if (data.length > 0) {
+                            $("#reservationGridForAllotment tr:nth-child(2)").remove();
+                        }
+                        var AllotmentHeaderId = $('#AllotmentHeader').val();
+                        var RoomCategoryId = $('#RoomCategory').val();
+                        var ReservationRoomCategoryId = $('#ReservationRoomCategoryId').val();
+                        var btn = '<button class="btn btn-sm btn-danger btn-remove-allotment" RoomCategoryId="' + RoomCategoryId + '" AllotmentHeaderId="' + AllotmentHeaderId + '">REMOVE</button>'
+                        var isDisabled = "";
+
+                        if (item.IsAlreadyAttachedAllotment == false) {
+                            btn = ''
+
+                        }
+                        else {
+                            if (ReservationRoomCategoryId == RoomCategoryId) {
+                                btn = '<button class="btn btn-sm btn-danger btn-remove-allotment" data-reservation-heaader-id="' + item.Id + '" RoomCategoryId="' + RoomCategoryId + '" AllotmentHeaderId="' + AllotmentHeaderId + '">REMOVE </button>';
+                                isDisabled = 'disabled';
+                            }
+                        }
+
+                        $('<tr class="data-single-filteration">' +
+                            '<td style="margin-right:0.2em">' +
+                            '    <div class="form-list checkbox">' +
+                            '        <label>' +
+                            '            <input class="list-checkBox" ' + isDisabled + ' type="checkbox" value="' + item.Id + '" />' +
+                            '        </label>' +
+                            '    </div>' +
+                            '</td>' +
+                            '<td>' +
+                            item.ReservationNo +
+                            '</td>' +
+                            '<td>' +
+                            item.GroupReservationNo +
+                            '</td>' +
+                            '<td>' +
+                            item.Company +
+                            '</td>' +
+                            '<td>' +
+                            item.Market +
+                            '</td>' +
+                            '<td>'
+                            +
+                            btn
+                            +
+                            '</td>' +
+                            '</tr>'
+                        ).appendTo("#reservationGridForAllotment");
+                    });
+                }
+            });
+        }
+
+        $('body').off('click', '#isAll').on('click', '#isAll', function () {
+            if ($('#isAll').is(':checked')) {
+                $('.list-checkBox').not(':disabled').prop('checked', true);
+
+            } else {
+                $('.list-checkBox').prop('checked', false);
+            }
+        });
+
+        function LoadAllotmnetDetailList() {
+            var ReservationHeaderId = $('#ReservationHeaderIdForAllotment').val();
+            var roomCategoryId = $('#roomCategoryIdForAllotment').val();
+
+            $.ajax({
+                url: '/Reservation/ReservationList/AvailableAllotments?ReservationHeaderId=' + ReservationHeaderId + '&roomCategoryId=' + roomCategoryId,
+                dataType: 'json',
+                method: 'get',
+                success: function (data) {
+                    $.each(data, function (index, item) {
+                        if (data.length > 0) {
+                            $("#allotmentDetailGrid tr:nth-child(2)").remove();
+                        }
+
+                        var button = "";
+
+                        if (item.IsAlreadyAttachedAllotment) {
+                            if (item.ReservationRoomCategoryId == item.RoomCategoryId) {
+                                button = '<button class="btn btn-sm btn-danger btn-remove-allotment" RoomCategoryId="' + item.RoomCategoryId + '" AllotmentHeaderId="' + item.AllotmentHeaderId + '">Remove</button>'
+                            }
+                        } else {
+                             if (item.RoomBalance <= 0 || item.ReservationRoomCategoryId != item.RoomCategoryId)
+                             {
+                                 button ='<button class="btn btn-sm btn-primary" style="text-decoration:line-through">Apply</button>'
+                             }
+                             else
+                             {
+                                 button ='<button class="btn btn-sm btn-primary btn-apply-allotment" RoomCategoryId="'+item.RoomCategoryId+'" AllotmentHeaderId="'+item.AllotmentHeaderId+'">Apply</button>'
+                             }
+                        }
+
+                        $(
+                            '<tr>'+
+                            '<td>'+item.Name+'</td>'+
+                            '<td>' + item.RoomCategoryName +'</td>'+
+                            '<td class="number">' + item.NoOfRooms +'</td>'+
+                            '<td class="number">' + item.RoomBalance +'</td>'+
+                            '<td hidden>' +
+                            button
+                           
+                        ).appendTo("#allotmentDetailGrid");
+                    });
+                }
+            });
+        }
+    </script>

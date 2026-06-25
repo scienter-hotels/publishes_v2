@@ -1,0 +1,168 @@
+﻿
+@{
+    ViewBag.Title = "Module Category Wise Item";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+
+<script>
+    $(document).ready(function () {
+        FillGrid();
+    });
+    //Show Grid------------------
+    $('body').on('click', '.showGrid', function (e) {
+        FillGrid();
+    });
+    //Show Form-------------------------
+    $('body').on('click', '.showForm', function (e) {
+        $.ajax({
+            url: '/administration/ModuleCategoryWiseItems/Form',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+
+        });
+    });
+
+    //Grid Fill-------------------
+    function FillGrid() {
+        var gridId = "#existingModuleCategoryGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/administration/ModuleCategoryWiseItems/SelectForModuleCategoryWiseItemGrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+
+
+            }
+
+        });
+    }
+
+    function ModuleCategoryCombo() {
+        $.ajax({
+            url: '/administration/ModuleCategoryWiseItems/modulesCategoryCombo',
+            dataType: 'json',
+            success: function (modulesCategorry) {
+                if ($('.modulesCategorry').length > 0) {
+                    $('.modulesCategorry option').not(':first').remove();
+
+                    $.each(modulesCategorry, function (index, modulesCategorry) {
+                        $(' <option value="' + modulesCategorry.Id + '"> ' + modulesCategorry.Name + ' </option>').appendTo($('.modulesCategorry'));
+                    });
+                }
+            }
+        });
+    }
+
+    function StockLocationCombo() {
+        $.ajax({
+            url: '/administration/ModuleCategoryWiseItems/StockLocationCombo',
+            dataType: 'json',
+            success: function (stockLocation) {
+                if ($('.stockLocation').length > 0) {
+                    $('.stockLocation option').not(':first').remove();
+
+                    $.each(stockLocation, function (index, stockLocation) {
+                        $(' <option value="' + stockLocation.Code + '"> ' + stockLocation.Description + ' </option>').appendTo($('.stockLocation'));
+                    });
+                }
+            }
+        });
+    }
+
+    //Module category wise item submit
+    $('body').on('submit', '#ModuleCategoryWiseItem', function (e) {
+        e.preventDefault();
+        var absaluteRate = $('.rate').val().replace(",", "")
+        var moduleCategoryWiseItem = {
+            Id: $('#Id').val(),
+            Name: $('#Name').val(),
+            ModuleCategoryId: $('#modulesCategorry').val(),
+            StockLocationCode: $('#stockLocation').val(),
+            Rate: absaluteRate,
+        };
+        $.ajax({
+            url: '/administration/ModuleCategoryWiseItems/SaveModuleCategoryWiseItem',
+            dataType: 'JSON',
+            data: moduleCategoryWiseItem,
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+                FillGrid();
+            },
+            error: function () {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+
+        });
+    });
+
+    $('body').on('click', '.btnEdit', function (e) {
+        $.ajax({
+            async: false,
+            url: '/administration/ModuleCategoryWiseItems/edit',
+            dataType: 'html',
+            data: { id: $(this).attr('data-id') },
+            method: 'POST',
+            success: function (response) {
+                console.log(response);
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+
+        });
+    });
+</script>

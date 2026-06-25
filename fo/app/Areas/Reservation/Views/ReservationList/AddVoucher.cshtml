@@ -1,0 +1,284 @@
+﻿@*@model List<Scienter.HotelERP.Common.Domain.VoucherDetails>*@
+@{
+    ViewBag.Title = "Add Voucher";
+}
+
+
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<link href="~/scripts/ui/reservation-list/reservation-list.css" rel="stylesheet" />
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+
+    #viewLoadingArea {
+        margin-left: 0px;
+        margin-right: -20px;
+    }
+
+    .col-border {
+        border: 1px solid #4d4d4d;
+        padding: 10px;
+    }
+
+    .default-width {
+        width: fit-content;
+    }
+
+    .the-fieldset {
+        padding-top: 10px;
+    }
+
+    #roomAvailabilityContainerForVoucher .form-group {
+        margin: -11px 0 0 0;
+    }
+
+    .custom-margin .form-group {
+        margin: 0;
+    }
+
+    .input-group {
+        width: 33.3% !important;
+    }
+
+    .col-height1{
+        height:400px;
+        max-height:401px;
+    }
+</style>
+
+<script src="~/Select2/js/select2.full.min.js"></script>
+@*<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />*@
+@*<input type="hidden" id="Search_FromDate" value="01/01/2000" />
+    <input type="hidden" id="Search_ToDate" value="@DateTime.Now.AddDays(2)" />*@
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-10">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-content" style="padding-left:15px; padding-right:15px;padding-top:15px;padding-bottom:5px;">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="alert alert-warning" style="box-shadow:none !important;">
+                            <strong>Please Note : </strong> Every agent voucher document should enter based on unique document no (EX : EMIRATES-GROUP-072024). System will identify it as the voucher no until you update the actual voucher. 
+                            <br />You may use this document no as the voucher no to search reservations in the reservation list. Also you can recall the voucher details using this document on this screen.
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 10px;margin-left:-10px;margin-right:-13px;">
+                    <div class="col-md-7 custom-margin label-floating">
+                        <input type="text" placeholder="Search by Document No" id="Search_VoucherNo" name="searchGroupCode" class="form-control label-data" />
+                    </div>
+                    <div class="col-md-3">
+                        <button title="Search Now" class="btn btn-primary" style="width:100%;" id="btnVoucherSearch">SEARCH</button>
+                    </div>
+                    <div class="col-md-2">
+                        <button title="Search Now" class="btn btn-default" style="width:100%;" onclick="window.location.href='/reservation/reservationlist/addvoucher'">CLEAR</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">
+                        <fieldset class="the-fieldset col-height1">
+
+                            <div class="voucherDetails">
+                                <div class="row">
+                                    <div class="col-md-12 form-group label-floating">
+                                        <label class="control-label">Document No * (Enter all vouchers in a document by using same document no)</label>
+                                        <input type="text" name="VoucherNo" id="VoucherNo" class="form-control label-data" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 form-group label-floating">
+                                        <label class="control-label">Company</label>
+                                        <select id="CompanyId" class="select2 form-control" required>
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 form-group label-floating">
+                                        <label class="control-label">Market</label>
+                                        <select id="MarketId" class="select2 form-control" required>
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 form-group label-floating">
+                                        <label class="control-label">Segment</label>
+                                        <select id="SegmentId" class="select2 form-control" required>
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4 form-group label-floating">
+                                        <label class="control-label">Country</label>
+                                        <select id="CountryId" class="select2 form-control" required>
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 form-group label-floating">
+                                        <label class="control-label">Rate Code</label>
+                                        <select id="RateCodeId" class="select2 form-control" required>
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 form-group label-floating">
+                                        <label class="control-label">Sales Person</label>
+                                        <select id="SalesPersonId" class="select2 form-control" required>
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4 form-group label-floating">
+                                        <label class="control-label">Meal Plan</label>
+                                        <select id="MealPlanId" class="select2 form-control" required>
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-8 form-group label-floating">
+                                        <label class="control-label">Guest (or Group No)</label>
+                                        <input type="text" name="GuestName" id="GuestName" class="form-control label-data ignore-textfeild-special-characters" />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12 form-group label-floating">
+                                        <label class="control-label">Remark</label>
+                                        <input type="text" name="Remark" id="Remark" class="form-control label-data" maxlength="1000" rows="2" />
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-7">
+                        <fieldset class="the-fieldset col-height1">
+                            <div class="row default-width">
+                                <div class="col-md-4 form-group label-floating input-group date">
+                                    <label class="control-label">Arrival</label>
+                                    <input autocomplete="off" class="form-control datePicker text-box single-line" maxlength="100" id="Arrival" name="Arrival" type="text" value="@Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate.ToString("dd/MM/yyyy")" required>
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+
+                                <div class="col-md-4 form-group label-floating input-group date">
+                                    <label class="control-label">Departure</label>
+                                    <input autocomplete="off" class="form-control datePicker text-box single-line" maxlength="100" id="Departure" name="Departure" type="text" value="@Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate.AddDays(2).ToString("dd/MM/yyyy")" required>
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                                <div class="col-md-4" style="text-align:right;">
+                                    <button type="button" class="btn btn-primary margin-top-20px" id="btnCheckRoomAvailabilityForVoucher" style="float:right; width:100%; margin-top:30px;">
+                                        Check Availability  <span class="glyphicon glyphicon-refresh"></span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="roomAvailability" class="">
+                                <div class="row">
+                                    <div class="col-md-12" id="roomAvailabilityContainerForVoucherSelect" style="margin-top:5px;height:255px;width:100%; overflow-y:auto; margin-left:5px; display:flex;justify-content:center;align-items:center;">
+                                        Please select a room...
+                                        </div>
+                                        <div class="col-md-12" id="roomAvailabilityContainerForVoucher" style="margin-top:5px;height:255px;overflow-y:auto; margin-left:5px">
+
+                                            @{Html.RenderAction("RoomAvailability", "Reservations");}
+                                        </div>
+                                    </div>
+                                    <div class="row" style="padding-left:15px;">
+                                        <div class="col-md-12 text-right">
+                                            <button type="button" class="btn btn-primary" id="btnAddVoucher" style="float:right; width:200px; ">
+                                                Add  <span class="glyphicon glyphicon-arrow-right"></span>
+                                            </button>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                        </fieldset>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-10">
+                        <h4 class="title">
+                            Exsisting reservations for this voucher
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" style="padding-left:15px; padding-right:15px;padding-top:15px;padding-bottom:5px;">
+                @Html.Partial("_ReservationTable")
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*<script>
+        $('body').on('click', '#btnSearch', function (e) {
+            LoadReservationGrid();
+        });
+    </script>*@
+
+<script src="~/Scripts/ui/reservation-list/side-buttons/add-voucher.js"></script>
+<script src="~/Scripts/ui/reservation-list/reservation-list5.js"></script>
+<script src="~/Scripts/ui/common/reservation-list-pagination.js"></script>

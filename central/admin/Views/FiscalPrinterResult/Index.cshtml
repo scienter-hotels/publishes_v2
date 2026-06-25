@@ -1,0 +1,269 @@
+﻿@model Scienter.DestinityHorizon.Common.Domain.FiscalPrinterResult
+@using Scienter.DestinityHorizon.Common.Domain
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    #viewDetails * {
+        font-family: 'Courier New', monospace !important;
+    }
+
+    #viewDetails .receipt {
+        max-width: 400px !important;
+        margin: auto;
+        padding: 5px;
+    }
+
+    #viewDetails .center {
+        text-align: center;
+    }
+
+    #viewDetails .right {
+        text-align: right;
+    }
+
+    #viewDetails .left {
+        text-align: left;
+    }
+
+    #viewDetails .header {
+        margin-bottom: 5px;
+    }
+
+    #viewDetails .item-container {
+        margin-bottom: 10px;
+    }
+
+    #viewDetails .item-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: -3px;
+    }
+
+    #viewDetails .totals {
+        margin-top: 10px;
+        border-top: 1px dashed #000;
+        padding-top: 5px;
+    }
+
+        #viewDetails .totals .line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: -5px;
+        }
+
+        #viewDetails .totals .total-label {
+            font-weight: bold;
+        }
+
+    #viewDetails .footer {
+        margin-top: 10px;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header" data-background-color="purple">
+        <div class="row">
+            <div class="col-md-12">
+                <h4 class="title">
+                    @ViewBag.Title
+                </h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-content form" id="contentLoadingArea">
+        <div class="col-md-4">
+            <form id="fiscalPrinter">
+                <div class="row form">
+                    <div class="col-md-12">
+                        <fieldset class="the-fieldset" style="height:90px;">
+                            <legend class="the-legend"><font size="2">Document Details</font> </legend>
+                            <div class="row" style="margin-top:-20px;">
+                                <div class="col-md-3 form-group label-floating">
+                                    <label class="control-label">Doc No *</label>
+                                    <input autocomplete="off" class="form-control single-line" id="DocNo" name="DocNo" type="text" required>
+                                </div>
+                                <div class="col-md-9" style="margin-top:-3px;">
+                                    <div class="form-group">
+                                        <input type="button" id="btnPrint" data-print="Print" value="Print" class="btn btn-primary"  style="width:112px;"/>
+                                        &nbsp;
+                                        <input type="button" id="btnView" value="View Here" class="btn btn-success" style="width:122px;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="row form">
+                    <div class="col-md-12">
+                        <fieldset class="the-fieldset" style="height:170px;">
+                            <legend class="the-legend"><font size="2">Print Report By Date Range</font> </legend>
+                            <div class="row" style="margin-top:-25px;">
+                                <div class="col-md-6 form-group label-floating">
+                                    <label class="">From *</label>
+                                    <input class="form-control single-line" id="FromDate" name="FromDate" type="date" required>
+                                </div>
+
+                                <div class="col-md-6 form-group label-floating">
+                                    <label class="">To *</label>
+                                    <input class="form-control single-line" id="ToDate" name="ToDate" type="date" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class=" col-md-6 form-group label-floating">
+                                    <div class="form-group label-floating">
+                                        <label class="control-label">Report *</label>
+
+                                        <select id="DateRangeFiscalReport" class="form-control select2" required>
+                                            <option value="D" data-document-type="D" data-req-type="45">Print Fiscal Report</option>
+                                            <option value="DS" data-document-type="DS" data-req-type="45">Print Report Summary</option>
+                                            <option value="Z" data-document-type="Z" data-req-type="45">Current Z Report</option>
+                                            <option value="X" data-document-type="X" data-req-type="45">Current X Report</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6" style="margin-top:5px;">
+                                    <div class="form-group">
+                                        <input type="button" id="btnPrintRemoteByDateRange" value="Print" class="btn btn-primary"  style="width:100%;" />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+
+                <div class="row form">
+                    <div class="col-md-12">
+                        <fieldset class="the-fieldset" style="height:170px;">
+                            <legend class="the-legend"><font size="2">Print Report By Document No Range</font> </legend>
+                            <div class="row" style="margin-top:-25px;">
+                                <div class="col-md-6 form-group label-floating">
+                                    <label class="">Doc From *</label>
+                                    <input class="form-control single-line" id="DocFrom" name="DocFrom" type="text" required>
+                                </div>
+
+                                <div class="col-md-6 form-group label-floating">
+                                    <label class="">Doc To *</label>
+                                    <input class="form-control single-line" id="DocTo" name="DocTo" type="text" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class=" col-md-6 form-group label-floating">
+                                    <div class="form-group label-floating">
+                                        <label class="control-label">Report *</label>
+
+                                        <select id="DocumentFiscalReport" class="form-control select2" required>
+                                            <option value="N" data-document-type="N" data-req-type="45">Print Fiscal Report</option>
+                                            <option value="NS" data-document-type="NS" data-req-type="45">Print Report Summary</option>
+                                            <option value="Z" data-document-type="Z" data-req-type="45">Current Z Report</option>
+                                            <option value="X" data-document-type="X" data-req-type="45">Current X Report</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6" style="margin-top:5px;">
+                                    <div class="form-group">
+                                        <input type="button" id="btnPrintRemoteByDocumentRange" value="Print" class="btn btn-primary" style="width:100%;" />
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </fieldset>
+                    </div>
+                </div>
+
+                <div class="row form">
+                    <div class="col-md-12">
+                        <fieldset class="the-fieldset" style="height:90px;">
+                            <legend class="the-legend"><font size="2">Execute Commands</font> </legend>
+                            <div class="row" style="margin-top:-15px;">
+                                <div class="col-md-5 form-group label-floating">
+                                    <label class="control-label">Command *</label>
+                                    <select id="FiscalReportExecute" class="form-control select2" required>
+                                        <option value="NA" data-document-type="NA" data-req-type="5A">Check FIscal Status</option>
+                                        <option value="B" data-document-type="B" data-req-type="47">Print All Fiscal Items</option>
+                                        <option value="U" data-document-type="U" data-req-type="47">Print All Fiscal Unsold Items</option>
+                                        <option value="N" data-document-type="N" data-req-type="47">Print All Fiscal Non Taxable Items</option>
+                                        <option value="NA" data-document-type="NA" data-req-type="61">Print All Fiscal Tax Types</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-7" style="margin-top:-3px;">
+                                    <div class="form-group">
+                                        <input type="button" id="btnExecute" value="Execute Command" class="btn btn-primary"  style="width:100%;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-8">
+            <form id="fiscalPrinterDetails">
+                <div class="row form">
+                    <div class="col-md-12">
+                        <fieldset class="the-fieldset" style="height:585px; overflow-y:scroll;">
+                            <legend class="the-legend"><font size="2">Fiscal Printer Result</font> </legend>
+                            <div class="row">
+                                <div class="col-md-12 form-group label-floating" id="viewDetails">
+                                    <div class="receipt">
+                                        @*<div class="center header">
+                                                <p>TIN:1234567890</p>
+                                                <p>Firm Name</p>
+                                                <p>Adv Line 3</p>
+                                                <p>Adv Line 4</p>
+                                                <p>Adv Line 5</p>
+                                                <p>Adv Line 6</p>
+                                            </div>*@
+                                        <div class="header">
+                                            <p>FS No. <span class="FiscalCode"></span></p>
+                                            <p>
+                                                <span class="OrderDate"></span>
+                                                <span class="OrderTime" style="float:right;">
+                                                </span>
+                                            </p>
+
+
+                                            <p>Guest Name: <span class="GuestName"></span></p>
+                                            <p>Agent Name: <span class="AgentName"></span></p>
+                                            <p>Tin No: <span class="TinNo"></span></p>
+                                            <p>Room #: <span class="RoomCode"></span> Order #: <span class="OrderNo"></span></p>
+                                            <p>Waiter #: <span class="Waiter"></span> Table No #: <span class="TableNo"></span></p>
+                                        </div>
+
+                                        <br>
+                                        <div class="item">
+                                            <div class="item-holder">
+
+                                            </div>
+                                            <div class="item-row subtotal">
+
+                                            </div>
+                                        </div>
+                                        <div class="totals taxTotals">
+
+                                        </div>
+                                        <div class="totals finalTotal">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" value="@ViewBag.FiscalPrinterURL" id="hdnFiscalPrinterURL" />
+
+<script src="~/Scripts/UI/Scienter.FiscalPrinter.js"></script>
+<script>
+</script>

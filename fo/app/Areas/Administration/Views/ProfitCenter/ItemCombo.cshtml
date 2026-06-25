@@ -1,0 +1,29 @@
+﻿@using Scienter.HotelERP.FrontOffice.WebUIMvc.Models
+@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.Common.Utility
+
+@model ComboBoxViewModel<ProfitCenterItem>
+@{
+    string required = "";
+    if (Model.Required) { required = "required"; }
+}
+
+<select id="@Model.Id" name="@Model.Name" @required class="form-control">
+
+    <option value="@ComboBoxes.DefaultOptionValue">@ComboBoxes.DefaultOptionMessage</option>
+
+    @foreach (var option in Model.Options)
+    {
+        if (option.Id.ToString() == Model.SelectedValue)
+        {
+            @*<option value="@option.Id" selected data-taxgroupdata="@option.TaxGroupId">@option.Name</option>*@
+            <option value="@option.Id" selected taxgroupdata="@option.TaxGroupId">@option.Name</option>
+        }
+        else
+        {
+            @*<option value="@option.Id" data-taxgroupdata="@option.TaxGroupId">@option.Name</option>*@
+            <option value="@option.Id" taxgroupdata="@option.TaxGroupId">@option.Name</option>
+        }
+    }
+</select>
+

@@ -1,0 +1,325 @@
+﻿
+@{
+    ViewBag.Title = "UPDATE HOUSE KEEPING STATUS";
+}
+
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+    .label-data {
+        font-size: 12px !important;
+        color: #1a1a1a;
+    }
+
+    .the-fieldset {
+        padding-top: 5px;
+    }
+
+    input[type="radio"], input[type="checkbox"] {
+        margin: 8px 0 0;
+        line-height: normal;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card" style="height:initial;">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-content form-control-area" id="div-status" style="padding: 8px 20px;">
+                <div class="search-criteria">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group form-group-margin-override label-floating">
+                                <label class="control-label">Property</label>
+                                <select name="HKPropertyId" id="HKPropertyId" class="select2 form-control label-data" required>
+                                    <option value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" class="label-data">@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Name</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row">
+                                <div class="col-md-10 form-group form-group-margin-override label-floating">
+                                    <label class="control-label">Room Category</label>
+                                    <input class="form-control label-data" type="text" name="HKRoomCatId" id="HKRoomCatId" value="" title="" />
+                                </div>
+                                <div class="col-md-2 form-group form-group-marging" style="margin: 44px 0 0 -22px;">
+                                    <span class="glyphicon glyphicon-search" id="btnRoomCategorySearch" style="padding: 0px 0px;"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row">
+                                <div class="col-md-10 form-group form-group-margin-override label-floating">
+                                    <label class="control-label">Floor</label>
+                                    <input class="form-control label-data" type="text" name="HKFloorId" id="HKFloorId" value="" title="" />
+                                </div>
+                                <div class="col-md-2 form-group form-group-marging" style="margin: 44px 0 0 -22px;">
+                                    <span class="glyphicon glyphicon-search" id="btnFloorSearch" style="padding: 0px 0px;"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <fieldset class="the-fieldset" style="">
+                                <legend class="the-legend label-data">Front Office Status</legend>
+                                <div class="row label-data" id="FOStatusLoadingArea"></div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-9">
+                            <fieldset class="the-fieldset" style="">
+                                <legend class="the-legend label-data">House Keeping Status</legend>
+                                <div class="row label-data" id="HKStatusLoadingArea"></div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <fieldset class="the-fieldset" style="">
+                                <legend class="the-legend label-data">Service Status</legend>
+                                <div class="row label-data" id="ServiceStatusLoadingArea"></div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset class="the-fieldset" style="">
+                                <legend class="the-legend label-data">Room Feature</legend>
+                                <div class="row label-data" id="RoomFeatureLoadingArea"></div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-2">
+                            <fieldset class="the-fieldset" style="">
+                                <legend class="the-legend label-data">Filtrations</legend>
+                                <div class="row label-data" id="FiltrationsLoadingArea">
+                                    <div class="col-md-12">
+                                        <div class="" style="margin-bottom: -10px;">
+                                            <label class="label-data">
+                                                <input type="checkbox" class="checkBoxGroup" id="HKIsTodayArrivals" name="" value="" />
+                                                Today Arrivals
+                                            </label>
+                                        </div>
+                                        <div class="" style="margin-bottom: -10px;">
+                                            <label class="label-data">
+                                                <input type="checkbox" class="checkBoxGroup" id="HKIsTodayDepartures" name="" value="" />
+                                                Today Departures
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-2">
+                            <fieldset class="the-fieldset" style="">
+                                <legend class="the-legend label-data">Other Details</legend>
+                                <div class="row label-data" id="OtherDetailsLoadingArea">
+                                    <div class="col-md-12">
+                                        <div class="" style="margin-bottom: -10px;">
+                                            <label class="label-data">
+                                                <input type="checkbox" class="checkBoxGroup" id="HKIsForOccupancy" name="" value="" />
+                                                Actual Rooms Only
+                                            </label>
+                                        </div>
+                                        <div class="" style="margin-bottom: -10px;">
+                                            <label class="label-data">
+                                                <input type="checkbox" class="checkBoxGroup" id="HKIncludeResDetails" name="" value="" />
+                                                Res/Guest Details
+                                            </label>
+                                        </div>
+                                        <div class="" style="margin-bottom: -10px;">
+                                            <label class="label-data">
+                                                <input type="checkbox" class="checkBoxGroup" id="HKQueueReservation" name="" value="" />
+                                                Queue Reservations
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+                <div class="filterations">
+                    <div class="row search-btn">
+                        <div class="col-md-12">
+                            <div style="float:right;">
+                                <button id="searchhkstatuswiserecords" class="btn btn-primary search-hkstatus-wise-records">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row filterCriteria-btn">
+                        <div class="col-md-12">
+                            <div style="float:right;">
+                                <button id="showsearchcriteria" class="btn-link show-search-criteria">Change Search Criteria</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="StatusUpdateButtons">
+                        <div class="col-md-6">
+                            <style>
+                                .searchBox .form-group {
+                                    margin: 0px !important;
+                                }
+                            </style>
+                            <div class="row searchBox">
+                                <div class="col-md-12">
+                                    <input type="text" id="roomSearchBy" placeholder="Search by room code, name or housekeeping status" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6" style="padding-top: 15px;">
+                            <div style="float:right;">
+                                Update :
+                                <button id="updatehkstatuswiserecords" class="btn-link update-hkstatus-wise-records disabled">HK Status</button>|
+                                <button id="updatessstatuswiserecords" class="btn-link update-hkstatus-wise-records disabled">SS Status</button>
+                            </div>
+                            <div style="float:right;">
+                                Remove :
+                                <button id="updatequeuerecords" class="btn-link update-queue-records disabled">Queue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <label class="rowCountLabel" id="rowCountLabel"><strong></strong></label>
+                <div class="filtered-results" id="DataLoadedTable">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="data-roomdetails">
+
+                                    <tr>
+                                        <th><div><div class="form-group checkbox"><label><input type="checkbox" id="isAllRooms" class="isAll-rooms" /></label></div></div></th>
+                                        <th>Room</th>
+                                        <th>Floor</th>
+                                        <th>Room Category</th>
+                                        <th>FO Status</th>
+                                        <th>HK Status</th>
+                                        <th>Cleaning Pattern</th>
+                                        <th>GS Status</th>
+                                        <th class="guest-detail">Arrival</th>
+                                        <th class="guest-detail">Departure</th>
+                                        <th class="guest-detail">Guest Name</th>
+                                    </tr>
+
+
+                                    <tbody class="all-filtered-roomdetails">
+                                        <tr>
+                                            <td class="" colspan="5">No records available.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <label class="rowCountLabel" id="rowCountLabel"><strong></strong></label>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/ui/HKChange.js"></script>
+<script>
+    $(document).ready(function () {
+        //2023-08-16--------------------------------------------------------------------------
+
+        $('#NationalityId').addClass('select2');
+        $('#SalutationId').addClass('select2');
+        $('#CountryId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+
+
+        $('body').off('keyup', '#roomSearchBy').on('keyup', '#roomSearchBy', function () {
+            FilterRooms();
+        });
+
+        $('body').off('click', '.searchByBtn').on('click', '.searchByBtn', function () {
+            FilterRooms();
+        });
+
+        function FilterRooms() {
+            debugger;
+            $('.room-block').hide();
+            $('.room-block').each(function (index, item) {
+                if ($(item).attr('data-room-text').toLowerCase().includes($('#roomSearchBy').val().toLowerCase())) {
+                    $(item).fadeIn();
+                }
+            });
+        }
+
+        $('.filterCriteria-btn').fadeOut();
+
+        $('#StatusUpdateButtons').fadeOut();
+        $('#DataLoadedTable').fadeOut();
+
+        $('#HKIsForOccupancy').not(':disabled').prop('checked', true);
+
+        $('#isAllRooms').prop('disabled', true);
+
+        //Check Boxes Start--------------
+        LoadFrontOfficeRoomStatus();
+        LoadHKHouseKeepingRoomStatusSelect();
+        LoadHKServiceRoomStatusSelect();
+        LoadHKRoomFeatureSelect();
+        //Check Boxes End--------------
+    });
+</script>

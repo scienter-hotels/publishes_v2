@@ -1,0 +1,383 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.LostAndFoundView
+<form Id="InquiryRelease">
+    <input type="hidden" class="itemId" value="@Model.Id" />
+    <input type="hidden" class="hidden-release-action-id" value="@Model.LostAndFoundActionId" />
+    <div>
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group label-floating">
+                    @Html.LabelFor(x => x.DocNo, "Doc No", htmlAttributes: new { @class = "control-label" })
+                    @Html.DisplayFor(model => model.DocNo, new { htmlAttributes = new { @class = "form-control font-size-16px" } })
+                </div>
+            </div>
+        </div>
+        <fieldset class="the-fieldset col-md-12" style="border:1px solid #000000">
+            <legend class="the-legend"><b> Release To</b></legend>
+            <div class="row">
+                <div class="col-md-3">
+                    <input type="radio" name="radioName" value="staff" checked> Staff
+                </div>
+
+                <div class="col-md-3">
+                    <input type="radio" name="radioName" value="guest"> Guest
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 staffDiv">
+                    <div class="row">
+                        <div class="col-md-10 form-group form-group-margin-override label-floating">
+                            <label class="control-label">Staff Person</label>
+                            <input class="form-control label-data" type="text" name="RoomBoyId" data-RoomBoyId="" id="RoomBoyId" value="" title="" />
+                        </div>
+                        <div class="col-md-2 form-group form-group-marging" style="margin: 44px 0 0 -22px;">
+                            <span class="glyphicon glyphicon-search" id="btnRoomBoySearch" style="padding: 0px 0px;"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 guestDiv">
+                    <div class="row">
+                        <div class="col-md-10 form-group form-group-margin-override label-floating">
+                            <label class="control-label">Guest</label>
+                            <input class="form-control label-data" type="text" name="guestId" data-guestId="" id="guestId" value="" title="" />
+                        </div>
+                        <div class="col-md-2 form-group form-group-marging" style="margin: 44px 0 0 -22px;">
+                            <span class="glyphicon glyphicon-search" id="btnguestIdSearch" style="padding: 0px 0px;"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group  label-floating">
+                        <label class="required control-label">Action</label>
+                        <select name="LostAndFoundReleaseActionId" id="LostAndFoundReleaseActionId" class="select2 form-control" value="@Model.LostAndFoundActionId">
+                            <option value="0">N/A</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="row">
+            <div class="col-md-12">
+                <fieldset class="the-fieldset col-md-12" style="border:1px solid #000000">
+                    <legend class="the-legend"><b> Remark</b></legend>
+                    <div class="form-group label-floating">
+                        <textarea name="Remark" required class="form-control ReleaseRemark" value=""> </textarea>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+       
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <button type="submit" class="btn btn-primary ">
+                    Release
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {       
+        $('.guestDiv').hide();    
+        LoadLostAndfoundReleaseActions();
+    });
+
+    $('body').on('submit', '#InquiryRelease', function (e) {     
+        var LostAndFoundImages = [];
+       
+        e.preventDefault();
+        var isRealeasePersonSet = false;
+
+        if ($("input[name='radioName']").is(':checked') && $("input[name='radioName']:checked").val() == 'staff' && $('#RoomBoyId').val()!="") {
+            isRealeasePersonSet = true;
+        }
+
+        if ($("input[name='radioName']").is(':checked') && $("input[name='radioName']:checked").val() == 'guest' && $('#guestId').val() != "") {
+            isRealeasePersonSet = true;
+        }
+
+        if (isRealeasePersonSet) {
+
+            var ReleaseToId = 0;
+            var ReleaseTo = '';
+            var data;
+
+            $.each($("input[name='radioName']"), function (index, item) {
+
+                if ($(this).is(':checked')) {
+                    if ($(this).val() == 'staff') {
+                        ReleaseToId = $("select[name='salesPersonId']").val();
+                        ReleaseTo = 'S';
+
+                    } else if ($(this).val() == 'guest') {
+                        ReleaseToId = $("select[name='guestId']").val();
+                        ReleaseTo = 'G';
+                    }
+                }
+            })
+
+            var itemdetails = {
+                __RequestVerificationToken: $('__RequestVerificationToken').val(),
+                Id: $('.itemId').val(),
+                ReleaseToId: ReleaseToId,
+                ReleaseTo: ReleaseTo,
+                ReleaseRemark: $('.ReleaseRemark').val(),
+                LostAndFoundActionId: $('#LostAndFoundReleaseActionId').val()
+            };
+
+            $.ajax({
+                url: '/administration/lostandfound/save',
+                dataType: 'html',
+                data: { itemdetails:itemdetails, LostAndFoundImages: LostAndFoundImages },
+                method: 'POST',
+                success: function (response) {
+                    if (response.startsWith("ERR-")) {
+                        ShowErrorMessage(response.replace("ERR-", ""));
+                    } else {
+                        $('#contentLoadingArea').html('').fadeOut();
+                        $('#contentLoadingArea').html(response).fadeIn();
+                        ShowSuccessMessage('Record has been saved successfully.');
+                    }
+                 
+                },
+                error: function (xhr, status, error) {
+                    ShowErrorMessage('Sorry, There is an error in saving this record.');
+                }
+            });
+        } else {
+            ShowWarningMessage('Please select the release person.');
+        }
+        
+    });
+
+    //------------------------------------------------------------------------------------
+
+    $("input[name='radioName']").change(function () {
+
+        var data = $(this).val();
+        if (data == 'staff') {
+            $('.guestDiv').hide();
+            $('.staffDiv').show();
+
+        } else if (data == 'guest') {
+            $('.guestDiv').show();
+            $('.staffDiv').hide();
+        }
+
+    });
+   //----------------------------------------------------------------------------------------------
+    $('.success-popup-ok, .error-popup-ok').closest('.modal').on('hide.bs.modal', function (e) {
+        location.reload();
+    })
+
+    $('body').off('click', '#btnRoomBoySearch').on('click', '#btnRoomBoySearch', function (e) {
+        e.preventDefault();
+        var title = "Staffs";
+        var view = "";
+        var width = 300;
+        var body = "";
+
+        $.ajax({
+            url: '/Administration/LostAndFound/SelectStaafDetailsForLostAndFound',
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+
+                $(data).each(function (index, item) {
+                    body = body + '<tr class="room-boy-data-rows">' +
+                        '<td><div class="checkbox"><label>' +
+                        '<input type="checkbox" data-room-boy-Id="' + item.Id + '" data-room-boy-name="' + item.Name + '" value="' + item.Id + '"  class="form-group checkbox room-boy-Id" >' +
+                        '</label></div></td>' +
+                        '<td class="col-md-1"></td>'+
+                        '<td class="roomboyname">' + item.Name + '</td>' +
+                        '</tr>'
+                });
+
+                setTimeout(function () {
+                    view = '<div class="row">' +
+                        '<div class="col-md-12">' +
+                        '<div class="table-responsive">' +
+                        '<table class="table table-striped" id="data-roomBoys">' +
+                        //'<tr>' +
+                        ////'<th><div><div class="form-group checkbox"><label><input type="checkbox" id="isAllRoomBoys" class="isAll-RoomBoys" /></label></div></div></th>' +
+                        //'<th class"col-md-2"></th>' +
+                        //'</tr>' +
+                        '<tbody class="all-roomboys-grid">' +
+                        body +
+                        '</tbody>' +
+                        '</table>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="row">' +
+                        '<div class="col-md-2">' +
+                        '<button id="selectroomboyrecords" class="btn btn-primary select-room-boy-records">SELECT</button>' +
+                        '</div>' +
+                        '</div >'
+
+
+                    $('#grid-record-detail-model-lost-and-found #grid-record-detail-body-lost-and-found').html('');
+                    $('#grid-record-detail-model-lost-and-found #grid-record-detail-body-lost-and-found').html(view);
+                    CallDetailModelSimpleForSearch(title, width)
+                }, 1000);
+
+            }, complete: function () {
+
+            }
+        });
+
+    });
+
+    $('body').off('click', '#btnguestIdSearch').on('click', '#btnguestIdSearch', function (e) {
+        e.preventDefault();
+        var title = "Guests";
+        var view = "";
+        var width = 300;
+        var body = "";
+
+        $.ajax({
+            url: '/Administration/LostAndFound/SelectGuestDetailsForLostAndFound',
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+
+                $(data).each(function (index, item) {
+                    body = body + '<tr class="guest-data-rows">' +
+                        '<td><div class="checkbox"><label>' +
+                        '<input type="checkbox" data-guest-Id="' + item.Id + '" data-guest-name="' + item.FirstName + '" value="' + item.Id + '"  class="form-group checkbox guest-Id" >' +
+                        '</label></div></td>' +
+                        '<td class="col-md-1"></td>' +
+                        '<td class="guestname">' + item.FirstName + '</td>' +
+                        '</tr>'
+                });
+
+                setTimeout(function () {
+                    view = '<div class="row">' +
+                        '<div class="col-md-12">' +
+                        '<div class="table-responsive">' +
+                        '<table class="table table-striped" id="data-guest">' +
+                        //'<tr>' +
+                        ////'<th><div><div class="form-group checkbox"><label><input type="checkbox" id="isAllguests" class="isAll-guests" /></label></div></div></th>' +
+                        //'<th>Guest</th>' +
+                        //'</tr>' +
+                        '<tbody class="all-guest-grid">' +
+                        body +
+                        '</tbody>' +
+                        '</table>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="row">' +
+                        '<div class="col-md-2">' +
+                        '<button id="selectguestsrecords" class="btn btn-primary select-guests-records">SELECT</button>' +
+                        '</div>' +
+                        '</div >'
+
+
+                    $('#grid-record-detail-model-lost-and-found #grid-record-detail-body-lost-and-found').html('');
+                    $('#grid-record-detail-model-lost-and-found #grid-record-detail-body-lost-and-found').html(view);
+                    CallDetailModelSimpleForSearch(title, width)
+                }, 1000);
+
+            }, complete: function () {
+
+            }
+        });
+
+    });
+
+    $('body').off('click', '.guest-Id').on('click', '.guest-Id', function () {
+        if ($(this).is(':checked')) {
+            $('.guest-Id').not(this).attr('disabled', true);
+        } else {
+            $('.guest-Id').attr('disabled', false);
+        }
+    });
+
+    $('body').off('click', '.room-boy-Id').on('click', '.room-boy-Id', function () {
+        if ($(this).is(':checked')) {
+            $('.room-boy-Id').not(this).attr('disabled', true);
+        } else {
+            $('.room-boy-Id').attr('disabled', false);
+        }
+    });
+
+    $('body').off('click', '#selectguestsrecords').on('click', '#selectguestsrecords', function () {
+        var guestString = "";
+        var guestId = 0;
+
+        $.each($('.guest-Id'), function (index1, item1) {
+            if ($(item1).prop('checked')) {
+               
+                guestId = $(item1).val();
+
+                if (guestString == "") {
+                    guestString = $(item1).attr('data-guest-name')
+                } else {
+                    guestString = guestString + ', ' + $(item1).attr('data-guest-name');
+                }
+
+            }
+        });
+
+        $('#guestId').val(guestString);
+        $('#guestId').attr("title", guestString);
+        $('#guestId').attr("data-guestId", guestId);
+        setTimeout(function () { $('#grid-record-detail-model-close-lost-and-found').click(); }, 1000);
+    });
+
+    $('body').off('click', '#selectroomboyrecords').on('click', '#selectroomboyrecords', function () {
+        var staffString = "";
+        var staffId = 0
+
+        $.each($('.room-boy-Id'), function (index1, item1) {
+            if ($(item1).prop('checked')) {
+                
+                staffId = $(item1).val();
+
+                if (staffString == "") {
+                    staffString = $(item1).attr('data-room-boy-name')
+                } else {
+                    staffString = staffString + ', ' + $(item1).attr('data-room-boy-name');
+                }
+
+            }
+        });
+
+        $('#RoomBoyId').val(staffString);
+        $('#RoomBoyId').attr("title", staffString);
+        $('#RoomBoyId').attr("data-RoomBoyId", staffId);
+        setTimeout(function () { $('#grid-record-detail-model-close-lost-and-found').click(); }, 1000);
+    });
+
+    function CallDetailModelSimpleForSearch(title, width) {
+        $('#grid-record-detail-model-lost-and-found .modal-dialog-lost-and-found').css("width", width);
+        $('#grid-record-detail-model-lost-and-found #grid-record-detail-header-lost-and-found').html(title);
+
+        $('#grid-record-detail-model-lost-and-found').modal({
+            show: true,
+            keyboard: false,
+            backdrop: 'static'
+        });
+    };
+
+    function LoadLostAndfoundReleaseActions() {
+        $.ajax({
+            url: '/Administration/LostAndFound/SelectLostAndFoundActionsForCombo',
+            dataType: 'JSON',
+            method: 'POST',
+            beforeSend: function () {
+                // $('#LostAndFoundReleaseActionId option').remove();
+            },
+            success: function (data) {
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#LostAndFoundReleaseActionId'));
+                });
+            },
+            complete: function () {
+                $('#LostAndFoundReleaseActionId').val($('.hidden-release-action-id').val());
+            }
+
+        });
+    }
+</script>

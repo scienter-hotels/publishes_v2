@@ -1,0 +1,402 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.ViewModels.HotelConfirmationView>
+@using System.Linq;
+<style>  
+    .form-group {
+        padding-bottom: 0px;
+        margin: 0px 0 0 0;
+    }
+
+    .col-md-2c {
+    width: 12.666666666666664%;
+}
+
+    .col-md-1c {
+    width: 1.333333333333332%;
+}
+
+    .col-xs-3{
+        font-size:11px;
+        font-weight:bold;
+        text-align:right ;
+    }
+
+    .btn-small {
+    color: #FFFFFF;
+    background-color: #999999;
+    border: none;
+    border-radius: 3px;
+    position: relative;
+    font-size: 6px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    will-change: box-shadow, transform;
+    transition: box-shadow 0.2s cubic-bezier(0.4, 0, 1, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    line-height: 1.428571429;
+    user-select: none;
+}
+</style>
+
+<div class="container">
+    <div class="row visible-print">
+        <div class="col-md-12 text-center">
+            <center> <img src="~/Content/Images/logo.jpg" style="width:100px !important" /> </center>
+            <h3 class="font-family-01">Sigiriya Jungles Hotel</h3>
+            <p style="text-align:center !important;">SIGIRIYA JUNGLES, AUDANGAWA ROAD, KIMBISSA, SIGIRIYA, SRI LANKA. <br /> Email : reservations@sigiriyajungles.com, Telephone: +94114508508, +94664508508</p>
+        </div>
+    </div>
+    @*<div class="row">
+        <button type="button" style="float:right;" class="btn btn-default Editbtn">
+            <span class="glyphicon"></span> Edit
+        </button>
+    </div>*@
+
+    @if (Model.Count() > 1)
+    {
+        <div class="row margin-top-20px">
+            <div class="col-md-12 text-left">
+                <h4>
+                    <hr class="hr-dark" />
+                    <b> Group Reservation Details </b>
+                    <hr class="hr-dark" />
+                </h4>
+            </div>
+        </div>
+        <fieldset class="the-fieldset reservationDetailsLoop margin-top-10px" style="border:1px solid #000000">
+            <div class="row margin-top-20px">
+                <div class="col-md-6 col-sm-6 col-xs-6 margin-bottom-20">
+                    <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Confirmation No</div><div class="col-md-1 col-sm-1 col-xs-1">:</div> <div class="col-md-4 col-sm-4 col-xs-4">@Model.FirstOrDefault().GroupReservationNo </div><input type="hidden" class="GroupResNo" value="@Model.FirstOrDefault().GroupReservationNo" /> </div>
+                    <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Arrival</div> <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Convert.ToDateTime(Model.FirstOrDefault().Arrival).ToShortDateString()</div> <div class="col-md-4 col-sm-4 col-xs-4 data-hide"><input type="text" class="form-control datePicker" value="@Model.FirstOrDefault().Arrival" /> </div></div>
+                    <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Country</div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().CountryName</div><div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("CountriesCombo", "Countries", new { area = "Administration", name = "CountryID", value = Model?.FirstOrDefault().CountryID });}</div> </div>
+                    <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Rate Code </div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().RateCodeHeaderName </div> <div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("RateCodeHeadersComboByCountryId", "RateCodeHeaders", new { area = "Administration", name = "RateCodeHeaderId", value = Model?.FirstOrDefault().RateCodeHeaderId });}</div></div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3 col-xs-3">Company</div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show"> @Model.FirstOrDefault().CompanyName</div>
+                        <div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("CompaniesCombo", "Companies", new { area = "Administration", name = "AgentId", value = Model?.FirstOrDefault().AgentId });}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3 col-xs-3">Booking Source</div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().BookingSourceName</div>
+                        <div class="col-md-4 col-sm-4 col-xs-1 data-hide">@{Html.RenderAction("BookingSourceCombo", "BookingSources", new { area = "Administration", name = "BookingSourceId", value = Model?.FirstOrDefault().BookingSourceId });}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3 col-xs-3">Segment</div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().SegmentName</div>
+                        <div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("SegmentCombo", "Segments", new { area = "Administration", name = "SegmentId", requiered = true, value = Model?.FirstOrDefault().SegmentId });}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3 col-xs-3">Market</div> <div class="col-md-1 col-sm-1 col-xs-1">:</div> <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().MarketName</div>
+                        <div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("MarketCombo", "Markets", new { area = "Administration", name = "MarketId", requiered = true, value = Model?.FirstOrDefault().MarketId });}</div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6 margin-bottom-20">
+                    <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Status</div> <div class="col-md-1 col-sm-1 col-xs-1">:</div> <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().Status</div><div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { area = "Administration", name = "StatusId", requiered = true, value = Model?.FirstOrDefault().StatusId });} </div> </div>
+                    <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Departure</div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Convert.ToDateTime(Model.FirstOrDefault().Departure).ToShortDateString()</div> <div class="col-md-4 col-sm-4 col-xs-4 data-hide"><input type="text" class="form-control datePicker" value=@Model.FirstOrDefault().Departure /></div></div>
+                    <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Meal Plan</div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().MealPlanName</div><div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("MealPlanCombo", "MealPlans", new { area = "Administration", name = "MealPlanId", value = Model?.FirstOrDefault().MealPlanId });}</div> </div>
+                    <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Voucher No</div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show"> @Model.FirstOrDefault().VoucherNo</div> <div class="col-md-4 col-sm-4 col-xs-4 data-hide"><input type="text" name="" class="form-control" value=@Model.FirstOrDefault().VoucherNo /></div></div>
+                    <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Tour No</div> <div class="col-md-1 col-sm-1 col-xs-1">:</div> <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().TourNo</div> <div class="col-md-4 col-sm-4 col-xs-4 data-hide"><input type="text" name="" class="form-control" value=@Model.FirstOrDefault().TourNo /></div></div>
+                </div>
+            </div>
+        </fieldset>
+                        }
+    <div class="row margin-top-10px">
+        <div class="col-md-12 text-left ">
+            <h4>
+                <hr class="hr-dark" />
+                <b>
+                    Rooming Details @if (Model.Count() < 1 || Model.Count() == 1)
+                    { @("and Related Details");
+                    }
+                </b>
+                @*<span class="pull-right" title="Add New Room" data-toggle="tooltip">
+                    <button type="button" style="float:right;" class="btn btnaddRoom accordion-toggle"
+                            data-toggle="collapse" data-target="#newRoom" aria-expanded="false" aria-controls="newRoom">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </span>*@
+                <hr class="hr-dark" />
+            </h4>
+        </div>
+    </div>
+    <fieldset class="the-fieldset collapse" id="newRoom" style="border:1px solid #000000">
+        <legend class="the-legend"><b> Add New Room</b></legend>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group label-floating">
+                        <label class="required control-label">Room Category</label>
+                        @{Html.RenderAction("RoomCategoryCombo", "RoomCategories", new { area = "Administration", name = "NewRoomCategory" });}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group  label-floating">
+                        <label class="required control-label">Room Type</label>
+                        @{Html.RenderAction("RoomTypeCombo", "RoomTypes", new { area = "Administration", name = "NewRoomType" });}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group  label-floating">
+                        <label class="required control-label">Meal Plan</label>
+                        @{Html.RenderAction("MealPlanCombo", "MealPlans", new { area = "Administration", name = "NewMealPlan" });}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group  label-floating">
+                        <label class="required control-label">No Of Rooms</label>
+                        <input type="number" class="form-control NewNoOfRooms" min="0" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-default btnSaveRoom"> Save</button>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    @foreach (var resdetails in Model)
+    {
+        <fieldset class="the-fieldset reservationDetailsLoop" style="border:1px solid #000000">
+            <input type="hidden" Id="resNo" value="@resdetails.ReservationNo" />
+            <legend class="the-legend">
+                <b>
+                    @if (Model.Count() > 1)
+                { @resdetails.ReservationNo}
+                else
+                { @Model.FirstOrDefault().GroupReservationNo}
+                </b>
+            </legend>
+            <div class="row">
+                <div class="col-md-6 col-sm-6 col-xs-6 margin-bottom-20">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3 col-xs-3">Guest</div> <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-7 col-sm-7 col-xs-7">
+                            @foreach (var guest in resdetails.SelectedGuestDetail)
+                            {@guest.Name <br>}
+                        </div>
+                    </div>
+                </div>
+                @*<span class="pull-right" title="Add New Guest" data-toggle="tooltip">
+                    <button type="button" class="btn-small btnaddGuest accordion-toggle"
+                            data-toggle="collapse" data-target="#@resdetails.ReservationNo" aria-expanded="false" aria-controls="newGuest">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </span>*@
+            </div>
+            <fieldset class="the-fieldset collapse panelGuest" id="@resdetails.ReservationNo" style="border:1px solid #000000">
+                <legend class="the-legend"><b> Add New Guest</b></legend>
+                <div class="row">
+                    <div id="dataGuestProfileForm1">
+                        @{Html.RenderAction("GuestProfile", "Reservations");}
+                    </div>
+                </div>
+                <div class="text-right">
+                    <button type="button" class="btn btn-default btnNewGuest"> Add</button>
+                </div>
+            </fieldset>
+            <div class="row">
+                <div class="col-md-6 col-sm-6 col-xs-6 margin-bottom-20">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3 col-xs-3">Arrival</div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Convert.ToDateTime(resdetails.SelectedRoomDetail.FirstOrDefault().Arrival).ToShortDateString() @Convert.ToDateTime(resdetails.ExpectedArrivalTime).ToShortTimeString()</div>
+                        <div class="col-md-4 col-sm-4 col-xs-4 resArrival data-hide">
+                            <input type="text" class="form-control datePicker" value="" />
+                            <input type="hidden" class="res-arrival" value="@resdetails.SelectedRoomDetail.Where(x => x.ReservationHeaderId == resdetails.ReservationHeaderId).FirstOrDefault().Arrival" />
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-4 resArrivalTime data-hide">
+                            <input type="hidden" class="timeArrival" value="@Convert.ToDateTime(resdetails.ExpectedArrivalTime).ToShortTimeString():00" />
+                            @{Html.RenderPartial("_TimeRange");}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3 col-xs-3">Arrival For </div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@resdetails.ArriveForMealName</div>
+                        <div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("MealCombo", "MealPlans", new { area = "Administration", name = "ArriveForMealName", value = resdetails.ArrivalForId });}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3 col-xs-3">Rate Code </div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@resdetails.RateCodeHeaderName</div>
+                        <div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("RateCodeHeadersComboByCountryId", "RateCodeHeaders", new { area = "Administration", name = "RateCodeHeaderId", value = resdetails.RateCodeHeaderId });}</div>
+                    </div>
+                    @if (Model.Count() < 1 || Model.Count() == 1)
+                    {
+                        <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Country</div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().CountryName</div><div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("CountriesCombo", "Countries", new { area = "Administration", name = "CountryID", value = Model?.FirstOrDefault().CountryID });}</div> </div>
+
+                        <div class="row">
+                            <div class="col-md-3 col-sm-3 col-xs-3">Company</div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show"> @Model.FirstOrDefault().CompanyName</div>
+                            <div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("CompaniesCombo", "Companies", new { area = "Administration", name = "AgentId", value = Model?.FirstOrDefault().AgentId });}</div>
+                        </div>
+                            <div class="row">
+                                <div class="col-md-3 col-sm-3 col-xs-3">Booking Source</div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().BookingSourceName</div>
+                                <div class="col-md-4 col-sm-4 col-xs-1 data-hide">@{Html.RenderAction("BookingSourceCombo", "BookingSources", new { area = "Administration", name = "BookingSourceId", value = Model?.FirstOrDefault().BookingSourceId });}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-sm-3 col-xs-3">Segment</div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().SegmentName</div>
+                                <div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("SegmentCombo", "Segments", new { area = "Administration", name = "SegmentId", requiered = true, value = Model?.FirstOrDefault().SegmentId });}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 col-sm-3 col-xs-3">Market</div> <div class="col-md-1 col-sm-1 col-xs-1">:</div> <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().MarketName</div>
+                                <div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("MarketCombo", "Markets", new { area = "Administration", name = "MarketId", requiered = true, value = Model?.FirstOrDefault().MarketId });}</div>
+                            </div>
+                                    }
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-6 margin-bottom-20">
+
+                    <div class="row">
+                        <div class="col-md-3 col-sm-3 col-xs-3">Departure</div> <div class="col-md-1 col-sm-1 col-xs-1">:</div><div class="col-md-4 col-sm-4 col-xs-4 data-show">@Convert.ToDateTime(resdetails.SelectedRoomDetail.FirstOrDefault().Departure).ToShortDateString() @Convert.ToDateTime(resdetails.ExpectedDepartureTime).ToShortTimeString()</div>
+                        <div class="col-md-4 col-sm-4 col-xs-4 resDeparture data-hide">
+                            <input type="text" class="form-control datePicker" value="" />
+                            <input type="hidden" class="res-departure" value="@resdetails.SelectedRoomDetail.Where(x => x.ReservationHeaderId == resdetails.ReservationHeaderId).FirstOrDefault().Departure" />
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-xs-4 resDepartureTime data-hide">
+                            <input type="hidden" class="timeDeparture" value="@Convert.ToDateTime(resdetails.ExpectedDepartureTime).ToShortTimeString():00" />
+                            @{Html.RenderPartial("_TimeRange");}
+                        </div>
+                    </div>
+                    <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Leave After</div><div class="col-md-1 col-sm-1 col-xs-1">:</div><div class="col-md-4 col-sm-4 col-xs-4 data-show">@resdetails.LeaveAfterMealName</div><div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("MealCombo", "MealPlans", new { area = "Administration", name = "LeaveAfterMealName", value = resdetails.LeaveAfterId });}</div></div>
+                    <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">No Of Nights</div><div class="col-md-1 col-sm-1 col-xs-1">:</div><div class="col-md-4 col-sm-4 col-xs-4 data-show">@resdetails.NoOfNights</div><div class="col-md-4 col-sm-4 col-xs-4 data-hide"><input type="number" min="0" class="form-control NoOfNights" readonly value="" /></div> </div>
+                    @if (Model.Count() < 1 || Model.Count() == 1)
+                    {
+                        <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Status</div> <div class="col-md-1 col-sm-1 col-xs-1">:</div> <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().Status</div><div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { area = "Administration", name = "StatusId", requiered = true, value = Model?.FirstOrDefault().StatusId });} </div></div>
+                        <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Meal Plan</div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().MealPlanName</div><div class="col-md-4 col-sm-4 col-xs-4 data-hide"> @{Html.RenderAction("MealPlanCombo", "MealPlans", new { area = "Administration", name = "MealPlanId", value = Model?.FirstOrDefault().MealPlanId });}</div> </div>
+                            <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Voucher No</div><div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-4 col-xs-4 data-show"> @Model.FirstOrDefault().VoucherNo</div> <div class="col-md-4 col-sm-4 col-xs-4 data-hide"><input type="text" name="" class="form-control" value=@Model.FirstOrDefault().VoucherNo /></div></div>
+                            <div class="row"><div class="col-md-3 col-sm-3 col-xs-3">Tour No</div> <div class="col-md-1 col-sm-1 col-xs-1">:</div> <div class="col-md-4 col-sm-4 col-xs-4 data-show">@Model.FirstOrDefault().TourNo</div> <div class="col-md-4 col-sm-4 col-xs-4 data-hide"><input type="text" name="" class="form-control" value=@Model.FirstOrDefault().TourNo /></div></div>
+                            }
+                </div>
+            </div>
+            @foreach (var roomDetails in resdetails.SelectedRoomDetail)
+                {
+                <div class="row tableDiv">
+                    <div class="col-md-12 margin-top-15px">
+                        <table class="table table-striped selectedRoomTable">
+                            <tr>
+                                <th class="col-md-2">Category</th>
+                                <th class="col-md-2">Type</th>
+                                <th class="col-md-2">Meal Plan</th>
+                                <th class="col-md-2">No of Rooms</th>
+                                <th class="col-md-2">Rate</th>
+                            </tr>
+                            <tr>
+                                <td>@roomDetails.RoomCategoryName</td>
+                                <td>@roomDetails.RoomTypeName</td>
+                                <td>@roomDetails.MealPlanName</td>
+                                <td>@(roomDetails.NoOfRooms / resdetails.NoOfNights)</td>
+                                <td>@roomDetails.AmountFormatedH</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <hr class="hr-dark" />
+            }
+        </fieldset>
+                            }
+
+    <div class="col-md-12">
+        <span class="glyphicon glyphicon-hand-right"></span>  Check-in time 13.00hrs and Check-out time 11.00hrs. <br />
+        <span class="glyphicon glyphicon-hand-right"></span>   Please email us on info@sigiriyajungles.com for any further assistance or information in relation to your reservation, the hotel, its facilities or related services and experiences.
+        <h5 class="margin-top-30"><hr class="hr-dark" /> Additional Compulsory Supplementary Charges. <hr class="hr-dark" /> </h5>
+        <ul class="no-list-style">
+            <li><span class="glyphicon glyphicon-hand-right"></span>  Additional compulsory supplementary charges – For non Sri Lankans/ Expatriates ( USD clients) – Please settle direct at the hotel on arrival.</li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>  24th December - Xmas eve – additional compulsory supplement of USD 58 nett per Adult & 50% discount for Kids between 5 – 11.99years</li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>  31st December – New Year’s eve - additional compulsory supplement of USD 68 nett per Adult & 50% discount for Kids between 5 – 11.99years</li>
+            <li></li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>  Additional compulsory supplementary charges – for Sri Lankans and Expatriates ( Sri Lankans Clients) – Please settle direct at the hotel on arrival.</li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>  24th December - Xmas eve – additional compulsory supplement of Rs. 5,000 per Adult & 50% discount for Kids between 5 – 11.99years</li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>  31st December – New Year’s eve – additional compulsory supplement of Rs. 6,000 per Adult & 50% discount for Kids between 5 – 11.99years</li>
+        </ul>
+        <h5 class="margin-top-30"><hr class="hr-dark" />  Cancellation Policy <hr class="hr-dark" /> </h5>
+        <ul class="no-list-style">
+            <li><span class="glyphicon glyphicon-hand-right"></span>  Less than 21 days prior to arrival - 100% of total amount.</li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>  22-45 days prior to arrival - 50% of total amount.</li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>   Over 46 days prior to arrival - No cancellation fee</li>
+        </ul>
+        <h5 class="margin-top-30"><hr class="hr-dark" />  Child Policy <hr class="hr-dark" /> </h5>
+        <ul class="no-list-style">
+            <li><span class="glyphicon glyphicon-hand-right"></span>  Infant to 4.99 years – Free ( Sharing parent’s room).</li>
+            <li><span class="glyphicon glyphicon-hand-right"></span>  5 to 11.99 years – 50% off on meal rates.</li>
+        </ul>
+        <hr class="hr-dark margin-top-30" />
+        We warmly welcome you to Sigiriya Jungles and hope you will have a pleasant stay !
+        <br />Powered by <a href="http://www.scienter.lk" target="_blank"><b> Destinity</b></a>
+    </div>
+</div>
+
+<button type="button" style="float:right;" class="btn btn-default hidden-print  hidden-xs" onclick="javascript:window.print()">
+    <span class="glyphicon glyphicon-print "></span> Print
+</button>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.data-hide').hide();
+
+        var resArrival;
+        var resDeparture;
+        var duration;
+        var timeArrival;
+        var timeDeparture;
+
+        $('.reservationDetailsLoop').each(function (index, item) {
+            resArrival = moment($($(item).find('.res-arrival')).val()).format("DD/MM/YYYY");
+            $(item).find($('.resArrival .datePicker')).val(resArrival);
+
+            resDeparture = moment($($(item).find('.res-departure')).val()).format("DD/MM/YYYY");
+            $(item).find($('.resDeparture .datePicker')).val(resDeparture);
+
+            duration = moment($(item).find('.res-departure').val()).diff(moment($(item).find('.res-arrival').val()), 'days');
+            $(item).find($('.NoOfNights')).val(duration);
+
+            timeArrival = $(item).find('.timeArrival').val();
+            $(item).find($('.resArrivalTime .time-range')).val(timeArrival);
+
+            timeDeparture = $(item).find('.timeDeparture').val();
+            $(item).find($('.resDepartureTime .time-range')).val(timeDeparture);
+        });
+    });
+
+    $('body').on('change', '.resArrival .datePicker', function () {
+        var resArrival = moment($(this).val(), 'DD/MM/YYYY');
+        var resDeparture = moment($(this).closest('.reservationDetailsLoop').find('.resDeparture .datePicker').val(), 'DD/MM/YYYY');
+        var duration = resDeparture.diff(resArrival, 'days');
+
+        if (duration < 0) {
+            ShowWarningMessage('Invalid Date!');
+            $(this).closest('.reservationDetailsLoop').find('.NoOfNights').val(0).focus();
+        }
+        else {
+            $(this).closest('.reservationDetailsLoop').find('.NoOfNights').val(duration);
+        }
+    });
+
+    $('body').on('change', '.resDeparture .datePicker', function () {
+        var resDeparture = moment($(this).val(), 'DD/MM/YYYY');
+        var resArrival = moment($(this).closest('.reservationDetailsLoop').find('.resArrival .datePicker').val(), 'DD/MM/YYYY');
+        var duration = resDeparture.diff(resArrival, 'days')
+
+        if (duration < 0) {
+            ShowWarningMessage('Invalid Date!');
+            $(this).closest('.reservationDetailsLoop').find('.NoOfNights').val(0).focus();
+        }
+        else {
+            $(this).closest('.reservationDetailsLoop').find('.NoOfNights').val(duration);
+        }
+    });
+
+    $('.Editbtn').on('click', function () {
+        var $this = $(this);
+        $this.toggleClass('Editbtn');
+        if ($this.hasClass('Editbtn')) {
+            $('.data-hide').toggle();
+            $('.data-show').toggle();
+            $this.text('Edit');
+        } else {
+            $this.text('Done');
+            $('.data-hide').toggle();
+            $('.data-show').toggle();
+        }
+    });
+
+    //$('body').on('click', '.btnaddGuest', function () {
+    //   
+    //    var target = $(this).closest('.reservationDetailsLoop').find('.panelGuest');
+    //    target.collapse('toggle') 
+    //});
+
+</script>

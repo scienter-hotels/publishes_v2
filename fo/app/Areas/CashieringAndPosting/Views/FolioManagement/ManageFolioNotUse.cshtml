@@ -1,0 +1,689 @@
+﻿@{
+    //Layout = "~/Areas/CashieringAndPosting/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "Manage Folios";
+}
+<div class="row">
+    <div class="col-md-12" style="padding-left:0px; padding-right:0px;">
+        <div class="card hidden-print">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                @* one header *@
+
+                <div class="col-md-12 hidden-print" id="oneHeader" style="padding:0px;">
+                    <fieldset class="the-fieldset col-md-1" style="padding:0px;">
+
+                        <div class="col-md-12 form-group label-floating margin-top-10px">
+                            <input type="text" class="form-control" style="padding:0px;" placeholder="Search Rooms" onkeyup="searchRoom()" id="txtSearch" />
+                        </div>
+
+                    </fieldset>
+                    <div class="col-md-11">
+                        <fieldset class="the-fieldset col-md-12" style="padding:0px;">
+
+                            @*<div class="form-group label-floating is-empty col-md-3" style="margin-top:10px;">
+                                    <label class="control-label">Room</label>
+                                    <select class="form-control" id="cmbAllRooms">
+                                        <option></option>
+
+                                    </select>
+                                    <span class="material-input"></span>
+                                </div>*@
+                            <input type="hidden" class="reservation-header-id" value="">
+                            <input type="hidden" class="reservation-room-id" value="">
+                            <input type="hidden" id="folio-no" value=""> 
+                            <div class="col-md-5 form-group label-floating margin-top-10px">
+                                @*<label class="control-label">Guest</label>*@
+                                <input type="text" class="form-control" name="Foliotxt" value="" id="txtGuest" />
+                            </div>
+                            <div class="col-md-2 form-group label-floating margin-top-10px">
+                                @*<label class="control-label">Folio</label>*@
+                                <input type="text" class="form-control" name="Amount" value="" id="txtFolio" />
+                            </div>
+                            <div class="col-md-5 form-group label-floating margin-top-10px">
+                              @*  <label class="control-label">Name</label>*@
+                                <input type="text" class="form-control" name="Foliotxt" value="" id="txtName" />
+                            </div>
+
+                        </fieldset>
+                    </div>
+                </div>
+
+
+                @* Left side Room List *@
+
+                <div class="the-fieldset col-md-1" style="padding:10px; background-color:#fcf4ec">
+                    <div id="" class="div-scroll" style="max-height:430px">
+                        <div id="inHouseRoomList"> </div>
+                    </div>
+                </div>
+
+
+                @*  *@
+                <div class="col-md-11">
+
+                    <div class="col-md-5 hidden-print" id="oneCol" style="padding:0px; ">
+                        <fieldset class="the-fieldset col-md-12" style="padding:0px; padding-right:0px; padding-left:10px; height:30px; margin-bottom:1px; background-color:#128e73; border-radius:0px;">
+                            <h4><strong><span><label class="" style="color:#ffffff;">All Transactions</label></span></strong>  </h4>
+                        </fieldset>
+                        <fieldset class="the-fieldset col-md-12" style="padding:0px; padding-right:0px;  ">
+                            <div class="table-responsive div-scroll" style="height:320px; overflow-y:scroll; overflow-x:hidden;">
+                                <table class="table table-striped" id='tbl-all-transactions'>
+
+                                    <tr>
+                                        <th class="">Date</th>
+                                        <th class="">Description</th>
+                                        <th class="" style="text-align:right">Amount</th>
+                                        <th class="" style="text-align:right">Folio</th>
+                                        <th class="">Select</th>
+                                    </tr>
+
+
+                                    <tbody class="all-transaction">
+                                        @*LOAD FROM JQUERY*@
+                                    </tbody>
+                                </table>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div id="twoCol" class="col-md-2 hidden-print">
+                        <fieldset class="the-fieldset col-md-12" style="padding:0px; padding-right:0px; padding-left:10px;  height:30px; margin-bottom:1px; background-color:#128e73;  border-radius:0px; ">
+                            <h4><strong><span><label class="" style="color:#ffffff;">Folio</label></span></strong>  </h4>
+
+                        </fieldset>
+                        <fieldset class="the-fieldset col-md-12" style="padding:0px;  ">
+                            @**@
+                            <div id="folioBtnList" class="div-scroll" style="height:320px; overflow-y:scroll; overflow-x:hidden;">
+                                <table class="table">
+                                    <thead>
+                                        <tr></tr>
+                                    </thead>
+
+                                    <tbody class="btn-folio-numbers">
+                                        @* LOAD BY JQUERY *@
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                    <div class="col-md-5 hidden-print" id="threeCol" style="padding:0px;">
+                        <fieldset class="the-fieldset col-md-12" style="padding:0px; padding-right:0px; padding-left:10px;  height:30px; margin-bottom:1px; background-color:#128e73; border-radius:0px; ">
+                            <h4><span><label class="" style="color:#ffffff">Folio Transactions</label></span>  </h4>
+                        </fieldset>
+                        <fieldset class="the-fieldset col-md-12" style="padding:0px; padding-right:0px;">
+                            <div class="table-responsive div-scroll" style="height:320px; overflow-y:scroll; overflow-x:hidden;">
+                                <table class="table table-striped" id='table-draggable2'>
+
+                                    <tr>
+
+                                        <th class="">Date</th>
+                                        <th class="">Description</th>
+                                        <th class="" style="text-align:right">Amount</th>
+                                        <th class="" style="text-align:right">Folio</th>
+                                        <th class="" style="display:none;">TaxGroup</th>
+
+                                    </tr>
+
+
+                                    <tbody class="tbl-folioWiseTable">
+                                        @* LOAD BY JQUERY *@
+                                    </tbody>
+                                </table>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    @* footer *@
+
+                    <div class="col-md-12 hidden-print" id="footerBar" style="padding:2px;">
+
+                        <fieldset class="the-fieldset col-md-5" style="padding:2px; ">
+
+                            <div class="col-md-4" style="padding-left:2px; padding-right:2px;">
+                                <div class="col-md-12" style="padding:0px;">
+                                    <a id="btnFolioPosting" class="btn btn-primary full-width-100perc" style="background-color:#128e73; padding:6px; width:100%; height:150%;" data-title="">
+                                        Posting
+                                    </a>
+                                </div>
+                               
+                                <div class="col-md-12" style="padding:0px;">
+                                    <a  id="btnFolioDiscount111" class="btn call-popup-model btn-primary full-width-100perc disabled" style="background-color:#128e73; padding:6px; width:100%; height:150%; " data-title="">
+                                       -
+                                    </a>
+                                </div>
+                                @*<div class="col-md-12" style="padding:0px;">
+                                    <a class="btn call-popup-model btn-primary full-width-100perc" style="background-color:#128e73; padding:6px; width:100%" id="btnPrint" data-title="Update Inhouse Details" data-href="/Reservation/Reservations/UpdateInhouseDetails/">
+                                        -
+                                    </a>
+                                </div>*@
+                            </div>
+                            <div class="col-md-4" style="padding-left:2px; padding-right:2px;">
+                               
+                                <div class="col-md-12" style="padding:0px;">
+                                    <a id="btnSettledFolios" class="btn call-popup-model btn-primary full-width-100perc" style="background-color:#128e73; padding:6px; width:200%" data-title="">
+                                        Settled Folios
+                                    </a>
+                                </div>
+                                <div class="col-md-12" style="padding:0px;">
+                                    <a class="btn call-popup-model btn-primary full-width-100perc disabled" style="background-color:#128e73; padding:6px; width:100%" id="btnPrint" data-title="Update Inhouse Details" data-href="/Reservation/Reservations/UpdateInhouseDetails/">
+                                        -
+                                    </a>
+                                </div>
+                                @*<div class="col-md-12" style="padding:0px;">
+                                    <a class="btn call-popup-model btn-primary full-width-100perc" style="background-color:#128e73; padding:6px; width:100%" id="btnPrint" data-title="Update Inhouse Details" data-href="/Reservation/Reservations/UpdateInhouseDetails/">
+                                        -
+                                    </a>
+                                </div>*@
+                            </div>
+                            <div class="col-md-4" style="padding-left:2px; padding-right:2px;">
+                                <div class="col-md-12" style="padding:0px; ">
+                                    <a id="btnFolioSplit" class="btn call-popup-model btn-primary full-width-100perc" style="background-color:#128e73; padding:6px; width:100%; height:150%;" data-title="">
+                                        Folio Split
+                                    </a>
+                                </div>
+                                <div class="col-md-12" style="padding:0px;">
+                                    <a class="btn call-popup-model btn-primary full-width-100perc disabled" style="background-color:#128e73; padding:6px; width:100%" id="btnPrint" data-title="Update Inhouse Details" data-href="/Reservation/Reservations/UpdateInhouseDetails/">
+                                        -
+                                    </a>
+                                </div>
+                                @*<div class="col-md-12" style="padding:0px;">
+                                    <a class="btn call-popup-model btn-primary full-width-100perc" style="background-color:#128e73; padding:6px; width:100%" id="btnPrint" data-title="Update Inhouse Details" data-href="/Reservation/Reservations/UpdateInhouseDetails/">
+                                        -
+                                    </a>
+                                </div>*@
+                            </div>
+                        </fieldset>
+
+                        <div class="col-md-2">
+                            <fieldset class="the-fieldset col-md-12" style="padding:0px; height:initial">
+                                <div class="col-md-12" style="padding:2px; ">
+                                    <input id="ExchangeFolioBtn" type="button" class="btn btn-primary col-md-12" value="Exchange" name="Folio" style="text-align:center;   padding:6px; " data-toggle="tooltip" title="Exchange Folio">
+                                    <input id="newFolioBtn" type="button" class="btn btn-primary col-md-12" value="Create Folio" name="Folio" style="text-align:center;  padding:6px;">
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <fieldset class="the-fieldset col-md-5" style="padding:2px;">
+
+                            <div class="col-md-4" style="padding-left:2px; padding-right:2px; ">
+                                <div class="col-md-12" style="padding:0px; ">
+                                    <a id="btnBillPreview" class="btn btn-primary full-width-100perc" style="background-color:#128e73; padding:6px; width:100%; height:150%;" data-title="" target="_blank">
+                                        Bill Preview
+                                    </a>
+                                </div>
+
+                                <div class="col-md-12" style="padding:0px;">
+                                    <a class="btn call-popup-model btn-primary full-width-100perc disabled" style="background-color:#128e73; padding:6px; width:100%; height:150%;" id="btnPrint" data-title="Update Inhouse Details" data-href="/Reservation/Reservations/UpdateInhouseDetails/">
+                                        -
+                                    </a>
+                                </div>
+                                @*<div class="col-md-12" style="padding:0px;">
+                                    <a class="btn call-popup-model btn-primary full-width-100perc" style="background-color:#128e73; padding:6px; width:100%; height:150%;" id="btnPrint" data-title="Update Inhouse Details" data-href="/Reservation/Reservations/UpdateInhouseDetails/">
+                                        -
+                                    </a>
+                                </div>*@
+                            </div>
+                            <div class="col-md-4" style="padding-left:2px; padding-right:2px;">
+                                <div class="col-md-12" style="padding:0px; ">
+                                    <a id="btnBillSettlement" class="btn call-popup-model btn-primary full-width-100perc" style="background-color:#128e73; padding:6px; width:100%; height:150%;" data-title="Bill Settlement">
+                                        Bill Settle
+                                    </a>
+                                </div>
+                                <div class="col-md-12" style="padding:0px;">
+                                    <a class="btn call-popup-model btn-primary full-width-100perc disabled" style="background-color:#128e73; padding:6px; width:100%; height:150%;" id="btnPrint" data-title="Update Inhouse Details" data-href="/Reservation/Reservations/UpdateInhouseDetails/">
+                                        -
+                                    </a>
+                                </div>
+                                @*<div class="col-md-12" style="padding:0px;">
+                                    <a class="btn call-popup-model btn-primary full-width-100perc" style="background-color:#128e73; padding:6px; width:100%; height:150%;" id="btnPrint" data-title="Update Inhouse Details" data-href="/Reservation/Reservations/UpdateInhouseDetails/">
+                                        -
+                                    </a>
+                                </div>*@
+                            </div>
+                            <div class="col-md-4" style="padding-left:2px; padding-right:2px;">
+                                <div class="col-md-12" style="padding:0px;">
+                                    <a class="btn call-popup-model btn-primary full-width-100perc disabled" style="background-color:#128e73; padding:6px; width:100%; height:150%;" id="btnPrint" data-title="Update Inhouse Details" data-href="/Reservation/Reservations/UpdateInhouseDetails/">
+                                        -
+                                    </a>
+                                </div>
+                                <div class="col-md-12" style="padding:0px;">
+                                    <a class="btn call-popup-model btn-primary full-width-100perc disabled" style="background-color:#128e73; padding:6px; width:100%; height:150%;" id="btnPrint" data-title="Update Inhouse Details" data-href="/Reservation/Reservations/UpdateInhouseDetails/">
+                                        -
+                                    </a>
+                                </div>
+                                @*<div class="col-md-12" style="padding:0px;">
+                                    <a class="btn call-popup-model btn-primary full-width-100perc" style="background-color:#128e73; padding:6px; width:100%; height:150%;" id="btnPrint" data-title="Update Inhouse Details" data-href="/Reservation/Reservations/UpdateInhouseDetails/">
+                                        -
+                                    </a>
+                                </div>*@
+                            </div>
+
+
+                        </fieldset>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+        <script>
+            // form load --------------------------------
+            $(document).ready(function () {
+                //global var
+                var reservationHeaderId;
+                var selectedFolioNumber;
+                var taxGroupIdArray = []
+                var chargersAmountArray = []
+                var SelectedFolioNumber
+                var roomNo
+                var ResID
+
+
+                //ScorelToTop60px();
+                $('newFolioBtn').on('click', function (e) {
+
+                });
+
+                // drag
+                $('#table-draggable2').on('click', function (e) {
+
+                });
+
+
+            });
+                //allow only one checkbox to click
+                $(document).on('click', '.folio-detail-id', function (e) {
+                    //    $('input[type=checkbox]').on('click', function (e) {
+                    $('.folio-detail-id').prop('checked', false)
+                    $(this).prop('checked', true)
+
+                });
+
+                //Load Reservations [1]
+                $.ajax({
+                    url: '/CashieringAndPosting/FolioManagement/ReservationList',
+                    dataType: 'json',
+                    method: 'GET',
+                    success: function (data) {
+                        $.each(data, function (index, eachRoomDetail) {
+
+                            $('<option key="' + eachRoomDetail.ReservationHeaderId + '" value="' + eachRoomDetail.RoomNo + '"> Room NO: ' + eachRoomDetail.Code + '  - ResNo: ' + eachRoomDetail.ResNo + ' - ' + eachRoomDetail.Name + '</option>').appendTo($('#cmbAllRooms'));
+                            $('#inHouseRoomList').append('<input  style=" padding-left:15px; padding-right:15px; width:60px; background-color:#F7A53E""  type="button" key="' + eachRoomDetail.ReservationHeaderId + '" class="btn btn-primary room-list-btn" value="' + eachRoomDetail.Code + '" name="Folio" id="' + eachRoomDetail.RoomNo + '" data-toggle="tooltip" title=" Res No: ' + eachRoomDetail.ResNo + ' - Guest: ' + eachRoomDetail.Name + ' " >')
+
+                        })
+                    },
+                    error: function (error) {
+
+                    }
+                });
+
+                //load data to fields when Room Select [2]
+                //  $("#cmbAllRooms").change(function () {
+                $(document).on('click', '.room-list-btn', function (e) {
+                    
+                    // clear fields
+                    $('#txtGuest').val(' ')
+                    $('#txtFolio').val(' ')
+                    $('#txtName').val(' ')
+                    $('.all-transaction').html('')
+                    $('.tbl-folioWiseTable').html('')
+                    $('.btn-folio-numbers').html('')
+                    $('#btnBillPreview').removeAttr('data-href')
+                    $('#btnBillSettlement').removeAttr('data-href')
+
+
+                    roomNo = $(this).attr('id') //$("#cmbAllRooms").find('option:selected').val();
+                    ResID = $(this).attr('key')//$("#cmbAllRooms").find('option:selected').attr('key')
+                    $('.reservation-header-id').val(ResID);
+                    $('.reservation-room-id').val(roomNo);
+
+                    
+                    $.ajax({
+                        url: '/CashieringAndPosting/FolioManagement/FolioDetails',
+                        dataType: 'json',
+                        data: { RoomNo: roomNo, ResID: ResID },
+                        method: 'POST',
+                        success: function (data) {
+
+                            $('#txtGuest').val(data.Name)
+                            $('#txtFolio').val(1)
+                            $('#txtName').val(data.Name)
+
+                            $('#txtGuest').prop('readOnly', true)
+                            $('#txtFolio').prop('readOnly', true)
+                            $('#txtName').prop('readOnly', true)
+
+                            reservationHeaderId = data.ReservationHeaderId;
+                            SelectedFolioNumber = 0
+
+                            //load data to table
+                            LoadAllTransactions(roomNo, reservationHeaderId)
+                            GetAllFoliosNumbers(roomNo, reservationHeaderId)
+
+                            //Alert Function
+                            ReservationAlert(reservationHeaderId, 'FOL')
+                        }
+                    });
+
+                })
+
+                //Create New folio [3]
+                $('#newFolioBtn').on('click', function (e) {
+
+
+                    //Check if there are any charge under FOLIO 1
+                    //Atleast one chareg should be under FOLIO 1
+                    var folioOneCount = 0
+                    $('.td-folio-nos').each(function (index, item) {
+                        if ($('.td-folio-nos').eq(index).text() == 1) {
+                            folioOneCount++;
+                        }
+
+                    });
+
+                    // get selected folio detail id
+                    var chargersArray;
+                    $('.folio-detail-id').each(function (index, item) {
+                        if ($(this).prop('checked')) {
+                            // chargersArray.push({
+
+                            chargersArray = $(this).val()
+                            // });
+                        }
+                    });
+
+
+
+                    if (chargersArray != null) {
+                        if (folioOneCount > 1) {
+
+                            // post selected folio detail id to update to new folio number
+                            $.ajax({
+                                url: '/CashieringAndPosting/FolioManagement/ChangeFolioNumber',
+                                dataType: 'json',
+                                data: { FolioDetailId: chargersArray, ReservationHeaderId: reservationHeaderId },
+                                success: function (data) {
+                                    $('.all-transaction').html('')
+                                    $('.tbl-folioWiseTable').html('')
+                                    $('.btn-folio-numbers').html('')
+                                    LoadAllTransactions(roomNo, reservationHeaderId);
+                                    GetAllFoliosNumbers(roomNo, reservationHeaderId)
+                                }
+                            })
+
+
+                        } else {
+                            ShowErrorMessage('Atleast One CHarge should be places under FOLIO 1')
+                        }
+                    } else {
+                        ShowErrorMessage('Select a Folio')
+                    }
+
+
+
+                });
+
+
+                //LoadFolioTransactionsWiseFolioNO [4] // folio Btn click
+                $(document).on('click', '.folio-btn', function () {
+                    $('.tbl-folioWiseTable').html('')
+                    $('#btnBillSettlement').attr('disabled', false)
+                    $('#folio-no').val((this).id)
+
+                    $.ajax({
+                        url: '/CashieringAndPosting/FolioManagement/FilterTransactionsByFolioNo',
+                        dataType: 'json',
+                        data: { FolioNo: (this).id, ReservationHeaderId: reservationHeaderId },
+                        success: function (data) {
+                          
+                            $.each(data, function (index, folio) {
+                                
+                                $('.tbl-folioWiseTable').append('<tr>' +
+                                          '<td>' + folio.ChargeDate + '</td>' +
+                                          '<td>' + folio.FolioText.substring(0, 35) + '</td>' +
+                                          '<td class="charge-amount formatNumber">' + folio.ChargeAmount.toFixed(2) + '</td>' +
+                                          '<td style="text-align:right">' + folio.FolioNo + '</td>' +
+                                          '<td class="taxGroup-Id hidden" >' + folio.TaxGroupId + '</td>' + //style="display:none;"
+                                          '<td><input type="checkbox" value="' + folio.FolioDetailID + '"  class="folio-detail-id hidden" ></td>' +
+                                      '</tr>')
+                              
+
+                                SelectedFolioNumber = folio.FolioNo;
+
+                                if (folio.FolioDetailID < 0) {
+                                    
+                                    $('#btnBillSettlement').attr('disabled', true)
+                                }
+
+                            })
+                           
+
+
+                        }
+                    });
+
+
+                })
+
+                // FOLIO EXCHANGE
+                var nextFolio;
+                $(document).on('click', '.folio-btn', function () {
+                    nextFolio = $(this).attr('id')
+                })
+                $('#ExchangeFolioBtn').on('click', function (e) {
+
+                    // check if checkbox is clicked
+                    var thisFolio;
+                    var thisFolioDetailId
+                    $('.folio-detail-id').each(function (index, item) {
+                        if ($(this).is(':checked', true)) {
+                            // checkbxArray.push({
+
+                            thisFolio = $('.folio-detail-id').eq(index).closest('tr').find('td.td-folio-nos').text()
+                            thisFolioDetailId = $(this).val()
+                            
+                            // });
+                        }
+                    });
+
+
+
+                    if (thisFolio != null && nextFolio != null) {
+
+                        ExchangeFolio(thisFolio, nextFolio, thisFolioDetailId)
+                        
+                    } else {
+                        ShowWarningMessage("Select Folio Number From Table and select Folio Button to Exchange Folio")
+
+                    }
+
+                });
+
+                //methods
+                //function LoadAllTransactions(roomNo, reservationHeaderId) {
+                //    
+                //    $.ajax({
+                //        url: '/CashieringAndPosting/FolioManagement/FolioChargers',
+                //        dataType: 'json',
+                //        data: { RoomNo: roomNo, ReservationHeaderId: reservationHeaderId },
+                //        success: function (data) {
+                //            $('.all-transaction').html('')
+                //            $.each(data, function (index, folio) {
+                                
+                //                $('.all-transaction').append('<tr>' +
+                //                      '<td class="data-date">' + folio.ChargeDate + '</td>' +
+                //                      '<td class="data-desc">' + folio.FolioText.substring(0, 30) + '</td>' +
+                //                      '<td class="formatNumber data-amount">' + folio.ChargeAmount.toFixed(2) + '</td>' +
+                //                      '<td class="td-folio-nos" style="text-align:right">' + folio.FolioNo + '</td>' +
+                //                      '<td><div class="checkbox"><label>' +
+                //                      '<input type="checkbox" value="' + folio.FolioDetailID + '"  class="form-group checkbox folio-detail-id" >' +
+                //                      '</label></div></td>' +
+                //                  '</tr>')
+
+                //                $('.tbl-folioWiseTable').append('<tr>' +
+                //                          '<td>' + folio.ChargeDate + '</td>' +
+                //                          '<td>' + folio.FolioText.substring(0, 35) + '</td>' +
+                //                          '<td class="charge-amount formatNumber">' + folio.ChargeAmount.toFixed(2) + '</td>' +
+                //                          '<td style="text-align:right">' + folio.FolioNo + '</td>' +
+                //                          '<td class="taxGroup-Id hidden"  >' + folio.TaxGroupId + '</td>' +//style="display:none;"
+                //                      '<td class="hidden"><input type="checkbox" value="' + folio.FolioDetailID + '"  class="form-group checkbox folio-detail-id" ></td>' +
+                //                  '</tr>')
+
+
+                //            })
+
+                //            $.each($('.folio-detail-id'), function (index, folioCharge) {
+                                
+                //                if ($(this).val() < 0) {
+                //                    $(this).prop('disabled', true)
+                //                }
+
+                //            })
+
+                //        }
+                //    });
+
+                //}
+                function GetAllFoliosNumbers(roomNo, reservationHeaderId) {
+
+                    $.ajax({
+                        url: '/CashieringAndPosting/FolioManagement/GetAllFolios',
+                        dataType: 'json',
+                        data: { RoomNo: roomNo, ReservationHeaderId: reservationHeaderId },
+                        success: function (data) {
+                            
+                            $.each(data, function (index, itemfolioNo) {
+
+                                $('.btn-folio-numbers').append('<tr class="abc">' +
+                                '<td style="text-align:center">' +
+                                '<input type="button" class="btn btn-primary folio-btn" value="FOLIO ' + (itemfolioNo) + '" name="Folio" id="' + (itemfolioNo) + '">' +
+                                ' </td></tr>'
+                                )
+                            })
+
+                        }
+                    });
+
+                }
+                function ExchangeFolio(thisFolio, nextFolio, thisFolioDetailId) {
+                    $.ajax({
+                        url: '/CashieringAndPosting/FolioManagement/ExchangeFolio',
+                        dataType: 'json',
+                        data: { ThisFolio: thisFolio, NextFolio: nextFolio, ResId: reservationHeaderId, DetailId: thisFolioDetailId },
+                        method: 'GET',
+                        success: function (data) {
+                            $('.all-transaction').html('')
+                            $('.tbl-folioWiseTable').html('')
+                            $('.btn-folio-numbers').html('')
+                            $('#btnBillPreview').removeAttr('data-href')
+                            $('#btnBillSettlement').removeAttr('data-href')
+                            LoadAllTransactions(roomNo, ResID)
+                            GetAllFoliosNumbers(roomNo, ResID)
+                        }   
+                    });
+                }
+
+                
+
+
+                //Btn Functions
+                //btn Preview click
+            $('#btnBillPreview').on('click', function (e) {                
+                if (SelectedFolioNumber > 0) {
+                        ///Reporting/Report/ViewReport?ReportName=FolioInvoice&ReservationHeaderId=15&FolioNo=2&IsPreview=0
+                        $('#btnBillPreview').attr('href', '/Reporting/Report/ViewReport?ReportName=FolioInvoice&ReservationHeaderId=' + reservationHeaderId + '&FolioNo=' + SelectedFolioNumber + '&IsPreview=1');
+                        
+                    } else {
+                        ShowWarningMessage("Select a Folio to Preview")
+                    }
+                    //Then claculate tax in Invoice view.
+                });
+
+                //btn Settle click
+                $('#btnBillSettlement').on('click', function (e) {
+                    if (SelectedFolioNumber > 0) {
+                        $('#btnBillSettlement').attr('data-href', '/CashieringAndPosting/FolioManagement/BillSettlement?ReservationHeaderId=' + reservationHeaderId + '&FolioNo=' + SelectedFolioNumber);
+                    } else {
+                        ShowWarningMessage("Select a Folio to Settle")
+                    }
+                    //Then claculate tax in Invoice view.
+                });
+
+                // btn folio split
+                $('#btnFolioSplit').on('click', function (e) {
+                    $('#btnFolioSplit').attr('data-href', '/CashieringAndPosting/FolioManagement/PostingSettings?ReservationHeaderId=' + reservationHeaderId);//+ '&RoomNo=' + roomNo);
+                });
+
+                // btn folio Discount
+                $('#btnFolioDiscount').on('click', function (e) {
+                    $('#btnFolioDiscount').attr('data-href', '/CashieringAndPosting/FolioManagement/FolioDiscount');//?ReservationHeaderId=' + reservationHeaderId + '&FolioNo=' + SelectedFolioNumber);//+ '&RoomNo=' + roomNo);
+                });
+
+
+                // btn folio Discount
+            $('#btnFolioPosting').on('click', function (e) {
+                
+                    $('#btnFolioPosting').attr('href', '/CashieringAndPosting/Posting/Landing/InHouse?roomNo=' + roomNo);//?ReservationHeaderId=' + reservationHeaderId + '&FolioNo=' + SelectedFolioNumber);//+ '&RoomNo=' + roomNo);
+                });
+
+                
+                // btn folio Discount
+                $('#btnSettledFolios').on('click', function (e) {
+                    
+                    if ($('.reservation-header-id').val() > 0)
+                    {
+                        $('#btnSettledFolios').attr('data-href', '/CashieringAndPosting/FolioManagement/ManageSettledFolios?ReservationHeaderId=' + reservationHeaderId + '&RoomNo=' + roomNo);//+ '&RoomNo=' + roomNo);
+                    } else {
+                        ShowWarningMessage("Select a Room to View Settled Folios")
+                    }
+
+                 });
+
+
+
+
+
+            // Function Search ROOM from ROOM list
+            function searchRoom() {
+                ;
+                
+                var input, filter, count, tt, b, i, li;
+
+                input = document.getElementById("txtSearch");
+                filter = input.value.toUpperCase();
+                ul = document.getElementById("inHouseRoomList");
+                li = $('.room-list-btn');
+
+                for (i = 0; i < li.length; i++) {
+                    b = li.eq(i).val();
+                    if (b.indexOf(filter) <= -1) {
+                        li.eq(i).hide()
+                    } else {
+                        li.eq(i).show()
+                    }
+                }
+
+                if (filter = "") { $('.room-list-btn').show() }
+            }
+
+            $.fn.digits = function () {
+                return this.each(function () {
+                    $(this).text($(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+                })
+            }
+        </script>

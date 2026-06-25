@@ -1,0 +1,118 @@
+﻿@model Scienter.HotelERP.Common.Domain.GuestComplainWiseAssignees
+
+@{
+    ViewBag.Title = "Inspected Details";
+}
+
+<form id="inspecteddetails">
+
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <input type="hidden" value="@Model.Id" id="Id" />
+    <input type="hidden" id="complain" class="form-control" value="@ViewBag.Id" />
+    @*<input type="text" id="complaintxt" class="form-control" value="@ViewBag.ComplainId" />*@
+
+    <div class="row">
+        <div class="col-md-12">
+            <p>@ViewBag.Description</p>
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label> Inspected By</label>
+                        @{Html.RenderAction("StaffDetailsCombo", "StaffDetails", new { name = "EmployeeId", required = true, value = Model?.EmployeeId });}
+                        @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        @Html.LabelFor(model => model.InspectedDateTime, htmlAttributes: new { @class = "control-label" })
+                        <div id="toDateContainer" class='input-group date'>
+                            @Html.TextBoxFor(model => model.InspectedDateTime, new { @class = "form-control datePicker", value = Model?.AssingnedDate })
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.InspectedDateTime, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group label-floating">
+                        @Html.LabelFor(model => model.InspectorRemark, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.InspectorRemark, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.InspectorRemark, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <input type="button" value="Complete" class="btn btn-primary" id="btncomplete" />
+                        <input type="reset" value="Clear" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+       
+        //GetcomplainDetails();
+
+
+        $('.datePicker').daterangepicker({
+            "showDropdowns": true,
+            singleDatePicker: true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "minDate": $('#hotelCurrentDate').val(),
+            "opens": "right",
+            "applyClass": "btn-primary",
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        }, function (start, end, label) {
+            $('input[name="From"]').val(start.format('DD/MM/YYYY'));
+            $('input[name="To"]').val(end.format('DD/MM/YYYY'));
+        });
+
+
+    });
+
+    $('body').on('click', '#btncomplete', function () {
+       
+        //e.preventDefault();
+        var inspectiondetails = {
+            __RequestVerificationToken: $('__RequestVerificationToken').val(),
+            Id: $('#Id').val(),
+            ComplainId: $('#complain').val(),
+            EmployeeId: $('#EmployeeId').val(),
+            InspectedDateTime: $('#InspectedDateTime').val(),
+            InspectorRemark: $('#InspectorRemark').val(),
+        };
+
+        $.ajax({
+            url: '/administration/GuestComplain/UpdateInspectionDetails',
+            dataType: 'html',
+            data: inspectiondetails,
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+                FillTracesGrids();
+            }
+        });
+    });
+
+</script>
+
+
+
+
+

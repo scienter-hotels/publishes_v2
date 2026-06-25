@@ -1,0 +1,526 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.SelectedGuest>
+
+@*<script src="~/Scripts/passportsacn/jquery.3.6.4.js"></script>*@
+
+<style>
+    .success-color {
+        background-color: #4caf50 !important;
+        border: none;
+        color: #fff !important;
+    }
+
+    .connect-color {
+        background-color: #ff9800 !important;
+        color: #fff !important;
+    }
+
+    .failure-color {
+        background-color: #bd0000 !important;
+        color: #fff !important;
+    }
+</style>
+
+@*<script src="~/Scripts/passportsacn/scan.js"></script>
+<script src="~/Scripts/passportsacn/main.js"></script>
+<link href="~/Scripts/passportsacn/style.css" rel="stylesheet" />*@
+
+<script src="~/Scripts/passportsacn/scan.js"></script>
+<script src="~/Scripts/passportsacn/main.js"></script>
+<link href="~/Scripts/passportsacn/style.css" rel="stylesheet" />
+
+
+<input type="hidden" value="@ViewBag.reservationHeaderId" name="reservationHeaderId" id="reservationHeaderId" />
+<input type="hidden" value="@ViewBag.guestName" name="guestName" id="guestName" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+<input type="hidden" id="imageStringbase64" value="" />
+
+<div class="row">
+    <div class="col-md-12">
+        <div style="z-index: 10;top:0px; width:800px;font-size:12px; height:25px;" id="status" class="connect-color">Device is connecting...</div>
+    </div>
+</div>
+
+<div class="row" id="guestDetailsGrid" style="margin-top:30px;">
+
+    <div class="col-md-12">
+        <fieldset class="the-fieldset padding-margin-bottom-override" style="padding-top:0px; padding-bottom:0px;">
+            <legend class="the-legend">
+                Guests Details
+            </legend>
+
+
+
+            <div id="ExistingGuestProfiles">
+                <table class="table table-striped reservationGuest-detail-table">
+                    <tr>
+                        <th>Name</th>
+                        <th>Profile Type</th>
+                        <th>Contact No</th>
+                        <th>Email</th>
+                        <th class="text-right">Scan</th>
+                        <th class="text-right">View</th>
+                    </tr>
+                    @foreach (var item in Model)
+                    {
+                        <tr class="guestDetails">
+                            <td>
+                                @item.Name
+                            </td>
+                            <td>
+                                <input type="hidden" value="@item.GuestProfileTypeId" class="gPTypeId" />
+                                @item.ProfileType
+                            </td>
+                            <td>
+                                @item.ContactNo
+                            </td>
+                            <td>
+                                @item.Email
+                            </td>
+                            <td class="text-right">
+                                <button class="btn btn-success btn-sm btnScan" id="btnScan" value="@item.Id" data-profiletype="@item.GuestProfileTypeId" data-id="@item.Id" data-toggle="">
+                                    <span class="glyphicon glyphicon-upload"></span>
+                                </button>
+                            </td>
+                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                            {
+                                <td width="60px" class="text-right"><button class="btn btn-sm btn-warning btnView" data-guestid="@item.Id" id="btnView" data-Uuid="@item.Uuid">View</button> </td>
+                            }
+
+
+                        </tr>
+                    }
+                </table>
+            </div>
+
+        </fieldset>
+    </div>
+</div>
+
+<div class="row" id="passportDetailsConfirmationForm" style="margin-top:25px;">
+    <form id="confirmationForm">
+        <div class="col-md-12">
+            @*<div class="row">
+                <div class="text-left col-md-2">
+                    <button id="btnBack" type="button" class="btn btn-theme-color-2 btn-sm btn-success btnBack">
+                        <span class="glyphicon glyphicon-arrow-left"></span>
+                    </button>
+                </div>
+            </div>*@
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="hidden" value="" name="guestProfileId" id="guestProfileId" />
+                            <input type="hidden" value="" name="receivedJson" id="receivedJson" />
+                            <div class="form-group form-group-margin-override label-floating">
+                                <label class="control-label">First Name *</label>
+                                <input type="text" name="Familyname" id="Familyname" class="form-control" value="" disabled />
+                            </div>
+                            <div class="form-group form-group-margin-override label-floating">
+                                <label class="control-label">Nationality *</label>
+                                <input type="text" name="Nationality" id="Nationality" class="form-control" value="" disabled />
+                            </div>
+                            <div class="form-group form-group-margin-override label-floating">
+                                <label class="control-label">Sex *</label>
+                                <input type="text" name="Sex" id="Sex" class="form-control" value="" disabled />
+                            </div>
+                            <div class="form-group form-group-margin-override label-floating">
+                                <label class="control-label">DocumentNo *</label>
+                                <input type="text" name="DocumentNo" id="DocumentNo" class="form-control" value="" disabled />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group form-group-margin-override label-floating">
+                                <label class="control-label">Last Name *</label>
+                                <input type="text" name="Givenname" id="Givenname" class="form-control" value="" disabled />
+                            </div>
+                            <div class="form-group form-group-margin-override label-floating">
+                                <label class="control-label">Birthday *</label>
+                                @*<input type="text" name="Birthday" id="Birthday" class="form-control" value="" required/>*@
+                                @*<div id="dobContainerInGuestProfiles" class="input-group date">
+                                        <input autocomplete="off" class="form-control text-box single-line Birthday" maxlength="100" name="Birthday" id="Birthday" type="text" disabled>
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>*@
+                                <input type="text" name="Birthday" id="Birthday" class="form-control" value="" disabled />
+                            </div>
+                            <div class="form-group form-group-margin-override label-floating">
+                                <label class="control-label">Issue State *</label>
+                                <input type="text" name="IssueState" id="IssueState" class="form-control" value="" disabled />
+                                @*<div id="dobContainerInGuestProfiles" class="input-group date">
+                                        <input autocomplete="off" class="form-control text-box single-line IssueState" maxlength="100" name="IssueState" id="IssueState" type="text" required>
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>*@
+                            </div>
+                            <div class="form-group form-group-margin-override label-floating date">
+                                <label class="control-label">Expiry Date *</label>
+                                <input type="text" name="Dateofexpiry" id="Dateofexpiry" class="form-control" value="" required readonly />
+                                @*<div id="dobContainerInGuestProfiles" class="input-group date">
+                                        <input autocomplete="off" class="form-control text-box single-line Dateofexpiry" maxlength="100" name="Dateofexpiry" id="Dateofexpiry" type="text" disabled>
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>*@
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group" style="margin-top:15px;">
+                                <img id="ScannedImage" src="" style="height:160px; width:335px;" name="ScannedImage" />
+                                <input type="hidden" name="ScannedImage" id="ScannedImage" />
+                                <input type="file" name="fileScannedImageImage" id="ScannedImageImagee" accept=".jpg, .png, .gif, .jpeg" />
+                            </div>
+                            <input type="hidden" value="" name="DocType" id="DocType" />
+                            <input type="hidden" value="" name="Angle" id="Angle" />
+                            <input type="hidden" value="" name="MRTDs" id="MRTDs" />
+                            <input type="hidden" value="" name="NativeName" id="NativeName" />
+                            <input type="hidden" value="" name="Checksum" id="Checksum" />
+                            <input type="hidden" value="" name="Uuid" id="Uuid" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-left:0;">
+                <div class="form-group">
+                    <input type="button" id="btnBack" value="Back" class="btn btn-default btnBack" />
+                    <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="scanner-service-model" class="modal fade" role="dialog">
+    <div class="modal-dialog" style="padding:50px; width:400px;">
+        <div class="modal-content" id="grid-detail-popup-container">
+            <div class="modal-body">
+                <center>
+                    <img src="/Images/loading.gif" width="120px" alt="Loading device" style="display:block;" />
+                    <h1 style="font-size:24px; font-weight:bold;"></h1>
+                    <b id="status">
+                        Connecting to Scanner Service.<br />
+                        Please Wait...<br />
+                    </b>
+                </center>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="loading-mask hide">
+    <div class="loader"></div>
+</div>
+
+<script>
+
+    var maxWaitingTime = 18;
+    function ShowCountDown() {
+        maxWaitingTime = 18;
+        setInterval(function () {
+            var msg = maxWaitingTime + "s";
+            if (maxWaitingTime <= 0) {
+                $('#scanner-service-model h1').fadeOut();
+            } else {
+                $('#scanner-service-model h1').html(msg);
+                $('#scanner-service-model h1').fadeIn();
+            }
+            maxWaitingTime = maxWaitingTime - 1;
+        }, 1000);
+    }
+
+    function HideCountDown() {
+        $('#scanner-service-model h1').fadeOut();
+    }
+
+    $(document).ready(function () {
+        $('#passportDetailsConfirmationForm').hide();
+        $('#guestDetailsGrid').show();
+        //$('.Birthday').daterangepicker({
+        //    "showDropdowns": true,
+        //    "showWeekNumbers": true,
+        //    "showISOWeekNumbers": true,
+        //    "singleDatePicker": true,
+        //    "changeYear": true,
+        //    "changeMonth": true,
+        //    "opens": "right",
+        //    "applyClass": "btn-primary",
+        //    "dateLimit": {
+        //        "days": false
+        //    },
+        //    locale: {
+        //        format: 'DD/MM/YYYY'
+        //    }
+        //});
+
+        //$('.Dateofexpiry').daterangepicker({
+        //    "showDropdowns": true,
+        //    "showWeekNumbers": true,
+        //    "showISOWeekNumbers": true,
+        //    "singleDatePicker": true,
+        //    "changeYear": true,
+        //    "changeMonth": true,
+        //    "opens": "right",
+        //    "applyClass": "btn-primary",
+        //    "dateLimit": {
+        //        "days": false
+        //    },
+        //    locale: {
+        //        format: 'DD/MM/YYYY'
+        //    }
+        //});
+    });
+
+    //$('.btnScan').off('click').on('click', function (e) {
+    //    var gustProfileId = $(this).val();
+    //    $('#guestProfileId').val(gustProfileId);
+    //    var reservationHeaderId = $('#reservationHeaderId').val();
+    //    var propertyId = $('#PropertyId').val();
+    //    var userId = $('#UserId').val();
+    //    var ScanURL = $('#DirectPrintURL').val();
+    //    var uUid = Math.floor(Math.random() * 26) + Date.now();
+
+    //    if (confirm('Place the passport on the scanner and click "OK" to continue...')) {
+
+    //        //var ajaxUrl = ScanURL + 'PASSPORT/SCAN/' + reservationHeaderId + '/' + propertyId + '/' + userId + '/' + gustProfileId + '/' + uUid + '/';
+    //        var ajaxUrl = "http://localhost:1303/" + 'ScanPassport/';
+
+    //        console.log(ajaxUrl);
+    //        //alert(ajaxUrl);
+    //        $.ajax({
+    //            url: ajaxUrl,
+    //            method: 'POST',
+    //            beforeSend: function () {
+    //                $('.btnScan').prop('disabled', true);
+    //                $('button').prop('disabled', true);
+    //                $('input[type="button"]').prop('disabled', true);
+    //                $('input[type="submit"]').prop('disabled', true);
+
+    //                $('#scanner-service-model').modal({
+    //                    show: true,
+    //                    keyboard: false,
+    //                    backdrop: 'static'
+    //                });
+    //                ShowCountDown();
+    //            },
+    //            complete: function () {
+    //                // RetriveRecordsByUuid(uUid);
+    //                $('.btnScan').prop('disabled', false);
+    //                $('button').prop('disabled', false);
+    //                $('input[type="button"]').prop('disabled', false);
+    //                $('input[type="submit"]').prop('disabled', false);
+    //                $('#scanner-service-model').modal('hide');
+
+    //            },
+    //            success: function (data) {
+    //                debugger;
+    //                console.log(data);
+    //                if (data.HttpCode == "200") {
+    //                    ShowPassportDetails(data.Data);
+    //                } else {
+    //                    ShowWarningMessage(data.HttpDescription);
+    //                }
+    //            },
+    //            error: function (data) {
+    //                ShowErrorMessage("Unable to connnect to the passport scanner service.");
+    //                console.log(data);
+    //            }
+    //        });
+
+    //    } else {
+    //        $('#guestDetailsGrid').show();
+    //    }
+
+    //});
+
+    $('.btnView').off('click').on('click', function (e) {
+        var uniqueId = $(this).attr("data-Uuid");
+        var gustProfileId = $(this).attr('data-guestid');
+        RetriveRecordsByUuid(gustProfileId);
+    });
+
+    function RetriveRecordsByUuid(gustProfileId) {
+        $.ajax({
+            url: '/reservation/reservations/RetriveRecordsByUuid',
+            dataType: 'json',
+            method: 'POST',
+            data: { gustProfileId: gustProfileId },
+            beforeSend: function () { },
+            complete: function () { },
+            success: function (data) {
+                debugger;
+                if (data.DocumentNo == null) {
+                    //ShowErrorMessage('Sorry there is an error in scanning the passport.');
+                    ShowWarningMessage('Scanner busy. Please try again after 10 seconds.');
+                } else {
+                    ShowPassportDetails(data);
+                }
+            },
+            error: function (data) {
+                ShowErrorMessage('Sorry there is an error in scanning the passport.');
+            }
+        });
+    }
+
+    function ShowPassportDetails(data) {
+        console.log(data);
+        debugger;
+        $('#passportDetailsConfirmationForm').show();
+        $('#guestDetailsGrid').hide();
+
+        //var formattedJson = JSON.parse(data);
+        //console.log(formattedJson)
+
+        $('#Familyname').val(data.Familyname);
+        $('#Nationality').val(data.Nationality);
+        $('#Sex').val(data.Sex);
+        $('#DocumentNo').val(data.DocumentNo);
+        $('#Givenname').val(data.Givenname);
+        $('#IssueState').val(data.IssueState);
+        //$("#ScannedImage").attr('src', 'data:image/jpeg;base64,' + formattedJson.ImageString);
+        $("#ScannedImage").attr('src', data.ImageString);
+        data.Image = "";
+
+        $('#DocType').val(data.Type);
+        $('#Angle').val(data.Angle);
+        $('#MRTDs').val(data.MRTDs);
+        $('#NativeName').val(data.NativeName);
+        $('#Checksum').val(data.Checksum);
+        // $('#Uuid').val(uUid);
+
+
+        ////var unformattedBDay = formattedJson.Birthday;
+        ////var unformattedExpirey = formattedJson.Dateofexpiry;
+        ////var birthDay = new Date(unformattedBDay.substring(2, 4) + '/' + unformattedBDay.substring(4, 6) + '/' + unformattedBDay.substring(0, 2));
+        ////var expiryDate = new Date(unformattedExpirey.substring(2, 4) + '/' + unformattedExpirey.substring(4, 6) + '/' + unformattedExpirey.substring(0, 2));
+
+        //////------- Birthday ------------------------
+        ////var dd = String(birthDay.getDate()).padStart(2, '0');
+        ////var mm = String(birthDay.getMonth() + 1).padStart(2, '0'); //January is 0!
+        ////var yyyy = birthDay.getFullYear();
+        ////birthDay = dd + '/' + mm + '/' + yyyy;
+        ////$('#Birthday').val(birthDay);
+        //////------ End of Birthday--------------------
+
+
+        //////------- Expiry Date ------------------------
+        ////var dd = String(expiryDate.getDate()).padStart(2, '0');
+        ////var mm = String(expiryDate.getMonth() + 1).padStart(2, '0'); //January is 0!
+        ////var yyyy = expiryDate.getFullYear();
+
+        ////expiryDate = dd + '/' + mm + '/' + yyyy;
+        ////$('#Dateofexpiry').val(expiryDate);
+        //////------- End of Expiry Date ------------------------
+
+
+        $('#Birthday').val(data.Birthday);
+        $('#Dateofexpiry').val(data.Dateofexpiry);
+
+
+        //var unformattedBDay = data.Birthday;
+        //var unformattedExpirey = data.Dateofexpiry;
+        //var birthDay = new Date(unformattedBDay.substring(2, 4) + '/' + unformattedBDay.substring(4, 6) + '/' + unformattedBDay.substring(0, 2));
+        //var expiryDate = new Date(unformattedExpirey.substring(2, 4) + '/' + unformattedExpirey.substring(4, 6) + '/' + unformattedExpirey.substring(0, 2));
+
+        ////------- Birthday ------------------------
+        //var dd = String(birthDay.getDate()).padStart(2, '0');
+        //var mm = String(birthDay.getMonth() + 1).padStart(2, '0'); //January is 0!
+        //var yyyy = birthDay.getFullYear();
+        //birthDay = dd + '/' + mm + '/' + yyyy;
+        //$('#Birthday').val(birthDay);
+        ////------ End of Birthday--------------------
+
+
+        ////------- Expiry Date ------------------------
+        //var dd = String(expiryDate.getDate()).padStart(2, '0');
+        //var mm = String(expiryDate.getMonth() + 1).padStart(2, '0'); //January is 0!
+        //var yyyy = expiryDate.getFullYear();
+
+        //expiryDate = dd + '/' + mm +'/' + yyyy;
+        //$('#Dateofexpiry').val(expiryDate);
+        ////------- End of Expiry Date ------------------------
+
+        // $('#Familyname').val(data.Familyname);
+        // $('#Nationality').val(data.Nationality);
+        // $('#Sex').val(data.Sex);
+        // $('#DocumentNo').val(data.DocumentNo);
+        // $('#Givenname').val(data.Givenname);
+        // $('#IssueState').val(data.IssueState);
+        // //$("#ScannedImage").attr('src', 'data:image/jpeg;base64,' + data.ImageString);
+        // data.Image = "";
+        // var originalDate = JSON.stringify(data);
+
+        // $('#DocType').val(data.Type);
+        // $('#Angle').val(data.Angle);
+        // $('#MRTDs').val(data.MRTDs);
+        // $('#NativeName').val(data.NativeName);
+        // $('#Checksum').val(data.Checksum);
+        //// $('#Uuid').val(uUid);
+
+        // $('#Birthday').val(data.Birthday);
+        // $('#Dateofexpiry').val(data.Dateofexpiry);
+
+        // $('#receivedJson').val(originalDate);
+    }
+
+    $('body').off('submit').off('submit', '#confirmationForm').on('submit', '#confirmationForm', function (e) {
+        e.preventDefault();
+
+        var verifiedDetails = {
+            GuestId: $('#guestProfileId').val(),
+            Familyname: $('#Familyname').val(),
+            Givenname: $('#Givenname').val(),
+            NationalityName: $('#Nationality').val(),
+            Birthday: $('#Birthday').val(),
+            Sex: $('#Sex').val(),
+            Dateofexpiry: $('#Dateofexpiry').val(),
+            IssueState: $('#IssueState').val(),
+            DocumentNo: $('#DocumentNo').val(),
+            //  ReceivedJson: $('#receivedJson').val(),
+            Image: $("#ScannedImage").attr('src'),
+            DocType: $('#DocType').val(),
+            Angle: $('#Angle').val(),
+            // MRTDs:$('#MRTDs').val(),
+            NativeName: $('#NativeName').val(),
+            Checksum: $('#Checksum').val(),
+            Uuid: $('#Uuid').val(),
+            ImageString: $('#imageStringbase64').val()
+        };
+        // console.log($('#receivedJson').val());
+        $.ajax({
+            url: '/Reservation/Reservations/SavePassportDocument',
+            dataType: 'json',
+            data: { document: verifiedDetails },
+            method: 'POST',
+            success: function (response) {
+                var Type = $('#resType').val();
+                if (response == "success") {
+                    ShowSuccessMessage('Record has been saved successfully.');
+                    setTimeout(function () {
+                        //Update Uuid
+                        if (Type == "reservation") {
+                            window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+                            console.log("Uuid");
+                        } else {
+                            location.reload()
+                        }
+                    }, 2500);
+
+                } else {
+                    ShowWarningMessage(response);
+                }
+
+            }
+        });
+    });
+
+    $('.btnBack').off('click').on('click', function (e) {
+        $('#passportDetailsConfirmationForm').hide();
+        $('#guestDetailsGrid').show();
+    });
+</script>

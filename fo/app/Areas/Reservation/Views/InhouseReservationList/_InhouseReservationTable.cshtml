@@ -1,0 +1,74 @@
+﻿
+@{
+    Layout = null;
+}
+
+
+<div class="table table-responsive reservation-grid-container">
+
+    <table class="reservation-table table table-striped font-size-12px" id="existingReservationGrid">
+        <tr style="height: 35px;">
+            <th title="Row No" style="width:30px; padding-left:5px;">#</th>
+            <th class="sortable" sort-colomn="ReservationNo" style="width:100px;" title="Here it will sort based on reservation created date time.">Res No</th>
+            <th class="sortable" sort-colomn="GroupReservationNo" style="width:100px;" title="Here it will sort based on group reservation created date time.">Group No</th>
+            <th class="" title="Advance Payment" style="width: 30px;">
+                <img src="~/Images/has-advance-payment.png" style="width:20px;" />
+            </th>
+            <th class="sortable" sort-colomn="Nights" title="No of nights" style="width: 48px;">
+                <img src="~/Images/standered-reservation.png" style="width:24px;" />
+            </th>
+            <th class="sortable" sort-colomn="Adults" title="No of adults" style="width: 48px;">
+                <img src="~/Content/reservation-list-icons/adults.png" style="width:24px;" />
+            </th>
+            <th class="sortable" sort-colomn="Kids" title="No of kids" style="width: 48px;">
+                <img src="~/Content/reservation-list-icons/kids.png" style="width:24px;" />
+            </th>
+            <th class="sortable asc" sort-colomn="Arrival" style="width: 75px;" title="Arrival">Arr.</th>
+            <th class="sortable" sort-colomn="Departure" style="width: 75px;" title="Departure">Dep.</th>
+            <th class="sortable" sort-colomn="FirstName">Guest</th>
+            @*<th class="sortable hide-on-side-buttons" sort-colomn="VipLevel">VIP</th>*@
+            <th class="sortable" sort-colomn="CompanyName">Agent</th>
+            <th class="sortable hide-on-side-buttons" sort-colomn="VoucherNo" style="width: 80px;" title="Voucher No">Voucher#</th>
+            <th class="sortable hide-on-side-buttons" sort-colomn="TourNo" style="width: 80px;" title="Tour No">Tour#</th>
+            <th class="sortable" sort-colomn="RoomNo" style="width: 45px;" title="Room No">R#</th>
+            <th class="sortable" sort-colomn="RoomCategoryCode" style="width:45px;" title="Room Category">Cat.</th>
+            <th class="sortable" sort-colomn="RoomTypeCode" style="width:50px;" title="Room Type">Type</th>
+            <th class="sortable" sort-colomn="MealPlanCode" style="width:50px;" title="Meal Pan">MP</th>
+            <th class="sortable" sort-colomn="Rate" style="width:80px;">Rate</th>
+            <th @*class="sortable"*@ @*sort-colomn="Posting"*@ style="width:80px;">Posting</th>
+            <th style="width:30px;"></th>
+            <th width="35px"></th>
+</table>
+
+
+    <center id="imgLoadingPot" style="display: none;">
+        <br>
+        <br>
+        <br>
+        <img src="/Images/loading_pot.gif" width="100px">
+    </center>
+
+    <center id="noRecordsMsg"> <h5 style="font-size:12px; margin-top:15px;">No records to show.</h5></center>
+
+
+</div>
+
+
+<div class="pagination-container">
+    <div class="pagination-info" id="pagination-info"></div>
+    <div class="page-size-container">
+        <label for="page-size-selector">#Rows : </label>
+        <select class="page-size-selector" id="page-size-selector">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="fit" selected>Fit To Screen</option>
+            <option value="all">All (Max 1000 / Page)</option>
+
+        </select>
+    </div>
+    <div class="pagination" id="pagination"></div>
+
+</div>
+
+

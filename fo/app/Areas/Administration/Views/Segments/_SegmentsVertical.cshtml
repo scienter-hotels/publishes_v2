@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.Segment>
+
+<fieldset class="the-fieldset" style="padding: 0em 1em 0.5em 1em;">
+    <legend class="the-legend">Segmetns</legend>
+    <div style="max-height:350px; overflow-y:scroll">
+        @foreach (Scienter.HotelERP.Common.Domain.Segment segment in Model)
+        {
+            <div class="col-md-9" style="margin-left:15px;">
+                <div class="form-group checkbox">
+                    <label>
+                        <input class="data-segment-checkbox" type="checkbox" name="SegmentId" value="@segment.Id" /> @segment.Name
+                    </label>
+                </div>
+            </div>
+        }
+    </div>
+</fieldset>
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            AddRemoveSegments();
+        }, 1500);
+
+    });
+
+    $('body').on('change', '.data-segment-checkbox', function () {
+        AddRemoveSegments();
+    });
+
+    function AddRemoveSegments() {
+        selectedSegments = [];
+        $('.data-segment-checkbox').each(function () {
+            if ($(this).prop('checked')) {
+                selectedSegments.push({ Id: $(this).val(), IsSelected: true });
+            }
+        });
+    }
+</script>

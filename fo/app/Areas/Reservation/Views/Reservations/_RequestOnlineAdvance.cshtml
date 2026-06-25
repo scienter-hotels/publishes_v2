@@ -1,0 +1,49 @@
+﻿@{
+    Layout = null;
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+
+
+<style>
+    hr.new5 {
+        border: 2px solid #34495e;
+        border-radius: 5px;
+    }
+
+    .dot {
+        height: 25px;
+        width: 25px;
+        background-color: #bbb;
+        border-radius: 50%;
+        display: inline-block;
+    }
+</style>
+<input type="hidden" name="name" id="ReservationNo" value="@Model.ReservationNo" />
+<input type="hidden" name="name" id="Amount" value="@Model.Amount" />
+<input type="hidden" name="name" id="DocNo" value="" />
+<input type="hidden" name="name" id="PropertyId" value="@Model.PropertyId" />
+
+<body style="padding: 0;display: flex;justify-content:center;">
+
+    <div class="col-md-12" style="background-image: url('../../Images/Untitled-2.png');background-size: 100%;background-repeat: no-repeat;display: inline-block;">
+        <div class="well" style="width:500px; height:auto; background:#FFFFFF;box-shadow:-1px 4px 18px 8px rgba(193, 193, 193, 0.25); margin:auto; padding:25px; margin-top:5%">
+            <form id="MakePayment">
+                <div class="row">
+                    <div class="col-md-12" style="text-align:center; margin-bottom:20px;">
+                        <img src="~/Images/download.png" style="width:160px" />
+                    </div>
+                    
+                    <div class="col-12 mb-4">
+                        <a href="#" target="_blank" id="urlId">
+                            <button class="btn MakePayment" target="_blank" data-uuid="" style="background:#249188;border-radius:5px;color:#ffffff;width:155px;">
+                                Make Payment
+                                <img src="https://localhost:44328/Images/assets/icons/arrow-right.png" style="width: 14px" />
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>

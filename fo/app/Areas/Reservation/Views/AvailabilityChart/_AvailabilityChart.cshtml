@@ -1,0 +1,283 @@
+﻿@*<style>
+    .panel-padding-custom {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        margin-right: 10px !important;
+        margin-left: 10px !important;
+    }
+
+    .panel-default-override {
+        border-color: #f2f2f2 !important;
+        border: 2px solid #ccc !important;
+        background-color: #f2f2f2 !important;
+    }
+
+    .panel-header-override {
+        margin-bottom:5px;
+    }
+
+    .label-font {
+        color:black;
+    }
+
+    .custom-header-font {
+        text-align:center;
+    }
+
+    .custom-header-font > h3 {
+        margin:0px;
+    }
+
+    .panel-body > span {
+        margin-right: 2px;
+    }
+
+    .availability-panel-parent {
+        height: 450px;
+    }
+</style>*@
+<style>
+    .panel-padding-custom {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+        margin-right: 10px !important;
+        margin-left: 10px !important;
+    }
+
+    .panel-default-override {
+        border-color: #f2f2f2 !important;
+        border: 2px solid #ccc !important;
+        background-color: #f2f2f2 !important;
+    }
+
+    .panel-header-override {
+        margin-bottom: 5px;
+        padding:0px;
+    }
+
+    .label-font {
+        color: black;
+    }
+
+    .custom-header-font {
+        text-align: center;
+    }
+
+    .custom-header-font > h3 {
+        margin: 0px;
+    }
+
+    .panel-body > span {
+        margin-right: 2px;
+    }
+
+    .availability-panel-parent {
+        height: 450px;
+    }
+
+    .well-height {
+        height:120px;
+    }
+    
+    .override-well {
+        padding: 5px;
+    }
+</style>
+
+<div class="col-md-12">
+     <div class="row">
+         <div class="col-md-3" style="padding-left:0px;">
+             <div class="form-group"  style="margin-top:0px;">
+                 <div class='input-group date' id='dateWiseCalender'>
+                     <label>Select Date Range</label>
+                     <input type='text' class="form-control availabilityRange" id="availabilityDateRange" name="daterange" />
+                     <span class="input-group-addon">
+                         <span class="glyphicon glyphicon-calendar"></span>
+                     </span>
+                 </div>
+             </div>
+         </div>
+     </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row availability-panel-parent">
+                
+                
+                @*<div class="col-md-3">
+                    <div style="" class="well well-height override-well">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="panel-heading theme-bg-color-3 custom-header-font panel-header-override">
+                                    <h2 style="height: 45px;"><b>23</b></h2>
+                                    <h3 style="height: 30px; font-size:25px"><b>MAR</b></h3>
+                                    <h3 style="height: 35px;"><b>2018</b></h3>
+                                </div>
+                            </div>
+                            <div class="col-md-7" style="padding:0px; padding-top:7px; padding-left: 10px !important">
+                                <img src="~/Images/availablerooms.png"  width="20" height="20"/><label style="margin-left:10px" class="label-font">Available : 10 </label><br>
+                                <img src="~/Images/occupied.png" width="20" height="20"/><label style="margin-left:10px" class="label-font">Occupied : 10 </label><br>
+                                <img src="~/Images/totalrooms.png" width="20" height="20"/> <label  style="margin-left:7px" class="label-font">Total : 10 </label><br>
+                                <a class="col-md-10 btn btn-sm btn-theme-color-2 edit-datewise" href="">
+                                    <div class="row">
+                                        <div style="padding-left:40px;" class="col-md-2">
+                                            <span class="glyphicon glyphicon-pencil"></span>
+                                        </div>
+                                        <div class="col-md-4" style="padding:0px;">
+                                            Edit
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
+           
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.availabilityRange').daterangepicker({
+            locale: {
+                format: 'YYYY/MM/DD'
+            },
+            "opens": "right",
+            "applyClass": "btn-primary"
+
+        }, function (start, end, label) {
+            $('input[name="From"]').val(start);
+            $('input[name="To"]').val(end);
+            });
+
+        FillAvailabilityChart();
+    })
+
+    $('body').on('click', '.applyBtn', function () {
+        
+        FillAvailabilityChart();
+    })
+
+    function ClearPanel(){
+        $('.availability-panel-parent').html('');
+    }
+
+    //Draw room availabilty each box
+    function FillAvailabilityChart() {
+        
+        var fromDateParam = '';
+        var toDateParam = '';
+        var fromDate = GetDateFromParam(fromDateParam, 'from', 'ac');
+        var endDate = GetDateFromParam(toDateParam, 'to', 'ac');
+       
+        $.ajax({
+            method: 'get',
+            datatype: 'json',
+            url: '/reservation/AvailabilityChart/AvailabilityList?fromDate=' + fromDate + '&toDate=' + endDate,
+            success: function (availabilityList) {
+               
+                ClearPanel();
+                $.each(availabilityList, function (index, availabilityObj) {
+                   
+                    var dateArr = [];
+                    date = availabilityObj.AvailabilityDate;
+
+                    dateArr = moment(availabilityObj.AvailabilityDate).format('YYYY-MM-DD').split('-');
+
+                    //$(' <div class="panel panel-default panel-default-override col-md-2 panel-padding-custom">' +
+                    //'<div class="panel-body">' +
+                    // '<span class="glyphicon glyphicon-remove-circle"></span><label class="label-font">Available : ' + availabilityObj.Available + '</label><br>' +
+                    // '<span class="glyphicon glyphicon-remove-circle"></span><label class="label-font">Occupied  : ' + availabilityObj.Occupied + '</label><br>' +
+                    // '<span class="glyphicon glyphicon-remove-circle"></span><label class="label-font">Total     : ' + availabilityObj.Total + '</label>' +
+                    //'</div>' +
+                    //'<div class="panel-heading theme-bg-color-3 custom-header-font panel-header-override">' +
+                    //    '<h3><b>' + dateArr[2] + ' ' + dateArr[1] + '</b></h2>' +
+                    //    '<h4><b>' + dateArr[0] + '</b></h4>' +
+                    //    '<a class="btn btn-sm btn-theme-color-2 edit-datewise" href="/reservation/RoomAvailability/Landing?fromDate=' + moment(availabilityObj.AvailabilityDate).format('YYYY/MM/DD') +'">' +
+                    //        '<span class="glyphicon glyphicon-pencil"></span>' +
+                    //    '</a>' +
+                    //'</div>' +
+                    //'</div>').appendTo($('.availability-panel-parent'));
+
+                //    $('<div class="col-md-3">'+
+                //    '<div style="" class="well well-height override-well">'+
+                //        '<div class="row">'+
+                //            '<div class="col-md-5">'+
+                //             '<div class="panel-heading theme-bg-color-3 custom-header-font panel-header-override">'+
+                //                  '<h2 style="height: 30px; font-size:25px"><b>' + dateArr[2] + '</b></h2>' +
+                //                    '<h3 style="height: 40px;"><b> ' + dateArr[1] + '</b></h3>' +
+                //                    '<h3 style="height: 35px;"><b>' + dateArr[0] + '</b></h3>' +
+                //                '</div>'+
+                //            '</div>'+
+                //            '<div class="col-md-7" style="padding:0px; padding-top:7px; padding-left: 10px !important">'+
+                //                '<img src="/Images/availablerooms.png"  width="20" height="20"/><label style="margin-left:10px" class="label-font">Available : ' + availabilityObj.Available + '</label><br>' +
+                //                '<img src="/Images/occupied.png" width="20" height="20"/><label style="margin-left:10px" class="label-font">Occupied : ' + availabilityObj.Occupied + '</label><br>'+
+                //                '<img src="/Images/totalrooms.png" width="20" height="20"/> <label  style="margin-left:7px" class="label-font">Total  : ' + availabilityObj.Total + '</label><br>' +
+                //                '<a class="col-md-10 btn btn-sm btn-theme-color-2 edit-datewise" href="/reservation/RoomAvailability/Landing?fromDate=' + moment(availabilityObj.AvailabilityDate).format('YYYY/MM/DD') + '">' +
+                //                    '<div class="row">'+
+                //                        '<div style="padding-left:40px;" class="col-md-2">' +
+                //                            '<span class="glyphicon glyphicon-pencil"></span>'+
+                //                       '</div>'+
+                //                        '<div class="col-md-4" style="padding:0px;">'+
+                //                           'Edit'+
+                //                        '</div>'+
+                //                    '</div>'+
+                //                '</a>'+
+                //            '</div>'+
+                //        '</div>'+
+                //    '</div>'+
+                //'</div>').appendTo($('.availability-panel-parent'));
+
+                    var months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                    var monthInt = Number(dateArr[1])-1;
+                    $('<div class="col-md-3" style="margin-bottom:2px;">' +
+                        '<div class="row">' +
+                        '<div class="col-xs-5" style="min-height:136px; background-color:#34495e; color:#fff; padding:21px; text-align:center;font-size:16px;">' +
+                        '<h1 style="font-weight:bold; font-size:32px; margin-bottom:0px; margin-top:0px; line-height: 1.1em;">' + dateArr[2] + '</h2>' +
+                        '<h2 style="margin-top:0px;margin-bottom:0px; font-size:24px; line-height: 1.1em;">' + months[monthInt] + '</h2>' +
+                        '<h3 style="margin-top:0px; font-size:20px; line-height: 1.1em;">' + dateArr[0] + '</h2>' +
+                        '</div>' +
+                        '<div class="col-xs-7" style="min-height:136px; background-color:#ecf0f1;color:#000; padding:10px; padding-bottom:0px; text-align:center;font-size:16px;">' +
+                        '<table width="100%">' +
+	                        '<tr style="background-color:#ecf0f1;">' +
+    	                        '<td  class="text-left" width="30px" style="padding:2px"><img src="/Images/availablerooms.png"  width="20" height="20"/></td>' +
+		                        '<td class="text-left" style="padding:2px; font-size:12px;">AVAILABLE</td>' +
+                        '<td  class="text-right" width="20px" style="padding:2px; font-weight:bold; font-size:12px;">' + availabilityObj.Available + '</td>' +
+                                '</tr>' +
+	                        '<tr style="background-color:#ecf0f1;">' +
+    	                        '<td  class="text-left" width="30px" style="padding:2px"><img src="/Images/occupied.png" width="20" height="20"/></td>' +
+		                        '<td  class="text-left" style="padding:2px; font-size:12px;">OCCUPIED</td>' +
+                        '<td class="text-right" width="20px" style="padding:2px; font-weight:bold; font-size:12px;"> ' + availabilityObj.Occupied + '</td>' +
+	                        '</tr>' +
+	                        '<tr style="background-color:#ecf0f1;">' +
+    	                        '<td  class="text-left" width="30px" style="padding:2px"><img src="/Images/totalrooms.png" width="20" height="20"/></td>' +
+		                        '<td  class="text-left" style="padding:2px;  font-size:12px;">TOTAL</td>' +
+                        '<td class="text-right" width="20px" style="padding:2px; font-weight:bold;  font-size:12px;">' + availabilityObj.Total + '</td>' +
+	                        '</tr>' +
+                            '<tr style="background-color:#ecf0f1;">' +
+    	                        '<td  class="text-left" colspan="3">' +
+                        '<button class="btn btn-warning call-popup-model" style="width:100% !important; margin:5px; margin-left: 0px; margin-bottom:10px;" data-href="/reservation/roomavailability/occupancydetails?date=' + moment(availabilityObj.AvailabilityDate).format('YYYY/MM/DD') + '" data-title="Details" data-width="600">View Details</button>' +
+                                '</td>' +
+	                        '</tr>   ' + 
+                        '</table>' +
+                        '</div>' +
+                        '</div>'+
+                        '</div>').appendTo($('.availability-panel-parent'));
+
+                })
+            },
+            error: function (error, xhr, status) {
+                console.log(error);
+            }
+        })
+    }
+
+    Date.prototype.addDays = function (days) {
+        var dat = new Date(this.valueOf());
+        dat.setDate(dat.getDate() + days);
+        return dat;
+    }
+
+</script>
+

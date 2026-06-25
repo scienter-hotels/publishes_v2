@@ -1,0 +1,37 @@
+﻿@model Scienter.HotelERP.FrontOffice.WebUIMvc.Areas.UserAccess.Models.UserWisePropertyViewModel
+
+
+
+    @foreach (var item in Model.Property)
+    {
+        <div class="col-md-6">
+            @if (Model.UserWiseProperty.Count(x => x.PropertyId == item.Id) > 0)
+            {
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group checkbox" style="margin-top:0px;">
+                            <label>
+                                <input type="checkbox" value="@item.Id" checked name="SelectedPropertyIds" class="data-selected-properties" />
+                                @item.Name
+                            </label>
+                        </div>
+                    </div>                    
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group checkbox" style="margin-top:0px;">
+                            <label>
+                                <input type="checkbox" value="@item.Id" name="SelectedPropertyIds" class="data-selected-properties" />
+                                @item.Name
+                            </label>
+                        </div>
+                    </div>
+                   
+                </div>
+
+            }
+        </div>
+    }

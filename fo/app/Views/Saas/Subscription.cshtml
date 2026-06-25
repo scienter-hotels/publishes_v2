@@ -1,0 +1,220 @@
+﻿@model Scienter.HotelERP.FrontOffice.WebUIMvc.Models.Login
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Subscription Payment</title>
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/mega-menu/css/reset.css" rel="stylesheet" />
+    <link href="~/Content/mega-menu/css/style.css" rel="stylesheet" />
+    <link href="~/Content/Theme.css" rel="stylesheet" />
+    <script src="~/Scripts/modernizr-2.6.2.js"></script>
+    <link href="~/Content/material-dashboard.css" rel="stylesheet" />
+
+    <style>
+        .card-content {
+        }
+
+        body {
+            background-color: none !important;
+        }
+        /*html {
+            background: url('/Images/login-bg.png') no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            background-color:#d8d8d8;
+        }*/
+        .card-header {
+            background-color: #6f195b !important;
+        }
+
+        .tile-height {
+            height: 80px !important;
+        }
+    </style>
+
+    @if (Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("ThemeColor") == "blue")
+    {
+        <link href="~/Content/scienter.theme.blue.css" rel="stylesheet" />
+    }
+</head>
+<body>
+    <div class="container" style="padding-top:80px;">
+        <div class="col-md-1"></div>
+        <div class="col-md-2">
+            <div class="row">
+                <div class="col-md-6 tile-height">
+                    <a><span class="tile-lable tile-dark"></span></a>
+                </div>
+                <div class="col-md-6  tile-height flip" style="background-color:#34495e" data-order="2">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height" style="background-color:#e67e22">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 tile-height">
+                    <a><span class="tile-lable tile-dark"></span></a>
+                </div>
+                <div class="col-md-6  tile-height flip" style="background-color:#34495e" data-order="3">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height" style="background-color:#95a5a6">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height flip" data-order="4">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6 tile-height">
+                    <a><span class="tile-lable tile-dark"></span></a>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="row">
+                <div class="col-md-6 tile-height">
+                    <a></a>
+                </div>
+
+                <div class="col-md-6  tile-height">
+                    <a></a>
+                </div>
+                <div class="col-md-6  tile-height" style="background-color:#e67e22" data-order="1">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height">
+                    <a></a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 tile-height" style="background-color:#d0d0d0">
+                    <a><span class="tile-lable tile-dark"></span></a>
+                </div>
+
+                <div class="col-md-6  tile-height" style="background-color:#34495e">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height flip" style="background-color:#e67e22" data-order="1">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height" style="background-color:#808080">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+
+                <div class="col-md-6 tile-height" style="background-color:#34495e; padding:0px; padding-top:30px;">
+                    <a></a>
+                    <img src="~/Images/destinity-left.png" style="float:right; width:90px;" />
+                </div>
+                <div class="col-md-6 tile-height" style="padding:0px; padding-top:30px;">
+                    <a></a>
+                    <img src="~/Images/destinity-right.png" style="float:left;width:80px;" />
+                </div>
+
+
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+
+        <div class="col-md-3">
+            <div class="card" style="margin-top:70px;">
+                <div class="card-header card-header-icon" style="padding-bottom:5px;">
+                    <div class="row">
+                        <div class="col-md-12" style="padding-top:11px; text-align:right;">
+                            <span href="http://www.scienter.lk" target="_blank">
+                                <img src="~/Images/destinity-horizon-logo.png" width="300px" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="login-card-min-height card-content">
+                    @{ 
+                        var property = Scienter.HotelERP.Common.Domain.SessionObjects.SubcribedProperty;
+                    }
+                    <h4>Hi @property.Name,</h4>
+                    <h5>Your subscription has been ended on @property.NextRenewalDate.ToShortDateString() </h5>
+                   
+                        <form method="post" action="/saas/subscription" style="margin-bottom:5px;">
+                            @Html.AntiForgeryToken()
+                            <div class="form-group label-floating is-empty">
+                                <label class="control-label">Extend your subscription</label>
+                                <select name="period" id="period" class="form-control">
+                                    <option value="1" data-discount="0">1 Month (0% off)</option>
+                                    <option value="2" data-discount="5">2 Months (5% off)</option>
+                                    <option value="3" data-discount="8">3 Month  (8% off)</option>
+                                    <option value="6" data-discount="10">6 Month  (10% off)</option>
+                                    <option value="12" data-discount="15">12 Month  (15% off)</option>
+                                </select>
+                                <span class="material-input"></span>
+                                <input type="hidden" id="discount" name="discount" value="0" />
+                                <input type="hidden" id="amountPerMonth" name="amountPerMonth" value="@property.NextRenewalAmount" />
+                            </div>
+                            <div class="label-floating is-empty">
+                             
+                                <h3 style="margin-top:0px; font-weight:bold;"><span id="amountToPay">@property.NextRenewalAmount</span> @property.Currency</h3> 
+                            </div>
+                           
+                           
+                            <div class="form-group row" style="margin-top:0px;">
+                               <button type="submit" class="btn btn-fill btn-primary">Contiue to  pay</button>
+                            </div>
+
+                        </form>
+                    
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Content/mega-menu/js/main.js"></script>
+
+    <script src="~/Scripts/material.min.js"></script>
+    <script src="~/Scripts/chartist.min.js"></script>
+    <script src="~/Scripts/arrive.min.js"></script>
+    <script src="~/Scripts/perfect-scrollbar.jquery.min.js"></script>
+    <script src="~/Scripts/bootstrap-notify.js"></script>
+    <script src="~/Scripts/material-dashboard.js"></script>
+    <script src="~/Scripts/ui/common/scienter.lablefloating.override.js"></script>
+    <script>
+        //setTimeout(function () {
+        //    $('input').val("");
+        //}, 1000);
+
+        $('.close').find('.alert-dismissible').fadeOut();
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('a').hide();           
+        });
+        $('body').on('change', '#period', function () {            
+            var amount = (Number($('#amountPerMonth').val()) * $(this).val());
+            var discount = ((amount / 100) * Number($('#period option:selected').attr('data-discount')));
+            $('#discount').val(discount);
+            $('#amountToPay').html('');
+            $('#amountToPay').html((amount - discount));
+        });
+    </script>
+
+</body>
+</html>

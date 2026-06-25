@@ -1,0 +1,202 @@
+﻿@{
+    ViewBag.Title = "Credit Or Debit Notes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<body>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header" data-background-color="purple">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="title">
+                                @ViewBag.Title
+                                <hr class="visible-print" />
+                            </h4>
+                        </div>
+                        <div class="col-md-4 text-right hidden-print">
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    .search input {
+                        border: 2px solid #d6d4d4;
+                    }
+
+                    .search .fa-search {
+                        position: absolute;
+                        top: 20px;
+                        left: 16px;
+                    }
+
+                    .search button {
+                        position: absolute;
+                        top: 5px;
+                        right: 5px;
+                        width: 110px;
+                    }
+                </style>
+
+                
+                <div class="container" style="padding-top: 28px;">
+                    <div class="row height d-flex justify-content-center align-items-center">
+                        <div class="col-md-8" style="margin-left: 28px;">
+                            <label class="form-label" for="datatable-search-input" style="color:black!important;border:none;font-weight:120;">
+                                Search By Reservation No or Invoice No:
+                            </label><br />
+                            <div class="search">
+                                <input type="text" name="search" id="searchKeyWord" class="form-control searchKeyWord" placeholder="Search...." style="margin-top: -26px;width: 663px;">
+                                <button type="button" id="btn-SearchKeyWord" class="btn btn-primary btn-SearchKeyWord" style="margin-right: 146px;margin-top: 19px;">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div id="FolioDetailsTB" style="height:420px; overflow-x:hidden; overflow-y:scroll;">
+                            <table class="table table-striped" id="tblDetails" cellspacing="5" style="margin-left: 13px;">
+                                <tr>
+                                    <th class="text-primary ">
+                                        Reservation No
+                                    </th>
+                                    <th class="text-primary ">
+                                        Invoice No
+                                    </th>
+                                    <th class="text-primary ">
+                                        Payment Type
+                                    </th>
+                                    <th class="text-primary ">
+                                        Paid Amount
+                                    </th>
+                                    <th class="text-primary " ">
+                                        Currency
+                                    </th>
+                                    <th>
+                                    </th>
+                                </tr>
+
+                                <tbody class="all-transaction">
+                                    <tr>
+                                        <td class="" colspan="5">
+                                            <center id="imgLoadingPot">
+                                                <br />
+                                                <br />
+                                                <br />
+                                                <img src="/Images/loading_pot.gif" width="200px" id="2"/>
+                                            </center>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>            
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        //$('#imgLoadingPot').hide();
+        //$("#DetailsTB").hide();
+        $('.AdjustableAmountTxn').attr('disabled', 'disabled');
+        let searchKeyWord = "";
+        LoadBillSettlementDetails(searchKeyWord);
+    });
+
+    //$('body').off('click', '#isAll').on('click', '#isAll', function () {
+    //    if ($('#isAll').is(':checked')) {
+    //        $('.Item-Checkbox').not(':disabled').prop('checked', true);
+
+    //    } else {
+    //        $('.Item-Checkbox').prop('checked', false);
+    //    }
+    //});
+    //----------------------------Step 01----------------------------------------------------
+    $(".btn-SearchKeyWord").click(function () {
+        //debugger;
+        let searchKeyWord = $('#searchKeyWord').val();
+        if (searchKeyWord.length==0) {
+            ShowWarningMessage("Please enter reservation no or invoice no..!");
+        }
+        $('.all-transaction').html('')
+
+        $("#DetailsTB").show();
+        LoadBillSettlementDetails(searchKeyWord);
+    });
+
+    function LoadBillSettlementDetails(searchKeyWord) {
+        $('#imgLoadingPot').show();
+        $('#tblDetails .data-row').remove();
+        
+        $.ajax({
+            url: '/CashieringAndPosting/CreditOrDebitNotesNew/SelectDetailsByReservationOrInvoiceNo',
+            method: 'POST',
+            data: { SearchKeyWord: searchKeyWord },
+            beforeSend: function () {
+                $('.all-transaction tr').remove();
+                $('#imgLoadingPot').show();
+            },
+            success: function (response) {
+                $(response).each(function (index, item) {
+                    $('<tr class="data-row">' +
+                        '<td>' + item.ReservationNo + '</td>' +
+                        '<td>' + item.InvoiceNo + '</td>' +
+                        '<td>' + item.PaymentType + '</td>' +
+                        //'<td>' + item.PaidAmount.toFixed(2) + item.Currency+ '</th > ' +
+                        '<td>' + item.PaidAmount.toFixed(2)+ '</td> ' +
+                        '<td>' + item.Currency + '</td>' +
+                        '<td>' +
+                        '<button type="button" id="btnInvoiceNo" data-InvoiceNo="' + item.InvoiceNo + '" class="btn btn-primary btnInvoiceNo">Select <span class="glyphicon glyphicon-list-alt"</span>' +
+                        '</button>' +
+                        '</td>' +
+                        '</tr>').appendTo('#tblDetails');
+                });
+            },
+            error: function () {
+                alert('There is an Error');
+            },
+            complete: function () {
+                $('#imgLoadingPot').hide();
+            }
+        });
+    };
+
+
+    $('body').on('click', '#btnInvoiceNo', function () {
+        //debugger;
+        var inNo = $(this).attr('data-InvoiceNo');
+        var url = '/CashieringAndPosting/CreditOrDebitNotesNew/Grid_FoliDetails?InvoiceNo=' + inNo;
+        CallDetailModelSimple('Credit Or Debit Notes Folio Details', url,900);
+    });
+    //function LoadGridFoliDetails(inNo) {
+    //    debugger;
+    //    var invoiceNo = inNo
+    //    var totalCherge = 0;
+    //    var totalAmount = totalAdjustableAmount;
+
+    //    console.log(totalAmount);
+
+    //    $.ajax({
+    //        method: "POST",
+    //        url: '/CashieringAndPosting/CreditOrDebitNotesNew/Grid_FoliDetails',
+    //        data: { InvoiceNo: invoiceNo },
+    //        success: function (response) {
+    //            $(response).each(function (index, item) {
+    //                // $('#tblFolioDetails .data-row').remove();
+    //                totalCherge = totalCherge + item.ChargeAmount;
+    //            });
+    //        },
+    //        error: function () {
+
+    //        },
+    //        complete: function (data) {
+    //            //debugger;
+    //            //$('#tblFolioDetails').append('<tr style="border-bottom:2px solid #ccc;"><td colspan="3" style="text-align:right;">Total : </td><td  colspan="1" class="FormatNumber"><b style="font-weight:bold !important;">' + totalCherge.toFixed(2) + '</b></td>' +
+    //            //    '<td id="totalAmountTxn" style="font-weight:bold !important;">||</td></tr>');
+    //        },
+    //    });
+    //}
+</script>
+

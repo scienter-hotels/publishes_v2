@@ -1,0 +1,176 @@
+﻿<style>
+    .table-style {
+        height: 100px;
+        /*margin-top: 100px;*/
+    }
+
+    #availability-Table .form-group {
+        margin-top:0px !important;
+        margin-bottom:0px !important
+    }
+
+    .remove-margin-top {
+        margin-top:0px !important;
+    }
+
+    .table-height {
+        height: 120px;
+    }
+</style>
+
+<input type="hidden" name="From" id="From" value="@DateTime.Now.Date" />
+<input type="hidden" name="To" id="To" value="@DateTime.Now.Date"  />
+
+<br />
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group remove-margin-top">
+                <div class='input-group date' id='dateWiseCalender'>
+                    <label>Select Date Range</label>
+                    <input type='text' class="form-control availabilityRange" id="availabilityDateRange" name="daterange" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1">
+            <input type="button" id="insert-availability" value="Save" class="btn btn-primary margin-top-20px" disabled />
+        </div>
+        <div class="col-md-1">
+            <input type="button" id="clear-availability" value="Clear" class="btn btn-default margin-top-20px" />
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="From"/>
+<input type="hidden" id="To" />
+
+<div class="col-md-12 div-scroll">
+    <table id="availability-Table" class="table table-striped">
+        @{ Html.RenderAction("RoomCatWiseTableHeades", "RoomAvailability");}
+        @{ Html.RenderAction("DateWiseRoomAvailabilities", "RoomAvailability", new { fromDate = DateTime.Now.Date.ToShortDateString(), toDate= DateTime.Now.Date.ToShortDateString() });}
+    </table>
+</div>
+
+
+<script>
+    var roomAvailabilityArray = [];
+    var roomAvailability;
+
+    //document ready//
+    $(function () {
+
+        //load dateRanger
+        $('.availabilityRange').daterangepicker({
+            "showDropdowns": true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "minDate": new Date(),
+            "opens": "right",
+            "applyClass": "btn-primary",
+            locale: {
+                format: 'DD/MM/YYYY'
+            },
+        }, function (start, end, label) {
+            $('input[name="From"]').val(start.format('DD/MM/YYYY'));
+            $('input[name="To"]').val(end.format('DD/MM/YYYY'));
+        });
+
+       
+        //grab the from date parameter coming from the room availability chart UI//
+        var fromDate = GetParameterValues('fromDate');
+        if (typeof fromDate !== 'undefined') {
+            var newDtString = fromDate.split('/')[2] + '/' + fromDate.split('/')[1] + '/' + fromDate.split('/')[0];
+            $('.availabilityRange').val(newDtString + '- ' + newDtString);
+            LoadDateWiseAvailabilities(fromDate, fromDate);
+        }
+       
+    })
+
+    //Load room availabilities on date range pciker apply button click
+    $('body').on('click', '.applyBtn', function () {
+        LoadDateWiseAvailabilities($('input[name="From"]').val(), $('input[name="To"]').val());
+    })
+
+    //Enbable save button 
+    $('body').on('click', '.availabilityRange', function () {
+        $('#insert-availability').prop("disabled",false);
+    })
+    //RoomAvailabilities for date range or url parameter
+    function LoadDateWiseAvailabilities(from, to)
+    {
+        $.ajax({
+            method: 'get',
+            datatype: 'html',
+            url: '/Reservation/RoomAvailability/DateWiseRoomAvailabilities?fromDate=' + from + '&toDate=' + to,
+            success: function (htmlContent) {
+                ClearTable();
+                $('#availability-Table').append(htmlContent);
+            },
+        })
+    }
+
+    //Clear room availabilities on clear button click
+    $('#clear-availability').click(function () {
+        ClearTable();
+        $('#insert-availability').prop("disabled", true);
+    })
+
+    //Insert room availabilities on the screen when insert button click
+    $('#insert-availability').click(function () {
+        roomAvailabilityArray = [];
+
+        $('#availability-Table tr').not(':first-child').each(function (index, EachTr) {
+            tdList = $(EachTr).find('td');
+            dateVal = $(tdList[0]).find('#hiddenDate').val();
+            thList = $('#availability-Table').find('th');
+            $.each(tdList, function (index, Td) {
+                if (index == 0 || index == 1){
+                    return;
+                } else {
+                    roomAvailability = "";
+                    roomAvailability = {
+                        AvailabilityDate: dateVal,
+                        RoomTypeId: $(thList[index]).find('#hiddenRoomType').val(),
+                        Available: $(Td).find('.available-value').val(),
+                        Occupied: $(Td).find('.occupied-value').val(),
+                        Total: $(Td).find('.total-value').val(),
+                    }
+                    roomAvailabilityArray.push(roomAvailability);
+                }
+            });
+        });
+
+        $.ajax({
+            method: 'post',
+            datatype: 'json',
+            data: { lstRoomAvailability: roomAvailabilityArray },
+            url: '/RoomAvailability/SaveRoomAvailability',
+            success: function (response) {
+                if (response == 'Saved') {
+                   ShowSuccessMessage('Record has been saved successfully.');
+                }
+            },
+        })
+    })
+
+    //-- change total of the room type of the date when availabile room number is changed(On change and on blur)--//
+    $('body').on('change', '.available-value', function () {
+        $(this).parents().eq(1).find('.total-value').val(parseInt($(this).val()) + parseInt($(this).parents().eq(1).find('.occupied-value').val()));
+    })
+
+    $('body').on('blur', '.available-value', function () {
+        $(this).parents().eq(1).find('.total-value').val(parseInt($(this).val()) + parseInt($(this).parents().eq(1).find('.occupied-value').val()));
+    })
+    //----------------------------------------------------------------------------------------------------------//
+
+    //Clear Room Availability table without clearing the first row(room categories)
+    function ClearTable() {
+        $('#availability-Table tr').not(':first-child').remove();
+    }
+
+</script>
+
+

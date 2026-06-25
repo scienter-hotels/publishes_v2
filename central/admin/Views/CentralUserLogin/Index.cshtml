@@ -1,0 +1,234 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+@model Scienter.DestinityHorizon.CentralAccessPortal.Models.Login
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>User Login</title>
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/mega-menu/css/reset.css" rel="stylesheet" />
+    <link href="~/Content/mega-menu/css/style.css" rel="stylesheet" />
+    <link href="~/Content/Theme.css" rel="stylesheet" />
+    <script src="~/Scripts/modernizr-2.6.2.js"></script>
+    <link href="~/Content/material-dashboard.css" rel="stylesheet" />
+
+    <style>
+        .card-content {
+        }
+
+        body {
+            background-color: none !important;
+        }
+
+        .card-header {
+            background-color: #6f195b !important;
+        }
+
+        .tile-height {
+            height: 80px !important;
+        }
+        .checkbox .checkbox-material .check {
+            position: relative;
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            /* border: 1px solid rgba(0, 0, 0, .54); */
+            border: 1px solid rgb(251, 96, 3);
+            overflow: hidden;
+            z-index: 1;
+            border-radius: 0px;
+        }
+        .checkbox input[type=checkbox]:checked + .checkbox-material .check {
+            background: #fb6003;
+        }
+        .checkbox .checkbox-material .check {
+            position: relative;
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            /* border: 1px solid rgba(0, 0, 0, .54); */
+            border: 1px solid rgb(251, 96, 3);
+            overflow: hidden;
+            z-index: 1;
+            border-radius: 0px;
+        }
+        .card .card-header {
+            border-radius: 0px;
+        }
+
+        .card {
+            border-radius: 0px;
+        }
+
+        .btn, .navbar .navbar-nav > li > a.btn {
+            border-radius: 0px
+        }
+    </style>
+
+    @if (Scienter.DestinityHorizon.Common.Utility.Configs.GetAppSettingValue("ThemeColor") == "blue")
+    {
+        <link href="~/Content/scienter.theme.blue.css" rel="stylesheet" />
+    }
+</head>
+<body>
+    <div class="container" style="padding-top:80px;">
+        <input type="hidden" value="" />
+        <div class="col-md-1"></div>
+        <div class="col-md-2">
+            <div class="row">
+                <div class="col-md-6 tile-height">
+                    <a><span class="tile-lable tile-dark"></span></a>
+                </div>
+                <div class="col-md-6  tile-height flip" style="background-color:#34495e" data-order="2">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height" style="background-color:#e67e22">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 tile-height">
+                    <a><span class="tile-lable tile-dark"></span></a>
+                </div>
+                <div class="col-md-6  tile-height flip" style="background-color:#34495e" data-order="3">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height" style="background-color:#95a5a6">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height flip" data-order="4">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6 tile-height">
+                    <a><span class="tile-lable tile-dark"></span></a>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="row">
+                <div class="col-md-6 tile-height">
+                    <a></a>
+                </div>
+
+                <div class="col-md-6  tile-height">
+                    <a></a>
+                </div>
+                <div class="col-md-6  tile-height" style="background-color:#e67e22" data-order="1">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height">
+                    <a></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 tile-height" style="background-color:#d0d0d0">
+                    <a><span class="tile-lable tile-dark"></span></a>
+                </div>
+
+                <div class="col-md-6  tile-height" style="background-color:#34495e">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height flip" style="background-color:#e67e22" data-order="1">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+                <div class="col-md-6  tile-height" style="background-color:#808080">
+                    <a><span class="tile-lable tile-light"></span></a>
+                </div>
+
+                <div class="col-md-6 tile-height" style="background-color:#34495e; padding:0px; padding-top:30px;">
+                    <a></a>
+                    <img src="~/Images/destinity-left.png" style="float:right; width:90px;" />
+                </div>
+                <div class="col-md-6 tile-height" style="padding:0px; padding-top:30px;">
+                    <a></a>
+                    <img src="~/Images/destinity-right.png" style="float:left;width:80px;" />
+                </div>
+
+
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+        <div class="col-md-3">
+            <div class="card" style="margin-top:70px; border-radius:0px">
+                <div class="card-header card-header-icon" style="padding-bottom:5px;border-radius:0px">
+                    <div class="row">
+                        <div class="col-md-12" style="padding-top:11px; text-align:right;">
+                            <span href="http://www.scienter.lk" target="_blank">
+                                <img src="~/Images/destinity-horizon-logo.png" width="300" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="login-card-min-height card-content">
+
+                    <form method="post" action="" style="margin-bottom:5px;">
+
+                        <div class="form-group label-floating  ">
+                            <label class="control-label">Username</label>
+                            <input type="text" class="form-control" name="Username" value="" autocomplete="off" required width="40%">
+                            <span class="material-input"></span>
+
+                        </div>
+                        <div class="form-group label-floating ">
+                            <label class="control-label">Password</label>
+                            <input type="password" class="form-control" name="Password" autocomplete="off" required width="40%">
+                            <span class="material-input"></span>
+                        </div>
+                        <div class="form-group checkbox" style="margin-top:10px;">
+                            <label>
+                                <input type="checkbox" value="true" name="RememberMe" /> Keep Login
+                            </label>
+                        </div>
+
+                        <div class="form-group row" style="margin-top:0px;">
+                            <button type="submit" class="btn btn-fill btn-primary" style="border-radius:0px">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-3.2.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Content/mega-menu/js/main.js"></script>
+
+    <script src="~/Scripts/material.min.js"></script>
+    <script src="~/Scripts/chartist.min.js"></script>
+    <script src="~/Scripts/arrive.min.js"></script>
+    <script src="~/Scripts/perfect-scrollbar.jquery.min.js"></script>
+    <script src="~/Scripts/bootstrap-notify.js"></script>
+    <script src="~/Scripts/material-dashboard.js"></script>
+    <script src="~/Scripts/scienter.lablefloating.override.js"></script>
+    @*<script>
+
+            $('.close').find('.alert-dismissible').fadeOut();
+        </script>
+
+        <script>
+            $(document).ready(function () {
+                var loopIndexOvrd = 1;
+                $('a').hide();
+
+            });
+        </script>*@
+
+</body>
+</html>
+

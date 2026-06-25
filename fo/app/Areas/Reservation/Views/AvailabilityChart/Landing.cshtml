@@ -1,0 +1,54 @@
+﻿
+@{
+    ViewBag.Title = "Availability";
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    @*<div class="col-md-4 text-right hidden-print">
+                            <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+
+                            <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                                <span class="glyphicon glyphicon-th-list"></span>
+                            </button>
+
+                        </div>*@
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    $(function () {
+        Init_Calender();
+    })
+
+    function Init_Calender() {
+        $.ajax({
+            url: '/reservation/availabilitychart/AvailabilityChart',
+            dataType: 'html',
+            method: 'get',
+            success: function (htmlContent) {
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(htmlContent).fadeIn();
+            }
+        });
+    }
+</script>

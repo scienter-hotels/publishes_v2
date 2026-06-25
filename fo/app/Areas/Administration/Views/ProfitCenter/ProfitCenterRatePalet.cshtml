@@ -1,0 +1,47 @@
+﻿@model Scienter.HotelERP.FrontOffice.WebUIMvc.Areas.Administration.Models.ProfitCenterRatePaletViewModel
+@{
+    decimal? price = 0;
+    string formatedPrice = "0.00";
+    decimal? CostPrice = 0;
+    decimal? SellingPrice = 0;
+}
+<style>
+    table:not(.table-striped) tr:hover {
+        background-position: 0 0;
+        background-color: #fff;
+    }
+
+    table:not(.table-striped) tr:first-child {
+        background-color: #fff;
+    }
+</style>
+<table id="laundryRatePalet" style="width:100%">
+    <tr>
+        <th>Charge Type</th>
+        @*<th class="text-center">Cost</th>*@
+        <th class="text-center"></th>
+        <th class="text-center">Selling</th>
+        @*<th>Price</th>*@
+    </tr>
+    @foreach (Scienter.HotelERP.Common.Domain.ProfitCenterChargeType profitCenterChargeType in Model.AllProfitCenterChargeType)
+    {
+        
+        <tr class="ChargeType" ChargeTypeId="@profitCenterChargeType.Id">
+            <td id="ChargeTypeId">
+                @profitCenterChargeType.Name
+            </td>
+            @*<td>
+                <div class="form-group" style="margin-top:0px !important; padding:0px !important; padding-right:10px;width: 111% !important;">
+                    <input type="number" min="0.00" value="@profitCenterChargeType.CostPrice" max="1000000" class="form-control text-right padding-right-10px CostPrice" />
+                </div>
+            </td>*@
+            <td></td>
+            <td>
+                <div class="form-group" style="margin-top:0px !important; padding:0px !important; padding-right:10px; width: 111% !important;">
+                    <input type="number" min="0.00" value="@profitCenterChargeType.SellingPrice" max="1000000" class="form-control text-right padding-right-10px SellingPrice" />
+                </div>
+            </td>
+        </tr>
+    }
+</table>
+

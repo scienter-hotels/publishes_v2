@@ -1,0 +1,43 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.DayeEndCheckList>
+
+<table class="table table-striped">
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <img src="@item.ImageUrl" width="40px" />
+            </td>
+            <td>
+                <h4>@item.Name</h4>
+            </td>
+            <td>
+                <h4>@item.Message</h4>
+            </td>
+        </tr>
+    }
+</table>
+
+
+
+<table style="float:right;">
+    <tr>
+        <td>
+            <button type="button" next class="btn-danger btn btn-block previous action-button-previous" name="previous" style="width: 10em;float: right;" onclick="window.location.reload()">
+                Previous
+            </button>
+        </td>
+        <td>
+            @if (ViewBag.IsOkayToCompleteDayEnd == 1)
+            {
+                <button type="button" class="btn-primary btn btn-block save-room-change action-button btn-complete-day-end" name="next" value="Complete" style="width: 12em;float: right;">
+                    Complete DAY END
+                    <div class="ripple-container"></div>
+                </button>
+            }
+        </td>
+    </tr>
+</table>
+
+
+

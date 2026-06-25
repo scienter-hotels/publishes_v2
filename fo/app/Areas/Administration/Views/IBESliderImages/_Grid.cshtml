@@ -1,0 +1,104 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.IBESliderImagesView>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table class="table table-striped"
+                   id="existingIBESliderImagesGrid">
+                <thead>
+                    <tr>
+                        <th class="text-primary">
+                            Title
+                        </th>
+                        <th class="text-primary">
+                            Description
+                        </th>
+                        <th class="text-primary">
+                            Image
+                        </th>
+                        <th class="text-primary">
+                            Property Id
+                        </th>
+                        <th class="col-md-1 text-primary">
+                            Active
+                        </th>
+                        <th class="col-md-1 hidden-print"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Title)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            <img src='@item.Image' style="max-width:60px; max-height:70px;" />
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PropertyId)
+                        </td>
+                        <td>
+                            <div class="form-group checkbox">
+                                <label>
+                                    @Html.DisplayFor(modelItem => item.IsActive)
+                                    <span class="hidden">
+                                        @if (item.IsActive)
+                                        {
+                                            @:Active
+                                        }
+                                        else
+                                        {
+                                            @:Inactive
+                                        }
+                                    </span>
+                                </label>
+                            </div>
+
+
+
+                        </td>
+                        <td class="hidden-print text-right">
+                            @*<a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Employees - @item.Name" data-href="/administration/employees/print/@item.Id">
+                <span class="glyphicon glyphicon-print"></span>
+            </a>*@
+
+                            <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/IBESliderImages/edit/@item.Id">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </a>
+
+                            <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/administration/IBESliderImages/delete/@item.Id">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </a>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+        <script>
+            $(document).ready(function () {
+                $('#existingIBESliderImagesGrid').DataTable(
+                    {
+                        //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                        searching: true,
+                        ordering: true,
+                        //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                        dom: 'Bfrtipl',
+                        select: true,
+                        buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                        ],
+                        scrollY: '58vh',
+                    });
+            });
+        </script>

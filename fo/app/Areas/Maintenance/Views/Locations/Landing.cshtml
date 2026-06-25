@@ -1,0 +1,124 @@
+﻿
+@{
+    ViewBag.Title = "Locations";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        FillGrid();
+    });
+
+    // show form -----------------------------------
+    $('body').on('click', '.showForm', function (e) {
+        $.ajax({
+            url: '/Maintenance/locations/form',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+        });
+    });
+
+    // show grid -----------------------------------
+
+    $('body').on('click', '.showGrid', function (e) {
+        FillGrid();
+    });
+
+
+    // save --------------------------------------
+    $('body').on('submit', '#locations', function (e) {
+            e.preventDefault();
+            var location = {
+                __RequestVerificationToken: $('__RequestVerificationToken').val(),
+                Id: $('#Id').val(),
+                Code:$('#Code').val(),
+                Name: $('#Name').val(),
+                //IsActive: $('#IsActive').prop("checked"),
+            };
+
+            $.ajax({
+                url: '/maintenance/locations/save',
+                dataType: 'html',
+                data: location,
+                method: 'POST',
+                success: function (response) {
+
+                    ShowSuccessMessage('Record has been saved successfully.');
+                    FillGrid();
+                }
+            });
+
+    });
+
+
+    // fill grid -------------------------------------
+    function FillGrid() {
+       
+        var gridId = "#existingLocationsGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/maintenance/locations/selectforgrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+
+            }
+        });
+    }
+
+</script>
+
+
+

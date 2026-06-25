@@ -1,0 +1,26 @@
+﻿@model  Scienter.HotelERP.Common.Domain.ViewModels.ComplainViewModel
+
+  
+@{
+    ViewBag.Title = "View Complain - ";
+}
+
+
+<div class="row">
+
+    <div class="col-md-12">
+        @Html.Partial("_ComplainTakenPopup", Model)
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        @Html.Partial("_ComplainHistory",Model.ComplainLogs)
+    </div>
+</div>
+
+
+
+
+
+

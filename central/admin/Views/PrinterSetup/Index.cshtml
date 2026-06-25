@@ -1,0 +1,156 @@
+﻿@{
+    ViewBag.Title = "Printer Setup";
+}
+<style>
+    .form-group-marging {
+        margin-top: 0px;
+    }
+
+    .card {
+        padding: 10px !important;
+    }
+</style>
+<div class="row">
+    <div class="card">
+        <div class="card-header" data-background-color="purple">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4 class="title">
+                        @ViewBag.Title
+                        <hr class="visible-print" />
+                    </h4>
+                </div>
+                <div class="col-md-4 text-right hidden-print">
+                    <button type="button" class="btn btn-sm btn-theme-color-2 showForm" title="Add New">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                    <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid" title="Show Grid">
+                        <span class="glyphicon glyphicon-th-list"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-content" id="contentLoadingArea">
+            <div class="row">
+                <div id="searchdiv">
+                    <input type="text" id="searchby" onkeyup="SearchGrid()" placeholder="Search by any Column" title="Search by any Column">
+                </div>
+            </div>
+            <div class="row">
+                <div class="master-file-grid col-md-12" style="overflow-y:scroll; max-height:450px;">
+                    @*Grid comes here*@
+                    <div class="row table-responsive">
+
+                        <div id="loadingProjects" class="well">
+                            <center>
+                                <img src="~/Images/loading.gif" style="width:50px; margin-top:20px; margin-bottom:0px;" />
+                            </center>
+                        </div>
+
+                        <table class="table table-striped" id="grid" style="display:none;">
+                            <tr>
+                                <th>Code</th>
+                                <th>Description</th>
+                                <th>Printer</th>
+                                <th>AlterNative Printer</th>
+                                <th class="col-md-1">Active</th>
+                                <th class="col-md-2"></th>
+                            </tr>
+                            <tr class="no-record">
+                                <td colspan="4">No Records Found.</td>
+                            </tr>
+                        </table>
+
+                    </div>
+
+                </div>
+                <div class="master-file-form">
+                    <form id="form" class="form" enctype="multipart/form-data">
+                        <input type="hidden" id="Id" name="Id" value="0" />
+                        <div class="row">
+                            <div class="col-md-1">
+                                <div class="form-group col-md-10 label-floating">
+                                    @*<label for="Code">Code</label>*@
+                                    <label class="control-label">Code   *</label>
+                                    <input type="text" class="form-control" id="Code" name="Code" required maxlength="2" autocomplete="off" pattern="[0-9]{2}" title="Numbers Only maximum length 2">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group col-md-10 label-floating">
+                                    @*<label for="Code">Name</label>*@
+                                    <label class="control-label">Name *</label>
+                                    <input type="text" class="form-control" id="Name" name="Name" maxlength="50" required autocomplete="off">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group col-md-10 label-floating">
+                                    @*<label>Printer *</label>*@
+                                    <label class="control-label">Printer *</label>
+                                    @*<select class="form-control Printer-Name" id="Printer-Name" maxlength="50" required>
+                                          
+                                        </select>*@
+                                    <input type="text" class="form-control" id="Printer-Name" name="Printer-Name" maxlength="50" required autocomplete="off">
+
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group col-md-8">
+                                        <label>Path *</label>
+                                        <div class="form-group form-group-marging label-floating">
+                                            <select class="form-control printer-path" id="printer-path" required>
+                                                <option value="">------------------- Select -------------------------------------</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>*@
+
+                        <div class="row">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group col-md-10 label-floating">
+                                    @*<label>Alternative Printer *</label>*@
+                                    <label class="control-label">Alternative Printer *</label>
+                                    @*<select class="form-control Alternativeprinter" id="Alternativeprinter" required>
+                                          
+                                        </select>*@
+
+                                    <input type="text" class="form-control" id="Alternativeprinter" name="Alternativeprinter" maxlength="50" required autocomplete="off">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group form-group-marging checkbox">
+                                    <label><input type="checkbox" id="is-active" class="is-active" name="is-active" />Active</label>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <button type="submit" class="btn btn-success btn-width-100px" id="btnSubmit">
+                                Save
+                            </button>
+                            <button type="button" class="btn btn-default btn-width-100px btn-shadow clearbtn" onclick="ClearForm()">
+                                Clear
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" value="" id="hdnAction" />
+<script src="~/scripts/UI/scienter.printersetup.js"></script>
+

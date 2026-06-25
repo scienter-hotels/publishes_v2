@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.SchedulePostingView>
+<div class="row">
+    <div class="col-md-12" style="overflow-y:auto;">
+        <table class="table" id="scheduleHistoryTable">
+            <tr>
+                <th>Posting Date</th>
+                <th>Bill Type</th>
+                <th>Folio Text</th>
+                <th>Remark</th>
+                <th style="text-align:right;">Amount</th>
+                <th></th>
+                <th></th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr value="@item.Id">
+                    <td>@string.Format("{0:dd/MM/yyyy}", item.ChargeDate).ToString()</td>
+                    <td>@item.BillTypeName</td>
+                    <td>@item.FolioText</td>
+                    <td class="col-md-2">@item.Remarks</td>
+                    <td class="formatNumber">@item.Amount</td>
+                    <td></td>
+                    <td>
+                        @if(item.ChargeDate >= item.DayEnd)
+                        {
+                            <button type="button" class="btn btn-danger btn-sm rowDelbtn" charge-date="@string.Format("{0:dd/MM/yyyy}", item.ChargeDate).ToString()" schedule-Id="@item.Id" res-no="@item.ReservationNo" guest-id="@item.GuestProfileId" data-RoomId="@item.RoomId"> <span class="glyphicon glyphicon-minus"></span></button>
+                        }                       
+                        </td>
+                    </tr>
+
+            }
+        </table>
+
+    </div>
+
+</div>

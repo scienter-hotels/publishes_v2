@@ -1,0 +1,44 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.RoomCategory>
+
+
+<div class="table-responsive">
+    <div>
+        <table  id="roomCategoriesInRoomRates" style="width:100%;">
+            @{ 
+                int rowId = 0;
+                string rowBgColor = "";
+            }
+            @foreach (var item in Model)
+            {
+                if (rowId % 2 == 0)
+                {
+                    //#f2f2f2
+                    rowBgColor = "style=background-color:#ffffff !important;";
+                }
+                else
+                {
+                    rowBgColor = "style=background-color:#ffffff !important;";
+                }
+
+                <tr class="room-category" @rowBgColor data-category-id="@item.Id">
+                    <td style="vertical-align:top !important; padding-left:5px;">
+                        <h4 style="font-weight:bold !important; margin-top:28px;">@item.Name</h4>
+                        <input type="hidden" class="roomCategory" value="@item.Id" />
+                        @*<button type="button" class="btn btn-sm btn-primary call-popup-model" style="width:100%; font-size:10px;" data-title="@item.Name - Base Rate Setup" data-href="/Administration/RoomRates/BaseRatePallet?categoryId=@item.Id" data-width="600">Room Rate</button>*@
+                        <button type="button" class="btn btn-sm btn-primary call-popup-model" style="width:100%; font-size:10px;" data-title="@item.Name - Base Rate Setup" data-href="/Administration/RoomRates/BaseRatePalletWithMealPlanRate?categoryId=@item.Id" data-width="600">Room Rate</button>
+                        <br />
+                        <button type="button" class="btn btn-sm btn-primary call-popup-model" style="width:100%; font-size:10px;" data-title="@item.Name - Suppliment Rate Setup" data-href="/Administration/RoomRates/SupplimentRatePallet?categoryId=@item.Id" data-width="600">Child Rate</button>
+                    </td>
+                    <td colspan="2" style="padding-left:10px; padding-right:10px;">
+                        @{Html.RenderAction("RatePalet", "RoomRates");}
+
+                    </td>
+                </tr>
+
+                                rowId = rowId + 1;
+             }
+        </table>
+    </div>
+</div>
+
+

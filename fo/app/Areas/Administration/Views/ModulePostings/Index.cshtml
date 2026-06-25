@@ -1,0 +1,132 @@
+﻿
+@{
+    ViewBag.Title = "Module Category";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+
+<script>
+    $(document).ready(function () {
+        FillGrid();
+    });
+    //Show Grid------------------
+    $('body').on('click', '.showGrid', function (e) {
+        FillGrid();
+    });
+    //Show Form-------------------------
+    $('body').on('click', '.showForm', function (e) {
+        $.ajax({
+            url: '/administration/ModulePostings/Form',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+
+        });
+    });
+    //Form Submit------------------------------
+    $('body').on('submit', '#modulePosting', function (e) {
+        e.preventDefault();
+        var moduleCategory = {
+            Id: $('#Id').val(),
+            Name: $('#Name').val(),
+            PostingTypeId: $('#PostingTypeId').val(),
+            Commission: $('#Commission').val(),
+        };
+        $.ajax({
+            url: '/administration/ModulePostings/save',
+            dataType: 'JSON',
+            data: moduleCategory,
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+                FillGrid();
+            },
+            error: function () {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+
+        });
+    });
+    //Grid Fill-----------------------
+    function FillGrid() {
+        var gridId = "#existingModuleCategoryGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/administration/ModulePostings/SelectForGrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+
+
+            }
+
+        });
+    }
+
+    $('body').on('click', '.btnEdit', function (e) {
+        $.ajax({
+            async: false,
+            url: '/administration/ModulePostings/edit',
+            dataType: 'html',
+            data: { id: $(this).attr('data-id') },
+            method: 'POST',
+            success: function (response) {
+
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+
+        });
+    });
+</script>

@@ -1,0 +1,107 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.TransportHeaderView>
+
+<table class="table" id="guest-transport-list">
+    <thead>
+        <tr>
+            <th>
+                Reservation #
+            </th>
+            <th>
+                Guest Name
+            </th>
+            <th>
+                Transfer Type
+            </th>
+            <th>
+                Transfer Mode
+            </th>
+            <th>
+                Required Date
+            </th>
+            <th>
+                Required Time
+            </th>
+            <th>
+                Remarks
+            </th>
+            <th>
+                Status
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            <input type="hidden" class="transport-header-id" value="@item.Id" />
+            @Html.DisplayFor(modelItem => item.ReservationNo)
+            <input type="hidden" class="reservation-header-id" value="@item.ReservationHeaderId" />
+            @*<input type="hidden" class="room-id" value="@item.RoomId"  />*@
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.GuestName)
+            <input type="hidden" class="guest-id" value="@item.GuestProfileId" />
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TransferTypeName)
+            <input type="hidden" class="transfer-type-id" value="@item.TransferTypeId" />
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TransferModeName)
+            <input type="hidden" class="transfer-mode-id" value="@item.TransferModeId" />
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.RequiredDateToShow)
+            <input type="hidden" class="required-date" value="@item.RequiredDateToShow" />
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.RequiredTimeToShow)
+            <input type="hidden" class="required-time" value="@item.RequiredTimeToShow" />
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Remarks)
+            <input type="hidden" class="remarks" value="@item.Remarks" />
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+            <input type="hidden" class="status-id" value="@item.StatusId" />
+        </td>
+        <td class="text-center">
+            <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Bed Type - @item.ReservationNo" data-href="">
+                <span class="glyphicon glyphicon-print"></span>
+            </a>
+
+            <a class="btn btn-theme-color-2 btn-sm row-edit" id="btnEdit">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </a>
+
+            <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/Reservation/Transport/Delete/@item.Id">
+                <span class="glyphicon glyphicon-trash"></span>
+            </a>
+        </td>
+    </tr>
+}
+
+</table>
+<script>
+    //$(document).ready(function () {
+       
+    //    $('#guest-transport-list').DataTable(
+    //        {
+    //            //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+    //            searching: true,
+    //            ordering: true,
+    //            //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    //            dom: 'Bfrtipl',
+    //            select: true,
+    //            buttons: [
+    //                        'copy',
+    //                        'excel',
+    //                        'csv',
+    //                        'pdf',
+    //                        'print'
+    //            ],
+    //            scrollY: '58vh',
+    //        } );
+    //});
+</script>

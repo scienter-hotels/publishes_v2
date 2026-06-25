@@ -1,0 +1,9 @@
+﻿@model List <Scienter.HotelERP.Common.Domain.ViewModels.UserWiseQuickNavigationView>
+
+<ul class="list-group">
+    @foreach (var item in Model)
+    {
+
+       <a class="list-group-item" href="@item.Url">@item.PageName</a>  
+    }
+</ul>

@@ -1,0 +1,235 @@
+﻿@model Scienter.HotelERP.Common.Domain.CurrencyConversion
+
+@{
+    ViewBag.Title = "Currency Conversion";
+}
+
+<style>
+    #searchby {
+        /*background-image: url('/Images/searchicon.png');*/
+        background-position: 10px 10px;
+        background-repeat: no-repeat;
+        width: 100%;
+        font-size: 14px;
+        padding: 8px 20px 8px 40px;
+        border: 1px solid #ddd;
+        margin-bottom: 12px;
+    }
+
+    .card-content {
+        margin-top: 0px !important;
+        min-height: 450px !important;
+        height: 450px !important;
+    }
+
+
+
+</style>
+
+@*<div class="row">
+    <div class="col-md-12">*@
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <a href="/administration/currencies"  class="btn btn-sm btn-theme-color-2 showForm" >
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+
+
+                    </div>
+                </div>
+            </div>
+            <div clss="row" style="margin-top:15px;margin-right:15px;margin-left:15px">
+                <div class="col-md-12">
+                    <input type="text" id="searchby" onkeyup="SearchGrid()" placeholder="Search by any colomn" title="Search by any colomn">
+                </div>
+            </div>
+            <div class="row" >
+                <div class="col-md-12">
+                    <div class="card-content" id="contentLoadingArea">
+                        <div id="CurrencyList" style="height:420px; overflow-x:hidden; overflow-y:scroll;">
+                            <table class="table" id="grid" style="overflow-y:scroll;">
+                                <tr>
+                                    <th class=""></th>
+                                    <th class="">Base Currency</th>
+                                    <th class="">Conversion Currency</th>
+                                    <th style="width:200px;">Buying Rate</th>
+                                    <th style="width:200px;">Selling Rate</th>
+                                </tr>
+                                <tr class="no-record">
+                                    <td colspan="4">No Records Found.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-success btn-width-100px" id="btnCurrCon" style="float:right; margin-right:20px">
+                        Save
+                    </button>
+                </div>
+            </div>
+
+            @*@Html.Partial("_Loading")*@
+        </div>
+
+    @*</div>
+</div>*@
+
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+
+    // form load -----------------------------------------------
+    $(document).ready(function () {
+        FillGrid();
+    });
+
+
+    function SearchGrid() {
+        var input, filter, table, tr, td, i, tds, isDisplay = false, ths;
+        input = document.getElementById("searchby");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("grid");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            tds = tr[i].getElementsByTagName("td");
+            for (var j = 0; j < tds.length; j++) {
+                td = tr[i].getElementsByTagName("td")[j];
+                if (td) {
+                    if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        isDisplay = true;
+                        break;
+                    } else {
+                        isDisplay = false;
+                    }
+                }
+            }
+            if (isDisplay) {
+                tr[i].style.display = "";
+            } else {
+                ths = tr[i].getElementsByTagName("th");
+                if (ths == undefined || ths.length == 0) {
+                    tr[i].style.display = "none";
+                }
+            }
+
+        }
+    }
+
+
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    $('body').off('click', '#grid tbody tr').on('click', '#grid tbody tr', function () {
+
+        if ($(this).find('input.itemCheckbox').prop('checked')) {
+            $('#grid tr').not(this).closest('tr').removeClass('selectdRecord');
+            $(this).find('input.itemCheckbox').prop('checked', false);
+
+        } else {
+
+            $(this).find('input.itemCheckbox').prop('checked', true);
+        }
+
+        $('input.itemCheckbox:checked').closest('tr').addClass('selectdRecord');
+        $(this).addClass('selectdRecord');
+    });
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+ 
+    // fill grid ---------------------------------------------------------------
+    function FillGrid() {
+
+        if ($('#grid').length == 1) {
+            $('#grid tr').not(':first-child').remove();
+
+            $.ajax({
+                url: '/administration/currencyconversion/grid',
+                dataType: 'JSON',
+                method: 'POST',
+                success: function (data) {
+                    if (data.length == 0) {
+                        $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#grid'));
+                    }
+
+                    $.each(data, function (index, item) {
+                        $('<tr class="con-items">' +
+                            '<td><div class="checkbox" ><label><input type="checkbox" class="itemCheckbox " data-tr-CurrConId="' + item.Id + '"></label></div></td>' +
+
+                            '<td>' + item.BaseCurrency + '</td>' +
+                            '<td>' + item.ConversionCurrency + '</td>' +
+                            '<td><div class="form-group" style="padding-bottom: 2px;margin: 6px 0 0 0;"> <input type="number" step="0.01" class="form-control  text-right data-br  number-only" style="height:20px;" min="0" value="' + item.BuyingRate + '"></div> </td>' +
+                            '<td><div class="form-group" style="padding-bottom: 2px;margin: 6px 0 0 0;"> <input type="number" step="0.01" class="form-control  text-right data-sr  number-only" style="height:20px;" min="0" value="' + item.SellingRate + '"></div> </td>' +
+                            '</tr>').appendTo($('#grid'));
+                    });
+                }
+            });
+        }
+    }
+
+ 
+    $('body').on('click', '#btnCurrCon', function (e) {
+        $('#searchby').val('');
+        var selectedCurrCon = [];
+
+        $('#grid tr.con-items').each(function (index, page) {
+            var pageInfo = "";
+            $(page).find('.itemCheckbox:checked').each(function (index2, selPage) {
+
+                var buyingRate = $(this).closest('tr.con-items').find('.data-br').val() == undefined ? 0 : $(this).closest('tr.con-items').find('.data-br').val();
+                var sellingRate = $(this).closest('tr.con-items').find('.data-sr').val() == undefined ? 0 : $(this).closest('tr.con-items').find('.data-sr').val();
+
+                pageInfo = {
+                    Id: $(this).attr('data-tr-CurrConId'),
+                    BuyingRate: buyingRate,
+                    SellingRate: sellingRate,                  
+                }
+                selectedCurrCon.push(pageInfo);
+            });
+        });
+
+
+        if (selectedCurrCon.length == 0) {
+            ShowWarningMessage('Please select at least one items.');
+        }
+        else {
+            $.ajax({
+                url: '/administration/currencyconversion/Save',
+                dataType: 'JSON',
+                data: { currencyConversion: selectedCurrCon },
+                complete: function () {
+                    FillGrid();
+                },
+                method: 'POST',
+                success: function (data) {
+                   
+                    if (data.startsWith('ERR-')) {
+                        ShowErrorMessage(data.replace("ERR-", ""));
+                    } else {
+                        ShowSuccessMessage('Record saved successfully.');   
+
+                        setTimeout(function () { location.reload(true); }, 3000);
+                        
+                    }
+                }
+               
+            });
+        }
+    });
+
+
+
+
+</script>

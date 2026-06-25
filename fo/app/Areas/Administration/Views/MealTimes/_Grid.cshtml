@@ -1,0 +1,96 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.MealTime>
+
+@{
+    ViewBag.Title = "Existing Meal Times";
+}
+
+<div class="table-responsive grid-container">
+       <table class="table table-striped"
+                   id="existingMealTimeGrid">
+           <thead>
+               <tr>
+                   <th class="text-primary">
+                       @Html.DisplayNameFor(model => model.Name)
+                   </th>
+                   <th class="text-primary">
+                       @Html.DisplayNameFor(model => model.FromTime)
+                   </th>
+                   <th class="text-primary">
+                       @Html.DisplayNameFor(model => model.ToTime)
+                   </th>
+                   <th class="col-md-1 text-primary">
+                       @Html.DisplayNameFor(model => model.IsActive)
+                   </th>
+                   <th class="col-md-1 hidden-print"></th>
+               </tr>
+           </thead>
+
+           <tbody>
+               @foreach (var item in Model)
+               {
+                   <tr>
+                       <td>
+                           @Html.DisplayFor(modelItem => item.Name)
+                       </td>
+                       <td>
+                           @Html.DisplayFor(modelItem => item.FromTime)
+                       </td>
+                       <td>
+                           @Html.DisplayFor(modelItem => item.ToTime)
+                       </td>
+                       <td class="col-md-1">
+                           <div class="form-group checkbox">
+                               <label>
+                                   @Html.DisplayFor(modelItem => item.IsActive)
+                                   <span class="hidden">
+                                       @if (item.IsActive)
+                                       {
+                                           @:Active
+                                    }
+                                       else
+                                       {
+                                           @:Inactive
+                                    }
+                                   </span>
+                               </label>
+                           </div>
+                       </td>
+                       <td class="hidden-print text-right">
+                           @*<a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Bed Type - @item.Name" data-href="/administration/mealtimes/print/@item.Id">
+                               <span class="glyphicon glyphicon-print"></span>
+                           </a>*@
+
+                           <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/mealtimes/edit/@item.Id">
+                               <span class="glyphicon glyphicon-pencil"></span>
+                           </a>
+
+                           <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/administration/mealtimes/delete/@item.Id">
+                               <span class="glyphicon glyphicon-trash"></span>
+                           </a>
+                       </td>
+                   </tr>
+               }
+           </tbody>
+    </table>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#existingMealTimeGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+</script>

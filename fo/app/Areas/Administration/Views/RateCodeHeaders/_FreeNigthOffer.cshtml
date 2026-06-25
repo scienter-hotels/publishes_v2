@@ -1,0 +1,97 @@
+﻿<input type="hidden" value="@ViewBag.rateCodeId" name="rateCodeId" id="rateCodeId" />
+<input type="hidden" value="@ViewBag.TotalNoOfReservationNights" name="TotalNoOfReservationNights" id="TotalNoOfReservationNights" />
+
+<form id="FreeNightOffer">
+    <div class="row">
+        <div class="col-md-12" style="padding-right: 5px;">
+            @*<fieldset class="the-fieldset">*@
+                @*<legend class="the-legend">Free Night Offer</legend>*@
+                <div class="row">
+                    <div class="col-md-4 form-group label-floating">
+                        <label class="control-label">Res Night *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="ResNight" minlength="0" name="ResNight" type="number" value="" >
+                    </div>
+                    <div class="col-md-4 form-group label-floating">
+                        <label class="control-label">Free Night *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" minlength="0" id="FreeNight" name="FreeNight" type="number" value="" >
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <input type="button" id="btnAdd" value="Add" class="btn btn-primary" />
+                    </div>
+                </div>
+                <div class="row">
+                    <table id="CurrencyEncashmentTable" class="table" style="">
+                        <tr>
+                            <th>
+                                Room Night
+                            </th>
+                            <th>
+                                Free Night
+                            </th>
+                            <th class="col-md-1 hidden-print"></th>
+
+                        </tr>
+                    </table>
+                </div>
+            @*</fieldset>*@
+        </div>
+    </div>
+    <div>
+        <div class="form-group" style="margin: -0.5em 0 1em 0;">
+            <input type="submit" id="btnSaveFreeNightOffer" value="Save" class="btn btn-primary" />
+        </div>
+    </div>
+</form>
+
+<script>
+    var FreeNightArr = [];
+
+    $(document).ready(function () {
+        var TotalFreeNights = $('#TotalNoOfReservationNights').val();
+        var RatecodeHeaderId = $('#rateCodeId').val();
+        if (TotalFreeNights > 0) {
+            $.ajax({
+                async: false,
+                url: '/administration/RateCodeHeaders/SelectbyId',
+                dataType: 'json',
+                data: { Id: RatecodeHeaderId },
+                method: 'POST',
+                success: function (data) {
+
+                    FreeNightArr = [];
+                    var itemId = 1;
+
+                    $.each(data, function (index, item) {
+                        FreeNightArr.push({
+                            rowId: create_UUID(),
+                            NoOfReservationNights: item.NoOfReservationNights,
+                            FreeNights: item.FreeNights
+                        });
+                        itemId++;
+                    })
+
+                    DrawFreenightsGrid(FreeNightArr);
+                }
+            });
+        } 
+    });
+
+    $('body').on('submit', '#FreeNightOffer', function (e) {
+        e.preventDefault();
+        var RateCodeHeaderId = $('#rateCodeId').val();
+        var rateCodeHeader = {
+            RateCodeWiseFreeNights: FreeNightArr
+        };
+        $.ajax({
+            url: '/administration/ratecodeheaders/FreeNigthOfferSave',
+            dataType: 'JSON',
+            data: { rateCodeHeader: rateCodeHeader, rateCodeHeaderId: RateCodeHeaderId},
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+                FillGrid();
+            }
+
+        });
+    });
+</script>

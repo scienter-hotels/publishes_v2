@@ -1,0 +1,308 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.ReservationHeaderView>
+@{
+    ViewBag.Title = "In-housed List";
+}
+<style>
+    .dataTables_filter {
+        width: 29% !important;
+        float: left !important;
+    }
+
+    .dt-buttons {
+        width: 70% !important;
+    }
+</style>
+
+
+<div class="">
+    <table class="table font-size-12px" id="existingReservationGrid">
+        <thead>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <th class="text-primary">
+                    Arrival
+                </th>
+
+                <th class="text-primary">
+                    Departure
+                </th>
+
+                <th class="text-primary col-md-1">
+                    Res#
+                </th>
+
+                <th class="text-primary">
+                    Guest
+                </th>
+
+                <th class="text-primary">
+                    Company
+                </th>
+
+                <th class="text-primary col-md-1">
+                    Category
+                </th>
+
+                <th class="text-primary">
+                    Type
+                </th>
+                <th class="text-primary">
+                    A.#
+                </th>
+                <th class="text-primary">
+                    K.#
+                </th>
+                <th class="text-primary">
+                    Basis
+                </th>
+
+                <th class="text-primary col-md-1">
+                    Room
+                </th>
+
+                <th class="text-primary">
+                    Group#
+                </th>
+
+                @*<th class="text-primary col-md-1">
+            Status
+        </th>*@
+
+                @*<th class="text-primary hidden">
+             Res. Status
+        </th>*@
+
+                <th title="Posting Status">
+                    Posting
+                </th>
+
+                <th>
+
+                </th>
+
+
+                <th class="text-primary">
+
+                </th>
+
+
+
+                <th>
+
+                </th>
+                <th></th>
+                <th class="hidden"></th>
+                <th class="hidden"></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr class="@item.GuestProfileType">
+
+                <td>
+                    <span class="@item.ReservationTypeIcon" title="@item.ResevationTypeName"></span>
+                </td>
+                <td>
+                    <span class="@item.ReservationCategoryIcon" title="@item.ReservationCategory"></span>
+                </td>
+                <td>
+                    <span class="@item.ReservationForIcon" title="@item.ReservationForIconText"></span>
+                </td>
+                <td class="arrival-date">
+                    @item.ArrivalDate
+                </td>
+                <td class="depature-date">
+                    @item.DepartureDate
+                </td>
+                <td class="res-no">
+                    @item.ResNo
+                </td>
+                <td class="guest-name">
+                    @item.GuestName
+                </td>
+                <td>
+                    @item.AgentName
+                </td>
+                <td>
+                    @item.RoomCat
+                </td>
+                <td>
+                    @item.RoomTypeCode
+                    @*@for (int i = 0; i < item.MaxHeadCount; i++)
+            {
+                <span class="glyphicon glyphicon-user display-inline font-size-18" data-toggle="tooltip"></span>
+            }
+            <span class="hidden">@item.RoomType</span>*@
+                </td>
+                <td>
+                    @if (item.NoOfAdults > 0)
+                    {
+                        <span class="glyphicon glyphicon-user" style="color:black; font-size:15px;" data-toggle="tooltip"></span>
+                        <sup class="superscript">@item.NoOfAdults</sup>
+                    }
+                    else
+                    {
+                        <span class="glyphicon glyphicon-user" style="color:#808080; font-size:15px;" data-toggle="tooltip"></span>
+                    }
+                </td>
+                <td>
+                    @if (item.NoOfKids > 0)
+                    {
+                        <span class="fa fa-child" style="color:black; font-size:15px;" data-toggle="tooltip"></span>
+                        <sup class="superscript">@item.NoOfKids</sup>
+                    }
+                    else
+                    {
+                        @*<span class="fa fa-child" style="color:#808080; font-size:15px;" data-toggle="tooltip"></span>*@
+                        <span font-size:15px;" data-toggle="tooltip"></span>
+                    }
+                </td>
+                <td>
+                    @item.MealPlanName
+                </td>
+                <td class="room-no">
+                    @item.RoomNo
+                </td>
+                <td class="group-res-no">
+                    @item.GResNo
+                </td>
+
+                <td>
+                    @if (item.IsStopPosting)
+                    {
+                        <input type="hidden" value="1" class="isStopPosting" />
+
+                        <text>Stopped</text>
+                    }
+                    else
+                    {
+                        <input type="hidden" value="0" class="isStopPosting" />
+                        <text>Allowed</text>
+                    }
+                </td>
+
+
+                <td></td>
+
+                @*<td>
+            @item.RoomStatus
+        </td>*@
+
+                @*<td class="hidden">
+            @item.ReservationStatus
+        </td>*@
+
+                <td style="text-align:left;">
+                    @if (item.HasAlert == 1)
+                    {
+                        <span class="glyphicon glyphicon-bell @*blink_me*@" style="color:#555; font-size:15px;" data-toggle="tooltip" title="Alert"></span>
+                    }
+
+                    else
+                    {
+                        <span class="glyphicon glyphicon-bell" style="color:#F2F2F2; font-size:15px;" data-toggle="tooltip" title="Alert"></span>
+                    }
+
+                    @if (item.HasTravel == 1)
+                    {
+                        <span class="fa fa-taxi" style="color:#555; font-size:15px;" data-toggle="tooltip" title="Transport"></span>
+                    }
+                    else
+                    {
+                        <span class="fa fa-taxi" style="color:#F2F2F2; font-size:15px;" data-toggle="tooltip" title="Transport"></span>
+                    }
+
+                    @if (item.HasTraces == 1)
+                    {
+                        <span class="fa fa-check" style="color:#555; font-size:15px;" data-toggle="tooltip" title="Traces"></span>
+                    }
+
+                    else
+                    {
+                        <span class="fa fa-check" style="color:#F2F2F2; font-size:15px;" data-toggle="tooltip" title="Traces"></span>
+                    }
+                </td>
+
+
+                <td class="hidden-print text-right" style="text-align:right !important;">
+                    <input type="hidden" value="Confirmed" class="res-status" />
+                    <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="" data-title="Reservation Activity Log" data-href="/Reservation/Reservations/ReservationActivityLog/@item.Id" title="Activity Log" data-toggle="tooltip" data-width="500">
+                        <span class="glyphicon glyphicon-tags"></span>
+                    </a>
+                </td>
+
+                <td>
+                    @if (item.IsAllowToCheckOut == true)
+                    {
+                        <div class="form-group checkbox">
+                            <label>
+                                <input type="checkbox" class="data-reservation-no" guestId="@item.GuestProfileId" guestName="@item.GuestName" group-resNo="@item.GResNo" arrival-date=@item.Arrival departure-date="@item.Departure" room-id="@item.RoomId" room-code="@item.RoomNo" resNo="@item.ResNo" value="@item.Id" res-Uuid="@item.ResUuid" isAllowCheckOut=1 roomCategoryId="@item.RoomCategoryId" data-isLocalRate="@item.IsLocalRate" data-rateCodeHeaderId="@item.RateCodeHeaderId" data-isAllowedToAllocateRoom="True" data-mealPlanId="@item.MealPlanId" data-roomTypeId="@item.RoomTypeId" data-isCheckoutToday="@item.IsCheckoutToday" />
+                            </label>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group checkbox">
+                            <label>
+                                @*<input type="checkbox" class="data-reservation-no" arrival-date=@item.Arrival departure-date="@item.Departure" room-id="@item.RoomId" room-code="@item.RoomNo" resNo="@item.ResNo" value="@item.Id" />*@
+                                <input type="checkbox" class="data-reservation-no" guestId="@item.GuestProfileId" guestName="@item.GuestName" group-resNo="@item.GResNo" arrival-date=@item.Arrival departure-date="@item.Departure" room-id="@item.RoomId" room-code="@item.RoomNo" resNo="@item.ResNo" value="@item.Id" res-Uuid="@item.ResUuid" isAllowCheckOut=0 roomCategoryId="@item.RoomCategoryId" data-isLocalRate="@item.IsLocalRate" data-rateCodeHeaderId="@item.RateCodeHeaderId" data-isAllowedToAllocateRoom="True" data-mealPlanId="@item.MealPlanId" data-roomTypeId="@item.RoomTypeId" data-PropertyId="@item.PropertyId" data-isDormitory="@item.IsDormitory"/>
+                            </label>
+                        </div>
+                    }
+                </td>
+
+                <td class="hidden">
+                    @item.TourNo
+                </td>
+
+                <td class="hidden">
+                    @item.VoucherNo
+                </td>
+            </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
+
+
+
+
+
+
+
+
+
+<script>
+
+    $(document).ready(function () {
+
+        $('#existingReservationGrid').DataTable(
+            {
+                searching: true,
+                ordering: false,
+                "lengthMenu": [[14, 10, 25, 50, -1], [15, 10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ],
+                scrollY: '58vh',
+            }).order([0, 'asc']).search('').draw(false);    
+
+        $('<button class="dropdown-item dt-button buttons-html5 pull-left data-filter-option" id="clearbtn" type="button" style="margin-top:10px; backgroud">Clear</button>').appendTo('.dt-buttons');
+
+    });
+
+    
+    
+  
+</script>

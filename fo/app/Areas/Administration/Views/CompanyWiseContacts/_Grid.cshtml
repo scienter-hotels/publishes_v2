@@ -1,0 +1,89 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.CompanyWiseContactViewModel>
+
+@{
+    ViewBag.Title = "Existing Company Wise Contacts";
+}
+
+<div class="table-responsive">
+    <table class="table table-striped" id="existingCompanyWiseContactsGrid">
+        <thead>
+            <tr>
+                <th class="text-primary">
+                  Company
+                </th>
+                <th class="text-primary">
+                    Representative Name
+                </th>
+                <th class="text-primary">
+                    Representative Email
+                </th>
+                <th class="text-primary">
+                    Representative Contact No
+                </th>
+               
+                <th class="col-md-1 hidden-print"></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CompanyName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RepresentativeName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RepresentativeEmail)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RepresentativeContactNo)
+                </td>
+               
+                @*<td>
+                    <div style="height:30px; width:30px;">
+                        <div style="background-color:@item.ColorValue; width:32px; height:25px;">
+
+                        </div>
+                    </div>
+                </td>*@
+               
+                <td class="hidden-print text-right">
+                    <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/companywisecontacts/edit/@item.Id">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+                   
+
+                    <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/administration/companywisecontacts/delete/@item.Id">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                </td>
+            </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#existingCompanyWiseContactsGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+</script>

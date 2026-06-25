@@ -1,0 +1,269 @@
+﻿
+@if (ViewBag.Type == "u")
+{
+    ViewBag.Title = "Room Inspection update";
+}
+else
+{
+    ViewBag.Title = "Room Inspection";
+}
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+    .search-col {
+        margin-top: 20px;
+        padding-left: 5px !important;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                            <input type="hidden" value="@ViewBag.Type" id="Type" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            @if (ViewBag.Type == "U")
+            {
+                <div class="col-md-12 search-col">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group label-floating">
+                                    <div class="form-group label-floating">
+                                        <label class="control-label">Inspection Time</label>
+                                        @{Html.RenderAction("RoomInspectionTimesCombo", "RoomInspection", new { name = "RoomInspectionId", requiered = true });}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Date</label>
+                                    <div class="input-group date">
+                                        <input autocomplete="off" class="form-control datePicker text-box single-line inspection-date" maxlength="100" id="InspectionDate" name="InspectionDate" type="text">
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        //2023-08-16--------------------------------------------------------------------------
+
+        $('#RoomInspectionId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+
+        if ($('#Type').val() == 'I') {
+            ShowForm();
+        } else {
+            ShowGrid();
+        }
+    })
+
+    // show form -----------------------------------
+    function ShowForm() {
+
+        $.ajax({
+            url: '/HouseKeeping/RoomInspection/Form',
+            dataType: 'HTML',
+            method: 'GET',
+            success: function (response) {
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(response).fadeIn();
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+    // show form -----------------------------------
+    function ShowGrid() {
+        $.ajax({
+            url: '/HouseKeeping/RoomInspection/Grid',
+            dataType: 'HTML',
+            method: 'GET',
+            success: function (response) {
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(response).fadeIn();
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+    var roomInspectionDetails = []
+
+    $('body').on('submit', '#roomInspection', function (e) {
+
+        e.preventDefault();
+        var roomInspectionDetail = {
+            TempId: create_UUID(),
+            RoomInspectionTimeId: $('#RoomInspectionId').val(),
+            RoomTimeName: $('#RoomInspectionId option:selected').html(),
+            RoomId: $('#RoomId').val(),
+            RoomName: $('#RoomId option:selected').html(),
+            RoomTypeId: $('#RoomTypeId').val(),
+            RoomTypeName: $('#RoomTypeId option:selected').html(),
+            HouseKeepingStatusId: $('#RoomStatusId').val(),
+            HouseKeepingStatusName: $('#RoomStatusId option:selected').html(),
+            Remark: $('#Remarks').val()
+        }
+
+        roomInspectionDetails.push(roomInspectionDetail);
+        RoominspectionGrid(roomInspectionDetails);
+    })
+
+    $('body').on('click', '#save-grid-data', function () {
+
+        var roomInspectionDetailsUpdate = []
+
+        $.each($('.inspection-tr'), function (index, item) {
+            var roomInspectionDetail = {
+                Id: $($(item).find('.roominspectionId')).val(),
+                Remark: $($(item).find('.user-update-remark')).val()
+            }
+            roomInspectionDetailsUpdate.push(roomInspectionDetail);
+        });
+        SaveRoomInspection(roomInspectionDetailsUpdate);
+    })
+
+    function SaveRoomInspection(RoomInspection) {
+        $.ajax({
+            url: '/HouseKeeping/RoomInspection/Save',
+            dataType: 'JSON',
+            method: 'POST',
+            data: { obj: RoomInspection, saveType: $('#Type').val() },
+            success: function (response) {
+                if (response == 'Success') {
+                    ShowSuccessMessage('Record has been saved successfully.');
+                } else {
+                    ShowErrorMessage('Error saving record.');
+                }
+            },
+            complete: function () {
+                if ($('#Type').val() == 'I') {
+                    ShowForm();
+                } else {
+                    ShowGrid();
+                }
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+    //pending
+    function RoominspectionGrid(roomInspectionJson) {
+
+        $('.inspection-save-grid-tbody').html('');
+
+        $.each(roomInspectionJson, function (index, roomInspection) {
+            $('.inspection-save-grid-tbody').append(
+                '<tr class="inspection-save-tr">' +
+                '<td class="data-InspectionType" data-InspectionType="' + roomInspection.RoomInspectionTimeId + '"> ' + roomInspection.RoomTimeName + ' </td>' +
+                '<td class="data-RoomNo" data-RoomNo="' + roomInspection.RoomId + '"> ' + roomInspection.RoomName + ' </td>' +
+                '<td class="data-RoomType" data-RoomType="' + roomInspection.RoomTypeId + '"> ' + roomInspection.RoomTypeName + ' </td>' +
+                '<td class="data-RoomStatus" data-RoomStatus="' + roomInspection.HouseKeepingStatusId + '"> ' + roomInspection.HouseKeepingStatusName + ' </td>' +
+                '<td class="data-Remark" data-Remark="' + roomInspection.Remark + '"> ' + roomInspection.Remark + ' </td>' +
+                '<td><a class="btn btn-danger btn-sm delete-room" data-tempId="' + roomInspection.TempId + '"><span class="glyphicon glyphicon-trash"></span></a></td></tr>'
+            );
+        })
+    }
+
+    $('body').on('click', '#btnSave', function () {
+        SaveRoomInspection(roomInspectionDetails);
+    })
+
+    $('body').on('click', '.delete-room', function () {
+        var tempId = $(this).attr('data-tempId');
+        DeleteRooms(tempId);
+    })
+
+    function DeleteRooms(tempId) {
+        var i = roomInspectionDetails.length;
+
+        while (i--) {
+            if (tempId.indexOf(roomInspectionDetails[i].TempId) != -1) {
+                roomInspectionDetails.splice(i, 1);
+            }
+        }
+
+        RoominspectionGrid(roomInspectionDetails);
+    }
+</script>

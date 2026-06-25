@@ -1,0 +1,247 @@
+﻿<style>
+    .form-group {
+        margin-top: 0px;
+    }
+</style>
+
+<input type="hidden" id="reservationHeaderId" value="@ViewBag.ReservationheaderId" />
+<input type="hidden" id="arrival-date" value="@ViewBag.ArrivalDate" />
+<input type="hidden" id="departure-date" value="@ViewBag.DepartureDate" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                            <h4 class="title">
+                                Room Inventory
+                                <hr class="visible-print" />
+                            </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm-inventory-allocation">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid-inventory-allocation">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content-Form">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <fieldset class="the-fieldset" id="reservation-dates"></fieldset>
+                        </div>
+                        <div class="col-md-8">
+                            <fieldset class="the-fieldset" id="">
+                                <div class="row">
+                                    <div class="col-md-12 room-inventory-availability" style="height:200px;overflow-y:scroll">
+                                        @*@{Html.RenderAction("RoomInventoryAvailablityGrid", "Reservations", new { area = "Reservation", fromDate = ViewBag.ArrivalDate, toDate = ViewBag.DepartureDate });}*@
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md- col-md-12">
+                            <button type="button" class="btn btn-primary" id="SaveRoomInventory">Save</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="content-Grid" class="hidden">
+                    @*@{Html.RenderAction("SelectReservationWiseinventoryAllocation", "Reservations", new { area = "Reservation", reservationHeaderId = ViewBag.ReservationheaderId });}*@
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+
+    $(function () {
+        GetDates($('#arrival-date').val(), $('#departure-date').val());
+        ShowGridRoomInventory();
+    })
+
+    $('body').on('click', '.showForm-inventory-allocation', function () {
+        ShowFormInventory();
+    })
+
+    $('body').on('click', '.showGrid-inventory-allocation', function () {
+        ShowGridRoomInventory();
+    })
+
+    function GetDates(arrival, depature) {
+        $.ajax({
+            method: 'GET',
+            url: '/CashieringAndPosting/SchedulePosting/GetReservationDates?arrivalDate=' + arrival + '&departureDate=' + depature,
+            datatype: 'html',
+            success: function (htmlContent) {
+                $('#reservation-dates').html('');
+                $('#reservation-dates').html(htmlContent);
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in getting records.');
+            }
+        });
+    }
+
+    $('body').on('click', '#SaveRoomInventory', function () {
+        var roomInventory;
+        var reservationDates = [];
+        var roomInventoryList = [];
+        var isOkayToSave = false;
+        $.each($('.data-not-disabled-checkboxes:checked'), function (index, item) {
+            isOkayToSave = true;
+            return false;
+        });
+
+        if (isOkayToSave) {
+            $.each($('.data-not-disabled-checkboxes:checked'), function (index, item) {
+                reservationDates.push($(item).val());
+            })
+
+            $.each($('.inventory-tr'), function (index, item) {
+                var roomInventory = {
+                    Id: $(item).attr('data-inventoryId'),
+                    ActualQty: $($(item).find('.room-inventory-count')).val()
+                }
+                roomInventoryList.push(roomInventory);
+            })
+
+            roomInventory = {
+                ReservationHeaderId: $('#reservationHeaderId').val(),
+                ReservationDates: reservationDates,
+                FrontOfficeInventory: roomInventoryList
+            }
+
+            $.ajax({
+                url: '/Reservation/Reservations/SaveRoomInventory',
+                method: 'POST',
+                datatype: 'JSON',
+                data: { reservationWiseRoomInventoryView: roomInventory },
+                success: function (data) {
+                    var Type = $('#resType').val();
+                    if (data == 'Success') {
+                        ShowSuccessMessage('Room inventory allocated.');
+                        ShowGridRoomInventory();
+                        setTimeout(function () {
+                            if (Type == "reservation") {
+                                //Update Uuid
+                                window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+                                //console.log("Uuid");
+
+                                
+
+                            } else {
+                                //location.reload()
+                                LoadInhouseReservationGrid();
+                            }
+                            
+                        }, 2500);
+
+                    }
+                    else {
+                        ShowWarningMessage(data);
+                    }
+
+                   
+                },
+                error: function (xhr, status, error) {
+                    ShowErrorMessage('Sorry, There is an error saving records.');
+                }
+            });
+        } else {
+            ShowWarningMessage('Please select at-least one date.');
+        }
+    });
+
+    function ShowGridRoomInventory() {
+        $('#content-Form').addClass('hidden');
+        $('#content-Grid').removeClass('hidden');
+
+        $.ajax({
+            url: '/Reservation/Reservations/SelectReservationWiseinventoryAllocation?reservationHeaderId=' + $('#reservationHeaderId').val(),
+            method: 'GET',
+            datatype: 'html',
+            success: function (htmlContent) {
+                $('#content-Grid').html('');
+                $('#content-Grid').html(htmlContent);
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in getting records.');
+            }
+        });
+    }
+
+    $('body').on('change', '.Res-dates-checkBoxGroup', function () {
+        $.ajax({
+            url: '/Reservation/Reservations/RoomInventoryAvailablityGrid?fromDate=' + $(this).val() + '&toDate=' + $(this).val(),
+            method: 'GET',
+            datatype: 'html',
+            success: function (htmlContent) {
+                $('.room-inventory-availability').html('');
+                $('.room-inventory-availability').html(htmlContent);
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in getting records.');
+            }
+        });
+    });
+
+    function ShowFormInventory() {
+        $('#content-Grid').addClass('hidden');
+        $('#content-Form').removeClass('hidden');
+
+        GetDates($('#arrival-date').val(), $('#departure-date').val());
+
+        $.ajax({
+            url: '/Reservation/Reservations/RoomInventoryAvailablityGrid?fromDate=' + $('#arrival-date').val() + '&toDate=' + $('#departure-date').val(),
+            method: 'GET',
+            datatype: 'html',
+            success: function (htmlContent) {
+                $('.room-inventory-availability').html('');
+                $('.room-inventory-availability').html(htmlContent);
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in getting records.');
+            }
+        });
+    }
+
+    $('body').on('click', '.btn-delete-item', function () {
+
+        $.ajax({
+            url: '/Reservation/Reservations/DeleteRoomInventory?id=' + $(this).attr('data-AllocationId'),
+            method: 'GET',
+            datatype: 'JSON',
+            success: function (data) {
+                if (data == 'success') {
+                    ShowSuccessMessage('Room inventory deleted.');
+                    ShowGridRoomInventory();
+                }
+                else {
+                    ShowErrorMessage('Sorry, There is an error deleting records.');
+                }
+
+                //Update Uuid
+                window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+                console.log("Uuid");
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error deleting records.');
+            }
+        });
+    })
+
+</script>

@@ -1,0 +1,62 @@
+﻿@model IEnumerable<Scienter.DestinityHorizon.Common.Domain.AuditTrail>
+@using Scienter.DestinityHorizon.Common.Domain
+
+<link href="~/Content/scienter.timeline.css" rel="stylesheet" />
+
+<div class="container">
+    <div class="qa-message-list" id="wallmessages">
+
+        @foreach (var item in Model)
+        {
+            <div class="message-item" id="@item.Id">
+                <div class="message-inner">
+                    <div class="message-head clearfix">
+                        <div class="avatar pull-left">
+                            <a><img src="~/Images/avatar_2x.png"></a>
+                        </div>
+                        <div class="user-detail">
+                            <h5 class="handle" style="text-transform:capitalize;">@item.Remark</h5>
+                            <div class="post-meta">
+                                <div class="asker-meta">
+                                    <span class="qa-message-what"></span>
+                                    <span class="qa-message-when">
+                                        <span class="qa-message-when-data">@item.Code | @item.TxnDate</span>
+                                    </span>
+                                    <span class="qa-message-who">
+                                        <span class="qa-message-who-pad">by </span>
+                                        <span class="qa-message-who-data"><a>@item.Username</a></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (item.RecordChanges.Count > 0)
+                    {
+                        <div class="qa-message-content" style="font-size:13px;">
+                            <table class="table table-striped">
+                                <tr>
+                                    <th>Change</th>
+                                    <th>Previous Value</th>
+                                    <th>Current Value</th>
+                                </tr>
+                                @foreach (var change in item.RecordChanges)
+                                {
+                                    <tr>
+                                        <td>@change.ColumnName</td>
+                                        <td>@change.PreviousValue</td>
+                                        <td>@change.NewValue</td>
+                                    </tr>
+                                }
+
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        @if (Model.Count() == 0)
+        {
+            <p>No log details found.</p>
+        }
+    </div>
+</div>

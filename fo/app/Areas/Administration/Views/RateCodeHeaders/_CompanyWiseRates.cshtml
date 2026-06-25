@@ -1,0 +1,115 @@
+﻿<input type="hidden" value="@ViewBag.rateCodeId" name="rateCodeId" id="rateCodeId" />
+<input type="hidden" value="@ViewBag.companywiseRateId" name="companywiseRateId" id="companywiseRateId" />
+<form id="CompanyWiseRates">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group form-group-margin-override label-floating">
+                        <label class="control-label">From*</label>
+                        <input type="text" name="From" id="FromDate" class="form-control dateSelect end-date-picker FromDate" value="" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group form-group-margin-override label-floating">
+                        <label class="control-label">To*</label>
+                        <input type="text" name="To" id="ToDate" class="form-control dateSelect end-date-picker ToDate" value="" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group form-group-margin-override label-floating">
+                <label class="required control-label">Company</label>
+                @{Html.RenderAction("CompaniesCombo", "Companies", new { area = "Administration", name = "CompanyId", requiered = true, value = "" });}
+            </div>
+            <div class="form-group label-floating">
+                <label class="control-label"> Rate Code *</label>
+                @*@{Html.RenderAction("RateCodeHeadersCombo", "RateCodeHeaders", new { name = "RateCodeHeaderID", requiered = true, value = ViewBag.rateCodeId });}*@
+                <input autocomplete="off" class="form-control text-box single-line rateCode" id="rateCode" name="rateCode" type="text" value="@ViewBag.rateCodeName" min="0" max="500" disabled required>
+            </div>
+            <div class="form-group label-floating">
+                <div class="form-group label-floating">
+                    <label class="control-label">Percentage (%) *</label>
+                    <input autocomplete="off" class="form-control text-box single-line percentage-Value" id="percentage-Value" name="percentage" type="number" value="" min="0" max="100" required>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-Event" style="padding-left: 0px;">
+                <input type="submit" id="btncompanyWiseRates" value="Save" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<script>
+    $(document).ready(function () {
+        var RateCodeHeaderId = $('#rateCodeId').val();
+        if ($('#companywiseRateId').val()>0) {
+            SelectCompanyWiseRatesSelectById(RateCodeHeaderId)
+        }
+        
+
+    });
+    $('.end-date-picker').daterangepicker({
+        linkedCalendars: true,
+        "showWeekNumbers": true,
+        "alwaysShowCalendars": true,
+        singleDatePicker: true,
+        "minDate": $('#hotelCurrentDate').val(),
+        locale: {
+            format: 'DD/MM/YYYY'
+        }
+    }, function (start, end, label) {
+       // $('#checkout').val(end.format('DD/MM/YYYY'));
+        });
+
+    $('body').off('submit', '#CompanyWiseRates').on('submit', '#CompanyWiseRates', function (e) {
+        e.preventDefault();
+        var companyWiseRates = {
+            FromDate: $('#FromDate').val(),
+            ToDate: $('#ToDate').val(),
+            RateCodeHeaderId: $('#rateCodeId').val(),
+            Percentage: $('#percentage-Value').val(),
+            CompanyId: $('#CompanyId').val()
+        };
+        $.ajax({
+            url: '/administration/RateCodeHeaders/InsertCompanyWiseRates',
+            dataType: 'JSON',
+            data: companyWiseRates,
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+            },
+            error: function () {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+
+        });
+    });
+
+    function SelectCompanyWiseRatesSelectById(id) {
+       
+        $.ajax({
+            async: false,
+            url: '/administration/RateCodeHeaders/CompanyWiseRatesSelectbyId',
+            dataType: 'json',
+            data: { rateCodeId: id },
+            method: 'POST',
+            success: function (data) {
+                if (data.Id>0) {
+                    $('#FromDate').val(data.FromDate);
+                    $('#ToDate').val(data.ToDate);
+                    $('#percentage-Value').val(data.Percentage);
+                    $('#CompanyId').val(data.CompanyId)
+                } else {
+                    $('#percentage-Value').val("");
+                    $('#CompanyId').val("")
+                }
+                
+            }
+        });
+    }
+</script>

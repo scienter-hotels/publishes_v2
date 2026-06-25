@@ -1,0 +1,63 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.SchedulePostingView
+<div class="row">
+    <div class="col-md-12" style="overflow-y:auto;max-height:350px;">
+        <div class="row">
+            <ul id="datesUL">
+                <li>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" class="check-all-nights"/>All
+                        </label>
+                    </div>
+                </li>
+                @foreach (DateTime date in Model.PostingScheduleDates)
+                {
+                    if (date >= Model.DayEnd)
+                    {
+                        <li>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" class="Res-dates-checkBoxGroup data-not-disabled-checkboxes" org-date="@date.Date.ToShortDateString()" value="@date.ToString("yyyy-MM-dd")" />@string.Format("{0:MMM dd yyyy}", date.Date).ToString()
+                                </label>
+                            </div>
+                        </li>
+                    }
+                    else
+                    {
+                        <li>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" disabled class="Res-dates-checkBoxGroup" org-date="@date.Date.ToShortDateString()" value="@date.ToString("yyyy-MM-dd")" />@string.Format("{0:MMM dd yyyy}", date.Date).ToString()
+                                </label>
+                            </div>
+                        </li>
+                    }
+
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('body').on('change', '.check-all-nights', function () {
+        if ($(this).is(':checked')) {
+            $('.data-not-disabled-checkboxes').prop('checked', true);
+            $('#btnSave').removeClass('disabled');
+           
+        } else {
+            $('.data-not-disabled-checkboxes').prop('checked', false);
+            $('#btnSave').addClass('disabled');
+            
+        }
+        
+    })
+
+    $('body').on('change', '.Res-dates-checkBoxGroup', function () {
+        if ($('.data-not-disabled-checkboxes:checked').length == $('.data-not-disabled-checkboxes').length) {
+            $('.check-all-nights').prop('checked', true);
+        } else {
+            $('.check-all-nights').prop('checked', false);
+        }
+    })
+</script>

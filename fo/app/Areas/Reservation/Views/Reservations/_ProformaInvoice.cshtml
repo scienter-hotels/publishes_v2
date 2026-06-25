@@ -1,0 +1,74 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.ViewModels.HotelConfirmationView>
+
+<div class="">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <center> <img src="~/Content/Images/logo.jpg" style="width:100px !important" /> </center>
+            @*<h3 class="font-family-01">Sigiriya Jungles Hotel</h3>
+            <p style="text-align:center !important;">SIGIRIYA JUNGLES, AUDANGAWA ROAD, KIMBISSA, SIGIRIYA, SRI LANKA. <br /> Email : reservations@sigiriyajungles.com, Telephone: +94114508508, +94664508508</p>*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h3 class="font-family-01">PROFORMA INVOICE</h3>
+        </div>
+    </div>
+
+
+    <div class="row" >
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Date</div>                <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-5 col-xs-5 data-show">@DateTime.Now.ToShortDateString()</div></div>
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Agent </div>              <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-5 col-xs-5 data-show">@Model.FirstOrDefault().CompanyName</div></div>
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Address </div>            <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-5 col-xs-5 data-show"></div></div>
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Tel/Email Contact</div>   <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-5 col-xs-5 data-show"></div></div>      
+        </div>
+    </div>
+
+
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Voucher No</div>          <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-8 col-sm-5 col-xs-5 data-show">@Model.FirstOrDefault().VoucherNo</div></div>
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Name of the guest </div>  <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-8 col-sm-5 col-xs-5 data-show">@Model.FirstOrDefault().SelectedGuestDetail.FirstOrDefault().Name</div></div>
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Date of Arrival </div>    <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-8 col-sm-5 col-xs-5 data-show">@Convert.ToDateTime(Model.FirstOrDefault().Arrival).ToShortDateString()</div></div>
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Date of Departure</div>   <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-8 col-sm-5 col-xs-5 data-show">@Convert.ToDateTime(Model.FirstOrDefault().Departure).ToShortDateString()</div></div>
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">No of Rooms</div>         <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-8 col-sm-5 col-xs-5 data-show">@Model.FirstOrDefault().SelectedRoomDetail.FirstOrDefault().NoOfRooms</div></div>
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Basis </div>              <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-8 col-sm-5 col-xs-5 data-show">@Model.FirstOrDefault().SelectedRoomDetail.FirstOrDefault().MealPlanName</div></div>
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">No of Nights </div>       <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-8 col-sm-5 col-xs-5 data-show">@Model.FirstOrDefault().NoOfNights</div></div>
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Room Rates</div>         <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-5 col-sm-5 col-xs-5 data-show">@Model.FirstOrDefault().SelectedRoomDetail.FirstOrDefault().NoOfRooms @Model.FirstOrDefault().SelectedRoomDetail.FirstOrDefault().MealPlanName @Model.FirstOrDefault().SelectedRoomDetail.FirstOrDefault().RoomTypeName  ($ @Model.FirstOrDefault().SelectedRoomDetail.FirstOrDefault().RoomRate x @Model.FirstOrDefault().SelectedRoomDetail.FirstOrDefault().ConversionRate  ) x @Model.FirstOrDefault().NoOfNights =  </div> <div class="col-md-1 col-sm-5 col-xs-5 col-title"><b>Rs</b></div>      <div style="border-bottom-style:solid; border-width:1px;" class="col-md-2 col-sm-5 col-xs-5 data-show"> @Model.FirstOrDefault().SelectedRoomDetail.FirstOrDefault().TotalPerformaAmount </div>  </div>
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title"></div>                   <div class="col-md-1 col-sm-1 col-xs-1"></div>   <div class="col-md-5 col-sm-5 col-xs-5 data-show"></div> <div class="col-md-1 col-sm-5 col-xs-5 col-title"><b>Total:</b></div> <div style="border-bottom-style:double; border-width:2px;" class="col-md-2 col-sm-5 col-xs-5 data-show">@Model.FirstOrDefault().SelectedRoomDetail.FirstOrDefault().TotalPerformaAmount</div></div>
+        </div>
+     
+    </div>
+
+
+    <div class="row" style="margin-top:50px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title"><b>Note</b></div>          <div class="col-md-1 col-sm-1 col-xs-1">:</div>  <div class="col-md-4 col-sm-5 col-xs-5 data-show"></div></div>
+             </div>
+    </div>
+
+    <div class="row" style="margin-top:30px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 data-show"><b>Account type</b></div></div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Account Name</div>     <div class="col-md-1 col-sm-1 col-xs-1"></div>  <div class="col-md-4 col-sm-5 col-xs-5 data-show"></div></div>
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Account Number </div>  <div class="col-md-1 col-sm-1 col-xs-1"></div>  <div class="col-md-4 col-sm-5 col-xs-5 data-show"></div></div>
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Bank </div>            <div class="col-md-1 col-sm-1 col-xs-1"></div>  <div class="col-md-4 col-sm-5 col-xs-5 data-show"></div></div>
+            <div class="row"><div class="col-md-3 col-sm-5 col-xs-5 col-title">Address</div>          <div class="col-md-1 col-sm-1 col-xs-1"></div>  <div class="col-md-4 col-sm-5 col-xs-5 data-show"></div></div>
+            </div>
+    </div>
+
+    <div class="row" style="margin-top:50px">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 data-show">----------------------------------</div></div>
+            <div class="row"><div class="col-md-4 col-sm-5 col-xs-5 data-show"><b>Reservation Department</b></div></div>
+        </div>
+    </div>
+        @*<button type="button" style="float:right;" class="btn btn-default hidden-print hidden-xs" onclick="javascript:window.print()">
+                <span class="glyphicon glyphicon-print "></span> Print
+         </button>*@
+    </div>

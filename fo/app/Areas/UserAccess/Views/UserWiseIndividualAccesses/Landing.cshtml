@@ -1,0 +1,145 @@
+﻿@using Scienter.HotelERP.Common.Domain
+
+@{
+    ViewBag.Title = "User Wise Individual Accesses";
+}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header" data-background-color="purple">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="title">
+                                @ViewBag.Title
+                                <hr class="visible-print" />
+                            </h4>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="content">
+                        @*<div class="row">
+                                <div class="col-md-12">
+
+                                   </div>
+                            </div>*@
+                        <div class="row">
+                            <div class="col-md-12" id="contentLoadingArea">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    $(document).ready(function () { 
+        GetMainNavigations();
+      
+    });
+
+    function GetMainNavigations() {
+        $.ajax({
+            url: '/useraccess/UserWiseIndividualAccesses/selectnavigationmain',
+            dataType: 'html',
+            method: 'GET',
+            success: function (response) {
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(response).fadeIn();
+            }
+        });
+    }
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    $('body').off('click', '#btnSavePages').on('click', '#btnSavePages', function (e) {
+       
+      
+        var MainNavigationId = $('.Page-combo').attr("Main-Id");
+        var UserId = $('#UserId').val();
+
+        var userWiseRights = [];
+       
+        $('#existingPagesGrid tr.page-details').each(function (index, page) {
+            var pageInfo = "";
+            $(page).find('.Page-combo:checked').each(function (index2, selPage) {
+
+          
+            pageInfo = {
+                PageId: $(this).val(),
+                IsAllowInsert: $(this).closest('tr.page-details').find('.insert-checkBox').prop("checked"),
+                IsAllowUpdate: $(this).closest('tr.page-details').find('.update-checkBox').prop("checked"),
+                IsAllowDelete: $(this).closest('tr.page-details').find('.delete-checkBox').prop("checked"),
+                IsAllowSelect: $(this).closest('tr.page-details').find('.select-checkBox').prop("checked")
+            }
+            userWiseRights.push(pageInfo);
+            });       
+        });
+      
+        if ($('#UserId').val() > 0) {
+        $.ajax({
+            url: '/useraccess/UserWiseIndividualAccesses/SaveUserWiseIndividualAccess',
+            dataType: 'HTML',
+            data: { UserId: UserId, MainNavigationId: MainNavigationId, userWiseRights: userWiseRights },
+            method: 'POST',
+            success: function (response) {              
+                ShowSuccessMessage('User Wise Page Rights has been saved successfully.');
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in saving this pages.');
+            }
+        });
+        }
+        else {
+            ShowWarningMessage('Please Select a User to Assign Rights.');
+        }
+    })
+
+    //--------------------------------------------------------------------------------------------------------------------------------------------------
+
+    $('body').off('click', '.mainMenus').on('click', '.mainMenus', function (e) {
+        var MainNavigationId = $(this).val();
+        var UserId = $('#UserId').val();
+    
+        if($('#UserId').val() > 0){
+        $.ajax({   
+            url: '/useraccess/UserWiseIndividualAccesses/UserWiseIndividualAccessSelect?userId=' + UserId + '&mainNavigationId=' + MainNavigationId,
+            dataType: 'JSON',
+            method: 'POST',
+            success: function (data) {              
+                $('input:checkbox').prop('checked', false)
+                $('#existingPagesGrid tr.page-details').removeClass('selectdRecord');
+
+                $.each(data, function (index, data) {
+                    var dataObj = data;
+                    $('#existingPagesGrid tr.page-details').each(function (index, page) {
+                        var pageObj = page;
+                        if ($(pageObj).find('.Page-combo').val() == dataObj.PageId) {
+                            $(pageObj).closest('tr').addClass('selectdRecord');
+                            $(pageObj).find('input.Page-combo').prop('checked', true);
+                            $(pageObj).find('input.insert-checkBox').prop('checked', dataObj.IsAllowInsert);
+                            $(pageObj).find('input.update-checkBox').prop('checked', dataObj.IsAllowUpdate);
+                            $(pageObj).find('input.delete-checkBox').prop('checked', dataObj.IsAllowDelete);
+                            $(pageObj).find('input.select-checkBox').prop('checked', dataObj.IsAllowSelect);
+                    }
+                    });
+                });
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, Error Retrieving Data.');
+            }
+        });
+        }
+        else {
+            ShowWarningMessage('Please Select a User to Retrieve or Save Data.');
+        }
+    })
+  
+
+
+
+</script>
+
+

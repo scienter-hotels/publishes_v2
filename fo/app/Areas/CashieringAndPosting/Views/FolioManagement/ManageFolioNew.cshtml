@@ -1,0 +1,2537 @@
+﻿@using Scienter.HotelERP.Common.Domain
+
+@{
+    //Layout = "~/Areas/CashieringAndPosting/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    ViewBag.Title = "Manage Folios";
+}
+
+<style>
+    td {
+        vertical-align: top !important;
+    }
+
+    .sideBtns .row {
+        margin: 0px;
+    }
+
+    .sideBtns .col-md-6, .sideBtns .col-md-12 {
+        padding: 3px;
+        vertical-align: middle;
+    }
+
+    .tileBtn span {
+        display: block;
+        margin-bottom: 5px;
+        padding-top: 5px;
+    }
+
+    .the-fieldset {
+        margin-bottom: 0px;
+    }
+
+    .room-number {
+        background-color: #bdc3c7 !important;
+        color: #000;
+    }
+
+    .room-number-selected {
+        background-color: #094F70 !important;
+        color: #fff;
+    }
+
+    .form-group {
+        margin-top: 5px !important;
+    }
+
+    .btn-custom-color {
+        background-color: #e67e22;
+        font-size: 10px;
+        width: 100%;
+        padding: 5px;
+    }
+
+        .btn-custom-color:hover {
+            background-color: #7d4412;
+        }
+
+    .table-label {
+        font-weight: bold !important;
+    }
+
+    .img-style {
+        width: 15px !important;
+    }
+
+    .sticky-header {
+        position: sticky;
+        top: 0;
+        background-color: #e5e5e5;
+        z-index: 100;
+    }
+
+    #tbl-all-transactions td, #tbl-all-transactions th {
+        padding: 2px 5px;
+    }
+
+    #tbl-all-transferred-transactions td, #tbl-all-transferred-transactions th {
+        padding: 2px 5px;
+    }
+
+    .btn-expand {
+        font-size: 10px !important;
+        padding: 3px 6px !important;
+    }
+
+    .btn-folio-numbers::-webkit-scrollbar {
+        width: 5px !important;
+        padding-left: 3px;
+    }
+
+    .btn-folio-numbers::-webkit-scrollbar-track {
+        background: #f1f1f1 !important;
+    }
+
+    .btn-folio-numbers::-webkit-scrollbar-thumb {
+        background: #c1c1c1 !important;
+    }
+
+        .btn-folio-numbers::-webkit-scrollbar-thumb:hover {
+            background: #8E8E8E !important;
+        }
+
+    .sideBtns-div::-webkit-scrollbar {
+        width: 5px !important;
+    }
+
+    .sideBtns-div::-webkit-scrollbar-track {
+        background: #f1f1f1 !important;
+    }
+
+    .sideBtns-div::-webkit-scrollbar-thumb {
+        background: #c1c1c1 !important;
+    }
+
+        .sideBtns-div::-webkit-scrollbar-thumb:hover {
+            background: #8E8E8E !important;
+        }
+
+    #inHouseRoomList::-webkit-scrollbar {
+        width: 5px !important;
+    }
+
+    #inHouseRoomList::-webkit-scrollbar-track {
+        background: #f1f1f1 !important;
+    }
+
+    #inHouseRoomList::-webkit-scrollbar-thumb {
+        background: #c1c1c1 !important;
+    }
+
+        #inHouseRoomList::-webkit-scrollbar-thumb:hover {
+            background: #8E8E8E !important;
+        }
+
+
+    .ribbon {
+        height: 60px !important;
+    }
+
+    .tileBtn {
+        min-height: 60px;
+        text-transform: capitalize !important;
+        display: block;
+        width: 100% !important;
+        padding: 0px;
+        margin: 0px;
+        padding-top: 5px;
+        word-wrap: break-word !important;
+        line-height: 13px;
+        box-shadow: #bdc3c7 1px 1px 2px;
+    }
+
+    .sideBtns .tileBtn:hover {
+        background-color: #fff !important;
+        color: #222 !important;
+        border: 1px solid #222;
+    }
+
+    .folio-number-select {
+        display: grid;
+        place-items: center;
+        font-size: 20px;
+        padding: 10px !important;
+        background-color: #094f70;
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+        color: #fff !important;
+    }
+
+    .folio-text {
+        font-size: 10px;
+        margin-bottom: -5px;
+    }
+
+    .ribbon-span {
+        width: 63px !important;
+        top: 8px !important;
+        right: -15px !important;
+        background-color: #094f70 !important;
+    }
+
+    .folio-btn-styles {
+        cursor: pointer;
+        margin-bottom: 5px !important;
+        padding-left: 0px !important;
+        width: 100%;
+        color: #2b2b2b;
+        padding: 0px;
+        min-height: 60px;
+        display: block;
+        place-items: center;
+        border-radius: 4px !important;
+        border-top-left-radius: 5px !important;
+        border-bottom-left-radius: 5px !important;
+    }
+
+    .folio-btn-company {
+        text-align: left;
+        padding: 0px 5px 0px 5px !important;
+        height: 60px;
+        display: block;
+        align-content: center;
+    }
+
+    .folio-btn-invoice-icon {
+        display: grid;
+        place-items: center;
+        height: 60px;
+        z-index: 10;
+    }
+
+        .folio-btn-invoice-icon i {
+            font-size: 20px;
+            color: #000 !important;
+        }
+
+            .folio-btn-invoice-icon i:hover {
+                color: #f00 !important;
+            }
+
+    .invoice-number-to-report {
+        font-weight: 100;
+        font-size: 10px;
+    }
+
+    .disabled-div {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+</style>
+
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate" name="" id="CurrentDate" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+<input type="hidden" id="GuestName" value="" />
+<input type="hidden" id="GuestProfileId" value="" />
+
+<link href="~/Content/scienter.sidebuttons.css" rel="stylesheet" />
+<link href="~/Content/ConerRibbon.css" rel="stylesheet" />
+<div class="row">
+    @*IShara 2024-09-27*@
+    <div class="col-md-12" style="padding-left:0px; padding-right:0px;">
+        <div class="card hidden-print">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div style="overflow-y:no-display !important; height:555px !important; padding:18px; padding-top:25px;" class="card-content" id="contentLoadingArea">
+
+
+                <div class="col-md-2">
+                    <div class="the-fieldset row" style="padding:0px; margin-bottom:10px; ">
+                        <div class="col-md-6 form-group label-floating margin-top-10px">
+                            <input type="text" class="form-control" style="padding:0px;" placeholder="Room No" onkeyup="searchRoom()" id="txtSearch" />
+                        </div>
+                        <div class="col-md-6" style="padding-left:0px; padding-top:10px;">
+                            <div class="form-group checkbox" style="margin-right: 0px;margin-left: 11px;">
+                                <label>
+                                    <input type="checkbox" class="checkbox today-departures" value="@Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate.ToString("yyyy-MM-dd")">
+                                    Td.Dep.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-11">
+                        <input type="hidden" class="reservation-header-id" value="">
+                        <input type="hidden" class="reservation-room-id" value="">
+                        <input type="hidden" class="hdn-reservation-No" value="">
+                        <input type="hidden" id="folio-no" value="">
+                        <input type="hidden" id="folio-header-id-selected" value="">
+                    </div>
+
+                    <div class="the-fieldset row" style="padding:10px; background-color:#f2f2f2; border:none; min-height:432px;">
+                        <div id="">
+                            <div style="height:418px; overflow-x:hidden; overflow-y:auto; padding-right:10px;" id="inHouseRoomList"> </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden-print col-md-3" style="padding-left:15px; padding-right:15px;">
+                    <fieldset id="folioBtnList" class="the-fieldset " style="padding:10px;  height:500px; background-color:#f2f2f2;">
+
+                        <div>
+                            <div value="" id="" class="well-height well col-md-11  all-folio-btn" style="margin-bottom:3px !important; width:100% !important; cursor:pointer; padding:10px !important; background-color:#094F70 !important; color:#fff; ">
+
+                                <table style="margin-top:5px; width:100%">
+                                    <tr style="background-color:#094F70 !important;">
+                                        <td width="50px" style="font-size:11px; ">Res.No</td>
+                                        <td width="10px">|</td>
+                                        <td class="res-no text-right" style="font-weight:bold;"></td>
+                                    </tr>
+                                    <tr style="background-color:#094F70 !important;">
+                                        <td style="font-size:11px;">Room</td>
+                                        <td>|</td>
+                                        <td class="res-room-no  text-right"></td>
+                                    </tr>
+                                    <tr style="background-color:#094F70 !important;">
+                                        <td style="font-size:11px !important;">Guest</td>
+                                        <td>|</td>
+                                        <td class="guest-name text-right" style="font-size:11px !important;"></td>
+                                    </tr>
+                                    <tr style="background-color:#094F70 !important;">
+                                        <td style="font-size:11px !important;">Stay</td>
+                                        <td>|</td>
+                                        <td class="guest-stay text-right" style="font-size:11px !important;"></td>
+                                    </tr>
+                                </table>
+
+
+                                @*<div class="col-md-12 res-no" style="font-size:12px; padding-left:5px !important; padding-right:5px !important;"></div>*@
+                                <div class="col-md-12">
+
+                                </div>
+                                @*<div class="col-md-10 res-guest-name" style="font-size:12px; padding-left:5px !important; padding-right:5px !important; padding-top:10px !important; line-height:1.4 "></div>*@
+
+                            </div>
+
+                            <div class="row" style="margin-bottom:0px !important;">
+                                <div class="col-md-4" style="padding-right:4px;">
+                                    <button class="btn btn-custom-color call-popup-model full-width-100perc" id="reservationDetailPopup" title="Reservation Details">
+                                        <img src="~/Images/folioIcons/reservationdetails.png" class="img-style" />
+                                    </button>
+                                </div>
+
+                                <div class="col-md-4" style="padding:0 8px;">
+                                    <button class="btn btn-custom-color call-popup-model full-width-100perc" id="guestDetailPopup" title="Guest Details">
+                                        <img src="~/Images/folioIcons/guestdetails.png" class="img-style" />
+                                    </button>
+                                </div>
+
+                                <div class="col-md-4" style="padding-left:4px;">
+                                    <button class="btn btn-custom-color call-popup-model full-width-100perc" id="remarkPopup" title="Remark">
+                                        <img src="~/Images/folioIcons/remark.png" class="img-style" />
+                                    </button>
+                                </div>
+
+                            </div>
+
+                            <div class="row" style="margin-bottom:0px !important;">
+                                <div class="col-md-6" style="padding-right:4px;">
+                                    <button class="btn btn-primary btn-sm" id="outstandingInvoices" style="display: inline-block; color: white;width:100% !important;">Outstanding</button>
+                                </div>
+
+                                <div class="col-md-6" style="padding-left:4px;">
+                                    <button class="btn btn-default btn-sm" id="settledInvoices" style="display: inline-block; color: white;width:100% !important">Settled</button>
+                                </div>
+
+                            </div>
+
+                            <div class="btn-folio-numbers" style="min-height:282.9px; max-height: 283px; overflow-y: auto;margin:0 auto;margin-top:5px;">
+                                @* LOAD BY JQUERY *@
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+
+
+
+                <div class="the-fieldset col-md-5 hidden-print" id="oneCol" style="padding:15px; padding-top:10px;  height:500px; overflow-y:auto;">
+                    <fieldset class="the-fieldset">
+                        <legend class="the-legend" style="font-size: 12px;">Existing Folio Charges</legend>
+                        <div class="table-responsive">
+                            <table class="table" id='tbl-all-transactions'>
+
+                                <tr>
+                                    <th class=""></th>
+                                    <th class="">#</th>
+                                    <th class="">Date</th>
+                                    <th class="">Description</th>
+                                    <th class="" style="text-align:right">Amount</th>
+                                    <th><div><div class="form-group checkbox"><label><input type="checkbox" id="isAll" class="isAll" /></label></div></div></th>
+                                    <th class="" style="text-align:right">Det.</th>
+                                </tr>
+
+
+                                <tbody class="all-transaction">
+                                    <tr>
+                                        <td class="" colspan="5">Please select room / folio to load transactions.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </fieldset>
+                    @*Anuradha-2024-07-03- commented based on classes all-transferred-transactions & all-transaction-summary' *@
+
+                    @*<br class="transferredGrid" />*@
+                    @*//R2R Modification*@
+                    @*<fieldset class="the-fieldset transferredGrid">
+                            <legend class="the-legend" style="font-size: 12px;">Transferred Folio Charges</legend>
+                            <div class="table-responsive">
+                                <table class="table" id='tbl-all-transferred-transactions'>
+
+                                    <tr>
+                                        <th class="">R.#</th>
+                                        <th class="">Date</th>
+                                        <th class="">Description</th>
+                                        <th class="" style="text-align:right">Amount</th>
+
+                                    </tr>
+
+
+                                    <tbody class="all-transferred-transactions">
+                                        <tr>
+                                            <td class="" colspan="5">No any R2R transfers yet.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </fieldset>
+                        <br />*@
+                    @*<fieldset class="the-fieldset">
+                        <legend class="the-legend" style="font-size: 12px;">Summary</legend>
+                        <div class="table-responsive">
+                            <table class="table" id='tbl-summary'>
+
+                                <tr>*@
+                    @*<th class="">Room</th>*@
+                    @*<th class="" style="text-align:right">Existing Amount</th>
+                                        <th class="" style="text-align:right">Transferred Amount</th>
+                                        <th class="" style="text-align:right">Total</th>
+                                    </tr>
+
+
+                                    <tbody class="all-transaction-summary"></tbody>
+                                </table>
+                            </div>
+                        </fieldset>*@
+                    @*//R2R Modification*@
+
+                    <center id="imgLoadingPot">
+                        <br />
+                        <br />
+                        <br />
+                        <img src="~/Images/loading_pot.gif" width="200px" />
+                    </center>
+
+                </div>
+                <div class="col-md-2 sideBtns-div" style="padding-left:10px; padding-right:5px; max-height: 500px; overflow-y: auto;">
+                    <div class="sideBtns">
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a style="color:black; background-color:#094f70;  padding-top:10px; color:#ffffff" class="btn tileBtn" id="newFolioBtn">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                    New Folio
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a id="folioRename" style="background-color:#e67e22;" class="btn tileBtn ">
+                                    <span class="glyphicon glyphicon-play"></span>
+                                    Folio <br />Rename
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a id="btnBillPreview" style="background-color:#808080;" class="btn tileBtn" target="_blank">
+                                    <span class="glyphicon glyphicon-play"></span>
+                                    Detail <br />Bill Preview
+                                </a>
+                            </div>
+
+                            <div class="col-md-6">
+                                <a id="btnBreifBillPreview" style="background-color:#094f70;" class="btn tileBtn" target="_blank">
+                                    <span class="glyphicon glyphicon-tasks"></span>
+                                    Summarize <br /> Bill Preview
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <a id="btnLKRBillPreview" style="background-color:#e67e22;" class="btn tileBtn" target="_blank">
+                                    <span class="glyphicon glyphicon-tasks"></span>
+                                    @SessionObjects.LocalCurrency.ISOCode  <br /> Bill Preview
+                                </a>
+                            </div>
+
+                            <div class="col-md-6">
+                                <a id="btnBillSettlement" style="background-color:#808080;" class="btn tileBtn" data-title="Bill Settlement">
+                                    <span class="glyphicon glyphicon-usd"></span>
+                                    Settle <br /> Folio
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a id="btnFolioDiscountNew" style="background-color:#094f70;" class="btn btn-theme-color-2 col-md-6 tileBtn">
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                    Apply<br /> Discount
+                                </a>
+                            </div>
+
+                            <div class="col-md-6">
+                                <a id="btnFolioPosting" style="background-color:#e67e22; padding:10px;" class="btn tileBtn" target="_blank">
+                                    <span class="glyphicon glyphicon-import"></span>
+                                    Posting
+                                </a>
+                            </div>
+
+                            @*<div class="col-md-6">
+                                    <a id="btnFolioSplit" style="background-color:#0353a9 !important;" class="btn btn-primary btn-theme-color-2 tileBtn col-md-6" data-title="Folio Split">
+                                        <span class="glyphicon glyphicon-resize-full"></span>
+                                        Folio<br />Split
+                                    </a>
+                                </div>*@
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a id="ExchangeFolioBtn" style="background-color:#808080;" class="btn call-popup-model btn-theme-color-2 tileBtn col-md-6" data-title="Folio Transfer">
+                                    <span class="glyphicon glyphicon-transfer"></span>
+                                    Folio  <br />Transfer
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a id="btnTransferRoomtoRoom" style="background-color:#094f70;" class="btn btn-theme-color-2 btn-theme-color- tileBtn col-md-6" data-width="600">
+                                    <span class="glyphicon glyphicon-home"></span>
+                                    R 2 R<br />Transfer
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a id="btnItemSplit" style="background-color:#e67e22; padding-top:10px;" class="btn btn-theme-color-2 col-md-6 tileBtn">
+                                    <span class="glyphicon glyphicon-fast-forward"></span>
+                                    Item Split
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a id="btnSettledFolios" style="background-color:#808080;" class="btn full-width-100perc col-md-6 tileBtn" data-title="Settled Folios">
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                    Settled <br />Folios
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a id="btnRebatePosting" style="background-color:#094f70; padding-top:10px;" class="btn tileBtn" target="_blank">
+                                    <span class="glyphicon glyphicon-export"></span>
+                                    Rebate
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a id="" style="background-color:#e67e22;" class="btn btnDirectRebate tileBtn col-md-6" data-title="">
+                                    <span class="glyphicon glyphicon-export"></span>
+                                    Direct <br />Rebate
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a id="BtnSuppBillPreview" style="background-color:#808080;" class="btn tileBtn col-md-6" target="_blank" href="">
+                                    <span class="glyphicon glyphicon-certificate"></span>
+                                    Supporting
+                                    <br />Bill
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a id="btnCheckOut" style="background-color:#094f70; padding-top:10px;" class="btn btn-theme-color-2 tileBtn col-md-12" data-width="500">
+                                    <span class="glyphicon glyphicon-thumbs-up"></span>
+                                    Check out
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a id="btnRemoveTax" style="background-color:#e67e22;" class="btn tileBtn" data-title="Remove SC/VAT">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                    Remove<br /> SC/VAT
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a id="btnSendInvoicePreview" style="background-color:#808080 !important;" class="btn btn-primary tileBtn" data-title="Out Standing Statement">
+                                    <span class="glyphicon glyphicon-share"></span>
+                                    Share <br /> OS Statement
+                                </a>
+                            </div>
+                            @*<div class="col-md-6">
+                                    <a id="btnGroupSettlement" style="background-color:#2c3e50 !important;" class="btn btn-primary tileBtn" data-title="Group Settlement">
+                                        <span class="glyphicon glyphicon-usd"></span>
+                                        Group<br /> Settlement
+                                    </a>
+                                </div>*@
+                        </div>
+
+                        @*<div class="row">
+                                <div class="col-md-6">
+                                    <a id="btnGroupMerge" style="background-color:forestgreen !important;" class="btn btn-primary tileBtn" data-title="Group Merge">
+                                        <span class="glyphicon glyphicon-usd"></span>
+                                        Group<br /> Merge
+                                    </a>
+                                </div>
+                            </div>*@
+
+                        <div class="row">
+                            @*<div class="col-md-6">
+                                    <a id="btnFullDiscount" style="background-color:#0090f8  !important;" class="btn btn-primary tileBtn col-md-6" target="_blank" href="">
+                                        <span class="glyphicon glyphicon-certificate"></span>
+                                        Full Discount
+                                        <br />
+                                    </a>
+                                </div>*@
+                            @*<div class="col-md-6">
+                                    <a id="btnLineItemTransfer" style="background-color:#2c3e50 !important;" class="btn btn-primary tileBtn" data-title="Line Item Transfer">
+                                        <span class="glyphicon glyphicon-usd"></span>
+                                        Line Item<br /> Transfer
+                                    </a>
+                                </div>*@
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" name="hdnTransferRefFolioDetailID" id="hdnTransferRefFolioDetailID" value="" />
+<input type="hidden" name="hdnTransferRefFolioChargeCode" id="hdnTransferRefFolioChargeCode" value="" />
+<input type="hidden" name="hdndatecheckbit" id="hdndatecheckbit" value="" />
+<input type="hidden" name="checkedIsTransferdtoAnotherRoomBit" id="checkedIsTransferdtoAnotherRoomBit" value="" />
+<input type="hidden" name="hdnBaseUrl" id="hdnBaseUrl" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("BaseUrl")" />
+
+@*<input type="hidden" id="hotelCurrentDate" value="@Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate" />*@
+@*<script src="~/Scripts/ui/common/scienter.grid2.js"></script>*@
+<script>
+    // form load --------------------------------
+    var reservationHeaderId;
+    $(document).ready(function () {
+        $('#imgLoadingPot').hide();
+        //global var
+
+        var selectedFolioNumber;
+        var taxGroupIdArray = []
+        var chargersAmountArray = []
+        var SelectedFolioNumber = 0;
+        var roomNo
+        var ResID
+        var selectedRoom
+        var orderno;
+        var reservationNo;
+
+        setInterval(function () {
+            $('.room-list-btn').css('background-color', '#000');
+            $('.room-list-btn').each(function (index, item) {
+                if ($(item).val() == $('.res-room-no').html()) {
+
+                    $(item).css('background-color', '#094F70');
+                }
+            });
+        }, 200);
+
+        if ($('#grid-record-detail-model-close').hasClass('folio-settle-refresh') == true) {
+            $('#grid-record-detail-model-close').removeClass('folio-settle-refresh');
+        };
+    });
+
+    var lastSelectedRoom = '';
+
+    //Load Reservations [1]
+    $.ajax({
+        url: '/CashieringAndPosting/FolioManagement/ReservationList',
+        dataType: 'json',
+        method: 'GET',
+        success: function (data) {
+            $.each(data, function (index, eachRoomDetail) {
+
+                $('<option key="' + eachRoomDetail.ReservationHeaderId + '" value="' + eachRoomDetail.RoomNo + '"> Room NO: ' + eachRoomDetail.Code + '  - ResNo: ' + eachRoomDetail.ResNo + ' - ' + eachRoomDetail.Name + '</option>').appendTo($('#cmbAllRooms'));
+                $('#inHouseRoomList').append('<input  style=" padding-left:15px; padding-right:15px; width:100%; margin=0px; background-color:#f39c12 !important;""  type="button" key="' + eachRoomDetail.ReservationHeaderId + '" class="btn room-list-btn room-number" value="' + eachRoomDetail.RoomName + '" name="Folio" id="' + eachRoomDetail.RoomNo + '" data-toggle="tooltip"  data-departureDate="' + eachRoomDetail.Departure + '" data-ResNo="' + eachRoomDetail.ResNo + '" title=" Res No: ' + eachRoomDetail.ResNo + ' - Guest: ' + eachRoomDetail.Name + ' " >')
+
+            })
+        },
+        error: function (error) {
+
+        }
+    });
+
+    //2024-04-25-Anuradha----------------------------------------------------------------------------------
+    $('body').off('click', '#reservationDetailPopup').on('click', '#reservationDetailPopup', function () {
+        reservationHeaderId = $('.reservation-header-id').val();
+
+        if (reservationHeaderId > 0) {
+            CallDetailModelSimple("Reservation Details", "/CashieringAndPosting/FolioManagement/CommonPopupContent", 800);
+
+            setTimeout(function () {
+                $.ajax({
+                    url: '/CashieringAndPosting/FolioManagement/SelectInhouseReservationDetails',
+                    dataType: 'Json',
+                    data: { reservationHeaderId: reservationHeaderId },
+                    success: function (response) {
+                        var reservationDateWiseDetails = JSON.parse(response.ReservationDateWiseDetailsJson);
+                        var datePartsArrival = response.Arrival.split(" ")[0].split("/");
+                        var Arrival = datePartsArrival[0] + "/" + datePartsArrival[1] + "/" + datePartsArrival[2];
+
+                        var datePartsDeparture = response.Departure.split(" ")[0].split("/");
+                        var Departure = datePartsDeparture[0] + "/" + datePartsDeparture[1] + "/" + datePartsDeparture[2];
+
+                        var reservationDateWiseDetailsTable = '';
+
+                        var htmlElement = $(
+                            '<div class="row">' +
+                            '<div class="col-md-6">' +
+                            '<table class="table table-striped table-borderless">' +
+                            '<tr>' +
+                            '<td class="table-label">Reservation No : </td>' +
+                            '<td>' + response.ReservationNo + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td class="table-label">Group Reservation No : </td>' +
+                            '<td>' + response.GroupReservationNo + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td class="table-label">Arrival : </td>' +
+                            '<td>' + Arrival + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td class="table-label">Departure : </td>' +
+                            '<td>' + Departure + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td class="table-label">Tour No : </td>' +
+                            '<td>' + response.TourNo + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td class="table-label">Voucher No : </td>' +
+                            '<td>' + response.VoucherNo + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td class="table-label">Agent : </td>' +
+                            '<td>' + response.Agent + '</td>' +
+                            '</tr>' +
+                            '</table>' +
+                            '</div>' +
+                            '<div class="col-md-6" style="padding-right:5px !important;">' +
+                            '<table class="table table-striped table-borderless">' +
+                            '<tr>' +
+                            '<td class="table-label">Market : </td>' +
+                            '<td>' + response.Market + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td class="table-label">Rate Code : </td>' +
+                            '<td>' + response.RateCode + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td class="table-label">Booking Source : </td>' +
+                            '<td>' + response.BookingSource + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td class="table-label">Segment : </td>' +
+                            '<td>' + response.Segment + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td class="table-label">Package : </td>' +
+                            '<td>' + response.Package + '</td>' +
+                            '</tr>' +
+                            '<tr>' +
+                            '<td class="table-label">Visit Purpose : </td>' +
+                            '<td>' + response.VisitPurpose + '</td>' +
+                            '</tr>' +
+                            '</table>' +
+                            '</div>' +
+                            '</div>' +
+                            '<div class="row" style="max-height:230px !important;overflow:auto;">' +
+                            '<div class="col-md-12">' +
+                            '<table class= "table table-striped" id="reservationDateWiseDetailsTable">' +
+                            '<thead class="sticky-header">' +
+                            '<tr>' +
+                            '<th class="table-label" style="padding-left:5px;">Res Date</th>' +
+                            '<th class="text-center table-label" >Room Category</th>' +
+                            '<th class="text-center table-label" >Room Type</th>' +
+                            '<th class="text-center table-label" >Meal Plan</th>' +
+                            '</tr>' +
+                            '</thead>' +
+                            '<tbody>' +
+                            '</tbody>' +
+                            '</table>' +
+                            '</div>' +
+                            '</div>'
+                        )
+
+                        $("#grid-record-detail-body").html(htmlElement);
+                        $(reservationDateWiseDetails).each(function (index, item) {
+                            var datePartsResDate = item.ReservationDate.split("T")[0].split("-");
+                            var resDate = datePartsResDate[2] + "/" + datePartsResDate[1] + "/" + datePartsResDate[0];
+                            $(
+                                '<tr>' +
+                                '<td style="padding-left:5px;">' + resDate + '</td>' +
+                                '<td class="text-center">' + item.RoomCategory + '</td>' +
+                                '<td class="text-center">' + item.RoomType + '</td>' +
+                                '<td class="text-center">' + item.MealPlan + '</td>' +
+                                '</tr>'
+                            ).appendTo('#reservationDateWiseDetailsTable tbody');
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr, status, error);
+                    }
+                });
+            }, 2000);
+        } else {
+            ShowWarningMessage("Select a room to display details.");
+        }
+
+
+    });
+
+    $('body').off('click', '#guestDetailPopup').on('click', '#guestDetailPopup', function () {
+        reservationHeaderId = $('.reservation-header-id').val();
+
+        if (reservationHeaderId > 0) {
+            CallDetailModelSimple("Guest Details", "/CashieringAndPosting/FolioManagement/CommonPopupContent", 800);
+
+            setTimeout(function () {
+                $.ajax({
+                    url: '/CashieringAndPosting/FolioManagement/SelectInhouseGuestDetails',
+                    dataType: 'json',
+                    data: { reservationHeaderId: reservationHeaderId },
+                    success: function (response) {
+                        var htmlElement = '';
+
+                        $.each(response, function (index, item) {
+                            var row = '<tr>' +
+                                '<td>' + item.Guest + '</td>' +
+                                '<td>' + item.GuestProfileType + '</td>' +
+                                '<td>' + (item.EmailAddress ? item.EmailAddress : '-') + '</td>' +
+                                '<td>' + (item.ContactNo ? item.ContactNo : '-') + '</td>' +
+                                '</tr>';
+                            htmlElement += row;
+                        });
+
+                        var tableHtml = '<div class="row">' +
+                            '<div class="col-md-12">' +
+                            '<table class="table table-striped table-borderless">' +
+                            '<tr>' +
+                            '<th class="table-label">Guest</th>' +
+                            '<th class="table-label">Type</th>' +
+                            '<th class="table-label">Email</th>' +
+                            '<th class="table-label">Contact No</th>' +
+                            '</tr>' +
+                            htmlElement +
+                            '</table>' +
+                            '</div>' +
+                            '</div>';
+
+                        $("#grid-record-detail-body").html(tableHtml);
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr, status, error);
+                    }
+                });
+            }, 2000);
+        } else {
+            ShowWarningMessage("Select a room to display details.");
+        }
+
+    });
+
+    $('body').off('click', '#remarkPopup').on('click', '#remarkPopup', function () {
+        reservationHeaderId = $('.reservation-header-id').val();
+
+        if (reservationHeaderId > 0) {
+            CallDetailModelSimple("Remark", "/CashieringAndPosting/FolioManagement/CommonPopupContent", 500);
+
+            setTimeout(function () {
+                $.ajax({
+                    url: '/CashieringAndPosting/FolioManagement/SelectInhouseReservationDetails',
+                    dataType: 'Json',
+                    data: { reservationHeaderId: reservationHeaderId },
+                    success: function (response) {
+                        var htmlElement = $(
+                            '<div class="row">' +
+                            '<div class="col-md-12">' + (response.BookingRemark ? response.BookingRemark : 'No Remark') + '</div>' +
+                            '</div>'
+                        )
+
+                        $("#grid-record-detail-body").html(htmlElement);
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr, status, error);
+                    }
+                });
+            }, 2000);
+        } else {
+            ShowWarningMessage("Select a room to display details.");
+        }
+
+
+    });
+    //---------------------------------------------------------------------------------------------------
+
+    $('body').off('click', '#isAll').on('click', '#isAll', function () {
+        if ($('#isAll').is(':checked')) {
+            $('.folio-detail-id').not(':disabled').prop('checked', true);
+
+        } else {
+            $('.folio-detail-id').prop('checked', false);
+        }
+    });
+
+    $('body').on('change', '.today-departures', function () {
+        var departureDate = $(this).val();
+
+        if ($(this).prop('checked')) {
+            $('.room-list-btn').hide();
+
+            $('.room-list-btn').each(function (index, item) {
+                if ($(item).attr('data-departuredate') == departureDate) {
+                    $(item).fadeIn();
+                }
+            })
+        } else {
+            $('.room-list-btn').fadeIn();
+        }
+
+    })
+
+    //load data to fields when Room Select [2]
+    $(document).on('click', '.room-list-btn', function (e) {
+
+        // clear fields
+        $('#txtGuest').val(' ')
+        $('#txtFolio').val(' ')
+        $('#txtName').val(' ')
+        $('.all-transaction').html('')
+        $('.all-transferred-transactions').html('') //R2R Modification
+        $('.tbl-summary').html('')
+        $('.tbl-folioWiseTable').html('')
+        $('.btn-folio-numbers').html('')
+        $('#btnBillPreview').removeAttr('data-href')
+        $('#btnBillSettlement').removeAttr('data-href')
+        $('#btnLKRBillPreview').removeAttr('data-href')
+        $('#btnBreifBillPreview').removeAttr('data-href')
+        $('#btnRemoveTax').removeAttr('data-href')
+
+        lastSelectedRoom = $(this);
+
+        roomNo = $(this).attr('id') //$("#cmbAllRooms").find('option:selected').val();
+        ResID = $(this).attr('key')//$("#cmbAllRooms").find('option:selected').attr('key')
+        reservationNo = $(this).attr('data-ResNo')
+        selectedRoom = $(this).val()
+        $('.reservation-header-id').val(ResID);
+        $('.reservation-room-id').val(roomNo);
+        $('.hdn-reservation-No').val(reservationNo);
+
+        $('.room-list-btn').removeClass('room-number-selected');
+        $('.room-list-btn').addClass('room-number');
+        $(this).addClass('room-number-selected');
+
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/FolioDetails',
+            dataType: 'json',
+            data: { RoomNo: roomNo, ResID: ResID },
+            method: 'POST',
+            success: function (data) {
+
+                $('#txtGuest').val(data.Name)
+                $('#txtFolio').val(1)
+                $('#txtName').val(data.Name)
+                $('#GuestName').val(data.Name)
+                $('#GuestProfileId').val(data.GuestProfileId)
+                //set guest name and address
+                if (data.Name.length <= 22) {
+                    $('.res-guest-name').text(data.Name)
+                } else {
+                    $('.res-guest-name').text(data.Name.substring(0, 21) + '...')
+                }
+
+                if (data.Name.length <= 22) {
+                    $('.guest-name').text(data.Name);
+                } else {
+                    $('.guest-name').text(data.Name.substring(0, 21) + '...')
+                }
+
+                $('.guest-stay').text(data.Stay);
+
+                $('.res-room-no').text(selectedRoom)
+                $('.res-no').text(data.ResNo);
+
+                $('#txtGuest').prop('readOnly', true)
+                $('#txtFolio').prop('readOnly', true)
+                $('#txtName').prop('readOnly', true)
+
+                reservationHeaderId = data.ReservationHeaderId;
+                SelectedFolioNumber = 0
+
+                //load data to table
+                LoadAllTransactions(roomNo, ResID)
+                GetAllFoliosNumbers(roomNo, ResID)
+
+                //Alert Function
+                ReservationAlert(reservationHeaderId, 'FOL')
+            }
+        });
+
+    })
+
+    //Create New folio [3]
+    $('#newFolioBtn').on('click', function (e) {
+        CallPasswordModel(function (e) {
+            //Check if there are any charge under FOLIO 1
+            //Atleast one chareg should be under FOLIO 1
+            var chargersArray = [];
+            var folioOneCount = 0
+            $('.td-folio-nos').each(function (index, item) {
+                if ($('.td-folio-nos').eq(index).text() == 1) {
+                    folioOneCount++;
+                }
+            });
+
+            if ($('#tbl-all-transactions tr').length > 1) {
+                folioOneCount = $('#tbl-all-transactions tr').not(':first').length;
+            }
+
+            $('.folio-detail-id').each(function (index, item) {
+                if ($(item).prop('checked')) {
+                    chargersArray.push({ "FolioDetailID": Number($(item).val()) });
+                }
+            });
+
+            if (chargersArray != null && chargersArray.length > 0) {
+                if (folioOneCount > 1) {
+                    // post selected folio detail id to update to new folio number
+                    $.ajax({
+                        url: '/CashieringAndPosting/FolioManagement/ChangeFolioNumber',
+                        dataType: 'json',
+                        data: { FolioDetailIdsJson: JSON.stringify(chargersArray), ReservationHeaderId: reservationHeaderId },
+                        success: function (data) {
+                            if (data.startsWith('success')) {
+                                $('.all-transaction').html('')
+                                $('.all-transferred-transactions').html('') //R2R Modification tbl-summary
+                                $('.all-transaction-summary').html('')
+                                $('.tbl-folioWiseTable').html('')
+                                $('.btn-folio-numbers').html('')
+                                LoadAllTransactions(roomNo, reservationHeaderId);
+                                GetAllFoliosNumbers(roomNo, reservationHeaderId)
+                            } else {
+                                ShowWarningMessage(data);
+                            }
+
+                        }
+                    })
+                } else {
+                    ShowWarningMessage('Atleast Two Charges should be places under FOLIO 1')
+                }
+            } else {
+                if (chargersArray != null) {
+                    ShowWarningMessage('Select at-least one folio item.');
+                }
+            }
+        });
+    });
+
+    //function CheckoutGuest(qCheckOutsList, ckOutRemark, ajaxUrl) {
+    //    if (qCheckOutsList[0].id == undefined) {
+    //        qCheckOutsList = [];
+    //        qCheckOutsList.push({
+    //            Id: $('.reservation-header-id').val(),
+    //            ReservationNo: $('.res-no').html().trim()
+    //        });
+    //        ckOutRemark = "Checked out from Folio";
+    //    }
+    //    $.ajax({
+    //        url: '/reservation/QuickCheckOut/QuickCheckOut',
+    //        dataType: 'JSON',
+    //        data: { qCheckOut: qCheckOutsList, CheckOutRemark: ckOutRemark },
+    //        method: 'POST',
+    //        success: function (response) {
+    //            if (response.startsWith('UnsettledBills')) {
+    //                ShowErrorMessage('There are unsettled bills for this reservation');
+    //            } else if (response.startsWith('success')) {
+    //                ShowSuccessMessage('Guest checked out successfully.');
+    //                var EventCode = "CO";
+    //                var propertyId = $('#PropertyId').val();
+    //                var userId = $('#UserId').val();
+    //                var printURL = $('#DirectPrintURL').val();
+    //                var FromRoom = $('.res-room-no').html().trim();
+
+    //                var ToRoom = "-1";
+    //                var GuestName = $('#GuestName').val();
+    //                var ReservationNo = $('.res-no').html().trim();
+    //                var ajaxUrlFinal = printURL + 'PABX/' + EventCode + '/' + ReservationNo + '/' + propertyId + '/' + userId + '/' + FromRoom + '/' + ToRoom + '/' + GuestName + '/'
+    //                var ajaxUrl = ajaxUrlFinal
+    //                PABXAjaxRequest(ajaxUrl);
+    //                //$.ajax({
+    //                //    url: ajaxUrlFinal,
+    //                //    method: 'POST',
+    //                //    beforeSend: function () {
+
+    //                //    },
+    //                //    complete: function () {
+
+    //                //    },
+    //                //    success: function (data) {
+
+    //                //    },
+    //                //    error: function (data) {
+    //                //        ShowErrorMessage('Sorry there is an error.');
+    //                //    }
+    //                //});
+    //                setTimeout(function () {
+    //                    window.location.reload();
+    //                }, 2000);
+    //            } else {
+    //                ShowErrorMessage(response);
+    //            }
+    //        },
+    //        error: function (xhr, status, error) {
+    //            ShowErrorMessage('Sorry, There is an error in checkout.');
+    //        }
+    //    });
+
+    //}
+
+    function CheckoutGuest(qCheckOutsList, ckOutRemark, ajaxUrl) {
+        if (qCheckOutsList[0].id == undefined) {
+            qCheckOutsList = [];
+            qCheckOutsList.push({
+                Id: $('.reservation-header-id').val(),
+                ReservationNo: $('.res-no').html().trim()
+            });
+            ckOutRemark = "Checked out from Folio";
+        }
+        $.ajax({
+            url: '/reservation/QuickCheckOut/QuickCheckOut',
+            dataType: 'JSON',
+            data: { qCheckOut: qCheckOutsList, CheckOutRemark: ckOutRemark },
+            method: 'POST',
+            success: function (response) {
+                if (response.startsWith('UnsettledBills')) {
+                    ShowErrorMessage('There are unsettled bills for this reservation');
+                } else if (response.startsWith('success')) {
+                    //ShowSuccessMessage('Guest checked out successfully.');
+                    var EventCode = "CO";
+                    var propertyId = $('#PropertyId').val();
+                    var userId = $('#UserId').val();
+                    var printURL = $('#DirectPrintURL').val();
+                    var FromRoom = $('.res-room-no').html().trim();
+
+                    var ToRoom = "-1";
+                    var GuestName = $('#GuestName').val();
+                    var ReservationNo = $('.res-no').html().trim();
+                    var ajaxUrlFinal = printURL + 'PABX/' + EventCode + '/' + ReservationNo + '/' + propertyId + '/' + userId + '/' + FromRoom + '/' + ToRoom + '/' + GuestName + '/'
+                    var ajaxUrl = ajaxUrlFinal
+                    PABXAjaxRequest(ajaxUrl);
+                    //$.ajax({
+                    //    url: ajaxUrlFinal,
+                    //    method: 'POST',
+                    //    beforeSend: function () {
+
+                    //    },
+                    //    complete: function () {
+
+                    //    },
+                    //    success: function (data) {
+
+                    //    },
+                    //    error: function (data) {
+                    //        ShowErrorMessage('Sorry there is an error.');
+                    //    }
+                    //});
+                    setTimeout(function () {
+                        var reservationHeaderId = $('.reservation-header-id').val();
+
+                        var url = '/reservation/reservations/PrintInvoiceCopy?resNo=' + ReservationNo + '&reservationHeaderId=' + reservationHeaderId;
+                        CallDetailModelSimple('Print Copies', url, 600);
+                    }, 2000);
+                } else {
+                    ShowErrorMessage(response);
+                }
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in checkout.');
+            }
+        });
+
+    }
+    //All Folio Btn Click
+    $(document).on('click', '.all-folio-btn', function (e) {
+        if ($.trim($('.reservation-header-id').val()) == "" || $.trim($('.reservation-room-id').val()) == "") {
+            ShowWarningMessage("Select a Room to Display Chargers")
+        } else {
+            $('.ribbon').removeClass('hidden');
+            LoadAllTransactions(roomNo, reservationHeaderId);
+            $('#folio-header-id-selected').val('');
+        }
+
+    });
+
+    $('#btnCheckOut').on('click', function (e) {
+        e.preventDefault();
+
+        if ($('.res-no').html().trim().length > 0) {
+            if ($('.all-transaction .data-rows').length == 0) {
+                CallPasswordModel(function (e) {
+                    var url = '/Reservation/Reservations/CheckOutConfirmation?reservationNo=' + $('.res-no').html().trim() + '&arrival=&departure=';
+                    CallDetailModelSimple('Check-out reservation', url, 600);
+                });
+            }
+            else {
+                ShowWarningMessage('There are unsettled bills for this room');
+            }
+        } else {
+            ShowWarningMessage('Select a room to continue');
+        }
+
+    });
+
+    $('#btnTransferRoomtoRoom').on('click', function (e) {
+
+        e.preventDefault();
+        if ($('.res-no').html().trim().length > 0) {
+            var url = '/CashieringAndPosting/FolioManagement/RoomToRoomTransfer?ReservationNo=' + $('.res-no').html().trim() + '&FolioNo=' + $('.td-folio-nos').html().trim();
+            var title = 'Room to room transfer ' + $('.res-no').html().trim();
+            CallPasswordModel(function (e) {
+                CallDetailModelSimple(title, url, 600);
+            });
+        } else {
+            ShowWarningMessage('Select a room to continue');
+        }
+
+    });
+
+    var folioNo = 0;
+    //LoadFolioTransactionsWiseFolioNO [4] // folio Btn click
+    $(document).on('click', '.folio-btn', function () {
+        $('.tbl-folioWiseTable').html('')
+        $('.all-transaction').html('')
+        $('.all-transferred-transactions').html('') //R2R Modification tbl-summary
+        $('.all-transaction-summary').html('')
+        $('#btnBillSettlement').attr('disabled', false)
+        $('#folio-no').val((this).id);
+        //$('.res-this-folio-no').
+        $('.ribbon').addClass('hidden')
+        $(this).find('.ribbon').removeClass('hidden');
+        folioNo = (this).id;
+        SelectedFolioNumber = (this).id;
+        LoadFolioChargers(folioNo);
+        var folioHeaderId = $($(this).find('.hidden-folio-header-Id')).val();
+        $('#folio-header-id-selected').val(folioHeaderId);
+    })
+
+    //OLD
+    //function LoadFolioChargers(folioNo) {
+    //    var total = 0;
+    //    var transferredTotal = 0;
+    //    var folioTotal = 0
+    //    var originalRoom = "";
+    //    var tableRow = '';
+
+    //    $('.transferredGrid').removeClass("hidden");
+    //    $('#imgLoadingPot').show();
+    //    $('.all-transaction tr').remove(); //all-transaction-summary
+    //    $('.all-transferred-transactions tr').remove();
+    //    $('.all-transaction-summary tr').remove();
+    //    setTimeout(function () {
+    //        $.ajax({
+    //            url: '/CashieringAndPosting/FolioManagement/FilterTransactionsByFolioNo',
+    //            dataType: 'json',
+    //            data: { FolioNo: folioNo, ReservationHeaderId: $('.reservation-header-id').val(), reservationNo: $('.hdn-reservation-No').val() },
+    //            beforeSend: function () {
+    //                $('.all-transaction tr').remove();
+    //                $('.all-transferred-transactions tr').remove();
+    //                $('.all-transaction-summary tr').remove();
+    //                $('#imgLoadingPot').show();
+    //            },
+    //            success: function (data) {
+    //                $('.all-transaction tr').remove();
+    //                $('.all-transferred-transactions tr').remove();
+    //                $('.all-transaction-summary tr').remove();
+    //                $.each(data, function (index, folio) {
+
+    //                    originalRoom = folio.OriginalRoomNo;
+
+    //                    if (folio.IsTransferrred == false) {
+    //                        var disabled = "";
+
+    //                        if (folio.IsPendingPOSBill == 1) {
+    //                            disabled = "disabled";
+    //                        }
+
+    //                        if (folio.IsInvoiceMerge) {
+    //                            tableRow = '<td style="padding-left:14px;"><button class="btn btn-info btn-sm btn-expand btn-view-more" data-transfred-folio-detail-id="' + folio.TransfredFolioDetailId + '"><span class="glyphicon glyphicon-fullscreen"></span></button></td>';
+    //                        } else {
+    //                            if (folio.IsAllowToSelect) {
+    //                                tableRow = '<td><div class="checkbox"><label>' +
+    //                                    '<input type="checkbox" ' + disabled + ' data-is-restaurant-posting="' + folio.IsRestaurantPostingType + '" data-ref-doc-no="' + folio.RefDocNo + '" data-resHeaderId=' + folio.ReservationHeaderId + ' value="' + folio.FolioDetailID + '"  class="form-group checkbox folio-detail-id" >' +
+    //                                    '</label></div></td>';
+    //                            } else {
+    //                                tableRow = '<td><div class="checkbox"><label>' +
+    //                                    '<input type="checkbox" ' + disabled + ' data-is-restaurant-posting="' + folio.IsRestaurantPostingType + '" data-ref-doc-no="' + folio.RefDocNo + '" data-resHeaderId=' + folio.ReservationHeaderId + ' value="' + folio.FolioDetailID + '"  class="form-group checkbox folio-detail-id" disabled>' +
+    //                                    '</label></div></td>';
+    //                            }
+    //                        }
+
+    //                        $('.all-transaction').append('<tr class="data-rows">' +
+    //                            '<td class="td-folio-nos">' + folio.FolioNo + '</td>' +
+    //                            '<td class="data-date">' + folio.ChargeDate + '</td>' +
+    //                            '<td class="data-desc">' + folio.FolioText + '</td>' +
+    //                            '<td class="formatNumber data-amount">' + folio.ChargeAmount.toFixed(2) + '</td>' +
+    //                            tableRow +
+    //                            '</tr>');
+
+    //                        // SelectedFolioNumber = folio.FolioNo;
+    //                        if (folio.FolioDetailID < 0) {
+    //                            $('#btnBillSettlement').attr('disabled', true)
+    //                        }
+    //                        total = total + folio.ChargeAmount;
+    //                    } else {
+    //                        var disabled = "";
+
+    //                        if (folio.IsPendingPOSBill == 1) {
+    //                            disabled = "disabled";
+    //                        }
+
+    //                        $('.all-transferred-transactions').append('<tr class="data-rows-transferred">' +
+    //                            '<td class="" style="font-weight: bold;">' + folio.TransferredToRoomNo + '</td>' +
+    //                            '<td class="">' + folio.ChargeDate + '</td>' +
+    //                            '<td class="">' + folio.FolioText + '</td>' +
+    //                            '<td class="formatNumber">' + folio.ChargeAmount.toFixed(2) + '</td>' +
+    //                            '</tr>');
+
+    //                        transferredTotal = transferredTotal + folio.ChargeAmount;
+    //                    }
+    //                });
+    //            },
+    //            complete: function () {
+    //                $('.all-transaction').append('<tr style="border-bottom:2px solid #ccc;"><td colspan="3" style="text-align:right;">Total : </td><td  colspan="1" class="formatNumber"><b style="font-weight:bold !important;">' + total.toFixed(2) + '</b></td><td></td></tr>');
+    //                $('.all-transferred-transactions').append('<tr style="border-bottom:2px solid #ccc;"><td colspan="3" style="text-align:right;">Total : </td><td  colspan="1" class="formatNumber"><b style="font-weight:bold !important;">' + transferredTotal.toFixed(2) + '</b></td><td></td></tr>');
+    //                $('#imgLoadingPot').hide();
+
+    //                folioTotal = total + transferredTotal;
+
+    //                $('.all-transaction-summary').append('<tr class="data-rows">' +
+    //                    //'<td class="" style="font-weight: bold;">' + originalRoom + '</td>' +
+    //                    '<td class="formatNumber" style="font-weight: bold;">' + total.toFixed(2) + '</td>' +
+    //                    '<td class="formatNumber" style="font-weight: bold;">' + transferredTotal.toFixed(2) + '</td>' +
+    //                    '<td class="formatNumber" style="font-weight: bold;">' + folioTotal.toFixed(2) + '</td>' +
+    //                    '</tr>');
+
+    //                if (transferredTotal == 0) {
+    //                    $('.transferredGrid').addClass("hidden");
+    //                }
+
+    //            }
+    //        });
+    //    }, 1000);
+    //}
+
+    //NEW
+    function LoadFolioChargers(folioNo) {
+        var total = 0;
+        var transferredTotal = 0;
+        var folioTotal = 0
+        var originalRoom = "";
+        var tableRow = '';
+        var currentDate = $('#CurrentDate').val();
+        var currentDateParsed = new Date(currentDate.split(' ')[0].split('/').reverse().join('-')); // Convert to YYYY-MM-DD format and create Date object
+        var transferRefFolioDetailID = 0;
+
+
+        $('.transferredGrid').removeClass("hidden");
+        $('#imgLoadingPot').show();
+        $('.all-transaction tr').remove(); //all-transaction-summary
+        //$('.all-transferred-transactions tr').remove();
+        //$('.all-transaction-summary tr').remove();
+        setTimeout(function () {
+            $.ajax({
+                url: '/CashieringAndPosting/FolioManagement/FilterTransactionsByFolioNo',
+                dataType: 'json',
+                data: { FolioNo: folioNo, ReservationHeaderId: $('.reservation-header-id').val(), reservationNo: $('.hdn-reservation-No').val() },
+                beforeSend: function () {
+                    $('.all-transaction tr').remove();
+                    // $('.all-transferred-transactions tr').remove();
+                    //$('.all-transaction-summary tr').remove();
+                    $('#imgLoadingPot').show();
+                },
+                success: function (data) {
+                    $('.all-transaction tr').remove();
+                    //$('.all-transferred-transactions tr').remove();
+                    //$('.all-transaction-summary tr').remove();
+                    $.each(data, function (index, folio) {
+
+                        originalRoom = folio.OriginalRoomNo;
+                        transferRefFolioDetailID = folio.TransferRefFolioDetailID
+                        if (folio.IsTransferrred == false) {
+                            var disabled = "";
+
+                            var PostingInorOut = 'Active Folio';
+
+
+                            if (folio.IsPendingPOSBill == 1) {
+                                disabled = "disabled";
+                            }
+
+
+                            if (folio.OriginalRoomNo == '/Images/up_arrows.png') {
+                                disabled = "disabled";
+                                PostingInorOut = "Transfered out item"
+                            }
+                            else if (folio.OriginalRoomNo == '/Images/down_arrow.png') {
+                                PostingInorOut = "Transfered in item"
+                            }
+
+                            if (!folio.OriginalRoomNo || folio.OriginalRoomNo === '') {
+                                folio.OriginalRoomNo = '/Images/dot.png';
+                            }
+
+                            var chargeDateParsed = new Date(folio.ChargeDate.split('/').reverse().join('-'));
+
+                            var dateCheckBit = currentDateParsed > chargeDateParsed ? 1 : 0;
+
+                            var checkedIsTransferdtoAnotherRoom = (transferRefFolioDetailID !== 0) ? 1 : 0;
+
+
+                            //if (folio.IsInvoiceMerge) {
+                            //    tableRow = '<td style="padding-left:14px;"><button class="btn btn-info btn-sm btn-expand btn-view-more" data-transfred-folio-detail-id="' + folio.TransfredFolioDetailId + '" data-transfred-charge-code-prefix="' + folio.ChargeCode + '" data-date-check-bit="' + dateCheckBit + '" data-checked-is-transferd-to-another-room ="' + checkedIsTransferdtoAnotherRoom + '" ><span class="glyphicon glyphicon-fullscreen"></span></button></td>';
+                            //}
+                            //else {
+                            //    if (folio.IsAllowToSelect) {
+                            //        tableRow = '<td><div class="checkbox"><label>' +
+                            //            '<input type="checkbox" ' + disabled + ' data-is-restaurant-posting="' + folio.IsRestaurantPostingType + '" data-ref-doc-no="' + folio.RefDocNo + '" data-resHeaderId=' + folio.ReservationHeaderId + ' value="' + folio.FolioDetailID + '"  class="form-group checkbox folio-detail-id" >' +
+                            //            '</label></div></td>';
+                            //    } else {
+                            //        tableRow = '<td><div class="checkbox"><label>' +
+                            //            '<input type="checkbox" ' + disabled + ' data-is-restaurant-posting="' + folio.IsRestaurantPostingType + '" data-ref-doc-no="' + folio.RefDocNo + '" data-resHeaderId=' + folio.ReservationHeaderId + ' value="' + folio.FolioDetailID + '"  class="form-group checkbox folio-detail-id" disabled>' +
+                            //            '</label></div></td>';
+                            //    }
+                            //}
+
+
+                        
+                      
+                            if (folio.IsAllowToSelect) {
+                                tableRow = '<td><div class="checkbox"><label>' +
+                                    '<input type="checkbox" ' + disabled + ' data-is-restaurant-posting="' + folio.IsRestaurantPostingType + '" data-ref-doc-no="' + folio.RefDocNo + '" data-resHeaderId=' + folio.ReservationHeaderId + ' value="' + folio.FolioDetailID + '"  class="form-group checkbox folio-detail-id" >' +
+                                    '</label></div></td>';
+                            }
+                            else {
+                                tableRow = '<td><div class="checkbox"><label>' +
+                                    '<input type="checkbox" ' + disabled + ' data-is-restaurant-posting="' + folio.IsRestaurantPostingType + '" data-ref-doc-no="' + folio.RefDocNo + '" data-resHeaderId=' + folio.ReservationHeaderId + ' value="' + folio.FolioDetailID + '"  class="form-group checkbox folio-detail-id" disabled>' +
+                                    '</label></div></td>';
+                            }
+                           
+
+                            if (folio.IsInvoiceMerge) {
+                                tableRow = tableRow + '<td style="padding-left:14px;"><button class="btn btn-info btn-sm btn-expand btn-view-more" data-transfred-folio-detail-id="' + folio.TransfredFolioDetailId + '" data-transfred-charge-code-prefix="' + folio.ChargeCode + '" data-date-check-bit="' + dateCheckBit + '" data-checked-is-transferd-to-another-room ="' + checkedIsTransferdtoAnotherRoom + '" ><span class="glyphicon glyphicon-fullscreen"></span></button></td>';
+                            } else {
+                                tableRow = tableRow + '<td></td>'
+                            }
+                           
+
+                            $('.all-transaction').append('<tr class="data-rows">' +
+                                '<td ><img  title="' + PostingInorOut +'" style = "width : 15px" src="' + folio.OriginalRoomNo + '"/></td>' +
+                                '<td class="td-folio-nos">' + folio.FolioNo + '</td>' +
+                                '<td class="data-date">' + folio.ChargeDate + '</td>' +
+                                '<td class="data-desc">' + folio.FolioText + '</td>' +
+                                '<td class="formatNumber data-amount">' + folio.ChargeAmount.toFixed(2) + '</td>' +
+                                tableRow +
+                                '</tr>');
+
+                            // SelectedFolioNumber = folio.FolioNo;
+                            if (folio.FolioDetailID < 0) {
+                                $('#btnBillSettlement').attr('disabled', true)
+                            }
+                            total = total + folio.ChargeAmount;
+                        } else {
+                            var disabled = "";
+
+                            if (folio.IsPendingPOSBill == 1) {
+                                disabled = "disabled";
+                            }
+
+                            //$('.all-transferred-transactions').append('<tr class="data-rows-transferred">' +
+                            //    '<td class="" style="font-weight: bold;">' + folio.TransferredToRoomNo + '</td>' +
+                            //    '<td class="">' + folio.ChargeDate + '</td>' +
+                            //    '<td class="">' + folio.FolioText + '</td>' +
+                            //    '<td class="formatNumber">' + folio.ChargeAmount.toFixed(2) + '</td>' +
+                            //    '</tr>');
+
+                            transferredTotal = transferredTotal + folio.ChargeAmount;
+                        }
+                    });
+                },
+                complete: function () {
+                    $('.all-transaction').append('<tr style="border-bottom:2px solid #ccc;"><td colspan="4" style="text-align:right;">Total : </td><td  colspan="1" class="formatNumber"><b style="font-weight:bold !important;">' + total.toFixed(2) + '</b></td><td></td><td></td></tr>');
+                    //$('.all-transferred-transactions').append('<tr style="border-bottom:2px solid #ccc;"><td colspan="3" style="text-align:right;">Total : </td><td  colspan="1" class="formatNumber"><b style="font-weight:bold !important;">' + transferredTotal.toFixed(2) + '</b></td><td></td></tr>');
+                    $('#imgLoadingPot').hide();
+
+                    folioTotal = total + transferredTotal;
+
+                    //$('.all-transaction-summary').append('<tr class="data-rows">' +
+                    //    //'<td class="" style="font-weight: bold;">' + originalRoom + '</td>' +
+                    //    '<td class="formatNumber" style="font-weight: bold;">' + total.toFixed(2) + '</td>' +
+                    //    '<td class="formatNumber" style="font-weight: bold;">' + transferredTotal.toFixed(2) + '</td>' +
+                    //    '<td class="formatNumber" style="font-weight: bold;">' + folioTotal.toFixed(2) + '</td>' +
+                    //    '</tr>');
+
+                    if (transferredTotal == 0) {
+                        $('.transferredGrid').addClass("hidden");
+                    }
+
+                }
+            });
+        }, 1000);
+    }
+
+    //OLD
+    //function LoadAllTransactions(roomNo, reservationHeaderId) {
+    //    var total = 0;
+    //    var transferredTotal = 0;
+    //    var folioTotal = 0
+    //    var originalRoom = "";
+    //    var tableRow = '';
+
+    //    $('.transferredGrid').removeClass("hidden");
+    //    $('#imgLoadingPot').show();
+    //    $('.all-transaction .data-rows').remove();
+    //    $('.all-transferred-transactions tr').remove();
+    //    $('.all-transaction-summary tr').remove();
+    //    setTimeout(function () {
+    //        $.ajax({
+    //            url: '/CashieringAndPosting/FolioManagement/FolioChargers',
+    //            dataType: 'json',
+    //            data: { RoomNo: $('.reservation-room-id').val(), ReservationHeaderId: $('.reservation-header-id').val(), reservationNo: $('.hdn-reservation-No').val() },
+    //            beforeSend: function () {
+    //                $('.all-transaction tr').remove();
+    //                $('.all-transferred-transactions tr').remove();
+    //                $('.all-transaction-summary tr').remove();
+    //                $('#imgLoadingPot').show();
+    //            },
+    //            success: function (data) {
+    //                $('.all-transaction tr').remove();
+    //                $('.all-transferred-transactions tr').remove();
+    //                $('.all-transaction-summary tr').remove();
+
+    //                $.each(data, function (index, folio) {
+    //                    originalRoom = folio.OriginalRoomNo;
+
+    //                    if (folio.IsTransferrred == false) {
+    //                        var disabled = "";
+    //                        if (folio.IsPendingPOSBill == 1) {
+    //                            disabled = "disabled";
+    //                        }
+
+    //                        if (folio.IsInvoiceMerge) {
+    //                            tableRow = '<td style="padding-left:14px;"><button class="btn btn-info btn-sm btn-expand btn-view-more" data-transfred-folio-detail-id="' + folio.TransfredFolioDetailId + '"><span class="glyphicon glyphicon-fullscreen"></span></button></td>';
+    //                        } else {
+    //                            if (folio.IsAllowToSelect) {
+    //                                tableRow = '<td><div class="checkbox"><label>' +
+    //                                    '<input type="checkbox" ' + disabled + ' data-is-restaurant-posting="' + folio.IsRestaurantPostingType + '" data-ref-doc-no="' + folio.RefDocNo + '" data-resHeaderId=' + folio.ReservationHeaderId + ' value="' + folio.FolioDetailID + '"  class="form-group checkbox folio-detail-id" >' +
+    //                                    '</label></div></td>';
+    //                            } else {
+    //                                tableRow = '<td><div class="checkbox"><label>' +
+    //                                    '<input type="checkbox" ' + disabled + ' data-is-restaurant-posting="' + folio.IsRestaurantPostingType + '" data-ref-doc-no="' + folio.RefDocNo + '" data-resHeaderId=' + folio.ReservationHeaderId + ' value="' + folio.FolioDetailID + '"  class="form-group checkbox folio-detail-id" disabled>' +
+    //                                    '</label></div></td>';
+    //                            }
+    //                        }
+
+    //                        $('.all-transaction').append('<tr class="data-rows">' +
+    //                            '<td class="td-folio-nos">' + folio.FolioNo + '</td>' +
+    //                            '<td class="data-date">' + folio.ChargeDate + '</td>' +
+    //                            '<td class="data-desc">' + folio.FolioText + '</td>' +
+    //                            '<td class="formatNumber data-amount">' + folio.ChargeAmount.toFixed(2) + '</td>' +
+    //                            tableRow +
+    //                            '</tr>');
+
+    //                        // SelectedFolioNumber = folio.FolioNo;
+    //                        total = total + folio.ChargeAmount;
+    //                    } else {
+    //                        var disabled = "";
+
+    //                        if (folio.IsPendingPOSBill == 1) {
+    //                            disabled = "disabled";
+    //                        }
+
+    //                        $('.all-transferred-transactions').append('<tr class="data-rows-transferred">' +
+    //                            '<td class="">' + folio.TransferredToRoomNo + '</td>' +
+    //                            '<td class="">' + folio.ChargeDate + '</td>' +
+    //                            '<td class="">' + folio.FolioText + '</td>' +
+    //                            '<td class="formatNumber">' + folio.ChargeAmount.toFixed(2) + '</td>' +
+    //                            '</tr>');
+
+    //                        transferredTotal = transferredTotal + folio.ChargeAmount;
+
+
+    //                    }
+
+
+
+    //                });
+    //                $.each($('.folio-detail-id'), function (index, folioCharge) {
+    //                    if ($(this).val() < 0) {
+    //                        $(this).prop('disabled', true)
+    //                    }
+    //                });
+    //            },
+    //            complete: function () {
+    //                $('.all-transaction').append('<tr style="border-bottom:2px solid #ccc;"><td colspan="3" style="text-align:right;">Total : </td><td  colspan="1" class="formatNumber"><b style="font-weight:bold !important;">' + total.toFixed(2) + '</b></td><td></td></tr>');
+    //                $('.all-transferred-transactions').append('<tr style="border-bottom:2px solid #ccc;"><td colspan="3" style="text-align:right;">Total : </td><td  colspan="1" class="formatNumber"><b style="font-weight:bold !important;">' + transferredTotal.toFixed(2) + '</b></td><td></td></tr>');
+    //                $('#imgLoadingPot').hide();
+
+    //                folioTotal = total + transferredTotal;
+
+    //                $('.all-transaction-summary').append('<tr class="data-rows">' +
+    //                    //'<td class="" style="font-weight: bold;">' + originalRoom + '</td>' +
+    //                    '<td class="formatNumber" style="font-weight: bold;">' + total.toFixed(2) + '</td>' +
+    //                    '<td class="formatNumber" style="font-weight: bold;">' + transferredTotal.toFixed(2) + '</td>' +
+    //                    '<td class="formatNumber" style="font-weight: bold;">' + folioTotal.toFixed(2) + '</td>' +
+    //                    '</tr>');
+
+
+    //                if (transferredTotal == 0) {
+    //                    $('.transferredGrid').addClass("hidden");
+    //                }
+    //            }
+    //        });
+    //    }, 1000);
+
+    //}
+
+    //NEW
+    function LoadAllTransactions(roomNo, reservationHeaderId) {
+        var total = 0;
+        var transferredTotal = 0;
+        var folioTotal = 0
+        var originalRoom = "";
+        var tableRow = '';
+        var currentDate = $('#CurrentDate').val();
+        var currentDateParsed = new Date(currentDate.split(' ')[0].split('/').reverse().join('-')); // Convert to YYYY-MM-DD format and create Date object
+        var transferRefFolioDetailID = 0;
+
+        $('.transferredGrid').removeClass("hidden");
+        $('#imgLoadingPot').show();
+        $('.all-transaction .data-rows').remove();
+        // $('.all-transferred-transactions tr').remove();
+        //$('.all-transaction-summary tr').remove();
+        setTimeout(function () {
+            $.ajax({
+                url: '/CashieringAndPosting/FolioManagement/FolioChargers',
+                dataType: 'json',
+                data: { RoomNo: $('.reservation-room-id').val(), ReservationHeaderId: $('.reservation-header-id').val(), reservationNo: $('.hdn-reservation-No').val() },
+                beforeSend: function () {
+                    $('.all-transaction tr').remove();
+                    //$('.all-transferred-transactions tr').remove();
+                    //$('.all-transaction-summary tr').remove();
+                    $('#imgLoadingPot').show();
+                },
+                success: function (data) {
+                    $('.all-transaction tr').remove();
+                    //$('.all-transferred-transactions tr').remove();
+                    //$('.all-transaction-summary tr').remove();
+
+                    $.each(data, function (index, folio) {
+                        originalRoom = folio.OriginalRoomNo;
+                        transferRefFolioDetailID = parseInt(folio.TransferRefFolioDetailID, 10);
+
+                        if (folio.IsTransferrred == false) {
+                            var disabled = "";
+
+                            var PostingInorOut = 'Active Folio';
+
+                            if (folio.IsPendingPOSBill == 1) {
+                                disabled = "disabled";
+                            }
+
+                            if (folio.OriginalRoomNo == '/Images/up_arrows.png') {
+                                disabled = "disabled";
+                                PostingInorOut = "Transfered out item"
+                            }
+                            else if (folio.OriginalRoomNo == '/Images/down_arrow.png') {
+                                PostingInorOut = "Transfered in item"
+                            }
+
+
+                            if (!folio.OriginalRoomNo || folio.OriginalRoomNo === '') {
+                                folio.OriginalRoomNo = '/Images/dot.png';
+                            }
+
+
+                            var chargeDateParsed = new Date(folio.ChargeDate.split('/').reverse().join('-'));
+
+                            //console.log('chargeDateParsed  :', chargeDateParsed);
+                            //console.log('currentDateParsed  :', currentDateParsed);
+
+                            var dateCheckBit = currentDateParsed > chargeDateParsed ? 1 : 0;
+                            var checkedIsTransferdtoAnotherRoom = (transferRefFolioDetailID !== 0) ? 1 : 0;
+                            //console.log('dateCheckBit  :', dateCheckBit);
+
+
+        
+                        if (folio.IsAllowToSelect) {
+                            tableRow = '<td><div class="checkbox"><label>' +
+                                '<input type="checkbox" ' + disabled + ' data-is-restaurant-posting="' + folio.IsRestaurantPostingType + '" data-ref-doc-no="' + folio.RefDocNo + '" data-resHeaderId=' + folio.ReservationHeaderId + ' value="' + folio.FolioDetailID + '"  class="form-group checkbox folio-detail-id" >' +
+                                '</label></div></td>';
+                        } else {
+                            tableRow = '<td><div class="checkbox"><label>' +
+                                '<input type="checkbox" ' + disabled + ' data-is-restaurant-posting="' + folio.IsRestaurantPostingType + '" data-ref-doc-no="' + folio.RefDocNo + '" data-resHeaderId=' + folio.ReservationHeaderId + ' value="' + folio.FolioDetailID + '"  class="form-group checkbox folio-detail-id" disabled>' +
+                                '</label></div></td>';
+                        }
+               
+                        if (folio.IsInvoiceMerge) {
+                            tableRow = tableRow + '<td style="padding-left:14px;"><button class="btn btn-info btn-sm btn-expand btn-view-more" data-transfred-folio-detail-id="' + folio.TransfredFolioDetailId + '"  data-transfred-charge-code-prefix="' + folio.ChargeCode + '" data-date-check-bit="' + dateCheckBit + '"  data-checked-is-transferd-to-another-room ="' + checkedIsTransferdtoAnotherRoom + '"  ><span class="glyphicon glyphicon-fullscreen"></span></button></td>';
+                        } else {
+                            tableRow = tableRow + '<td></td>'
+                        }
+
+                            $('.all-transaction').append('<tr class="data-rows">' +
+                                '<td > <img  title="' + PostingInorOut +'"   style = "width : 15px" src="' + folio.OriginalRoomNo + '"/></td>' +
+                                '<td class="td-folio-nos">' + folio.FolioNo + '</td>' +
+                                '<td class="data-date">' + folio.ChargeDate + '</td>' +
+                                '<td class="data-desc">' + folio.FolioText + '</td>' +
+                                '<td class="formatNumber data-amount">' + folio.ChargeAmount.toFixed(2) + '</td>' +
+                                tableRow +
+                                '</tr>');
+
+                            // SelectedFolioNumber = folio.FolioNo;
+                            total = total + folio.ChargeAmount;
+                        } else {
+                            var disabled = "";
+
+                            if (folio.IsPendingPOSBill == 1) {
+                                disabled = "disabled";
+                            }
+
+                            //$('.all-transferred-transactions').append('<tr class="data-rows-transferred">' +
+                            //    '<td class="">' + folio.TransferredToRoomNo + '</td>' +
+                            //    '<td class="">' + folio.ChargeDate + '</td>' +
+                            //    '<td class="">' + folio.FolioText + '</td>' +
+                            //    '<td class="formatNumber">' + folio.ChargeAmount.toFixed(2) + '</td>' +
+                            //    '</tr>');
+
+                            transferredTotal = transferredTotal + folio.ChargeAmount;
+
+
+                        }
+
+
+
+                    });
+                    $.each($('.folio-detail-id'), function (index, folioCharge) {
+                        if ($(this).val() < 0) {
+                            $(this).prop('disabled', true)
+                        }
+                    });
+                },
+                complete: function () {
+                    $('.all-transaction').append('<tr style="border-bottom:2px solid #ccc;"><td colspan="4" style="text-align:right;">Total : </td><td  colspan="1" class="formatNumber"><b style="font-weight:bold !important;">' + total.toFixed(2) + '</b></td><td></td><td></td></tr>');
+                    //$('.all-transferred-transactions').append('<tr style="border-bottom:2px solid #ccc;"><td colspan="3" style="text-align:right;">Total : </td><td  colspan="1" class="formatNumber"><b style="font-weight:bold !important;">' + transferredTotal.toFixed(2) + '</b></td><td></td></tr>');
+                    $('#imgLoadingPot').hide();
+
+                    folioTotal = total + transferredTotal;
+
+                    //$('.all-transaction-summary').append('<tr class="data-rows">' +
+                    //    //'<td class="" style="font-weight: bold;">' + originalRoom + '</td>' +
+                    //    '<td class="formatNumber" style="font-weight: bold;">' + total.toFixed(2) + '</td>' +
+                    //    '<td class="formatNumber" style="font-weight: bold;">' + transferredTotal.toFixed(2) + '</td>' +
+                    //    '<td class="formatNumber" style="font-weight: bold;">' + folioTotal.toFixed(2) + '</td>' +
+                    //    '</tr>');
+
+
+                    if (transferredTotal == 0) {
+                        $('.transferredGrid').addClass("hidden");
+                    }
+                }
+            });
+        }, 1000);
+
+    }
+
+    function GetAllFoliosNumbers(roomNo, reservationHeaderId) {
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/GetAllFolios',
+            dataType: 'json',
+            data: { RoomNo: roomNo, ReservationHeaderId: reservationHeaderId },
+            success: function (data) {
+                $('.btn-folio-numbers').html('')
+                $.each(data, function (index, item) {
+                    $('.btn-folio-numbers').append('<div value="' + item.FolioNo + '"  id="' + item.FolioNo + '" class="well-height well col-md-11  folio-btn"  style="cursor:pointer; margin-bottom:5px !important; padding-left:5px !important; width:100% !important; padding-right:5px !important; background-color: #57606f  !important; color:#ffffff; padding:8px; min-height:60px;">'
+                        + '<div class="ribbon hidden" style="position:absolute;"><span style="width:80px !important; top:12px !important; right:-19px !important; background-color:#850272 !important" >selected</span></div>'
+                        + '<div class="col-md-3 res-this-folio-no" style="color:#f1c40f; font-size:30px; padding:4px 20px 0px 5px !important;"><b>' + item.FolioNo + '</b></div>'
+                        + '<input type="hidden" class="hidden-folio-header-Id" value="' + item.FolioHeaderID + '">'
+                        + '<div class="col-md-6" style="text-align:left; padding:0px 5px 0px 5px !important;">' + item.FolioCompanyName + '</div>'
+                        + '</div>');
+                });
+
+
+                // $($('.folio-btn')[0]).click();
+            }
+        });
+    }
+
+    function ExchangeFolio(nextFolio, TransferDetailArray) {
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/ExchangeFolio',
+            dataType: 'json',
+            data: { NextFolio: nextFolio, ResId: reservationHeaderId, TransferDetailArray: TransferDetailArray },
+            method: 'POST',
+            success: function (data) {
+                //console.log(data);
+
+                //ShowSuccessMessage('Folio Transfer Successfully!');
+                //$('#folioNoList').html('');
+
+                if (typeof data === 'string' && data.startsWith("ERR-")) {
+                    ShowWarningMessage(data.replace('ERR-', ''));
+                } else {
+                    ShowSuccessMessage('Folio Transfer Successfully!');
+                    $('#folioNoList').html('');
+                }
+
+            }, complete: function () {
+                $('.all-transaction').html('')
+                //$('.all-transferred-transactions').html('') //R2R Modification tbl-summary
+                //$('.all-transaction-summary').html('')
+                $('.tbl-folioWiseTable').html('')
+                $('.btn-folio-numbers').html('')
+                $('#btnBillPreview').removeAttr('data-href')
+                $('#btnBillSettlement').removeAttr('data-href')
+                $('#btnLKRBillPreview').removeAttr('data-href')
+                $('#btnBreifBillPreview').removeAttr('data-href')
+                LoadAllTransactions(roomNo, ResID)
+                GetAllFoliosNumbers(roomNo, ResID)
+            }
+        });
+
+
+    }
+
+    //Btn Functions
+    //btn Preview click
+    $('#btnBillPreview').on('click', function (e) {
+        CallPasswordModel(function (e) {
+            if (SelectedFolioNumber > 0) {
+                var url = '/Reporting/Report/ViewReport?ReportName=FolioInvoice&ReservationHeaderId=' + reservationHeaderId + '&FolioNo=' + SelectedFolioNumber + '&IsPreview=1' + '&IsLKROnlyInvoice=0';
+                window.open(url, '_blank');
+            } else if ($('.tbl-all-transactions').length == 0) {
+                ShowWarningMessage("There are no transactions");
+            }
+            else {
+                ShowWarningMessage("Select a Folio to Preview");
+            }
+        });
+
+    });
+
+    $('#btnBreifBillPreview').on('click', function (e) {
+        CallPasswordModel(function (e) {
+            if (SelectedFolioNumber > 0) {
+                var url = '/Reporting/Report/ViewReport?ReportName=FolioInvoice&ReservationHeaderId=' + reservationHeaderId + '&FolioNo=' + SelectedFolioNumber + '&IsPreview=1' + '&IsLKROnlyInvoice=0';
+                window.open(url, '_blank');
+            } else {
+                ShowWarningMessage("Select a Folio to Preview");
+            }
+        });
+    });
+
+    $('#btnLKRBillPreview').on('click', function (e) {
+        CallPasswordModel(function (e) {
+            if (SelectedFolioNumber > 0) {
+                var url = '/Reporting/Report/ViewReport?ReportName=FolioInvoice&ReservationHeaderId=' + reservationHeaderId + '&FolioNo=' + SelectedFolioNumber + '&IsPreview=1' + '&IsLKROnlyInvoice=1';
+                window.open(url, '_blank');
+            } else {
+                ShowWarningMessage("Select a Folio to Preview");
+            }
+        });
+    });
+
+    //btn Settle click
+    $('#btnBillSettlement').on('click', function (e) {
+        // e.preventDefault();
+        //CallPasswordModel(function (e) {
+        if (SelectedFolioNumber > 0) {
+            var url = '/CashieringAndPosting/FolioManagement/BillSettlement?ReservationHeaderId=' + reservationHeaderId + '&FolioNo=' + SelectedFolioNumber
+            CallDetailModelSimple('Settle folio', url, 800);
+        } else {
+            $('#btnBillSettlement').attr('data-href', '');
+            ShowWarningMessage("Select a Folio to Settle");
+        }
+        //});
+        //Then claculate tax in Invoice view.
+
+    });
+
+    //btn Remove tax
+    $('body').off('click', '#btnRemoveTax').on('click', '#btnRemoveTax', function () {
+        if (SelectedFolioNumber > 0) {
+            var url = '/CashieringAndPosting/FolioManagement/RemoveTax?ReservationHeaderId=' + reservationHeaderId + '&FolioNo=' + SelectedFolioNumber
+            CallDetailModelSimple('Remove SC/VAT for - ' + reservationNo, url, 500);
+        } else {
+            $('#btnRemoveTax').attr('data-href', '');
+            ShowWarningMessage("Select a folio to remove tax.");
+        }
+    });
+
+    // btn folio split
+    $('#btnFolioSplit').on('click', function (e) {
+        e.preventDefault();
+        CallPasswordModel(function (e) {
+            var url = '/CashieringAndPosting/FolioManagement/PostingSettings?ReservationHeaderId=' + reservationHeaderId;
+            CallDetailModelSimple('Split Folio', url, 800);
+        });
+    });
+
+    // btn folio Discount
+    $('#btnFolioDiscount').on('click', function (e) {
+
+        $('#btnFolioDiscount').attr('data-href', '/CashieringAndPosting/FolioManagement/FolioDiscount');//?ReservationHeaderId=' + reservationHeaderId + '&FolioNo=' + SelectedFolioNumber);//+ '&RoomNo=' + roomNo);
+    });
+
+    $('#btnItemSplit').on('click', function (e) {
+
+        if ($('.folio-detail-id:checked').length == 0) {
+            ShowWarningMessage("Please select a transaction to continue.");
+        }
+        else if ($('.folio-detail-id:checked').length > 1) {
+            ShowWarningMessage("This functionality is only valid for one transaction.");
+        } else {
+            e.preventDefault();
+            CallPasswordModel(function (e) {
+                var date = "";
+                var folioNo = "";
+                var desc = "";
+
+                if ($('.folio-detail-id:checked').length > 0) {
+                    date = $('.folio-detail-id:checked').closest('tr').find('.data-date').html();
+                    folioNo = $('.folio-detail-id:checked').closest('tr').find('.td-folio-nos').html();
+                    desc = $('.folio-detail-id:checked').closest('tr').find('.data-desc').html();
+
+                    var url = '/CashieringAndPosting/FolioManagement/ItemSplit?date=' + date + '&FolioNo=' + folioNo + '&desc=' + desc;
+                    CallDetailModelSimple('Item Split', url, 600);
+                } else {
+                    ShowWarningMessage("Select a transaction to split");
+                }
+            });
+        }
+    });
+
+    // btn folio Discount
+    $('#btnFolioPosting').on('click', function (e) {
+        e.preventDefault();
+        CallPasswordModel(function (e) {
+            var url = '/CashieringAndPosting/Posting/Landing/InHouse?roomNo=' + roomNo;
+            window.open(url, '_blank');
+        });
+        //?ReservationHeaderId=' + reservationHeaderId + '&FolioNo=' + SelectedFolioNumber);//+ '&RoomNo=' + roomNo);
+    });
+
+    // btn  Rebate Posting
+    $('#btnRebatePosting').on('click', function (e) {
+        e.preventDefault();
+        CallPasswordModel(function (e) {
+            var url = '/cashieringandposting/posting/landing/rebate?roomNo=' + roomNo;
+            window.open(url, '_blank');
+        });
+    });
+
+    // btn folio Discount
+    $('#btnSettledFolios').on('click', function (e) {
+
+        if ($('.reservation-header-id').val() > 0) {
+            CallPasswordModel(function (e) {
+                var url = '/CashieringAndPosting/FolioManagement/ManageSettledFolios?ReservationHeaderId=' + reservationHeaderId + '&RoomNo=' + roomNo
+                CallDetailModelSimple('Settled Folios', url, 900);
+            });
+        } else {
+            ShowWarningMessage("Select a Room to View Settled Folios")
+        }
+
+    });
+
+    //btn Folio Transfer
+    $('#ExchangeFolioBtn').on('click', function (e) {
+
+        e.preventDefault();
+        CallPasswordModel(function (e) {
+            if ($('.folio-detail-id:checked').length == 0) {
+                ShowWarningMessage("Please select a transaction to continue.")
+            } else {
+                if ($('.reservation-header-id').val() > 0) {
+                    var url = '/CashieringAndPosting/FolioManagement/FolioTransfer?ReservationHeaderId=' + reservationHeaderId + '&RoomNo=' + roomNo;
+                    CallDetailModelSimple('Folio Transfer', url, 500);
+                } else {
+                    ShowWarningMessage("Select a Room to Transfer")
+                }
+            }
+        });
+    });
+
+    // Function Search ROOM from ROOM list by room name
+    function searchRoom() {
+        var input, filter, ul, li, a, i, txtValue;
+        input = document.getElementById("txtSearch");
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("inHouseRoomList");
+        li = ul.getElementsByTagName("input");
+        for (i = 0; i < li.length; i++) {
+
+            txtValue = li[i].value;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                li[i].style.display = "";
+            } else {
+                li[i].style.display = "none";
+            }
+        }
+    }
+
+    $.fn.digits = function () {
+        return this.each(function () {
+            $(this).text($(this).text().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+        })
+    }
+
+    $('body').on('change', '.itemSplitchkbox', function () {
+
+        if ($(this).prop('checked')) {
+            $('.itemSplitchkbox').not(this).prop('checked', false);
+            $(this).prop('checked', true);
+            if ($(this).val() == "p") {
+                $(this).closest('form').find('#data-perc-mark').removeAttr('hidden');
+            } else {
+                $(this).closest('form').find('#data-perc-mark').attr('hidden', true);
+            }
+        } else {
+            $(this).closest('form').find('#data-perc-mark').attr('hidden', true);
+        }
+    });
+
+    //itemsplit submit
+    $('body').on('click', '#btnsplitItem', function (e) {
+        e.preventDefault();
+        var splitMode = $('.itemSplitchkbox:checked').val();
+        var splitAmount = $('#data-split-amount').val();
+        var folioDetailId = $('.folio-detail-id:checked').val()
+        //var roomNo = $('.res-room-no').html();
+        var resHeaderId = $('.reservation-header-id').val();
+
+        $.ajax({
+            url: '/cashieringandposting/foliomanagement/itemsplit',
+            dataType: 'Json',
+            data: { splitMode: splitMode, splitAmount: splitAmount, folioDetailId: folioDetailId },
+            method: 'POST',
+            success: function (data) {
+                e.preventDefault();
+
+                if (data.startsWith("ERR-")) {
+                    ShowWarningMessage(data.replace('ERR-', ''))
+                } else {
+                    ShowSuccessMessage('Split successful');
+                    setTimeout(function () {
+                        LoadAllTransactions(roomNo, resHeaderId);
+                        GetAllFoliosNumbers(roomNo, resHeaderId);
+                        $('#grid-record-detail-model').modal('hide');
+                    }, 1000);
+
+                }
+
+            },
+
+        });
+    });
+
+    $('body').on('click', '#tbl-all-transactions tr', function () {
+
+        if ($(this).find('input.folio-detail-id').prop('disabled')) {
+            $(this).find('input.folio-detail-id').prop('checked', false);
+            $(this).removeClass('selectdRecord');
+        } else {
+            if ($(this).find('input.folio-detail-id').prop('checked')) {
+                $(this).find('input.folio-detail-id').prop('checked', false);
+                $(this).removeClass('selectdRecord');
+            } else {
+                $(this).find('input.folio-detail-id').prop('checked', true);
+                $(this).addClass('selectdRecord');
+            }
+        }
+        //$('#tbl-all-transactions tr').not(this).find('input.folio-detail-id').prop('checked', false);
+        //$('#tbl-all-transactions tr').not(this).closest('tr').removeClass('selectdRecord');
+    });
+
+    //OLD
+    //$('body').on('submit', '#RoomToRoomTransfer', function (e) {
+    //    e.preventDefault();
+    //    var reservationheaders = [];
+    //    var transferToRoomId;
+    //    var folioNo = 1;
+
+    //    if ($('.merge-reservation:checked').length > 0) {
+    //        $.each($('.merge-reservation:checked'), function (index, item) {
+
+    //            reservationheaders.push({
+    //                Id: $(item).data('reservationheaderid')
+    //            })
+    //        });
+    //        transferToRoomId = $('.master-reservation:checked').data('roomid');
+    //        folioNo = 0;
+    //    }
+    //    else {
+    //        reservationheaders.push({
+    //            Id: $('.reservation-header-id').val()
+    //        });
+    //        transferToRoomId = $('#data-rooms').val();
+    //        folioNo = $('#folioNo').val();
+    //    }
+
+
+
+    //    $.ajax({
+    //        url: '/CashieringandPosting/FolioManagement/RoomToRoomTransferSave',
+    //        dataType: 'JSON',
+    //        data: {
+    //            inhouseReservations: reservationheaders,
+    //            transferToRoomId: transferToRoomId,
+    //            folioNo: folioNo
+    //        },
+    //        method: 'POST',
+    //        success: function (data) {
+
+    //            if (data == "success") {
+    //                ShowSuccessMessage("Transfer Successful.");
+    //                setTimeout(function () {
+    //                    window.location.reload();
+    //                }, 3000);
+    //            } else {
+    //                ShowWarningMessage(data);
+    //                setTimeout(function () {
+    //                    window.location.reload();
+    //                }, 3000);
+    //            }
+    //        },
+    //        error: function (error) {
+    //        }
+    //    });
+    //});
+
+    //NEW
+    $('body').on('submit', '#RoomToRoomTransfer', function (e) {
+        e.preventDefault();
+        var reservationheaders = [];
+        var transferToRoomId;
+        var folioNo = 1;
+        var currentTab;
+
+        currentTab = $('.nav-tabs li.active a').attr('href');
+
+        //if ($('.merge-reservation:checked').length > 0)
+
+        if (currentTab === '#groupFolioMerge') {
+
+            if ($('.merge-reservation:checked').length > 0) {
+                $.each($('.merge-reservation:checked'), function (index, item) {
+
+                    reservationheaders.push({
+                        Id: $(item).data('reservationheaderid')
+                    })
+                });
+            }
+
+            transferToRoomId = $('.master-reservation:checked').data('roomid');
+            folioNo = 0;
+        }
+        else {
+            reservationheaders.push({
+                Id: $('.reservation-header-id').val()
+            });
+            transferToRoomId = $('#data-rooms').val();
+            folioNo = $('#folioNo').val();
+
+        }
+
+
+        if (reservationheaders.length === 0) {
+            ShowWarningMessage("No reservations selected for transfer. Please select one or more reservations to transfer out.");
+        }
+
+        else if (!transferToRoomId) {
+            ShowWarningMessage("No room selected for the transfer. Please select a room to transfer the folios.");
+        }
+        else {
+            $.ajax({
+                url: '/CashieringandPosting/FolioManagement/RoomToRoomTransferSave',
+                dataType: 'JSON',
+                data: {
+                    inhouseReservations: reservationheaders,
+                    transferToRoomId: transferToRoomId,
+                    folioNo: folioNo
+                },
+                method: 'POST',
+                success: function (data) {
+
+                    if (data == "success") {
+                        ShowSuccessMessage("Transferred Successfully.");
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 3000);
+                    } else {
+                        ShowWarningMessage(data);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 3000);
+                    }
+                },
+                error: function (error) {
+                }
+            });
+
+        }
+
+    });
+
+    $('body').on('click', '#BtnSuppBillPreview', function (e) {
+        e.preventDefault();
+        if ($('.folio-detail-id:checked').length == 0) {
+            ShowWarningMessage("Please select a transaction to continue.");
+        }
+        else if ($('.folio-detail-id:checked').length > 1) {
+            ShowWarningMessage("This functionality is only valid for one transaction.");
+        } else {
+            if ($('.folio-detail-id:checked').data('is-restaurant-posting') == 1) {
+                var refDocNo = $('.folio-detail-id:checked').data('ref-doc-no');
+                var url = '/Reporting/Report/ViewReport?ReportName=SupportingBillPreview&OrderNo=' + refDocNo + '&ReservationHeaderId=' + reservationHeaderId;
+                window.open(url, '_blank');
+            } else {
+                e.preventDefault();
+                ShowWarningMessage('Supporting invoice is not available!');
+            }
+        }
+    });
+
+    //Direct rebate
+    $('body').on('click', '.btnDirectRebate', function (e) {
+        e.preventDefault();
+        if ($('.folio-detail-id:checked').length == 0) {
+            ShowWarningMessage("Please select a transaction to continue.");
+        }
+        else if ($('.folio-detail-id:checked').length > 1) {
+            ShowWarningMessage("This functionality is only valid for one transaction.");
+        } else {
+            CallPasswordModel(function (e) {
+                if (confirm('Are you sure you want to proceed?')) {
+
+                    if ($('.folio-detail-id:checked').length > 0) {
+                        $.ajax({
+                            url: '/CashieringandPosting/Posting/DirectRebate?foliodetailId=' + $('.folio-detail-id:checked').val(),
+                            dataType: 'json',
+                            method: 'POST',
+                            success: function (response) {
+                                if (response.toString().startsWith('ERR-')) {
+                                    ShowWarningMessage("Sorry, selected posting type is not allowed to rebate.");
+                                } else {
+                                    ShowSuccessMessage("Rebate added successfully.");
+                                    LoadFolioChargers(folioNo);
+                                }
+                            },
+                            error: function (error) {
+                            }
+                        });
+                    }
+                    else {
+                        ShowWarningMessage('Please select one bill item to Rebate');
+                    }
+                }
+            });
+        }
+    });
+
+    $('body').on('click', '#btnFolioDiscountNew', function (e) {
+        e.preventDefault();
+        if (folioNo > 0) {
+            var url = '/CashieringAndPosting/Discount/ApplyDiscount?reservationHeaderId=' + reservationHeaderId + '&folioNo=' + folioNo;
+            CallPasswordModel(function (e) {
+                CallDetailModelSimple('Apply Discount', url, 900);
+            });
+        } else {
+            ShowWarningMessage('Select folio to apply discount.');
+        }
+    });
+
+    $('body').on('click', '#Completebtn', function (e) {
+        $('#Completebtn').attr('href', '/Reporting/Report/ViewReport?ReportName=FolioInvoicePrint&ReservationHeaderId=' + reservationHeaderId + '&FolioNo=' + folioNo + '&IsPreview=0');
+    });
+
+    $('body').on('click', '#grid-record-detail-model-close', function () {
+        if ($('#grid-record-detail-model-close').hasClass('folio-settle-refresh') == true) {
+            setTimeout(function () {
+                window.location.reload();
+            }, 2000);
+        }
+        $(lastSelectedRoom).click();
+    })
+
+    $('body').on('click', '#folioRename', function (e) {
+        if ($('.folio-btn').find('.ribbon').not('.hidden').length > 1) {
+            ShowWarningMessage('This functionality is only valid for one folio.');
+        }
+        else if ($('.folio-btn').find('.ribbon').not('.hidden').length == 1) {
+            var folioHeaderId2 = $('#folio-header-id-selected').val();
+            if (folioHeaderId2 == undefined || folioHeaderId2 == "") {
+                ShowWarningMessage('Please select a folio to continue.');
+            } else {
+                var url = '/CashieringAndPosting/FolioManagement/ChangeCompanyAndCustomerName?folioHeaderId=' + folioHeaderId2 + '&foliono=' + $('#folio-no').val();
+                CallPasswordModel(function (e) {
+                    CallDetailModelSimple('Rename Folio', url, 500);
+                });
+            }
+        } else {
+            ShowWarningMessage('Please select a folio to continue.');
+        }
+
+    });
+
+    $('#btnFullDiscount').on('click', function (e) {
+        //e.preventDefault();
+        //var url = '/CashieringAndPosting/FolioManagement/FullDiscount';
+        //CallPasswordModel(function (e) {
+        //    CallDetailModelSimple('Full discount', url, 500);
+        //});
+
+        e.preventDefault();
+        if (folioNo > 0) {
+            var url = '/CashieringAndPosting/FolioManagement/FullDiscount';
+            CallPasswordModel(function (e) {
+                CallDetailModelSimple('Full Discount', url, 900);
+            });
+        } else {
+            ShowWarningMessage('Select folio to apply discount.');
+        }
+        //$('#btnFullDiscount').attr('data-href', '/CashieringAndPosting/FolioManagement/FullDiscount');
+    });
+
+    //Group settlement 2024-06-26
+    $('body').off('click', '#btnGroupSettlement').on('click', '#btnGroupSettlement', function () {
+
+        //Commented By ishara on 2024 - 10 - 08 Old
+
+        //var url = "/CashieringAndPosting/FolioManagement/GroupSettlement";
+
+       //Added By ishara on 2024 - 10 - 08 New
+        var IsGroupMergeOnly = 0;
+        var url = "/CashieringAndPosting/FolioManagement/GroupSettlement?IsGroupMergeOnly=" + IsGroupMergeOnly;
+        CallPasswordModel(function (e) {
+            CallDetailModelSimple('Group Settlement', url, 1020);
+        });
+    });
+
+    @* Added By ishara on 2024 - 10 - 08 *@
+    //Group Merge 2024-10-07
+    $('body').off('click', '#btnGroupMerge').on('click', '#btnGroupMerge', function () {
+        var IsGroupMergeOnly = 1;
+        var url = "/CashieringAndPosting/FolioManagement/GroupSettlement?IsGroupMergeOnly=" + IsGroupMergeOnly;
+        CallPasswordModel(function (e) {
+            CallDetailModelSimple('Group Merge', url, 1020);
+        });
+    });
+
+
+    //Anuradha-2024-07-03 OLD
+    //$(document).off('click', '.btn-view-more').on('click', '.btn-view-more', function () {
+
+    //    var transferRefFolioDetailID = $(this).data('transfred-folio-detail-id');
+
+    //    $('#hdnTransferRefFolioDetailID').val(transferRefFolioDetailID)
+
+    //    ShowLoader();
+
+    //    $('#tbl-all-transactions tr').removeClass('selectdRecord');
+
+    //    CallDetailModelSimple("Transfer Folio Details for " + transferRefFolioDetailID, "/CashieringAndPosting/FolioManagement/FolioDetailsPopup", 700);
+    //})
+
+    //Anuradha-2024-07-03 NEW
+    $(document).off('click', '.btn-view-more').on('click', '.btn-view-more', function () {
+
+        var transferRefFolioDetailID = $(this).data('transfred-folio-detail-id');
+        var transferRefFolioChargeCode = $(this).data('transfred-charge-code-prefix');
+        var datecheckbit = $(this).data('date-check-bit');
+        var checkedIsTransferdtoAnotherRoomBit = $(this).data('checked-is-transferd-to-another-room');
+
+        $('#hdnTransferRefFolioDetailID').val(transferRefFolioDetailID);
+        $('#hdnTransferRefFolioChargeCode').val(transferRefFolioChargeCode);
+        $('#hdndatecheckbit').val(datecheckbit);
+        $('#checkedIsTransferdtoAnotherRoomBit').val(checkedIsTransferdtoAnotherRoomBit);
+
+        ShowLoader();
+
+        $('#tbl-all-transactions tr').removeClass('selectdRecord');
+
+        CallDetailModelSimple("Transferred Orginal Folio Details", "/CashieringAndPosting/FolioManagement/FolioDetailsPopup", 700);
+        //CallDetailModelSimple("Transfer Folio Details for " + transferRefFolioDetailID, "/CashieringAndPosting/FolioManagement/FolioDetailsPopup", 700);
+    })
+
+    //Line item Transfer
+    $('#btnLineItemTransfer').on('click', function (e) {
+
+
+
+
+        //CallPasswordModel(function (e) {
+        //Check if there are any charge under FOLIO 1
+        //Atleast one chareg should be under FOLIO 1
+        var chargersArray = [];
+        var folioOneCount = 0
+        $('.td-folio-nos').each(function (index, item) {
+            if ($('.td-folio-nos').eq(index).text() == 1) {
+                folioOneCount++;
+            }
+        });
+
+        if ($('#tbl-all-transactions tr').length > 1) {
+            folioOneCount = $('#tbl-all-transactions tr').not(':first').length;
+        }
+
+        $('.folio-detail-id').each(function (index, item) {
+            if ($(item).prop('checked')) {
+                chargersArray.push({ "FolioDetailID": Number($(item).val()) });
+            }
+        });
+
+        //});
+        var FolioDetailIdsJson = JSON.stringify(chargersArray)
+        var ReservationNo = $('.res-no').html().trim();
+
+        if (chargersArray != null && chargersArray.length > 0) {
+
+            CallPasswordModel(function (e) {
+                var ReservationNo = $('.res-no').html().trim();
+                var url = '/CashieringAndPosting/FolioManagement/LineItemTransfer?FolioDetailIdsJson=' + FolioDetailIdsJson + '&ReservationNo=' + ReservationNo
+                CallDetailModelSimple('Line Item Transfer', url, 900);
+            });
+        }
+        else {
+            ShowWarningMessage("Select one or more folios to tranfer.")
+        }
+
+    });
+
+    $(document).off('click', '#outstandingInvoices').on('click', '#outstandingInvoices', function () {
+        if ($(this).hasClass('btn-default')) {
+            $(this).addClass('btn-primary').removeClass('btn-default');
+            $('#settledInvoices').removeClass('btn-primary').addClass('btn-default');
+            $('.btn-folio-numbers').hide();
+            GetAllFoliosNumbers(roomNo, reservationHeaderId);
+            $('.btn-folio-numbers').show();
+        } else {
+
+            $(this).addClass('btn-default').removeClass('btn-primary');
+            $('#settledInvoices').addClass('btn-default').removeClass('btn-primary');
+        }
+
+
+    });
+
+    $(document).off('click', '#settledInvoices').on('click', '#settledInvoices', function () {
+        if ($(this).hasClass('btn-default')) {
+            $(this).addClass('btn-primary').removeClass('btn-default');
+            $('#outstandingInvoices').removeClass('btn-primary').addClass('btn-default');
+            $('.btn-folio-numbers').hide();
+            GetAllSettledFoliosNumbers(roomNo, reservationHeaderId);
+            $('.btn-folio-numbers').show();
+        } else {
+
+            $(this).addClass('btn-default').removeClass('btn-primary');
+            $('#outstandingInvoices').addClass('btn-default').removeClass('btn-primary');
+        }
+
+
+
+    });
+
+    function GetAllSettledFoliosNumbers(roomNo, reservationHeaderId) {
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/GetAllSettledFolios',
+            dataType: 'json',
+            data: { RoomNo: roomNo, ReservationHeaderId: reservationHeaderId },
+            success: function (data) {
+                $('.btn-folio-numbers').html('')
+                $.each(data, function (index, item) {
+                    console.log(item);
+                    $('.btn-folio-numbers').append('<div value="' + item.FolioNo + '"  id="' + item.FolioNo + '" class="well-height well col-md-11  folio-btn"  style="cursor:pointer; margin-bottom:5px !important; padding-left:5px !important; width:100% !important; padding-right:5px !important; background-color: #645d51  !important; color:#ffffff; padding:8px; min-height:60px;">'
+                        + '<div class="ribbon hidden" style="position:absolute;"><span style="width:80px !important; top:12px !important; right:-19px !important; background-color:#850272 !important" >selected</span></div>'
+                        + '<div class="col-md-3 res-this-folio-no" style="color:#f1c40f; font-size:30px; padding:4px 20px 0px 5px !important;"><b>' + item.FolioNo + '</b></div>'
+                        + '<input type="hidden" class="hidden-folio-header-Id" value="' + item.FolioHeaderID + '">'
+                        + '<div class="col-md-6" style="text-align:left; padding:0px 5px 0px 5px !important;">' + item.FolioCompanyName + '</div>'
+                        //+ '<div class="col-md-6" style="text-align:left; padding:0px 5px 0px 5px !important;">' + item.InvoiceNo + '</div>'
+                        //+ '<div class="col-md-6" style="text-align:left; padding:0px 5px 0px 5px !important; font-size: 12px;">' + item.RefDocNo + '</div>'
+                        + '</div>'
+                        + '<div class="row" style="margin-left:1px;margin-right:1px;"><div class="col-md-12" style="text-align: right;padding: 0px 5px 0px 5px !important;color: #fff;font-style: italic;font-size: 14px;background-color:#645d51 !important;margin:58px 0 0 0;height:25px;"><a href="/Reporting/Report/ViewReport?ReportName=FolioInvoice&ReservationHeaderId=' + reservationHeaderId + '&FolioNo=' + item.FolioNo + '&IsPreview=0' + '&IsLKROnlyInvoice=0" style="margin: -8px 7px 12px 0;"  class="pull-right reportViewBtn" target="_blank">' + item.InvoiceNo + '</a></div></div>'
+                    );
+                });
+            }
+        });
+    }
+
+    //Send documents
+    $('body').off('click', '#btnSendInvoicePreview').on('click', '#btnSendInvoicePreview', function (e) {
+        // read values from the clicked button's data-* attributes
+        var invoiceNo = "";
+        var resNo = $('.hdn-reservation-No').val();
+        
+        var documentParams = {
+            reservationHeaderId: reservationHeaderId, // prefer button's value; fallback to global
+            guestProfileId: $('#GuestProfileId').val(),
+            Uuid: "",
+            reservationLevel: "Folio",
+            reservationNo: resNo,
+            InvoiceNo: invoiceNo,
+            FolioNo: folioNo
+        };
+
+        if (folioNo > 0) {
+            var url = '/DocumentDelivery/DocumentDelivery?documentParams=' + encodeURIComponent(JSON.stringify(documentParams));
+            var title = 'Send Document ' + (typeof resNo !== 'undefined' ? resNo : '');
+
+            CallDetailModelSimple(title, url, 800);
+        } else {
+            ShowWarningMessage('Select folio to proceed.');
+        }
+
+        
+    });
+
+
+</script>

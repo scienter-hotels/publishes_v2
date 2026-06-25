@@ -1,0 +1,735 @@
+﻿
+@{
+    ViewBag.Title = "Schedule Posting";
+}
+
+<input type="hidden" value="@ViewBag.GResNo" name="" id="gresNo_SP" />
+<input type="hidden" value="@ViewBag.ResNo" name="" id="resNo_SP" />
+<input type="hidden" value="@ViewBag.GuestName" name="" id="guestName_SP" />
+<input type="hidden" value="@ViewBag.RoomNo" name="" id="roomNo_SP" />
+<input type="hidden" value="@ViewBag.RoomId" name="" id="roomId_SP" />
+<input type="hidden" value="@ViewBag.Arrival" name="" id="arrival_SP" />
+<input type="hidden" value="@ViewBag.Departure" name="" id="departure_SP" />
+<input type="hidden" value="@ViewBag.GuestProfileId" name="" id="guestProf_SP" />
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+@if (@ViewBag.fromReservationScreen != null)
+{
+    <input type="hidden" value="fromRes" name="" id="schedulePostingVia" />
+}
+else
+{
+    <input type="hidden" value="Other" name="" id="schedulePostingVia" />
+}
+@if (@ViewBag.fromReservationScreen != null)
+{
+    <div class="row" style="max-height:1000px;">
+        <div class="col-md-12">
+
+            @if (@ViewBag.fromReservationScreen == null)
+            {
+                <div class="card-header hidden-print" data-background-color="purple">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="title hidden-print">
+                                @ViewBag.Title
+                            </h4>
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+            <div class="card-content">
+                <div class="row">
+                    @if (@ViewBag.fromReservationScreen != null)
+                    {
+                        <div class="col-md-12">
+                            <fieldset class="the-fieldset" style="padding:10px !important;">
+                                <legend class="the-legend">Reservation Details</legend>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="restable">
+                                            <tr style="background-color: #fff !important;">
+                                                <td style="width:45px !important;">Guest:&nbsp;</td>
+                                                <td id="guest" class="col-md-6" style="padding-left:0px;"></td>
+
+                                                <td style="width:10px;">Room#:&nbsp;</td>
+                                                <td id="roomNo" class="col-md-2" style="padding-left:0px;"></td>
+
+                                                <td style="width:10px;">Arrival:&nbsp;</td>
+                                                <td id="arrival" class="col-md-2" style="padding-left:0px;"></td>
+
+                                                <td style="width:10px;">Departure:&nbsp;</td>
+                                                <td id="depature" class="col-md-2" style="padding-left:0px;"></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </fieldset>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-12 hidden-print">
+                            <fieldset class="the-fieldset" style="min-height:180px;">
+                                <legend class="the-legend">Select Reservations</legend>
+                                <div id="contentLoadingArea">
+                                    @Html.Partial("_ReservationDetails")
+                                </div>
+                            </fieldset>
+                        </div>
+                    }
+
+                </div>
+                <div class="row bill-Process">
+                    <div class="col-md-2 hidden-print">
+                        <fieldset class="the-fieldset" style="min-height:420px !important; max-height:421px !important;">
+                            <legend class="the-legend">Booking Dates</legend>
+                            <div class="col-md-12" id="reservationDatesLoadingArea"></div>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-3">
+                        <fieldset class="the-fieldset" style="min-height:420px !important; max-height:421px !important;">
+                            <legend class="the-legend">Schedule Bill</legend>
+                            <div class="col-md-12">
+                                @Html.Partial("_Form", new Scienter.HotelERP.Common.Domain.Posting())
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-7">
+                        <fieldset class="the-fieldset" style="min-height:420px !important; max-height:421px !important;">
+                            <legend class="the-legend">Existing Invoice Details</legend>
+                            <div class="col-md-12" id="ExistinginvoiceGridloadingArea"></div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row" style="max-height:1000px;">
+        <div class="col-md-12">
+            <div class="card">
+                @if (@ViewBag.fromReservationScreen == null)
+                {
+                    <div class="card-header hidden-print" data-background-color="purple">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h4 class="title hidden-print">
+                                    @ViewBag.Title
+                                </h4>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+
+                <div class="card-content">
+                    <div class="row">
+                        @if (@ViewBag.fromReservationScreen != null)
+                        {
+                            <div class="col-md-12">
+                                <fieldset class="the-fieldset" style="padding:10px !important;">
+                                    <legend class="the-legend">Reservation Details</legend>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <table class="restable">
+                                                <tr style="background-color: #fff !important;">
+                                                    <td style="width:45px !important;">Guest:&nbsp;</td>
+                                                    <td id="guest"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="width:10px;">Room#:&nbsp;</td>
+                                                    <td id="roomNo"></td>
+                                                </tr>
+
+                                            </table>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <table class="restable">
+                                                <tr>
+                                                    <td style="width:10px;">Arrival:&nbsp;</td>
+                                                    <td id="arrival"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="width:10px;">Departure:&nbsp;</td>
+                                                    <td id="depature"></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-md-12 hidden-print">
+                                <fieldset class="the-fieldset" style="height:150px;padding:13px 0px 1px 0px;">
+                                    @*<legend class="the-legend">Select Reservations</legend>*@
+                                    <div id="contentLoadingArea">
+                                        @Html.Partial("_ReservationDetails")
+                                    </div>
+                                </fieldset>
+                            </div>
+                        }
+
+                    </div>
+                    <div class="row bill-Process">
+                        <div class="col-md-2 hidden-print">
+                            <fieldset class="the-fieldset" style="min-height:350px;">
+                                <legend class="the-legend">Booking Dates</legend>
+                                <div class="col-md-12" id="reservationDatesLoadingArea"></div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset class="the-fieldset" style="min-height:350px;">
+                                <legend class="the-legend">Schedule Bill</legend>
+                                <div class="col-md-12">
+                                    @Html.Partial("_Form", new Scienter.HotelERP.Common.Domain.Posting())
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-7">
+                            <fieldset class="the-fieldset" style="min-height:350px;">
+                                <legend class="the-legend">Existing Invoice Details</legend>
+
+                                <div class="col-md-12" id="ExistinginvoiceGridloadingArea"></div>
+
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+<style>
+    .tab-content .form-group {
+        margin: 5px 0 0 0;
+    }
+</style>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script src="~/Scripts/ui/common/Scienter.Common.TimeFormat.js"></script>
+<script>
+
+    var guestInfo = '';
+    var guestInfo2 = '';
+    var schedulePosting = [];
+    var invoice = '';
+    var postingDatesarray = [];
+    var AmountwithoutTax = 0;
+
+    // form load ------------------------------
+    $(document).ready(function () {
+        //ScorelToTop60px();
+        if ($('#schedulePostingVia').val() == "fromRes") {
+            guestInfo2 = { ReservationNo: '', groupresNo: '', GuestName: '', RoomCode: '', RoomId: '', GuestProfileId: '', ArrivalDate: '', Departure: '' }
+
+            guestInfo2 = {
+                ReservationNo: $('#resNo_SP').val(),
+                groupresNo: $('#gresNo_SP').val(),
+                GuestName: $('#guestName_SP').val(),
+                RoomCode: $('#roomNo_SP').val(),
+                RoomId: parseInt($('#roomId_SP').val()),
+                GuestProfileId: parseInt($('#guestProf_SP').val()),
+                ArrivalDate: $('#arrival_SP').val(),
+                Departure: $('#departure_SP').val()
+            }
+
+            $('#resNo').html(guestInfo2.ReservationNo);
+            $('#roomNo').html(guestInfo2.RoomCode);
+            $('#guest').html(guestInfo2.GuestName);
+            $('#arrival').html(guestInfo2.ArrivalDate);
+            $('#depature').html(guestInfo2.Departure);
+
+            GetDates(guestInfo2.ArrivalDate, guestInfo2.Departure);
+            FillHistoryGrid(guestInfo2.ReservationNo, guestInfo2.GuestProfileId, guestInfo2.RoomId);
+
+
+        }
+        else {
+            //ScorelToTop60px();
+            FillDropDownReservation();
+            // FillDropDownInhouse();
+        }
+    });
+
+
+    $('body').on('change', '#BillTypeId', function () {
+        $('#Amount').prop('disabled', false);
+        var price = $(this).find("option:selected").attr('data-price');
+        var ifFixed = $(this).find("option:selected").attr('data-isfixed');
+        $('#amountField').addClass('is-focused');
+        $("#Amount").val(Number(parseFloat(price).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 }));
+        if (ifFixed == "True") {
+            $('#Amount').prop('disabled', true);
+        }
+    });
+
+    $('body').on('change', '#CurrencyId', function () {
+        var selectedCurrencyId = $("#CurrencyId option:selected").val();
+        $.ajax({
+            url: '/CashieringAndPosting/PostingBillType/PostingBillTypeCombo',
+            dataType: 'html',
+            data: {
+                name: "BillTypeId",
+                required: true,
+                currencyId: selectedCurrencyId
+            },
+            method: 'POST',
+            success: function (data) {
+                $('#PostingBillTypeComboContainer').html("");
+                $('#PostingBillTypeComboContainer').html(data);
+            },
+        });
+    });
+
+    var currRate, currencyTypeId, CurrencyAmount, ConvertedAmount;
+
+    $('body').off('submit').on('submit', '#Schedule-Posting', function (e) {
+        e.preventDefault();
+        CallPasswordModel(function (e) {
+            if ($('.Res-dates-checkBoxGroup:checked').length > 0) {
+                if ($('#Quantity').val() >= 1) {
+                    $('#btnSave').removeClass('disabled');
+                    postingDatesarray = [];
+
+                    quantity = $('#Quantity').val();
+                    currRate = $("#CurrencyId option:selected").attr('data-rate');//convertion rate
+                    currencyTypeId = $("#CurrencyId option:selected").val()//currency id
+                    CurrencyAmount = parseFloat($('#Amount').val().trim().replace(/,/g, '')).toFixed(2);
+                    ConvertedAmount = Number(parseFloat((CurrencyAmount * quantity) * currRate).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 });
+
+                    var foliotext = $("#BillTypeId option:selected").text() + '[' + CurrencyAmount.toString() +' '+ $("#CurrencyId option:selected").text() + '*' + quantity.toString() + ']';
+
+
+                    $.ajax({
+                        async: false,
+                        url: '/CashieringAndPosting/TaxCalculation/GetOriginalBillValue',
+                        dataType: 'json',
+                        data: { Amount: parseFloat(ConvertedAmount.replace(/,/g, '')).toFixed(2), TaxGroupId: $("#BillTypeId option:selected").attr('tax-groupid') },
+                        method: 'POST',
+                        success: function (response) {
+                            AmountwithoutTax = response.Amount;
+
+                            if ($('#schedulePostingVia').val() == "fromRes") {
+
+                                schedulePostingdata = {
+                                    BillTypeId: $("#BillTypeId option:selected").val(),
+                                    TaxGroupId: $("#BillTypeId option:selected").attr('tax-groupid'),
+                                    PostingCategoryId: $("#BillTypeId option:selected").attr('posting-catg'),
+                                   //FolioText: $("#FolioText").val() == "" ? $("#BillTypeId option:selected").text() : $("#FolioText").val(),
+                                    FolioText:foliotext,
+                                    //Amount: parseFloat($("#Amount").val().trim().replace(/,/g, '')).toFixed(2),
+                                    Amount: parseFloat(AmountwithoutTax.toString().trim().replace(/,/g, '')),
+                                    Remarks: $("#Remarks").val(),
+                                    ChargeCodeId: parseInt($("#BillTypeId option:selected").attr('charge-code')),
+                                    ScheduleDates: getDates(),
+                                    ReservationNo: guestInfo2.ReservationNo,
+                                    groupresNo: guestInfo2.groupresNo,
+                                    GuestName: guestInfo2.GuestName,
+                                    RoomCode: guestInfo2.RoomCode,
+                                    RoomId: guestInfo2.RoomId,
+                                    GuestProfileId: guestInfo2.GuestProfileId,
+                                    ArrivalDate: guestInfo2.ArrivalDate,
+                                    DepartureDate: guestInfo2.Departure,
+                                    DRCR: 'D',
+                                    AmountFC: parseFloat($("#Amount").val().trim().replace(/,/g, '')).toFixed(2),
+                                    ConvertionRate: parseFloat(currRate),
+                                    CurrencyId: currencyTypeId
+                                }
+                            }
+                            else {
+
+                                schedulePostingdata = {
+                                    BillTypeId: $("#BillTypeId option:selected").val(),
+                                    TaxGroupId: $("#BillTypeId option:selected").attr('tax-groupid'),
+                                    PostingCategoryId: $("#BillTypeId option:selected").attr('posting-catg'),
+                                    FolioText: $("#FolioText").val() == "" ? $("#BillTypeId option:selected").text() : $("#FolioText").val(),
+                                    Amount: parseFloat(AmountwithoutTax.toString().trim().replace(/,/g, '')).toFixed(2),
+                                    Remarks: $("#Remarks").val(),
+                                    ChargeCodeId: parseInt($("#BillTypeId option:selected").attr('charge-code')),
+                                    ScheduleDates: getDates(),
+                                    ReservationNo: guestInfo.ReservationNo,
+                                    groupresNo: guestInfo.groupresNo,
+                                    GuestName: guestInfo.GuestName,
+                                    RoomCode: guestInfo.RoomCode,
+                                    RoomId: guestInfo.RoomId,
+                                    GuestProfileId: guestInfo.GuestProfileId,
+                                    ArrivalDate: guestInfo.ArrivalDate,
+                                    DepartureDate: guestInfo.Departure,
+                                    DRCR: 'D',
+                                    AmountFC: parseFloat($("#Amount").val().trim().replace(/,/g, '')).toFixed(2),
+                                    ConvertionRate: parseFloat(currRate),
+                                    CurrencyId: currencyTypeId
+                                }
+                            }
+
+                            $.ajax({
+                                url: '/CashieringAndPosting/SchedulePosting/SaveSchedulePosting',
+                                datatype: 'html',
+                                data: schedulePostingdata,
+                                method: 'POST',
+                                success: function (response) {
+                                    var Type = $('#resType').val();
+                                    ShowSuccessMessage('Record has been saved successfully.');
+                                    //$('#btnSave').addClass('d');
+                                    $('#BillTypeId').prop('selectedIndex', 0);
+                                    $('#FolioText').val('');
+                                    $("#Amount").val('');
+                                    $("#Remarks").val('');
+                                    $('#Quantity').val(1);
+
+                                    $('#ExistinginvoiceGridloadingArea').html(response);
+
+                                    $('#Schedule-Posting div').addClass('is-empty');
+                                    $('#amountField').removeClass('is-focused');
+
+                                    setTimeout(function () {
+                                        if (Type == "reservation") {
+                                            // closeFullContent();
+                                            //LoadReservationGrid();
+                                        } else {
+                                            //location.reload()
+                                            LoadInhouseReservationGrid();
+                                        }
+
+                                    }, 2500);
+
+
+                                },
+                                error: function (xhr, status, error) {
+                                    ShowErrorMessage('Sorry, There is an error in saving this record.');
+
+                                }
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            ShowErrorMessage('Sorry, There is an error.');
+                        }
+                    });
+                } else {
+                    ShowErrorMessage("Please enter the correct quantity");
+                    $('#btnSave').addClass('disabled');
+                }
+            } else {
+                ShowErrorMessage("Please select a date to add posting");
+                $('#btnSave').addClass('disabled');
+            }
+        });
+    });
+
+    $('body').on('click', '#scheduleHistoryTable .rowDelbtn', function () {
+        var currentRow = $(this);
+        CallPasswordModel(function (e) {
+            DeleteRow(currentRow);
+        });
+    });
+
+    function DeleteRow(currentRow) {
+        var id = $(currentRow, '.rowDelbtn').attr('schedule-Id');
+        var chargedate = $(currentRow, '.rowDelbtn').attr('charge-date');
+        var ReservationNo = $(currentRow, '.rowDelbtn').attr('res-no');
+        var GuestProfileId = $(currentRow, '.rowDelbtn').attr('guest-id');
+        var RoomId = $(currentRow, '.rowDelbtn').attr('data-RoomId');
+
+        $.ajax({
+            method: 'GET',
+            url: '/CashieringAndPosting/SchedulePosting/DeleteHistory?reservationNo=' + ReservationNo + '&guestProfileId=' + GuestProfileId + '&roomId=' + RoomId + '&Id=' + id,
+            datatype: 'html',
+            success: function (htmlContent) {
+
+                $('#ExistinginvoiceGridloadingArea').html('');
+                $('#ExistinginvoiceGridloadingArea').html(htmlContent);
+
+                $('.Res-dates-checkBoxGroup:checked').each(function (index, elm) {
+                    //uncheck checked checkboxes
+
+                    if ($(elm).attr('org-date') == chargedate) {
+
+                        $(elm).prop('checked', false);
+                    }
+
+                });
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in getting records.');
+            }
+            ///$(this).closest('tr').remove();
+
+        });
+    }
+
+    function getDates() {
+
+        $('.Res-dates-checkBoxGroup:checked').each(function (index, elm) {
+            postingDatesarray.push(
+                {
+                    Sceduledate: $(this).attr('org-date')
+                });
+
+        });
+        return postingDatesarray;
+    }
+
+    //$('#btnClear').click(function () { location.reload(); });
+
+    function hidebuttons() {
+
+        $('.showForm').hide();
+        $('.dropdown-toggle').hide();
+    }
+
+    //enable schedule button when checkbox selected btnSave
+
+    $('body').on('click', '.Res-dates-checkBoxGroup', function () {
+        
+        if ($('.Res-dates-checkBoxGroup:checked').length > 0) {
+            $('.btn-Save').removeClass('disabled');
+            $('#btnSave').removeClass('disabled');
+        }
+        else {
+            $('#btnSave').addClass('disabled');
+            $('.btn-Save').addClass('disabled');
+        }
+    });
+
+
+    //fill grid -----------------------------------
+    function FillHistoryGrid(ReservationNo, GuestProfileId, RoomId) {
+
+        $.ajax({
+            method: 'POST',
+            url: '/CashieringAndPosting/SchedulePosting/SchedulePostingHistory?reservationNo=' + ReservationNo + '&guestProfileId=' + GuestProfileId + '&roomId=' + RoomId,
+            datatype: 'html',
+            success: function (htmlContent) {
+
+                $('#ExistinginvoiceGridloadingArea').html('');
+                $('#ExistinginvoiceGridloadingArea').html(htmlContent);
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in getting records.');
+            }
+
+
+        });
+
+    }
+
+    $('#Reservation_nav').click(function () {
+        $('#reservationDatesLoadingArea').html('');
+        FillDropDownReservation();
+    });
+    //$('#inhouse_nav').click(function () {
+    //    $('#reservationDatesLoadingArea').html('');
+    //    FillDropDownInhouse();
+    //});
+    //res list click
+
+    $('body').on('change', '#ReservationCombo', function () {
+
+        LoadSelected_ReservationDetails();
+    });
+    //$('body').on('chan', '#ReservationList .es-list', function () {
+    //
+    //    LoadSelected_ReservationDetails();
+    //});
+
+
+    //$('body').on('click').off('click', '#ReservationList .es-list', function () {
+
+    //    LoadSelected_ReservationDetails();
+    //});
+
+    //$(document).on("keydown", $('#ReservationList .es-list'), function (e) {
+    //    if (e.which === 13) {
+    //        alert("Enter Res ");
+    //        LoadSelected_ReservationDetails();
+    //    }
+    //});
+
+    function LoadSelected_ReservationDetails() {
+
+        $('#reservationDatesLoadingArea').html('');
+        $('#resNo').html('');
+        $('#roomNo').html('');
+        $('#guest').html('');
+        $('#arrival').html('');
+        $('#depature').html('');
+        $('#BillTypeId').prop('selectedIndex', 0);
+        $('#FolioText').val('');
+        $("#Amount").val('');
+        $("#Remarks").val('');
+        $('#Quantity').val(1);
+        guestInfo = { ReservationNo: '', groupresNo: '', GuestName: '', RoomCode: '', RoomId: '', GuestProfileId: '', ArrivalDate: '', Departure: '' }
+        $('#ExistinginvoiceGridloadingArea').html('');
+        $('#invoiceGridloadingArea').html('');
+        guestInfo = {
+            ReservationNo: $('#ReservationCombo option:selected').attr('res-no'),
+            groupresNo: $('#ReservationCombo option:selected').attr('gres_no'),
+            GuestName: $('#ReservationCombo option:selected').attr('name'),
+            RoomCode: $('#ReservationCombo option:selected').attr('roomCode'),
+            RoomId: $('#ReservationCombo option:selected').attr('roomId'),
+            GuestProfileId: $('#ReservationCombo option:selected').attr('guestprofId'),
+            ArrivalDate: $('#ReservationCombo option:selected').attr('arr-date'),
+            Departure: $('#ReservationCombo option:selected').attr('dep-date')
+
+        }
+        $('#resNo').html(guestInfo.ReservationNo);
+        $('#roomNo').html(guestInfo.RoomCode);
+        $('#guest').html(guestInfo.GuestName);
+        $('#arrival').html(guestInfo.ArrivalDate);
+        $('#depature').html(guestInfo.Departure);
+
+        GetDates(guestInfo.ArrivalDate, guestInfo.Departure);
+        FillHistoryGrid(guestInfo.ReservationNo, guestInfo.GuestProfileId, guestInfo.RoomId);
+
+    }
+
+    //inhouse list click
+    //$('body').on('click', '#inhouseList', function () {
+    //    //alert("click inhouse");
+    //    LoadSelected_Inhouse_ReservationDetails();
+    //});
+
+    //$('body').on("keydown", $('#inhouseList .es-list'), function (e) {
+
+    //    if (e.which === 13) {
+    //        alert("Enter inhouse ");
+    //        LoadSelected_Inhouse_ReservationDetails();
+    //    }
+    //});
+
+
+    // $('#inhouseList .es-list').on("keydown", function (e) { alert("ftdsfgdfsgdsfdghsdsw   656656"); });
+
+    // $("#cmbAllReservationRooms").keydown(function () {
+    //$('#cmbAllReservationRooms #ReservationList .es-list').on('keydown', function (e) {
+    //    alert("Handler for .keydown() called.");
+    //});
+    //function LoadSelected_Inhouse_ReservationDetails() {
+    //
+    //    $('#reservationDatesLoadingArea').html('');
+    //    $('#resNo').html('');
+    //    $('#roomNo').html('');
+    //    $('#guest').html('');
+    //    $('#arrival').html('');
+    //    $('#depature').html('');
+    //    $('#BillTypeId').prop('selectedIndex', 0);
+    //    $('#FolioText').val('');
+    //    $("#Amount").val('');
+    //    $("#Remarks").val('');
+    //    guestInfo = { ReservationNo: '', groupresNo: '', GuestName: '', RoomCode: '', RoomId: '', GuestProfileId: '', ArrivalDate: '', Departure: '' }
+    //    $('#ExistinginvoiceGridloadingArea').html('');
+    //    $('#invoiceGridloadingArea').html('');
+    //    guestInfo = {
+    //        ReservationNo:  $('#inhouseList option:selected').attr('res-no'),
+    //        groupresNo:     $('#inhouseList option:selected').attr('gres_no'),
+    //        GuestName:      $('#inhouseList option:selected').attr('name'),
+    //        RoomCode:       $('#inhouseList option:selected').attr('roomCode'),
+    //        RoomId:         $('#inhouseList option:selected').attr('roomId'),
+    //        GuestProfileId: $('#inhouseList option:selected').attr('guestprofId'),
+    //        ArrivalDate:    $('#inhouseList option:selected').attr('arr-date'),
+    //        Departure:      $('#inhouseList option:selected').attr('dep-date')
+
+    //    }
+    //    $('#resNo').html(guestInfo.ReservationNo);
+    //    $('#roomNo').html(guestInfo.RoomCode);
+    //    $('#guest').html(guestInfo.GuestName);
+    //    $('#arrival').html(guestInfo.ArrivalDate);
+    //    $('#depature').html(guestInfo.Departure);
+
+    //    GetDates(guestInfo.ArrivalDate, guestInfo.Departure);
+    //    FillHistoryGrid(guestInfo.ReservationNo, guestInfo.GuestProfileId, guestInfo.RoomId);
+
+
+
+    //}
+
+
+    function GetDates(arrival, depature) {
+
+        $.ajax({
+            method: 'GET',
+            url: '/CashieringAndPosting/SchedulePosting/GetReservationDates?arrivalDate=' + arrival + '&departureDate=' + depature,
+            datatype: 'html',
+            success: function (htmlContent) {
+                $('#reservationDatesLoadingArea').html('');
+                $('#reservationDatesLoadingArea').html(htmlContent);
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in getting records.');
+            }
+
+
+        });
+
+    }
+
+
+    //$('#ReservationList').click(function () {
+    //    $('#ReservationList').show();
+    //});
+
+    function FillDropDownReservation() {
+        $.ajax({
+            url: '/CashieringAndPosting/SchedulePosting/ReservationList',
+            dataType: 'json',
+            method: 'GET',
+            success: function (response) {
+
+                // $.each(JSON.parse(response), function (index, item) {
+                $.each(response, function (index, item) {
+
+                    // $('<option value="' + index + '" res-no="' + item.ResNo + '" gres_no="' + item.GResNo + '" name="' + item.Name + '" roomCode="' + item.RoomCode + '"  roomId="' + item.RoomId + '" guestprofId="' + item.GuestProfileId + '" arr-date="' + fomatTime(item.Arrival, 'd') + '" dep-date="' + fomatTime(item.Departure, 'd') + '" > ' + item.ResNo + '--' + item.Name + '</option>').appendTo($('#ReservationCombo'));
+                    $('#ReservationCombo').append('<option value="' + index + '" res-no="' + item.ResNo + '" gres_no="' + item.GResNo + '" name="' + item.Name + '" roomCode="' + item.RoomCode + '"  roomId="' + item.RoomId + '" guestprofId="' + item.GuestProfileId + '" arr-date="' + fomatTime(item.Arrival, 'd') + '" dep-date="' + fomatTime(item.Departure, 'd') + '" > ' + item.ResNo + '--' + item.Name + '</option>');
+
+                })
+                $('#reservationDatesLoadingArea').html('');
+                //$('#cmbAllReservationRooms').editableSelect();
+            },
+            error: function (error) {
+                ShowErrorMessage('Sorry, There is an error in loading records.');
+            }
+        });
+    }
+
+    //$('#inhouseList').click(function () {
+
+    //    $('#inhouseList').show();
+    //});
+
+
+    //function FillDropDownInhouse() {
+    //    $.ajax({
+    //        url: '/CashieringAndPosting/SchedulePosting/InHouseReservationList',
+    //        dataType: 'json',
+    //        method: 'GET',
+    //        success: function (response) {
+    //            $.each(response, function (index, item) {
+
+    //                $('<option value="' + index + '" res-no="' + item.ResNo + '" gres_no="' + item.GResNo + '" name="' + item.Name + '" roomCode="' + item.RoomCode + '"  roomId="' + item.RoomId + '" guestprofId="' + item.GuestProfileId + '" arr-date="' + fomatTime(item.Arrival, 'd') + '" dep-date="' + fomatTime(item.Departure, 'd') + '" > ' + item.RoomCode + ' --' + item.Name + '</option>').appendTo($('#inhouseReservations'));
+
+    //            })
+    //            $('#reservationDatesLoadingArea').html('');
+    //            $('#inhouseReservations').editableSelect();
+    //        },
+    //        error: function (error) {
+    //            ShowErrorMessage('Sorry, There is an error in loading records.');
+    //        }
+    //    });
+
+
+    //}
+
+
+</script>

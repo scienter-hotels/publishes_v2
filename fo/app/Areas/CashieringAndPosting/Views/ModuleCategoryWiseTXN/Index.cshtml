@@ -1,0 +1,218 @@
+﻿
+@{
+    ViewBag.Title = "Module Category Wise TXN";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form id="moduleCategoryWiseTXN">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header" data-background-color="purple">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h4 class="title">
+                                @ViewBag.Title
+                                <hr class="visible-print" />
+                            </h4>
+                        </div>
+                        <div class="col-md-4 text-right hidden-print" hidden>
+                            <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+
+                            <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                                <span class="glyphicon glyphicon-th-list"></span>
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card-content" id="contentLoadingArea">
+                    <div id="content">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group label-floating ">
+                                            <label class="control-label">Type</label>
+                                            <div id="TypeComboContainer">
+                                                <select name="TypeId" id="TypeId" class="form-control" required>
+                                                    <option value=""> </option>
+                                                    <option value="Inhouse"> Inhouse</option>
+                                                    <option value="Walk-In"> Walk-In</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group label-floating ">
+                                            <label class="control-label">Reservation No</label>
+                                            <div id="ReservationNoComboContainer">
+                                                <select name="ReservationHeaderId" id="ReservationHeaderId" class="form-control ReservationHeaderId" required>
+                                                    <option> Select Type</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">Stock Location *</label>
+                                            <select name="stockLocation" id="stockLocation" class="form-control stockLocation" required>
+                                                <option value="" selected></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">Module Category Wise Item *</label>
+                                            <select name="moduleCategoryWiseItem" id="moduleCategoryWiseItem" class="form-control moduleCategoryWiseItem" required>
+                                                <option value="" selected></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">Quantity *</label>
+                                            <input autocomplete="off" class="form-control text-box single-line" min="0" max="100" id="Quantity" name="Quantity" type="number" value="" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group label-floating" id="amountField">
+                                            <label class="control-label">Rate *</label>
+                                            <input autocomplete="off" class="form-control text-box single-line number number-only rate" id="rate" name="rate" required type="text" value="" maxlength="10" style="text-align:left !important;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group label-floating ">
+                                            <label class="control-label">Discount Type</label>
+                                            <div id="DiscountTypeComboContainer">
+                                                <select name="DiscountType" id="DiscountType" class="form-control" required>
+                                                    <option value="P"> Percentage</option>
+                                                    <option value="A"> Amount</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">Discount *</label>
+                                            <input autocomplete="off" class="form-control text-box single-line" min="0" max="100000" id="Discount" name="Discount" type="number" value="" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                                    &nbsp;
+                                    <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        StockLocationCombo();
+        ModuleCategoryWiseItemCombo();
+    });
+
+    $('body').on('change', '#TypeId', function () {
+        var selectedTypeId = $("#TypeId option:selected").val();
+        $.ajax({
+            url: '/CashieringAndPosting/ModuleCategoryWiseTXN/SelectReservationNumbersByType?type=' + selectedTypeId,
+            dataType: 'json',
+            success: function (response) {
+                if ($('.ReservationHeaderId').length > 0) {
+                    $('.ReservationHeaderId option').not(':first').remove();
+
+                    $.each(ReservationHeaderId, function (index, ReservationHeaderId) {
+                        $(' <option value="' + ReservationHeaderId.Id + '"> ' + ReservationHeaderId.ReservationNo + ' </option>').appendTo($('.ReservationHeaderId'));
+                    });
+                }
+            }
+        });
+    });
+
+    function StockLocationCombo() {
+        $.ajax({
+            url: '/administration/ModuleCategoryWiseItems/StockLocationCombo',
+            dataType: 'json',
+            success: function (stockLocation) {
+                if ($('.stockLocation').length > 0) {
+                    $('.stockLocation option').not(':first').remove();
+
+                    $.each(stockLocation, function (index, stockLocation) {
+                        $(' <option value="' + stockLocation.Code + '"> ' + stockLocation.Description + ' </option>').appendTo($('.stockLocation'));
+                    });
+                }
+            }
+        });
+    }
+
+    function ModuleCategoryWiseItemCombo() {
+        $.ajax({
+            url: '/administration/ModuleCategoryWiseItems/ModuleCategoryWiseItemComboCombo',
+            dataType: 'json',
+            success: function (moduleCategoryWiseItem) {
+                if ($('.moduleCategoryWiseItem').length > 0) {
+                    $('.moduleCategoryWiseItem option').not(':first').remove();
+
+                    $.each(moduleCategoryWiseItem, function (index, moduleCategoryWiseItem) {
+                        $(' <option value="' + moduleCategoryWiseItem.Id + '"> ' + moduleCategoryWiseItem.Name + ' </option>').appendTo($('.moduleCategoryWiseItem'));
+                    });
+                }
+            }
+        });
+    }
+
+    //Form Submit
+    $('body').on('submit', '#moduleCategoryWiseTXN', function (e) {
+        e.preventDefault();
+        var absaluteRate = $('#rate').val().replace(",","")
+        var moduleCategoryWiseTXN = {
+            ReservationHeaderId:    $('#ReservationHeaderId').val(),
+            StockLocationCode:      $('#stockLocation').val(),
+            ItemId:                 $('#moduleCategoryWiseItem').val(),
+            Quantity:               $('#Quantity').val(),
+            OriginalAmount:         absaluteRate,
+            DiscountType:           $('#DiscountType').val(),
+            DiscountRate:           $('#Discount').val(),
+        };
+        $.ajax({
+            url: '/CashieringAndPosting/ModuleCategoryWiseTXN/ModuleCategoryWiseTXNSave',
+            dataType: 'JSON',
+            data: moduleCategoryWiseTXN,
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+                        $('#ReservationHeaderId').val(''),
+                        $('#stockLocation').val(''),
+                        $('#moduleCategoryWiseItem').val(''),
+                        $('#Quantity').val(''),
+                        $('#rate').val('')
+                        $('#DiscountType').val(''),
+                        $('#Discount').val('')
+            },
+            error: function () {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+
+        });
+    });
+</script>
+

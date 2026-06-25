@@ -1,0 +1,24 @@
+﻿@using Scienter.HotelERP.FrontOffice.WebUIMvc.Models
+@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.Common.Utility
+
+@model ComboBoxViewModel<RoomStatus>
+
+<style>
+    .col12override{
+        padding: 0px !important;
+    }
+</style>
+<div class="col-md-12 col12override">
+    <fieldset  class="the-fieldset">
+        <legend class="the-legend"><font size="3" color="#999">Out of order Status</font> </legend>
+        <div class="row">
+            @foreach (var item in Model.Options)
+            {
+                <div class="col-md-6">
+                    <input type="radio" id="OutOfOrderStatusId" name="OutOfOrderStatusId" value="@item.Id" /> @item.Name
+                </div>
+            }
+        </div>
+    </fieldset>
+</div>

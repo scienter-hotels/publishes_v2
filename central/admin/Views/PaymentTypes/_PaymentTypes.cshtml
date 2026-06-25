@@ -1,0 +1,22 @@
+﻿@using Scienter.DestinityHorizon.Common.Service
+@using Scienter.DestinityHorizon.Common.Domain
+
+@{
+
+    List<PaymentType> paymentTypelst = new List<PaymentType>();
+
+    paymentTypelst = new PaymentTypeService().SelectActive();
+}
+
+@foreach (var item in paymentTypelst)
+{    
+        <div>
+            <div class="checkbox  form-group form-group-marging">
+                <label>
+                    <input type="checkbox" class="paymentType-checkbox"  value="@item.PayCode">@item.Description
+                </label>
+            </div>
+        </div>
+   
+
+}

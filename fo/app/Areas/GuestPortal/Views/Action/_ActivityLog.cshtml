@@ -1,0 +1,43 @@
+﻿<div class="modal fade guestportal-activitylog-model" id="guestportal-action-model" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <input type="hidden" id="code" value="" />
+                <input type="hidden" id="requestId" value="" />
+                <input type="hidden" id="reservationHeaderId" value="" />
+                <h5 class="modal-title" id="exampleModalLabel">Guest Portal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="white_card_body">
+
+                    <form id="guestportalactionForm" method="get">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label" for="exampleInputEmail1">Action Type</label>
+                                <select class="form-control" id="actionType"></select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label" for="exampleInputEmail1">Additional Notes</label>
+                                <textarea class="form-control" id="additionalNotes" required></textarea>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="btnSaveChanges">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @*<div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSave">Save changes</button>
+                </div>*@
+        </div>
+    </div>
+</div>

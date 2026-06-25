@@ -1,0 +1,93 @@
+﻿
+@{
+    ViewBag.Title = "User Wise Properties";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    
+         // form load --------------------------------
+        $(document).ready(function () {       
+            LoadForm();
+        });
+
+    // show form --------------------------------
+
+         function LoadForm() {
+            $.ajax({
+                url: '/useraccess/userwiseproperties/form',
+                dataType: 'html',
+                method: 'POST',
+                success: function (response) {                  
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }             
+            });
+    }
+    
+        // save --------------------------------------
+         $('body').on('submit', '#userWiseProperties', function (e) {
+           
+            var UserId = $('#UserId').val()
+            e.preventDefault();
+            var userWisePropertySelected = [];
+            
+            $('.data-selected-properties').each(function (index, item) {
+                var pageInfo = "";
+                if ($(this).is(':checked')) {
+                    pageInfo = {
+                        PropertyId: $(this).val()
+                    }
+                    userWisePropertySelected.push(pageInfo);
+                }
+            });
+
+            if (userWisePropertySelected.length == 0) {
+
+                ShowWarningMessage('Please select a property.');
+
+            }
+            else {
+                $.ajax({
+                    url: '/useraccess/userwiseproperties/Insert',
+                    dataType: 'JSON',
+                    data: { userWisePropertySelected: userWisePropertySelected, UserId: UserId },
+                    method: 'POST',
+                    success: function (response) {
+                        ShowSuccessMessage('User Wise Roles has been saved successfully.');
+                    }
+
+                });
+            }
+         
+     
+        });
+
+
+</script>
+
+

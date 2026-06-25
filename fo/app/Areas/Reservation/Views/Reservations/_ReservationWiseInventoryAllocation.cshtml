@@ -1,0 +1,43 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.ReservationWiseRoomInventoryView>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Reservation Date
+                    </th>
+                    <th>
+                        Inventory Item
+                    </th>
+                    <th>
+                        Item Quantity
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.ReservationDate.ToShortDateString()
+                        </td>
+                        <td>
+                            @item.ItemName
+                        </td>
+                        <td>
+                            @item.ItemQuantity
+                        </td>
+                        <td>
+                            <a class="btn btn-danger btn-sm btn-delete-item" id="btnDelete" data-AllocationId="@item.Id">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

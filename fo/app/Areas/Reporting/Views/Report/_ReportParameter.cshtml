@@ -1,0 +1,1057 @@
+﻿@using System;
+@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.FrontOffice.Service
+@using Scienter.HotelERP.FrontOffice.WebUIMvc.Models
+@using Scienter.HotelERP.Common.Domain.ViewModels
+
+<style>
+    .reportcontainer {
+        border-color: #D9434C;
+        border-width: 0.5px;
+    }
+
+    button {
+        border-radius: 5px !important;
+        background-color: #D9434C;
+        width: 100px;
+        border: none;
+    }
+
+    /*.select2-container .select2-selection--single {
+        height: 34px !important;
+    }
+
+    .select2-container--default .select2-selection--single {
+        border: 1px solid #ccc !important;
+        border-radius: 0px !important;
+    }*/
+
+    /*2023-08-15---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+
+</style>
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+</style>
+
+
+@{
+    ReportDetails rd = new ReportDetails();
+
+    rd = new ReportService().SelectReportParamaters(ViewBag.ReportName);
+
+}
+
+@*<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>*@
+<!------ Include the above in your HEAD tag ---------->
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.min.js"></script>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading active">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" class="view-accordion report-param-title" data-parent="#accordion" href="#collapseOne">
+                            Report Parameters
+                        </a>
+                    </h4>
+                </div>
+                @if (rd.ParamFromDate)
+                {
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging input-group date">
+                            <label>From Date*</label>
+                            <input type="text" class="effective-to form-control start-date-picker text-box single-line FromDate" id="FromDate" name="FromDate" value="" autocomplete="off" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+
+                }
+                @if (rd.ParamToDate)
+                {
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging input-group date">
+                            <label>To Date*</label>
+                            <input type="text" class="effective-to form-control end-date-picker text-box single-line ToDate" id="ToDate" name="ToDate" value="" autocomplete="off" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+
+                    </div>
+                }
+                @if (rd.ParamDate)
+                {
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging input-group date">
+                            <label>Date*</label>
+                            <input type="text" class="effective-to form-control end-date-picker text-box single-line" id="Date" name="Date" value="" autocomplete="off" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+
+                    </div>
+                }
+                @if (rd.ParamFromTime)
+                {
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>From Time *</label>
+                            <input type="text" class="effective-to form-control" id="FromTime" name="FromTime" value="" autocomplete="off" />
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamToTime)
+                {
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>To Time*</label>
+                            <input type="text" class="effective-to form-control" id="ToTime" name="ToTime" value="" autocomplete="off" />
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamTime)
+                {
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>To Time*</label>
+                            <input type="text" class="effective-to form-control" id="Time" name="Time" value="" autocomplete="off" />
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamResNo)
+                {
+                    List<ReservationHeaderView> ReserlistWithoutGrp = new List<ReservationHeaderView>();
+                    ReserlistWithoutGrp = new ReservationHeaderService().SelectAllReservations("GROUP").ToList();
+
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Reservation No*</label>
+                            <select id="ResNo" name="ResNo" required class="select2 ResNo-combo form-control">
+                                @foreach (var item in ReserlistWithoutGrp)
+                                {
+                                    <option value="@item.ResNo">@item.ResNo</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    @*<div class="col-md-6">
+                <div class="col-md-12 form-group form-group-marging">
+                    <label>Reservation No*</label>
+                    <input type="text" class="effective-to form-control " id="ResNo" name="ResNo" value="" autocomplete="off" />
+                </div>
+            </div>*@
+                }
+                @if (rd.ParamGroupResNo)
+                {
+                    List<ReservationHeaderView> GrpReserlist = new List<ReservationHeaderView>();
+                    GrpReserlist = new ReservationHeaderService().SelectAllReservations("GROUP").ToList();
+
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Group Reservation No*</label>
+                            <select id="GroupResNo" name="GroupResNo" required class="select2 GroupResNo-combo form-control">
+                                @foreach (var item in GrpReserlist)
+                                {
+                                    <option value="@item.GResNo">@item.ResNo</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    @*<div class="col-md-6">
+                <div class="col-md-12 form-group form-group-marging">
+                    <label>Group Reservation No*</label>
+                    <input type="text" class="effective-to form-control " id="GroupResNo" name="GroupReservationNo" value="" autocomplete="off" />
+                </div>
+            </div>*@
+                }
+                @if (rd.ParamExtensionCode)
+                {
+                    IEnumerable<Extension> extensions = new ExtensionService().Select(Scienter.HotelERP.Common.Utility.SelectType.ActiveOnly);
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Extension Code *</label>
+                            <select id="ExtensionCode" name="ExtensionCode" required class="select2 ExtensionCode-combo form-control">
+                                @foreach (var item in extensions)
+                                {
+                                    <option value="@item.Code">@item.Code</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                }
+                @if (rd.ParamCallDirection)
+                {
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Selection *</label>
+                            <select class="select2 form-control " id="CallDirection">
+                                <option value="All">All</option>
+                                <option value="Incoming">Incoming</option>
+                                <option value="Outgoing">Outgoing</option>
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamCallType)
+                {
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Call Type *</label>
+                            <select class="select2 form-control " id="CallType">
+                                <option value="All">All</option>
+                                <option value="Local">Local</option>
+                                <option value="National">National</option>
+                                <option value="Internal">Internal</option>
+                                <option value="IDD">IDD</option>
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamTelePhoneNo)
+                {
+                    IEnumerable<TelePhoneNumber> TelePhoneNo = new ExtensionService().SelectTelePhoneNumber();
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>TelePhone Number *</label>
+                            <select id="TelePhoneNo" name="TelePhoneNo" required class="select2 TelePhoneNumberCombo form-control select2">
+                                @foreach (var item in TelePhoneNo)
+                                {
+                                    <option value="@item.TelNo">@item.TelNo</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamExtensionGroup)
+                {
+                    IEnumerable<ExtensionGroup> extensionGroups = new ExtensionGroupsService().SelectExtensionGroup();
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Extension Group *</label>
+                            <select id="ExtensionGroup" name="ExtensionGroup" required class="select2 ExtensionGroupCombo form-control select2">
+                                @foreach (var item in extensionGroups)
+                                {
+                                    <option value="@item.GroupName">@item.GroupName</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                }
+                @if (rd.ParamProfitCenter)
+                {
+                    IEnumerable<ProfitCenter> profitCenters = new ProfitCenterService().Select_ProfitCenter_ForCombo();
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Profit Center *</label>
+                            <select id="ProfitCenter" name="ProfitCenter" required class="select2 ProfitCenterCombo form-control">
+                                @foreach (var item in profitCenters)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamProfitCenter)
+                {
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Document No*</label>
+                            <select id="DocNo" name="DocNo" required class="select2 DocumentNoCombo select2 form-control"></select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamRoomRate)
+                {
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Show Room Rate*</label>
+                            @*<input type="text" class="effective-to form-control " id="roomrate" name="RoomRate" value="" autocomplete="off" />*@
+                            <select class="select2 form-control " id="roomrate">
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamUuid)
+                {
+                    List<ReservationHeaderView> reserlist = new List<ReservationHeaderView>();
+                    if (rd.ReportName == "ProformaInvoice")
+                    {
+                        reserlist = new ReservationHeaderService().SelectAllReservations("ALL").ToList();
+                    }
+                    else if (rd.ReportName == "ReservationConfirmation")
+                    {
+                        reserlist = new ReservationHeaderService().SelectAllReservations("ALL").ToList();
+                    }
+                    else if (rd.ReportName == "ReservationConfirmationWithoutGroupReservation")
+                    {
+                        reserlist = new ReservationHeaderService().SelectAllReservations("WITHOUTGROUP").ToList();
+                    }
+                    else if (rd.ReportName == "ReservationConfirmationWithGroupReservation")
+                    {
+                        reserlist = new ReservationHeaderService().SelectAllReservations("GROUP").ToList();
+                    }
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Reservation No*</label>
+                            <select id="ProfomaResUuid" name="ProfomaResUuid" required class="select2 Reservation-combo form-control">
+                                @foreach (var item in reserlist)
+                                {
+                                    <option value="@item.ResUuid">@item.ResNo</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamArrival)
+                {
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Type *</label>
+                            <select id="Arrival" name="Status" required class="select2 Status-combo form-control">
+                                <option value="0">All</option>
+                                <option value="1">Arrival</option>
+                                <option value="2">Departure</option>
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamDeparture)
+                {
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging input-group date">
+                            <label>Departure*</label>
+                            <input type="text" class="effective-to form-control end-date-picker text-box single-line" id="DepartureDate" name="Date" value="" autocomplete="off" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+
+                    </div>
+                }
+                @if (rd.ParamStatus)
+                {
+
+                    List<ReservationStatus> options = new ReservationStatusService().Select("active-only").ToList();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Status *</label>
+                            <select id="Status" name="Status" required class="select2 Status-combo form-control">
+                                <option value="0">All</option>
+                                @foreach (var item in options)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamSegment)
+                {
+                    IEnumerable<Segment> options = new SegmentService().Select("active-only").ToList();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Segment *</label>
+                            <select id="Segment" name="Segment" required class="select2 Segment-combo form-control">
+                                <option value="0">All</option>
+                                @foreach (var item in options)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamInspectionTimeId)
+                {
+
+                    List<RoomInspectionTime> options = new RoomInspectionService().Select();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Inspection Time *</label>
+                            <select id="InspectionTime" name="InspectionTime" required class="select2 InspectionTime-combo form-control">
+                                @foreach (var item in options)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamRoomBoy)
+                {
+                    List<RoomWiseRoomBoys> options = new RoomDetailService().SelectRoomBoys();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Room Boy *</label>
+                            <select id="RoomBoy" name="RoomBoy" required class="select2 Status-combo form-control">
+                                <option value="0">All</option>
+                                @foreach (var item in options)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+
+                @if (rd.ParamCompany)
+                {
+                    List<CompanyView> options = new CompanyService().Select("active-only").ToList();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Company *</label>
+                            <select id="Company" name="Company" required class="select2 Status-combo form-control">
+                                <option value="0">All</option>
+                                @foreach (var item in options)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+
+                            </select>
+                            @if (rd.ReportName == "OccupancyByRoomNights_Monthly")
+                            {
+                                <span style="font-size:10px;">Applicable only for agent wise reports</span>
+                            }
+                            @if (rd.ReportName == "OccupancyByRoomNights")
+                            {
+                                <span style="font-size:10px;">Applicable only for room nights & pax count by nationality report</span>
+                            }
+
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamRateCode)
+                {
+                    List<RateCodeHeader> options = new RateCodeHeaderService().Select("active-only", 2).ToList();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Rate Code*</label>
+                            <select id="RateCode" name="RateCode" required class="select2 Status-combo form-control">
+                                <option value="0">All</option>
+                                @foreach (var item in options)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamDocNo && (!rd.ParamMealResAdvDocNo && !rd.ParamProfitCenter))
+                {
+
+                    List<Posting> options = new PostingService().GetInvoiceNoList(rd.DocumentNo).ToList();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Document No*</label>
+                            <select id="DocNo" name="DocNo" required class="select2 Status-combo select2 form-control">
+                                @foreach (var item in options)
+                                {
+                                    <option value="@item.DocNo">@item.DocNo</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamMealResAdvDocNo)
+                {
+                    List<Posting> options = new MealReservationService().GetDocumentNoList().ToList();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Document No*</label>
+                            <select id="DocNo" name="DocNo" required class="select2 Status-combo select2 form-control">
+                                @foreach (var item in options)
+                                {
+                                    <option value="@item.DocNo">@item.DocNo</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamInvoiceNo)
+                {
+                    List<FolioHeader> options = new ReportService().GetInvoiceNumbers();
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6 form-group ">
+                                <label>Invoice No*</label>
+                                @*<select id="InvoiceNo" name="InvoiceNo" required class="InvoiceNo-combo select2 form-control">*@
+                                <select id="InvoiceNo" name="InvoiceNo" required class="select2 InvoiceNo-combo form-control">
+                                    @foreach (var item in options)
+                                    {
+                                        <option value="@item.InvoiceNo.Trim()" data-reservation-header-id="@item.ReservationID" data-folio-no="@item.FolioNo">@item.InvoiceNo</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6 form-group form-group-marging" style="margin: 44px 0 0 -22px;">
+                                @*<button id="btnAdvanceSearch" class="btn btn-primary hidden-print" target="" style="height: 28px;">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>*@
+                                @*<button id="btnAdvanceSearch" class="btn btn-primary hidden-print" target="" style="height: 28px;">*@
+                                <span class="glyphicon glyphicon-search" id="btnAdvanceSearch" style="padding: 20px 0px;"></span>
+                                @*</button>*@
+                            </div>
+                        </div>
+                        <div class="row" style="margin: 0px 0px 20px -15px; font-size:13px !important;">
+                            <div class="col-md-12">
+                                This dropdown contains only the latest 100 records. Please use the advanced search ( <span class="glyphicon glyphicon-search" style="font-size:12px !important;"></span>) for more details...
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamDepartment)
+                {
+                    List<Department> options = new DepartmentService().Select("active-only").ToList();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Department*</label>
+                            <select id="Department" name="Department" required class="select2 Status-combo form-control">
+                                <option value="-1">All</option>
+                                @foreach (var item in options)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamPaymentType)
+                {
+                    List<PaymentTypes> options = new PaymentModeService().SelectPaymentTypes().ToList();
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Payment Type *</label>
+                            <select id="PaymentType" name="PaymentType" required class="select2 Status-combo form-control">
+                                <option value="0">All</option>
+                                @foreach (var item in options)
+                                {
+                                    <option value="@item.Id">@item.Description</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamMarket)
+                {
+                    List<Market> options = new MarketService().Select("active-only").ToList();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Market *</label>
+                            <select id="Market" name="Market" required class="select2 Status-combo form-control">
+                                <option value="0">All</option>
+                                @foreach (var item in options)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamCompanyProfileType)
+                {
+                    List<CompanyProfileType> options = new CompanyProfileTypeService().Select("active-only").ToList();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Company Profile Type *</label>
+                            <select id="CompanyProfileType" name="CompanyProfileType" required class="select2 Status-combo form-control">
+                                <option value="0">All</option>
+                                @foreach (var item in options)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                            <span style="font-size:10px;">Applicable only for agent wise reports</span>
+                        </div>
+                    </div>
+                }
+                @if (rd.ParamReportType)
+                {
+                    <input type="hidden" id="ReportType" name="ReportType" value="@rd.ParamReportTypeValue" />
+                    <input type="hidden" id="ReportSubTitle" name="ReportSubTitle" value="@rd.ReportSubTitle" />
+                }
+                @if (rd.ParamSalesPerson)
+                {
+                    List<StaffDetail> options = new StaffDetailService().SelectSalesPersons();
+
+                    <div class="col-md-6">
+                        <div class="col-md-12 form-group form-group-marging">
+                            <label>Sales Person *</label>
+                            <select id="SalesPerson" name="SalesPerson" required class="select2 Status-combo form-control">
+                                <option value="0">All</option>
+                                @foreach (var item in options)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @if (rd.IsDirectPrint == 1)
+        {
+            <input type="hidden" value="@rd.DocType" name="" id="DocType" />
+            <input type="hidden" value="@rd.IsDirectPrint" name="" class="printingMethod" />
+            <button id="btnprint" class="btn btn-primary hidden-print" target="">
+                <span class="glyphicon glyphicon-print"></span>
+            </button>
+
+            if (rd.IsDirectPrint == 1)
+            {
+                if (rd.IsBreifInvoice == 1)
+                {
+                    <a id="btnBreifBill" class="pull-right btn btn-primary btn-success" target="_blank">
+                        Preview
+                    </a>
+                }
+                else
+                {
+                    <a href="" class="pull-right btn btn-success btn-width-100px btn-shadow reportViewBtn" target="_blank">Preview</a>
+                }
+
+            }
+        }
+        @*else if (rd.IsFiscalPrint == true)
+        {
+            <input type="hidden" value="@rd.DocType" name="" id="DocType" />
+            <input type="hidden" value="@rd.IsFiscalPrint" name="" class="printingMethod" />
+            <button id="btnprint" class="btn btn-primary hidden-print" target="">
+                <span class="glyphicon glyphicon-print"></span>
+            </button>
+
+            if (rd.IsFiscalPrint == true)
+            {
+                if (rd.IsBreifInvoice == 1)
+                {
+                    <a id="btnBreifBill" class="pull-right btn btn-primary btn-success" target="_blank">
+                        Preview
+                    </a>
+                }
+                else
+                {
+                    <a href="" class="pull-right btn btn-success btn-width-100px btn-shadow reportViewBtn" target="_blank">Preview</a>
+                }
+
+            }
+        }*@
+        else
+        {
+            if (@Scienter.HotelERP.Common.Domain.SessionObjects.SystemSettingsWiseProperties.Find(x => x.Code == "SS016" && x.PropertyId == Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id).Value == "F")
+            {
+                <input type="hidden" value="@rd.DocType" name="" id="DocType" />
+                <input type="hidden" value="@rd.IsDirectPrint" name="" class="printingMethod" />
+                <button id="btnprint" class="btn btn-primary hidden-print" target="">
+                    <span class="glyphicon glyphicon-print"></span>
+                </button>
+
+                //if (rd.IsFiscalPrint == true)
+                //{
+                if (rd.IsBreifInvoice == 1)
+                {
+                    <a id="btnBreifBill" class="pull-right btn btn-primary btn-success" target="_blank">
+                        Preview
+                    </a>
+                }
+                else
+                {
+                    <a href="" class="pull-right btn btn-success btn-width-100px btn-shadow reportViewBtn" target="_blank">Preview</a>
+                }
+
+                //}
+            }
+            else
+            {
+                <a href="" class="pull-right btn btn-success btn-width-100px btn-shadow reportViewBtn" target="_blank">View</a>
+            }
+
+        }
+
+        @if (rd.IsLKROnlyInvoice == 1)
+        {
+            <a id="btnLKRBill" class="btn btn-primary" style="background-color:#2f9b04 !important;" target="_blank">
+                BILL   @SessionObjects.LocalCurrency.ISOCode             @*Bangaladesh Modification*@
+            </a>
+        }
+
+        @if (rd.ReportName == "FolioInvoice")
+        {
+            <button id="BtnShareBillPrintCopy" type="button" class="btn btn-primary">
+                <span class="glyphicon glyphicon-send"></span> Share
+            </button>
+        }
+
+
+        <button type="reset" class="pull-right btn btn-default btn-width-100px btn-shadow" onclick="ClearForm()"> Clear </button>
+
+
+    </div>
+</div>
+
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Username" name="" id="Username" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+
+<script>
+    $(document).ready(function (e) {
+        debugger;
+
+        //2023-08-15--------------------------------------------------------------------------
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+
+        let Id = $('.ProfitCenterCombo').val();
+        if (Id == null) {
+            $('.ProfitCenterCombo').append('<Option>no results found</Option>');
+        } else {
+            setTimeout(function () {
+                ProfitCenterComboChange(Id);
+            }, 500);
+        }
+
+        $('.report-param-title').html('');
+        $('.report-param-title').html($($($('.checkmark').not(':hidden')).parent('.reportdiv').find('input[type="hidden"]')).attr('data-reportTitle'));
+
+        var todayDateFormatted = dateFormatChanger($('.FromDate').val())
+        $('.ToDate').val(getDateforHeader(parseDate(todayDateFormatted).addDays(30), 'withdash'));
+
+
+    });
+
+    //$('body').off('click', '#btnLKRBill').on('click', '#btnLKRBill', function (e) {
+    //    alert(test);
+    //});
+
+    $('body').off('click', '#btnprint').on('click', '#btnprint', function (e) {
+        debugger;
+        e.preventDefault();
+        var docType = $('#DocType').val();
+        var docno = $('#DocNo').val();
+        var propertyId = $('#PropertyId').val();
+        var userId = $('#UserId').val();
+        var printURL = $('#DirectPrintURL').val();
+        var IsBilPreview = "0";
+        var Username = $('#Username').val();
+        var isPrintCopy = true;
+
+        var folioNo = $('#InvoiceNo option:selected').attr('data-folio-no');
+        var reservationHeaderId = $('#InvoiceNo option:selected').attr('data-reservation-header-id');
+
+        if ($('#DocType').val() == "INV") {
+            docno = $('#InvoiceNo').val();
+        }
+
+        $.ajax({
+            url: '/reporting/report/SaveReportPrintCopyCount',
+            dataType: 'json',
+            method: 'POST',
+            data: { invoiceNo: docno, folioNo: folioNo, reservationHeaderId: reservationHeaderId },
+            success: function (date) {
+
+            },
+            error: function (error) {
+            }
+        });
+
+        var ajaxUrl = printURL + 'PRT/' + docType + '/' + docno + '/' + propertyId + '/' + userId + '/PrintCopy/';
+        
+        var fiscalPrinterUrl = '/Base/FiscalPrinter_DirectPrint?docType=' + docType + '&docno=' + docno + '&propertyId=' + propertyId + '&userId=' + userId + '&isPrintCopy=' + isPrintCopy;
+
+        if ($('#DocType').val() == "INV") {
+            docno = $('#InvoiceNo').val();
+            //var reservationHeaderId = $('#InvoiceNo option:selected').attr('data-reservation-header-id');
+            //var folioNo = $('#InvoiceNo option:selected').attr('data-folio-no');
+            ajaxUrl = printURL + 'PRT/' + docType + '/' + reservationHeaderId + '/' + propertyId + '/' + userId + '/' + folioNo + '/' + Username + '/0/';
+
+            var fiscalPrinterUrl = '/Base/FiscalPrinter_FolioInvoice?folioNo=' + folioNo + '&reservationHeaderId=' + reservationHeaderId + '&IsPreview=0' + '&IsLKROnlyInvoice=0' + '&isPrintCopy=' + isPrintCopy;
+        }
+        //alert(ajaxUrl);
+        ///////ReportDirectPrintRequest(ajaxUrl);
+
+        
+        // 2024-02-06 Modification on fiscal printer
+        if ($('.printingMethod').val() == 0) {
+            debugger;
+            //alert(fiscalPrinterUrl);
+            FiscalPrinterRequest(fiscalPrinterUrl);
+            
+        } else {
+            ReportDirectPrintRequest(ajaxUrl);
+        }
+
+       
+
+        //$.ajax({
+        //    url: ajaxUrl,
+        //    method: 'POST',
+        //    beforeSend: function () {
+        //        $('#btnprint').val('Please wait');
+        //        $('#btnprint').prop('disabled', true);
+        //    },
+        //    complete: function () {
+        //        $('#btnprint').val('Print');
+        //        $('#btnprint').prop('disabled', false);
+        //    },
+        //    success: function (data) {
+        //
+        //        if (data.HttpCode == "200") {
+        //            ShowSuccessMessage('Receipt printed.');
+        //            ;
+        //        } else {
+        //            ShowErrorMessage(data.HttpDescription);
+        //        }
+        //    },
+        //    error: function (data) {
+        //        ShowErrorMessage('Sorry there is an error in printing the receipt.');
+        //    }
+        //});
+
+    });
+
+    $('body').off('click', '#BtnShareBillPrintCopy').on('click', '#BtnShareBillPrintCopy', function (e) {
+        e.preventDefault(); // avoid form submit
+
+        var invoiceNo = $('#InvoiceNo').val();
+        var reservationHeaderId = $('#InvoiceNo option:selected').attr('data-reservation-header-id');
+        var folioNo = $('#InvoiceNo option:selected').attr('data-folio-no');
+
+        // assumes `folioNo` and `reservationHeaderId` are available (set them where you build the page)
+        var documentParams = {
+            reservationHeaderId: reservationHeaderId,
+            guestProfileId: 0,
+            Uuid: "",
+            reservationLevel: "CheckedOut",
+            reservationNo: "",
+            InvoiceNo: invoiceNo,
+            FolioNo: folioNo
+        };
+
+            var url = '/DocumentDelivery/DocumentDelivery?documentParams=' + encodeURIComponent(JSON.stringify(documentParams));
+            var title = 'Send Document ' + (typeof invoiceNo !== 'undefined' ? invoiceNo : '');
+            CallDetailModelSimple(title, url, 800);
+       
+    });
+
+    $('.start-date-picker').daterangepicker({
+        linkedCalendars: true,
+        "showWeekNumbers": true,
+        "alwaysShowCalendars": true,
+        "minDate": $('#ArrivalDate').val(),
+        "maxDate": $('#ArrivalDate').val(),
+        singleDatePicker: true,
+        locale: {
+            format: 'DD/MM/YYYY'
+
+        }
+    }, function (start, end, label) {
+        minDate = start.format('DD/MM/YYYY');
+        $('#FromDate').val(start.format('DD/MM/YYYY'));
+    });
+
+    $('.end-date-picker').daterangepicker({
+        linkedCalendars: true,
+        "showWeekNumbers": true,
+        "alwaysShowCalendars": true,
+        singleDatePicker: true,
+        locale: {
+            format: 'DD/MM/YYYY'
+        }
+    }, function (start, end, label) {
+        $('#ToDate').val(end.format('DD/MM/YYYY'));
+    });
+
+    $('body').on('change', '.FromDate', function (e) {
+        var todayDateFormatted = dateFormatChanger($('.FromDate').val())
+        $('.ToDate').val(getDateforHeader(parseDate(todayDateFormatted).addDays(30), 'withdash'));
+    });
+
+
+
+    // new Date("dateString") is browser-dependent and discouraged, so we'll write
+    // a simple parse function for U.S. date format (which does no error checking)
+    function parseDate(str) {
+
+        var mdy = str.split('/');
+        return new Date(mdy[2], mdy[0] - 1, mdy[1]);
+    }
+
+    // Take the difference between the dates and divide by milliseconds per day.
+    // Round to nearest whole number to deal with DST.
+    function datediff(first, second) {
+        return Math.round((second - first) / (1000 * 60 * 60 * 24));
+    }
+
+    Date.prototype.addDays = function (days) {
+        var dat = new Date(this.valueOf());
+        dat.setDate(dat.getDate() + days);
+        return dat;
+    }
+
+
+    function getDateforHeader(date, thOrHidden) {
+
+        var weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        var monthsArr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var returnDate;
+        var year, dayName, dayNumStr = '';
+
+        dayName = weekday[date.getDay()];
+
+        var dateVar = new Date(date).getDate();
+
+        if (dateVar.toString().length <= 1) {
+            ;
+            dayNumStr = '0' + dateVar.toString();
+        } else {
+            dayNumStr = dateVar.toString();
+        }
+
+        var month = new Date(date).getMonth() + 1
+        if (month.toString().length <= 1) {
+            month = '0' + month.toString();
+        }
+
+        year = new Date(date).getFullYear().toString();
+
+        if (thOrHidden == 'hid') {
+            returnDate = dayNumStr + '/' + month + '/' + year;
+        } else if (thOrHidden == 'th') {
+            returnDate = dayName + '<br />' + '<p style="font-size:24px">' + dayNumStr + '<p>' + monthsArr[new Date(date).getMonth()] + '/ ' + year;
+        } else if (thOrHidden == 'ywm') {
+            returnDate = monthsArr[new Date(date).getMonth()] + '/ ' + year;
+        } else if (thOrHidden == 'mon') {
+            returnDate = month;
+        } else if (thOrHidden == 'withdash') {
+            returnDate = dateVar + '/' + month + '/' + year;
+        }
+
+        return returnDate;
+    }
+
+    function dateFormatChanger(d) {
+        var splitedDate = d.split('/');
+        var changedDate = splitedDate[1] + "/" + splitedDate[0] + "/" + splitedDate[2];
+        return changedDate;
+    }
+
+
+    $('body').off('click', '#btnAdvanceSearch').on('click', '#btnAdvanceSearch', function (e) {
+        e.preventDefault();
+        var url = '/Reporting/Report/LoadReservationDetailsForSearch';
+        var title = 'Reservation Details';
+        CallDetailModelSimple(title, url, 1200);
+    });
+
+    //Profit Center Change Event GANGULI
+    $('.ProfitCenterCombo').change(function () {//----*
+        debugger;
+        let Id = $('.ProfitCenterCombo').val();
+        ProfitCenterComboChange(Id);
+
+    });
+    function ProfitCenterComboChange(Id) {
+        debugger;
+        $.ajax({
+            url: '/CashieringAndPosting/ProfitCenter/ProfitCenterWiseDocumentNo',
+            dataType: 'json',
+            method: 'POST',
+            data: { ProfitCenterId: Id },
+            success: function (modules) {
+                debugger;
+                if (($('.ProfitCenterCombo').length > 0) || ($('.DocumentNoCombo').length > 0)) {
+                    $('.DocumentNoCombo').empty();
+
+                    $.each(modules, function (index, type) {//This need to change line 287-295
+                        $(' <option value="' + type.DocumentNo + '"> ' + type.DocumentNo + ' </option>').appendTo($('.DocumentNoCombo'));
+                    });
+                }
+            },
+            complete: function () {
+            }
+        });
+    }
+</script>

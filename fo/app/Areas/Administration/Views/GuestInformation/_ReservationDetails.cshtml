@@ -1,0 +1,234 @@
+﻿
+@{
+    ViewBag.Title = "Reservation Details";
+}
+
+<div class="override-card-padding override-card-two-height form-group">
+    @*<div class="panel panel-default">*@
+        <div>
+            <input type="hidden" value="@ViewBag.ResNo" id="reservationno" />
+            <div class="row">
+                <div class="col-md-12">
+                    <fieldset class="the-fieldset">
+                        <legend class="the-legend">Inhouse  Reservation Details</legend>
+                        <div class="roomratechangedetails">
+                            <table class="table" id="inhousetable">
+                                <thead>
+                                    <tr>
+                                        <th>Res.No</th>
+                                        <th>FirstName</th>
+                                        <th>LastName</th>
+                                        <th>Arrival</th>
+                                        <th>Departure</th>
+                                        <th>Status</th>
+                                        <th>Booking Remark</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <fieldset class="the-fieldset">
+                        <legend class="the-legend">Checkedout  Reservation Details</legend>
+                        <div class="roomratechangedetails">
+                            <table class="table" id="checkedouttable">
+                                <thead>
+                                    <tr>
+                                        <th>Res.No</th>
+                                        <th>FirstName</th>
+                                        <th>LastName</th>
+                                        <th>Arrival</th>
+                                        <th>Departure</th>
+                                        <th>Status</th>
+                                        <th>Booking Remark</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-12">
+                    <fieldset class="the-fieldset">
+                        <legend class="the-legend">Future  Reservation Details</legend>
+                        <div class="roomratechangedetails">
+                            <table class="table" id="futuretable">
+                                <thead>
+                                    <tr>
+                                        <th>Res.No</th>
+                                        <th>FirstName</th>
+                                        <th>LastName</th>
+                                        <th>Arrival</th>
+                                        <th>Departure</th>
+                                        <th>Status</th>
+                                        <th>Booking Remark</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+                <div class="col-md-12">
+                    <fieldset class="the-fieldset">
+                        <legend class="the-legend">Cancel Reservation Details</legend>
+                        <div class="roomratechangedetails">
+                            <table class="table" id="canceltable">
+                                <thead>
+                                    <tr>
+                                        <th>Res.No</th>
+                                        <th>FirstName</th>
+                                        <th>LastName</th>
+                                        <th>Arrival</th>
+                                        <th>Departure</th>
+                                        <th>Status</th>
+                                        <th>Booking Remark</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    $(document).ready(function () {
+       
+        FillInhouseTable();
+        FillCheckedoutTable();
+        FillFutureReservationTable();
+        FillFutureReservationTable();
+    });
+
+    function FillInhouseTable() {
+       
+        var reservationno = $('#reservationno').val();
+        $.ajax({
+            url: '/GuestInformation/SelectInhouseReservations',
+            dataType: 'json',
+            method: 'POST',
+            data : {reservationno : reservationno},
+            success: function (data) {
+                if (data.length == 0) {
+                    $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#inhousetable'));
+                }
+                $('#roomchangetable tr:not(:first)').empty();
+                $.each(data, function (index, item) {
+
+                  
+                    $('<tr>' +
+                        '<td>' + item.ReservationNo + '</td>' +
+                        '<td>' + item.FirstName + '</td>' +
+                        '<td>' + item.LastName + '</td>' +
+                        '<td>' + item.Arrival + '</td>' +
+                        '<td>' + item.Departure + '</td>' +
+                        '<td>' + item.Status + '</td>' +
+                        '<td>' + item.BookingRemark + '</td>' +
+                        '</tr>').appendTo($('#inhousetable'));
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function FillCheckedoutTable() {
+        var reservationno = $('#reservationno').val();
+        $.ajax({
+            url: '/GuestInformation/SelectCheckedOutReservations',
+            dataType: 'json',
+            method: 'POST',
+             data : {reservationno : reservationno},
+            success: function (data) {
+                if (data.length == 0) {
+                    $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#checkedouttable'));
+                }
+                $('#checkedouttable tr:not(:first)').empty();
+                $.each(data, function (index, item) {
+
+                  
+                    $('<tr>' +
+                        '<td>' + item.ReservationNo + '</td>' +
+                        '<td>' + item.FirstName + '</td>' +
+                        '<td>' + item.LastName + '</td>' +
+                        '<td>' + item.Arrival + '</td>' +
+                        '<td>' + item.Departure + '</td>' +
+                        '<td>' + item.Status + '</td>' +
+                        '<td>' + item.BookingRemark + '</td>' +
+                        '</tr>').appendTo($('#checkedouttable'));
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function FillFutureReservationTable() {
+        var reservationno = $('#reservationno').val();
+        $.ajax({
+            url: '/GuestInformation/SelectFutureReservations',
+            dataType: 'json',
+            method: 'POST',
+            data: { reservationno: reservationno },
+            success: function (data) {
+                if (data.length == 0) {
+                    $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#futuretable'));
+                }
+                $('#futuretable tr:not(:first)').empty();
+                $.each(data, function (index, item) {
+
+                  
+                    $('<tr>' +
+                        '<td>' + item.ReservationNo + '</td>' +
+                        '<td>' + item.FirstName + '</td>' +
+                        '<td>' + item.LastName + '</td>' +
+                        '<td>' + item.Arrival + '</td>' +
+                        '<td>' + item.Departure + '</td>' +
+                        '<td>' + item.Status + '</td>' +
+                        '<td>' + item.BookingRemark + '</td>' +
+                        '</tr>').appendTo($('#futuretable'));
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function FillCancelReservationTable() {
+        var reservationno = $('#reservationno').val();
+        $.ajax({
+            url: '/GuestInformation/SelectCancelReservations',
+            dataType: 'json',
+            method: 'POST',
+            data: { reservationno: reservationno },
+            success: function (data) {
+                if (data.length == 0) {
+                    $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#canceltable'));
+                }
+                $('#canceltable tr:not(:first)').empty();
+                $.each(data, function (index, item) {
+
+                   
+                    $('<tr>' +
+                        '<td>' + item.ReservationNo + '</td>' +
+                        '<td>' + item.FirstName + '</td>' +
+                        '<td>' + item.LastName + '</td>' +
+                        '<td>' + item.Arrival + '</td>' +
+                        '<td>' + item.Departure + '</td>' +
+                        '<td>' + item.Status + '</td>' +
+                        '<td>' + item.BookingRemark + '</td>' +
+                        '</tr>').appendTo($('#canceltable'));
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+</script>

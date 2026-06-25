@@ -1,0 +1,47 @@
+﻿@using Scienter.HotelERP.FrontOffice.WebUIMvc.Models
+@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.Common.Utility
+
+@model ComboBoxViewModel<RateCodeHeader>
+@{
+    string required = "";
+    if (Model.Required) { required = "required"; }
+
+}
+
+@if (Model.Options.FirstOrDefault().DefaultRateCodeId > 0)
+{
+    Model.SelectedValue = Model.Options.FirstOrDefault().DefaultRateCodeId.ToString();
+}
+
+<select id="@Model.Id" name="@Model.Name" @required class="form-control" >
+    <option value="@ComboBoxes.DefaultOptionValue">@ComboBoxes.DefaultOptionMessage</option>
+    @foreach (var option in Model.Options)
+    {
+        if (option.Id.ToString() == Model.SelectedValue)
+        {
+            <option value="@option.Id" selected data-currId="@option.CurrencyId">@option.Name</option>
+        }
+        else
+        {
+            <option value="@option.Id" data-currId="@option.CurrencyId">@option.Name</option>
+        }
+    }
+</select>
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            if ($('#data-ratecode-details').length > 0 && $('#data-ratecode-details').attr('data-rate-code').length > 0) {
+                $('#RateCodeHeaderId option').each(function () {
+                    currentTd = $(this);
+                    if (currentTd.val() == $('#data-ratecode-details').attr('data-rate-code')) {
+                        currentTd.attr('selected', true);
+                    }
+                });
+                $('#MealPlanId').change();
+            }
+            //$('#MealPlanId').change();
+        }, 1000);
+    });
+</script>

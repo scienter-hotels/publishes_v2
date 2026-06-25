@@ -1,0 +1,151 @@
+﻿@using Scienter.HotelERP.Common.Domain;
+
+@{
+    ViewBag.Title = "Existing Scanned Documents";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    a:focus {
+        color: inherit;
+    }
+
+    a:hover {
+        color: #094f70;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+                    <div class="row">
+                        <div class="col-md-3" style="margin-top:0px; margin-left:0px">
+                            <div class="form-group form-group-margin-override label-floating">
+                                <label class="required control-label">Doc Type</label>
+                                <select name="DocumentProcess" id="DocumentTypeId" class="select2 form-control" required>
+                                    @foreach (var item in Model)
+                                    {
+                                        <option value="@item.Id" data-FolderName="@item.FolderName">@item.Name</option>
+
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4" style="margin-top:0px; margin-left:0px">
+                            <div class="form-group form-group-margin-override label-floating">
+                                <label class="required control-label">Search Keyword</label>
+                                <input type="text" class="form-control" id="SearchDocumentKeyWord" name="name" value="" title="Search" placeholder="Search" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <button class="form-group btn btn-primary" id="viewDetailsTable" style="width:100%;">
+                                View Documents
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div id="content-Grid">
+
+                </div>
+
+                @*@Html.Partial("_Loading")*@
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/scienter.grid.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        $('.dt-buttons').addClass('hidden');
+        //FillGrid();
+    });
+
+    // show form --------------------------------
+    $('body').on('click', '.showForm', function (e) {
+
+    });
+
+    // show grid --------------------------------
+
+    $('body').on('click', '.showGrid', function (e) {
+       // FillGrid();
+    });
+
+    var document1 = {};
+    // fill grid -----------------------------------
+    function FillGrid(document, SearchDocumentKeyWord) {
+        var gridId = "#existingScannedDocumentGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/Reservation/Document/ExistingScannedDocumentGrid',
+            dataType: 'html',
+            //data: paginations, document,
+            data: { doc: document, searchKeyWord: SearchDocumentKeyWord},
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content-Grid').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content-Grid').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content-Grid').html('').fadeOut();
+                    $('#contentLoadingArea #content-Grid').html(response).fadeIn();
+                }
+                GridFunctionalities();
+
+                $('.dt-buttons').addClass('hidden');
+            }
+
+        });
+    }
+    
+
+    $('body').on('click', '#viewDetailsTable', function (e) {
+        var document = {};
+        document.DocumentProcessWiseDocumentId = $('#DocumentTypeId option:selected').val();
+        var SearchDocumentKeyWord = $('#SearchDocumentKeyWord').val();
+        FillGrid(document, SearchDocumentKeyWord)
+    });
+
+</script>
+
+
+
+
+
+
+
+

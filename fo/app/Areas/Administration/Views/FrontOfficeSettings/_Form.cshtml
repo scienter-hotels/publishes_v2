@@ -1,0 +1,167 @@
+﻿@model Scienter.HotelERP.Common.Domain.FrontOfficeSetting
+
+@{
+    ViewBag.Title = "Front Office Settings";
+}
+
+<div class="col-md-12">
+
+    <form id="frontofficesettings">
+        @Html.AntiForgeryToken()
+        <div class="">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="col-md-10">
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Base Currency Type </label>
+                                @{Html.RenderAction("CurrenciesCombo", "Currencies", new { name = "BaseCurrencyISO", requiered = true, value = Model?.BaseCurrencyISO });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Commission Percentage </label>
+                                <input type="text" value="@Model.CommissionPercentage" id="CommissionPercentage" name="CommissionPercentage" class="form-control" />
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Current Date </label>
+                                <div id="dobContainerInGuestProfiles" class='input-group date'>
+                                    <input type="text" value="@Model.CurrentDate.ToShortDateString()" id="CurrentDate" name="CurrentDate" class="form-control datePicker" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">House Keeping Room Status Category </label>
+                                @{Html.RenderAction("RoomStatusCategoryCombo", "RoomStatusCategory", new {area= "HouseKeeping", name = "HouseKeepingStatusCategoryId", requiered = true, value = Model?.HouseKeepingStatusCategoryId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Bill To Room</label>
+                                @{Html.RenderAction("PaymentModesCombo", "PaymentModes", new { name = "BillToRoomId", requiered = true, value = Model?.BillToRoomId });}
+                            </div>
+
+                            <div class="form-group">
+                                <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                                &nbsp;
+                                <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Advanced Posting Name</label>
+                                <input type="text" value="@Model.AdvancedPostingName" id="AdvancedPostingName" name="AdvancedPostingName" class="form-control" />
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Advacned Payment Tax Group</label>
+                                @{Html.RenderAction("TaxGroupCombo", "TaxGroups", new { name = "AdvancedPayment_taxtGroupId", requiered = true, value = Model?.AdvancedPayment_taxtGroupId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Advanced Payment Posting Categories</label>
+                                @{Html.RenderAction("PostingCategoryCombo", "PostingCategories", new { name = "AdvancedPayment_PostingCatgId", requiered = true, value = Model?.AdvancedPayment_PostingCatgId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Advanced Payment Charge Code</label>
+                                @{Html.RenderAction("ChargeCodeCombo", "ChargeCodes", new { name = "AdvancedPayment_ChargeCodeId", requiered = true, value = Model?.AdvancedPayment_ChargeCodeId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Advanced Payment Posting Type</label>
+                                @{Html.RenderAction("PostingTypesCombo", "PostingTypes", new { name = "AdvancedPayment_PostingTypeId", requiered = true, value = Model?.AdvancedPayment_PostingTypeId });}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Flight Date</label>
+                                @{Html.RenderAction("TransportAttributesCombo", "Transport", new { area = "Reservation", name = "FlightDate", requiered = true, value = Model?.FlightDate });}
+                            </div>
+                            
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Flight Number</label>
+                                @{Html.RenderAction("TransportAttributesCombo", "Transport", new {area="Reservation", name = "FlightNumber", requiered = true, value = Model?.FlightNumber });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Flight Time</label>
+                                @{Html.RenderAction("TransportAttributesCombo", "Transport", new { area = "Reservation", name = "FlightTime", requiered = true, value = Model?.FlightTime });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Airport Drop Off Code </label>
+                                @{Html.RenderAction("TransferTypesCombo", "TransferTypes", new { name = "AirportDropOffCodeId", requiered = true, value = Model?.AirportDropOffCodeId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Airport Pick Up Code </label>
+                                @{Html.RenderAction("TransferTypesCombo", "TransferTypes", new { name = "AirportPickupCodeId", requiered = true, value = Model?.AirportPickupCodeId });}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Complain Create Status</label>
+                                @{Html.RenderAction("StatusCombo", "Status", new { name = "ComplainCreateStatusId", requiered = true, value = Model?.ComplainCreateStatusId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Complain Pending Status</label>
+                                @{Html.RenderAction("StatusCombo", "Status", new { name = "ComplainPendingStatusId", requiered = true, value = Model?.ComplainPendingStatusId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Complain Taken Status</label>
+                                @{Html.RenderAction("StatusCombo", "Status", new { name = "ComplainTakenStatusId", requiered = true, value = Model?.ComplainTakenStatusId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Complain Close Status</label>
+                                @{Html.RenderAction("StatusCombo", "Status", new { name = "ComplainCloseStatusId", requiered = true, value = Model?.ComplainCloseStatusId });}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="~/Scripts/ui/common/scienter.common.datatimepicker.js"></script>
+@*<script>
+    $(document).ready(function () {
+        $('#CurrentDate').daterangepicker({
+            "showDropdowns": true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "singleDatePicker": true,
+            "minDate": new Date(),
+            "changeYear": true,
+            "changeMonth": true,
+            "opens": "right",
+            "applyClass": "btn-primary",
+            "dateLimit": {
+                "days": false
+            }
+        });
+    });
+</script>*@

@@ -1,0 +1,25 @@
+﻿@using Scienter.HotelERP.FrontOffice.WebUIMvc.Models
+@using Scienter.HotelERP.Common.Domain.ViewModels
+@using Scienter.HotelERP.Common.Utility
+
+@model ComboBoxViewModel<ReservationView>
+@{
+    string required = "";
+    if (Model.Required) { required = "required"; }
+}
+
+<select id="@Model.Id" name="@Model.Name" @required class="form-control reservation-headers">
+    <option value="@ComboBoxes.DefaultOptionValue">@ComboBoxes.DefaultOptionMessage</option>
+    @foreach (var option in Model.Options)
+    {
+        if (option.ReservationHeaderId.ToString() == Model.SelectedValue)
+        {
+            <option value="@option.ReservationHeaderId" data-room-no="@option.RoomNo" data-guest-Id="@option.GuestProfileId" data-guest-name="@option.Name" selected>@option.ResNo</option>
+        }
+        else
+        {
+            <option value="@option.ReservationHeaderId" data-room-no="@option.RoomNo" data-guest-Id="@option.GuestProfileId" data-guest-name="@option.Name">@option.ResNo</option>
+        }
+    }
+</select>
+

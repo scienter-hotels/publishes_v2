@@ -1,0 +1,269 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.GuestPortal_Transport>
+@{
+
+
+    ViewBag.Title = "Guest Portal Transports";
+}
+
+<style>
+    .form-group {
+        margin: 0;
+    }
+
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+</style>
+
+<div class="row">
+    <div class="col-md-4" style="position:absolute;z-index:10000;">
+        <select id="customSelect" class="custom-select form-control">
+            <option value="A">All</option>
+            <option value="R">Reservation</option>
+            <option value="I">In House</option>
+            <option value="C">Checked Out</option>
+        </select>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped" id="guestPortalTransport">
+        @*2022-10-20*@
+        <thead>
+            <tr>
+                <th hidden></th>
+                <th class="col-md-1 text-primary">
+                    Res / No
+                </th>
+                <th class="col-md-1 text-primary">
+                    Room / No
+                </th>
+                <th class="col-md-1 text-primary">
+                    Date
+                </th>
+                <th class="col-md-1 text-primary">
+                    Time
+                </th>
+                <th class="col-md-1 text-primary">
+                    Type
+                </th>
+                <th class="col-md-1 text-primary">
+                    Airport
+                </th>
+                <th class="col-md-1 text-primary">
+                    Airline
+                </th>
+                <th class="col-md-1 text-primary">
+                    Flight No
+                </th>
+                <th class="col-md-1 text-primary" style="text-align:right;padding: 0 10px;">
+                    Pessengers
+                </th>
+                @*<th class="col-md-1 text-primary">
+                    EST D/T
+                </th>*@
+                <th class="col-md-1 text-primary">
+                    Note
+                </th>
+                <th class="col-md-1 text-primary">
+                    Status
+                </th>
+                <th class="col-md-1 text-primary">
+
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr style="height: 36px !important;" data-reservation_level="@Html.DisplayFor(modelItem => item.ReservationLevel)">
+                <th hidden></th>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReservationNo)
+                    <input type="hidden" name="text" id="guestPoratlTransportReservationHeaderId" value="@item.ReservationHeaderId" />
+                    <input type="hidden" name="text" id="transportId" value="@item.Id" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateFormatted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TimeFormatted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TransportTypeName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AirportName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AirlineName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FlightNo)
+                </td>
+                <td style="text-align:right;padding: 0 10px;">
+                    @Html.DisplayFor(modelItem => item.NoOfPessengers)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.FlightEstimatedTimeFormatted)
+                </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.AdditionalNotes)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ActionName)
+                </td>
+                <td style="text-align:right !important;">
+                    <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="activityLog" data-guestPoratlTransportReservationHeaderId="@item.ReservationHeaderId" data-ActionTypeId="@item.ActionTypeId" data-id="@item.Id" data-title="Reservation Activity Log" data-href="" title="Activity Log" data-toggle="modal" data-target="" data-width="500">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </a>
+                    <a class="btn btn-theme-color-2 btn-sm call-popup-model viewactivityLog" id="viewactivityLog" data-guestPoratlTransportReservationHeaderId="@item.ReservationHeaderId" data-id="@item.Id" data-title="Reservation Activity Log" data-href="" title="View Activity" data-toggle="modal" data-target="" data-width="500">
+                        <span class="glyphicon glyphicon-tags"></span>
+                    </a>
+                </td>
+
+
+                @*<td class="hidden-print text-right" style="text-align:right !important;">
+            <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="activityLog" data-ActionTypeId="@item.ActionTypeId" data-id="@item.Id" data-title="Reservation Activity Log" data-href="" title="Activity Log" data-toggle="modal" data-target="" data-width="500">
+                <span class="glyphicon glyphicon-plus"></span>
+            </a>
+        </td>
+        <td class="hidden-print text-right" style="text-align:right !important;">
+            <a class="btn btn-theme-color-2 btn-sm call-popup-model viewactivityLog" id="viewactivityLog" data-id="@item.Id" data-title="Reservation Activity Log" data-href="" title="View Activity" data-toggle="modal" data-target="" data-width="500">
+                <span class="glyphicon glyphicon-tags"></span>
+            </a>
+        </td>*@
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+    var reservationLevel = $('#customSelect').val();
+    $(document).ready(function () {
+        loadGridData()
+        $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+        $('#guestPortalTransport').DataTable(
+            {
+                searching: true,
+                ordering: true,
+                dom: 'frtipl',
+                select: true,
+                scrollY: '58vh',
+            });
+    });
+
+    $(document).off('change').on('change', '#customSelect', function () {
+        reservationLevel = $('#customSelect').val();
+        loadGridData();
+    });
+
+    function loadGridData() {
+        var rows = $('#guestPortalTransport tr');
+        var noRecords = true;
+
+        if (reservationLevel !== "A") {
+            rows.each(function () {
+                var reservationLevelTr = $(this).data('reservation_level');
+                if (reservationLevel !== reservationLevelTr) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                    noRecords = false;
+                }
+            });
+
+            if (noRecords) {
+                $('#guestPortalTransport tbody').append('<tr class="no-records"><td colspan="100%" style="text-align:center;">No Records Found</td></tr>');
+            } else {
+                $('#guestPortalTransport .no-records').remove();
+            }
+        } else {
+            rows.show();
+            $('#guestPortalTransport .no-records').remove();
+        }
+    }
+
+
+    $('body').on('click', '#btnAccept', function () {
+        debugger;
+        var obj = {};
+        obj.Id = $(this).attr('data-Id');
+        obj.ReservationHeaderId = $(this).attr('data-ResId');
+        obj.ReservationNo = $(this).attr('data-ResNo');
+        obj.AcceptOrReject = 'A';
+        TransportAcceptOrReject(obj);
+    });
+
+    $('body').on('click', '#btnReject', function () {
+        debugger;
+        var obj = {};
+        obj.Id = $(this).attr('data-Id');
+        obj.ReservationHeaderId = $(this).attr('data-ResId');
+        obj.ReservationNo = $(this).attr('data-ResNo');
+        obj.AcceptOrReject = 'R';
+        TransportAcceptOrReject(obj);
+    });
+
+    function TransportAcceptOrReject(obj) {
+        debugger;
+        $.ajax({
+            url: '/GuestPortal/Transport/TransportActivitySave',
+            dataType: 'html',
+            data: { transports: obj },
+            method: 'POST',
+            success: function (response) {
+                if (response == "OK") {
+                    ShowSuccessMessage('Transport request changed successfully.');
+                    window.location.reload();
+                    //FillGrid();
+                }
+                else (response == "ERR-")
+                {
+                    ShowSuccessMessage(response);
+                }
+                window.location.reload();
+            }
+        });
+    }
+
+    $('body').on('click', '#activityLog', function () {
+        debugger;
+        var code = "T";
+        $(".guestportal-action-model").modal('show');
+        $('#code').val(code);
+        //$('#hdnreservationHeaderId').val($('#reservationHeaderId').val());
+        $('#hdnreservationHeaderId').val($(this).attr('data-guestPoratlTransportReservationHeaderId'));
+        //$('#requestId').val($('#transportId').val());
+        $('#requestId').val($(this).attr('data-Id'));
+        $('#hdnlabel').val("Transport Request Status");
+        $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+        LoadActionType(code);
+    });
+
+    $('body').on('click', '.viewactivityLog', function (e) {
+        debugger;
+        var code = "T";
+        var requestId = $(this).attr('data-id');
+        //var reservationHeaderId = $('#reservationHeaderId').val();
+        var reservationHeaderId = $(this).attr('data-guestPoratlTransportReservationHeaderId');
+        var GuestPortalActivityLogURL = '/GuestPortal/Action/ActivityLog?code=' + code + '&requestId=' + requestId + '&reservationHeaderId=' + reservationHeaderId;
+        var title = 'Transport Request Status Activity Log ';
+
+        //'&guestName=' + guestName + '&guestProfileId=' + GuestProfileId + '&Uuid=' + ResUuid + '';
+
+        CallDetailModelSimple(title, GuestPortalActivityLogURL, 1000);
+    });
+
+</script>
+

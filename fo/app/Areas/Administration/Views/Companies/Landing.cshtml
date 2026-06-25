@@ -1,0 +1,210 @@
+﻿
+@{
+    ViewBag.Title = "Companies";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="hdnSelectedCompanyId" value="@ViewBag.Id" />
+<input type="hidden" id="hdnSelectedApprovalId" value="@ViewBag.ApprovalId" />
+@*<input type="text" id="hdnScreenType" value="@ViewBag.Type"/>*@
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+
+@*<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>*@
+
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+
+        /*if ($('#hdnSelectedCompanyId').val() > 0)*/
+        if ($('#hdnSelectedCompanyId').val() >= 0) {
+            ShowForm();
+        }
+        else {
+            FillGrid();
+        }
+
+    });
+
+    // show form --------------------------------
+    $('body').on('click', '.showForm', function (e) {
+        ShowForm();
+    });
+
+
+    //if ($('#hdnSelectedCompanyId').val() = 0) {
+    //   $("#Name").keyup(function () {
+
+    //    var a = $("#Name").val();
+    //    $("#NameAlias").val(a);
+    //});
+    //}
+    $('body').on('click', '.approval', function (e) {
+        //alert("ok");
+        //window.location.href = '/administration/companies/approvalscreen';
+    });
+    // show grid --------------------------------
+
+    $('body').on('click', '.showGrid', function (e) {
+        FillGrid();
+    });
+
+
+    // save --------------------------------------
+    $('body').on('submit', '#companies', function (e) {
+        e.preventDefault();
+        var backclr;
+        var company = {
+            __RequestVerificationToken: $('__RequestVerificationToken').val(),
+            Id: $('#Id').val(),
+            Name: $('#Name').val(),
+            NameAlias: $('#NameAlias').val(),
+            Address: $('#Address').val(),
+            CountryId: $('#CountryId').val(),
+            CurrencyId: $('#CurrencyId').val(),
+            CompanyProfileTypeId: $('#CompanyProfileTypeId').val(),
+            ReferenceNo: $('#ReferenceNo').val(),
+            ProfileRemarks: $('#ProfileRemarks').val(),
+            ConfirmationRemaks: $('#ConfirmationRemaks').val(),
+            VATRegistrationNo: $('#VATRegistrationNo').val(),
+            SVATRegistrationNo: $('#SVATRegistrationNo').val(),
+            MappingCode1: $('#MappingCode1').val(),
+            MappingCode2: $('#MappingCode2').val(),
+            MappingCode3: $('#MappingCode3').val(),
+            SegmentId: $('#SegmentId').val(),
+            ProfileCode: $('#profilecode').val(),
+            Email: $('#email').val(),
+            ContactPerson: $('#contactperson').val(),
+            TelNo: $('#telno').val(),
+            Fax: $('#faxno').val(),
+            CreditLimit: parseFloat($('#creditlimit').val().trim().replace(/,/g, '')).toFixed(2),
+            RateCodeId: $('#RateCodeId').val(),
+            CancellationPolicy: $('#cancellationpolicy').val(),
+            Promotion: $('#promotion').val(),
+            FITProfile: $('#FITProfile').prop("checked"),
+            //AddToOccupancy: $('#AddToOccupancy').prop("checked"),
+            AddToOccupancy: 1,
+            IsActive: $('#IsActive').prop("checked"),
+            ShowRatesOnGRC: $('#ShowRatesOnGRC').prop("checked"),
+            CompanyType: $("input[name='CompanyType']:checked").val(),
+            //   Properties: "",
+            BackColor: $('#hiddenColor').val(),
+            BookingPolicyId: $('#BookingPolicyId').val(),
+            creditPeriod: $('#creditPeriod').val(),
+            IsForeignCurrencyBillRequested: $('#IsForeignCurrencyBillRequested').prop("checked"),
+            DefaultPaymentModeId: $('#DefaultPaymentModeId').val(),
+            DefaultBookingSourceId: $('#DefaultBookingSourceId').val(),
+            IsCreditEnabled: $('#IsCreditEnabled').prop("checked"),
+            CompanyEmailTemplateId: $('#CompanyEmailTemplateId').val(),
+            ApprovalId: $('#hiddenApprovalId').val(),
+            IsBillPaymentFromLKR: $('#IsBillPaymentFromLKR').prop("checked")
+        };
+
+        $.ajax({
+            url: '/administration/companies/save',
+            dataType: 'json',
+            data: company,
+            method: 'POST',
+            success: function (data) {
+                if (data.startsWith("ERR-")) {
+                    ShowWarningMessage(data.replace("ERR-", ""));
+                } else {
+                    ShowSuccessMessage('Record has been saved successfully.');
+                 //   alert('Record has been saved successfully.');
+
+                    var id = $('#Id').val();
+
+                    setTimeout(function () {
+                        if (Number($('#hdnSelectedApprovalId').val()) > 0) {
+                            window.location.href = "/administration/companies/approvalscreen";
+                        }
+                        else {
+                            window.location.reload();
+                        }
+                    }, 3000);
+                    FillGrid();
+                }
+               
+            },
+            error: function () {
+                ShowErrorMessage(data);
+            }
+
+        });
+
+    });
+
+
+    // fill grid -----------------------------------
+    function FillGrid() {
+        var gridId = "#existingCompanyGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/administration/companies/selectforgrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+                GridFunctionalities();
+            }
+
+        });
+    }
+
+    function ShowForm() {
+        //debugger;
+        $.ajax({
+            url: '/administration/companies/form?id=' + $('#hdnSelectedCompanyId').val() + '&approvalId=' + $('#hdnSelectedApprovalId').val(),
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+        });
+    }
+
+</script>
+

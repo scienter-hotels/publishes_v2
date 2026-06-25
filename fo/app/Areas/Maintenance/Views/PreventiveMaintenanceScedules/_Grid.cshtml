@@ -1,0 +1,98 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.PreventiveMaintenanceSceduleView>
+
+@{
+    ViewBag.Title = "Preventive Maintenance Scedule";
+}
+
+<div class="table-responsive">
+    <table class="table table-striped" id="existingPreventiveMaintenancesceduleGrid">
+        <thead>
+            <tr>
+                <th class="text-primary">
+                    Assets
+                </th>
+                <th class="text-primary">
+                    Activities
+                </th>
+                <th class="text-primary">
+                    Maintenance Types
+                </th>
+                <th class="text-primary">
+                    Remarks
+                </th>
+                <th class="text-primary">
+                    Date
+                </th>
+                <th class="text-primary">
+                    Assignees
+                </th>
+                <th class="col-md-1 hidden-print"></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReferenceNo)
+                    </td>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(modelItem => item.Activities)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MaitenanceType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Remark)
+                    </td>
+                    <td>
+                        @item.Date.ToShortDateString()
+                    </td>
+                    <td>
+                        @foreach (var a in item.Assignees)
+                        {
+                            @a.Name.Split(' ')[0]<br />
+                        }
+                    </td>
+                    <td class="hidden-print text-right">
+             
+                        <a class="btn btn-theme-color-2 btn-sm" id="brnCreateJob" data-ajax="true" title="Create Job" data-ajax-mode="replace" data-ajax-update="#content" href="/maintenance/jobs/PreventiveJobs?id=@item.Id">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                        <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" title="Edit" data-ajax-update="#content" href="/maintenance/PreventiveMaintenanceScedules/Edit?id=@item.Id">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+
+                        @*<a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/maintenance/jobs/EditPreventive/@item.Id">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>*@
+                       
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#existingPreventiveMaintenancesceduleGrid').DataTable(
+            {
+           
+                searching: true,
+                ordering: true,
+             
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            });
+    });
+</script>

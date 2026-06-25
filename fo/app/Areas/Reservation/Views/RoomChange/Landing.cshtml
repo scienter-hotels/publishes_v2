@@ -1,0 +1,100 @@
+﻿@using Scienter.HotelERP.Common.Domain.ViewModels
+@{
+    ViewBag.Title = "Room Change";
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                    </div>
+                </div>
+            </div>
+            <div class="card-content " id="contentLoadingArea">
+                <div class="col-md-12 panel panel-default ">
+                    <div class="row panel-body">
+                        <div class="col-md-8 inhouse-reservations-grid">
+                            @{Html.RenderAction("InHouseReservationList");}
+                        </div>
+                        <div class="col-md-4 date-detail-room-change">
+                            @*@{Html.RenderAction("_InhouseReservationHeaderWiseDateAndRoomDetails", new ReservationView());}*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    $(function () {
+        //ScorelToTop60px();
+    })
+
+    $('body').on('click', '.data-reservation-no', function () {
+        $.ajax({
+            method: 'get',
+            url: '/Reservation/RoomChange/InhouseReservationHeaderWiseDateAndRoomDetails?reservationHeaderId=' + $(this).val() + '&arrivalDate=' + $(this).closest('tr').find('.arrival-date-hidden').val() + '&departureDate=' + $(this).closest('tr').find('.departure-date-hidden').val(),
+            datatype: 'html',
+            success: function (htmlContent) {
+                $('.date-detail-room-change').html('');
+                $('.date-detail-room-change').html(htmlContent);
+            }
+        })
+    });
+
+    $('body').on('click', '.save-room-change', function () {
+        var ReservationHeaderId = $('.data-reservation-no:checked').val();
+        var RoomChangedReasonId = $('#RoomChangeId').val(); 
+        var changedRoomId = $('.room-check-box:checked').val();
+
+
+        $.ajax({
+            method: 'post',
+            datatype: 'json',
+            data: { ReservationHeaderId: ReservationHeaderId, RoomChangedReasonId: RoomChangedReasonId, changedRoomId: changedRoomId},
+            url: '/reservation/roomchange/SaveRoomChange',
+            success: function (data) {
+                if (data == 'success') {
+                    ShowSuccessMessage('Room changed');
+                    $('input[type=checkbox]').prop('checked', false);
+                    $('.date-detail-room-change').html('');
+                } else {
+                    ShowErrorMessage('Error updating rooms');
+                }
+            }
+        });
+    });
+
+    $('body').on('change', '.data-reservation-no', function () {
+        $(this).prop('checked', true);
+        $('.data-reservation-no').not($(this)).prop('checked', false);
+    });
+
+    $('body').on('change', '.room-check-box', function () {
+        $(this).prop('checked', true);
+        $('.room-check-box').not($(this)).prop('checked', false);
+    });
+
+    $('body').on('click', '.success-popup-ok', function () {
+        location.reload();
+    });
+
+    $('body').on('click', '.clear-alls', function () {
+        $('.date-detail-room-change').html('');
+        $('input[type=checkbox]').prop('checked', false);
+    });
+
+
+
+</script>

@@ -1,0 +1,171 @@
+﻿@model IEnumerable<Scienter.DestinityHorizon.Common.Domain.Outlet>
+@{
+    ViewBag.Title = "Sync Payment Types";
+}
+<style>
+    .grid-content {
+        height: 200px !important;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .listOutlets {
+        margin-left: -15px;
+    }
+
+    #message-model-msg {
+        overflow-y: auto;
+        height: 400px;
+    }
+    .checkBoxGroup{
+
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="ResultDiv" class="hidden modal" role="dialog">
+                            <div class="modal-dialog modal-md">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <div data-dismiss="modal" class="model-popup-close-btn" id="ResultClose">
+                                            <img src="~/Images/close-btn.png" />
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="model-popup-title" style="color:#122f39">
+                                                    <h4><i class="fa fa-calendar-check-o fa-2x"></i>&nbsp;&nbsp;Payment Type Sync Results</h4>
+                                                </div>
+                                                <div id="message-model-msg" style="font-size:14px;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="LoadPopUp" class="hidden modal-backdrop" role="dialog">
+                            <div class="modal-dialog modal-small">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div>
+                                                    <center><img src="~/Images/load-dribbble.gif" /></center>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 master-file-grid ">
+                        @*Grid comes here*@
+                        <div class="row gridPayments">
+                            <div class="col-md-12 table-responsive">
+                                <div class="row gridPayments">
+                                    <div class="col-md-12 table-responsive">
+                                        <input type="text" id="searchby" onkeyup="SearchGridCallByID(gridPayments)" placeholder="Search by any Column" title="Search by any Column">
+                                    </div>
+                                </div>
+
+
+                                <div id="loadingProjects" class="well">
+                                    <center>
+                                        <img src="~/Images/loading.gif" style="width:50px; margin-top:20px; margin-bottom:0px;" />
+                                    </center>
+                                </div>
+                                <div class="grid-content">
+                                    <table class="table table-striped table-responsive gridPayments" id="gridPayments" style="display:none;">
+                                        <tr>
+                                            <th class="col-md-1">Code</th>
+                                            <th>Description</th>
+                                            <th>Active</th>
+                                            <th class="col-md-2"><div class="checkbox"><label><input type="checkbox" id="AllPayments" /></label></div></th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="checkbox col-md-2 listOutlets">
+                            <label>
+                                <input type="checkbox" id="AllOutlets" /><b> Select All Outlets</b>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="outletLoading hidden">
+                            <img src="~/Content/Images/Sync-data.gif" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="outletListDiv">
+                            <ul id="OutletList">
+                                @foreach (var item in Model)
+                                {
+                                <li>
+                                    <div class="listOutlets checkbox  col-md-2 form-inline">
+                                        <label>
+                                            <input type="checkbox" class="checkBoxGroup " />@{
+                                                var trimmedDes = item.Description;
+                                                if (trimmedDes.Length > 15)
+                                                {
+                                                    trimmedDes = trimmedDes.Substring(0, 15) + "..";
+                                                }
+                                            } @trimmedDes
+                                        </label>
+                                    </div>
+                                    <input type="hidden" class="hdnLocCode" value="@item.Code" />
+                                    <input type="hidden" class="hdnIpAddress" value="@item.IPAddress" />
+                                    <input type="hidden" class="hdnDescription" value="@item.Description" />
+                                </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 table-responsive">
+                        <div>
+                            <button class="btn btn-primary  btn-Sync" id="btnSync" title="Sync">Sync Payments</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*All master file related scripts should be in here*@
+<script src="~/scripts/UI/Scienter.paymentType.js"></script>
+
+
+
+

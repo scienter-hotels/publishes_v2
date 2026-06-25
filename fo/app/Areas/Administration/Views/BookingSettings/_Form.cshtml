@@ -1,0 +1,117 @@
+﻿@model Scienter.HotelERP.Common.Domain.BookingSetting
+
+@{
+    ViewBag.Title = "Booking Settings";
+}
+
+<div class="col-md-12">
+
+    <form id="bookingsettings">
+        @Html.AntiForgeryToken()
+        <div class="">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group label-floating">
+                                <label class="control-label">IBE Booking Status </label>
+                                @{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { name = "IBEBookingStatusId", requiered = true, value = Model?.IBEBookingStatusId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Web Api Booking Status </label>
+                                @{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { name = "WebApiBookingStatusId", requiered = true, value = Model?.WebApiBookingStatusId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">IBE Communication Type </label>
+                                @{Html.RenderAction("CommunicationTypesCombo", "CommunicationTypes", new { name = "IBEEmailCommiunicationTypeId", requiered = true, value = Model?.IBEEmailCommiunicationTypeId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Charge Code Advanced</label>
+                                @{Html.RenderAction("ChargeCodeCombo", "ChargeCodes", new { name = "ChargeCodeAdvancedPayments", requiered = true, value = Model?.ChargeCodeAdvancedPayments });}
+
+                            </div>
+
+                            <div class="form-group">
+                                <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                                &nbsp;
+                                <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group label-floating">
+                                <label class="control-label">IBE Telephone Communication Type </label>
+                                @{Html.RenderAction("CommunicationTypesCombo", "CommunicationTypes", new { name = "IBETelephoneCommiunicationTypeId", requiered = true, value = Model?.IBETelephoneCommiunicationTypeId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Web Agent</label>
+                                @{Html.RenderAction("CompaniesCombo", "Companies", new { name = "WebAgentId", requiered = true, value = Model?.WebAgentId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Web Api Agent</label>
+                                @{Html.RenderAction("CompaniesCombo", "Companies", new { name = "WebApiAgentId", requiered = true, value = Model?.WebApiAgentId });}
+                            </div>
+
+                           
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="col-md-10">
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Accomadation Charge Code</label>
+                                @{Html.RenderAction("ChargeCodeCombo", "ChargeCodes", new { name = "AccomadationChargeCodeId", requiered = true, value = Model?.AccomadationChargeCodeId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Accomadation Tax Group</label>
+                                @{Html.RenderAction("TaxGroupCombo", "TaxGroups", new { name = "AccomadationTaxGroupId", requiered = true, value = Model?.AccomadationTaxGroupId });}
+
+                            </div>
+                            <div class="form-group label-floating">
+                                <label class="control-label">Booking Cancel Status</label>
+                                @{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { name = "BookingCancelStatusId", requiered = true, value = Model?.BookingCancelStatusId });}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Booking Confirmation Status</label>
+                                @{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { name = "BookingConfirmStatusId", requiered = true, value = Model?.BookingConfirmStatusId });}
+                            </div>
+
+                            <div class="form-group label-floating">
+                                <label class="control-label">Charge Code Room Charges</label>
+                                @{Html.RenderAction("ChargeCodeCombo", "ChargeCodes", new { name = "ChargeCodeRoomCharges", requiered = true, value = Model?.ChargeCodeRoomCharges });}
+                            </div>
+                            <div class="form-group label-floating">
+                                <label class="control-label">Local Country</label>
+                                @{Html.RenderAction("CountriesCombo", "Countries", new { name = "LocalCountryId", requiered = true, value = Model?.LocalCountryId });}
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

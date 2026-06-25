@@ -1,0 +1,115 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.ViewModels.ReservationFolioView>
+@using System.Linq;
+
+<style>
+    input[type="checkbox"][readonly] {
+        pointer-events: none;
+    }
+</style>
+
+@if (Model.Count > 0)
+{
+    var folioheaderId = Model?.FirstOrDefault().FolioHeaderID;
+    var fdId = Model?.FirstOrDefault().FolioDetailID;
+    var flock = Model?.FirstOrDefault().IsLock.ToString();
+
+    <input type="hidden" id="folioHeaderId" value="@folioheaderId" />
+    <input type="hidden" id="fdId" value="@fdId" />
+    <input type="hidden" id="flock" value="@flock" />
+}
+<div class="col-md-12" style="background-color:#f8f8f8; min-height: 120px; height: 120px; overflow-y:scroll;">
+    <table class="table" id="otherGrid">
+        <tr>
+            @*<th width="50px"></th>*@
+            @*<th class="text-primary">F.No</th>*@
+            <th class="text-primary">Charge Date</th>  
+            <th class="text-primary">Folio Text</th>
+            <th class="text-primary">Curr.</th>
+            <th class="text-primary text-right">C.Rate</th>
+            <th class="text-primary text-right">Amount</th>
+            <th class="text-primary text-right">Tax</th>
+            <th class="text-primary text-right">Total</th>
+        </tr>
+
+
+        @if (Model.Count > 0)
+        {
+            decimal taxTotal = 0;
+            decimal total = 0;
+            foreach (var item in Model)
+            {
+                if (item.FolioTaxBreakList != null)
+                {
+                    taxTotal = item.FolioTaxBreakList.Sum(x => x.Amount);
+                }
+                else
+                {
+                    taxTotal = taxTotal + item.TaxAmount;
+                }
+                total = item.FAmount + taxTotal;
+
+                <tr>
+                    @*<td><div class="form-group checkbox"><label><input type="checkbox" class="selected-folio-detail" folioDetailId="@item.FolioDetailID" isComplntry="@item.IsComplimentory" roomId="@item.RoomID" mealPlanId="@item.MealPlanID" conversionRate="@item.ConvertionRate" amount="@total" roomTypeID="@item.RoomTypeID" folioText="@item.FolioText" isLock="@item.IsLock" /></label></div></td>*@
+                    @*<td>@item.FolioNo</td>*@
+                    <td>@Convert.ToDateTime(item.ChargeDate).ToString("dd/MM/yyyy")</td>
+                    <td title="@item.FolioText">@(item.FolioText.Length > 28 ? item.FolioText.Substring(0, 17) + "..." : item.FolioText)</td>
+                    <td>@item.CurrencyCode</td>
+                    <td class="text-center number">@Convert.ToDecimal(item.ConvertionRate).ToString("#,##0.00")</td>
+                    <td class="text-center number">@Convert.ToDecimal(item.FAmount).ToString("#,##0.00")</td>
+                    <td class="text-center number">@Convert.ToDecimal(taxTotal).ToString("#,##0.00")</td>
+                    <td class="text-center number">@Convert.ToDecimal(total).ToString("#,##0.00")</td>
+                    
+                </tr>
+                @*<tr style="background-color:#f5f5f5;">
+                    <td colspan="14" style="background-color:#f5f5f5;">
+                        <div style="background-color:#f8f8f8" class="table-responsive data-package-detail-@item.FolioDetailID collapse col-md-5 col-lg-offset-6">
+                            <table class="table" id="existingChargeTypeGrid">
+                                <thead>
+                                    <tr>
+
+                                        <th class="col-md-4">
+                                            Tax Type
+                                        </th>
+                                        <th class="col-md-4" style="text-align:right;">
+                                            Precentage
+                                        </th>
+                                        <th class="col-md-4" style="text-align:right;">
+                                            Amount
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach (var taxBreakDown in item.FolioTaxBreakList)
+                                    {
+                                        <tr>
+
+                                            <td>
+                                                @Html.DisplayFor(modelItem => taxBreakDown.TT[0].Name)
+                                            </td>
+                                            <td align="right">
+                                                @taxBreakDown.Percentage %
+                                            </td>
+                                            <td align="right">
+                                                @taxBreakDown.Amount.ToString("#,##0.00")
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>*@
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="15">No Records</td>
+            </tr>
+
+        }
+    </table>
+</div>
+
+

@@ -1,0 +1,96 @@
+﻿
+@{
+    ViewBag.Title = "User Wise Roles";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    
+        var userId = 0;
+        // form load --------------------------------
+        $(document).ready(function () {
+            LoadForm();
+      
+
+        });
+    // show form --------------------------------
+
+         function LoadForm() {
+            $.ajax({
+                url: '/useraccess/userwiseroles/form',
+                dataType: 'html',
+                method: 'POST',
+                success: function (response) {                  
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+           
+                }             
+            });
+    }
+    
+        // save --------------------------------------
+         $('body').on('submit', '#userWiseRoles', function (e) {
+           
+            var UserId = $('#UserId').val()
+            e.preventDefault();
+            var userWiseRolesSelected = [];
+            
+            $('.data-selected-roles').each(function (index, item) {
+                var pageInfo = "";
+                if ($(this).is(':checked')) {
+                    pageInfo = {
+                        RoleId: $(this).val()
+                    }
+
+                    userWiseRolesSelected.push(pageInfo);
+                }
+            });
+
+            if (userWiseRolesSelected.length == 0) {
+                
+                ShowWarningMessage('Please select a role.');
+
+            }
+            else {
+
+                $.ajax({
+                    url: '/useraccess/userwiseroles/Insert',
+                    dataType: 'JSON',
+                    data: { userWiseRolesSelected: userWiseRolesSelected, UserId: UserId },
+                    method: 'POST',
+                    success: function (response) {
+                        ShowSuccessMessage('User Wise Roles has been saved successfully.');
+                    }
+                });
+            }       
+     
+        });
+
+
+</script>
+
+

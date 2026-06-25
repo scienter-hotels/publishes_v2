@@ -1,0 +1,107 @@
+﻿@using Scienter.HotelERP.Common.Domain
+@model List<TaxType>
+
+<input type="hidden" value="@ViewBag.ReservationHeaderId" id="reservationNo" />
+<input type="hidden" value="@ViewBag.FolioNo" id="folioNo" />
+<div class="row">
+    <div class="col-md-12" id="TaxTypeContent">
+        <table class="table table-striped" id="TaxType-Grid" style="overflow-y:scroll;">
+            <tr>
+                <th>Tax Type</th>
+                <th></th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr class="tax-types">
+                    <td>@item.Name</td>
+                    <td>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" class="taxTypeCheckbox" TaxTypeId="@item.Id" value="@item.Id">
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6 form-group label-floating">
+        <label class="control-label">Apply For</label>
+        <select id="apply-policy-list" name="" class="form-control"></select>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 form-group label-floating">
+        <label class="control-label">Remark</label>
+        <input type="text" class="form-control" maxlength="100" id="taxRemark" />
+    </div>
+</div>
+<div class="row">
+    <div class="form-group col-md-12" style="margin: 0em 0 0 0;">
+        <button class="btn btn-sm btn-danger btn-remove-tax-Type" id="btn-remove-tax-Type">REMOVE</button>
+    </div>
+</div>
+
+<script>
+
+
+    $(document).ready(function () {
+        LoadTaxRemovalPolicies();
+    });
+
+    function LoadTaxRemovalPolicies() {
+        $.ajax({
+            url: '/Administration/TaxTypes/SelectTaxRemovalPolicies',
+            dataType: 'json',
+            success: function (data) {
+                $('#apply-policy-list option').remove();
+                $(data).each(function (index, item) {
+                    $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#apply-policy-list'));
+                });
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+    $('body').off('click', '#btn-remove-tax-Type').on('click', '#btn-remove-tax-Type', function () {
+        var taxTypeList = [];
+        debugger;
+        $('.taxTypeCheckbox').each(function () {
+            if ($(this).prop('checked')) {
+                taxTypeList.push({
+                    ReservationHeaderId: $('#reservationNo').val(),
+                    FolioNo: $('#folioNo').val(),
+                    TaxTypeId: $(this).attr('TaxTypeId'),
+                    RemovalPolicyId: $('#apply-policy-list option:selected').val(),
+                    RemovalRemark: $('#taxRemark').val()
+                });
+            }
+        });
+        
+        if (taxTypeList.length > 0) {
+            $.ajax({
+                url: '/CashieringandPosting/FolioManagement/ApplyTaxRemoval',
+                dataType: 'json',
+                data: { taxTypes: taxTypeList },
+                method: 'POST',
+                success: function (response) {
+                    if (response.toString().startsWith('ERR')) {
+                        ShowWarningMessage(response.replace('ERR-',''));
+                    } else {
+                        ShowSuccessMessage("Tax removed successfully.");
+                        LoadFolioChargers($('#folioNo').val());
+                        setTimeout(function () { $('#grid-record-detail-model-close').click(); }, 2000);
+                    }
+                },
+                error: function (error) {
+                }
+            });
+        } else {
+            ShowWarningMessage("No tax type selected to continue.");
+        }
+    });
+</script>

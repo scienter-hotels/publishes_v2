@@ -1,0 +1,61 @@
+﻿@model Scienter.HotelERP.FrontOffice.WebUIMvc.Areas.Administration.Models.RatePaletViewModel
+
+  
+    <table id="ratePalet"  style="width:100%; margin-bottom:15px;">
+    
+            <tr style="background-color:transparent !important;">
+                <th style="background-color:transparent !important;">
+                    @*<span class="glyphicon glyphicon-plane"></span>*@
+                </th>
+                @foreach (var roomType in Model.RoomTypes)
+                {
+                    <th width="10px;" style="background-color:transparent !important;"></th>
+                    <th style="padding-left:10px; background-color:transparent !important;">
+                        @roomType.Name
+                        @*@for (int i = 0; i < roomType.MaxHeadCount; i++)
+                        {
+                            <span class="glyphicon glyphicon-user" style="margin-left:0px; padding-left:0px;"></span>
+                        }*@
+                    </th>
+
+                }
+            </tr>
+ 
+
+        @foreach (var mealPlans in Model.MealPlans)
+        {
+            <tr class="meal-plan" style="background-color:transparent !important;" data-mealplan="@mealPlans.Id">
+                <td style="background-color:transparent !important;">
+                    <text style="font-weight:bold">@mealPlans.Prefix</text>
+                    <input type="hidden" value="@mealPlans.Id" class="mealPlanId form-control" />
+                </td>
+
+
+                @foreach (var roomType in Model.RoomTypes)
+                {
+                    <td width="20px;" style="background-color:transparent !important;"></td>
+
+                    <td class="room-rate" style="background-color:transparent !important;" data-roomtype="@roomType.Id" data-roomType-Wise-Basis="@mealPlans.Id">
+                        <input type="hidden" class="roomTypes" value="@roomType.Id" />
+                        <table style="width:100%;">
+                            @*<tr>
+                                <td></td>
+                                <td width="50%" style="font-size:10px;">Adults</td>
+                                <td></td>   
+                                <td width="50%" style="font-size:10px;">Child </td>
+                            </tr>*@
+                            <tr style="background-color:transparent !important;" class="class-@roomType.Code">
+                                <td width="40%" class="adult-rate-cls"><input type="text" value="0" class="number rateValue form-control" /></td>
+                                <td width="10%" class="text-right" style="padding-left:10px"><i class="fa fa-bed" title="Room Rate" data-toggle="tooltip" style="color:#808080"></i> </td>
+                                <td width="40%" class="child-rate-cls"><input type="text" value="0" class="number rateValueChild form-control" /></td>
+                                <td width="10%" class="text-right" style="padding-left:10px"><i class="fa fa-child child-rate-cls" title="Child Rate" data-toggle="tooltip" style="color:#808080"></i> </td>
+                            </tr>
+                        </table>
+                    </td>
+
+                }
+
+            </tr>
+        }
+    </table>
+

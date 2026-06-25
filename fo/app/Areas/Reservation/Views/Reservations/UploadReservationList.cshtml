@@ -1,0 +1,359 @@
+﻿
+@{
+    ViewBag.Title = "Upload Reservation List";
+}
+
+<style>
+
+    .table th,
+    .table td {
+        padding: 5px 15px 5px 0 !important;
+    }
+
+    .table tbody tr td {
+        white-space: nowrap;
+    }
+
+    .text-primary {
+        font-weight: bold !important;
+    }
+</style>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-content" style="margin:auto -5px;">
+
+                <fieldset class="the-fieldset" style="padding: 20px 20px 0px 25px;">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <form id="UploadReservationListFrom">
+                                <div class="form-horizontal">
+
+                                    <input type="hidden" id="fileUrl" name="name" value="@ViewBag.FileUrl" />
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div style="margin-bottom:5px;">
+                                                <input type="file" name="DocumentUpload" id="DocumentUpload" accept="" required style="width:100%;" />
+                                                <input type="hidden" name="docBytes" id="docBytes" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="form-group label-floating" style="margin-left:0px; margin-right:10px;">
+                                                <label class="required control-label">Remark</label>
+                                                <textarea maxlength="500" rows="2" id="Remark" name="Remark" class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="submit" id="btnSave" class="btn theme-bg-color-1" style="width:100%;margin-top:46px;">
+                                                Save <span class="glyphicon glyphicon-floppy-saved" style="margin-left:5px;"></span>
+                                            </button>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="reset" id="btnClear" class="btn btn-default" style="width:100%;margin-top:46px;">
+                                                Clear
+                                            </button>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row" style="margin-top: 1em;">
+
+                                    </div>
+
+                                </div>
+
+                                @*<div>
+                            <label>
+                                <input type="checkbox" id="myCheckbox" hidden> Do you want to save this
+                            </label>
+                            <label>
+                                <button type="button" id="saveUploadList" style="width:100%; background-color:#b45b23" class="btn theme-bg-color-1" hidden>Save Upload List</button>
+                            </label>
+                        </div>*@
+                            </form>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="the-fieldset" style="padding: 20px 20px 0px 25px;"  id="saveUploadListFormF" hidden>
+                    <div class="row" id="tableWidthLength">
+
+                        <div class="col-md-12 ">
+                            <form action="" method="post" id="saveUploadListForm">
+                                <div class="row">
+                                    <div class="col-md-12" id="reservationGrid" style="max-height: 400px;width:100%; overflow: auto;">
+
+                                        <table class="table table-striped table-hover table-condensed">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-primary"> ResNo </th>
+                                                    @*<th class="text-primary"> RoomCat </th>*@
+                                                    <th class="text-primary"> Type</th>
+                                                    <th class="text-primary"> Basis </th>
+                                                    <th class="text-primary"> AgentBSP</th>
+                                                    <th class="text-primary"> Market </th>
+                                                    <th class="text-primary"> Remark </th>
+                                                    <th class="text-primary"> VoucherNo </th>
+                                                    <th class="text-primary"> TourNo </th>
+                                                    <th class="text-primary"> Title </th>
+                                                    <th class="text-primary"> FirstName </th>
+                                                    <th class="text-primary"> Lastname </th>
+                                                    <th class="text-primary"> Email </th>
+                                                    <th class="text-primary"> ContactNo </th>
+                                                    <th class="text-primary"> DOB </th>
+                                                    <th class="text-primary"> Passport </th>
+                                                    <th class="text-primary"> Address </th>
+                                                    <th class="text-primary"> Nationality </th>
+                                                    @*<th class="text-primary"> Adults </th>
+                                        <th class="text-primary"> Kids </th>*@
+
+                                                </tr>
+                                            </thead>
+
+                                            <tbody id="uploadReservationGrid"></tbody>
+                                        </table>
+
+
+
+
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-right: -30px;">
+                                    <div class="col-md-10">
+                                        <label style="float:right;line-height: 3;">
+                                            <input type="checkbox" id="myCheckbox" />
+                                            Do you want to save this ?
+                                        </label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit" id="saveUploadList" style="width:100%; background-color:#b45b23" class="btn theme-bg-color-1" disabled>Save Upload List</button>
+
+                                    </div>
+                                </div>
+
+                                @*<a href="/Reservation/Reservations/SaveUploadReservationList" class="btn theme-bg-color-1" style="width:100%; background-color:#b45b23">
+                        Download
+                    </a>*@
+                            </form>
+                        </div>
+                    </div>
+
+                </fieldset>
+
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('#DocumentUpload').closest('input[type=button]').css({ 'background-color': '#00bcd4' });
+
+        // Add custom scrolling behavior
+        $(".scroll-container").on("mousewheel DOMMouseScroll", function (e) {
+            var delta = e.originalEvent.wheelDelta || -e.originalEvent.detail;
+
+            this.scrollTop += (delta < 0 ? 1 : -1) * 30;
+            e.preventDefault();
+        });
+        
+    });
+
+    function readDocURL(input) {
+        console.log(input.files);
+        console.log(input.files[0]);
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+
+                var docBytes = e.target.result;
+                $('#btnSubmit').attr('disabled', false);
+
+                if (
+                    docBytes.toLowerCase().indexOf("pdf") < 0 &&
+                    docBytes.toLowerCase().indexOf("jpg") < 0 &&
+                    docBytes.toLowerCase().indexOf("jpeg") < 0 &&
+                    docBytes.toLowerCase().indexOf("png") < 0 &&
+                    docBytes.toLowerCase().indexOf("xlsx") < 0 &&
+                    docBytes.toLowerCase().indexOf("doc") < 0
+                ) {
+                    ShowWarningMessage('Invalid file type. Only WORD, EXCELL, PDF, JPG, PNG files are allowed.');
+                    $('#btnSubmit').attr('disabled', true);
+                    docBytes = "";
+                }
+                $('#docBytes').val(docBytes);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $("#DocumentUpload").change(function (e) {
+        readDocURL(this);
+    });
+
+
+    $('body').off('submit', '#UploadReservationListFrom').on('submit', '#UploadReservationListFrom', function (e) {
+        e.preventDefault();
+        var documentUrl = $('#docBytes').val();
+        $.ajax({
+            url: '/Reservation/Reservations/ReadUploadReservationList',
+            //dataType: 'json',
+            data: { documentUrl: documentUrl },
+            method: 'POST',
+            success: function (data) {
+                console.log(data);
+                $('#uploadReservationGrid').attr('hidden', false);
+                $('#saveUploadList').attr('disabled', false);
+                $('#saveUploadListFormF').attr('hidden', false);
+                $(data).each(function (index, item) {
+                    $(
+                        //'<tbody>' +
+                        '<tr class="">' +
+                        '<td class="">' + item.ReservationNo + '</td>' +
+                        //'<td class="">' + item.RoomCategoryCode + '</td>' +
+                        '<td class="">' + item.RoomTypeCode + '</td>' +
+                        '<td class="">' + item.MealPlanCode + '</td>' +
+                        '<td class="">' + item.BSPCode + '</td>' +
+                        '<td class="">' + item.MarketCode + '</td>' +
+                        '<td class="">' + item.BookingRemark + '</td>' +
+                        '<td class="">' + item.VoucherNo + '</td>' +
+                        '<td class="">' + item.TourNo + '</td>' +
+                        '<td class="">' + item.SalutationId + '</td>' +
+                        '<td class="">' + item.FirstName + '</td>' +
+                        '<td class="">' + item.LastName + '</td>' +
+                        '<td class="">' + item.Email + '</td>' +
+                        '<td class="">' + item.Mobile + '</td>' +
+                        '<td class="">' + item.DOB.replace(' 00:00:00', '') + '</td>' +
+                        '<td class="">' + item.PassportNo + '</td>' +
+                        '<td class="">' + item.HomeAddress + '</td>' +
+                        '<td class="">' + item.CountryCode + '</td>' +
+                        '<td class="">' + item.NationalityCode + '</td>' +
+                        //'<td class="">' + item.NoOfAdults + '</td>' +
+                        //'<td class="">' + item.NoOfKids + '</td>' +
+                        '</tr>'
+                        //+
+                        //'</tbody>'
+                    ).appendTo('#uploadReservationGrid');
+                });
+            },
+
+            complete: function () {
+                var windowSize = $(window).width();
+                console.log(windowSize);
+
+                if (windowSize <= 1919) {
+                    $('#tableWidthLength').css('max-width', windowSize - 111);
+                } else {
+                    $('#tableWidthLength').css('max-width', windowSize - 136);
+                }
+               
+            },
+
+        });
+    });
+
+    $('body').off('submit', '#saveUploadListForm').on('submit', '#saveUploadListForm', function (e) {
+        e.preventDefault();
+        //debugger;
+
+        //var tableData = [];
+        //$('#uploadReservationGrid tbody tr').each(function () {
+        //    var rowData = {};
+
+        //    $(this).find('td').each(function (index, cell) {
+        //        // Get the column name without spaces and convert it to camelCase
+        //        var columnName = $('#uploadReservationGrid th:eq(' + index + ')').text().replace(/\s+/g, '').toLowerCase();
+        //        rowData[columnName] = $(cell).text();
+        //    });
+
+        //    tableData.push(rowData);
+        //});
+
+        //console.log(JSON.stringify(tableData));
+
+        //var fileUrl = $('#fileUrl').val();
+        //alert(fileUrl);
+
+        $.ajax({
+            type: 'POST',
+            url: '/Reservation/Reservations/SaveUploadReservationList',
+            success: function (response) {
+                debugger;
+                console.log(response);
+                if (response.toString().startsWith('ERR-')) {
+                    //ShowErrorMessage("Sorry, There is an error in saving this record.");
+                    ShowErrorMessage(response);
+                } else {
+                    ShowSuccessMessage("Reservation list saved succssfully.");
+                }
+            },
+            complete: function () {
+                $('#saveUploadListFormF').attr('hidden', true);
+                $('#uploadReservationGrid tbody').empty();
+                $('#DocumentUpload').val('');
+                $('#Remark').val('');
+            },
+            error: function (error) {
+                ShowWarningMessage('Sorry, There is an error in saving this record.');
+            }
+        });
+    });
+
+        //$('#saveUploadList').click(function () {
+        //    debugger;
+        //    var tableData = [];
+        //    $("#uploadReservationGrid tbody tr").each(function () {
+        //        var row = [];
+        //        $(this).find("td").each(function () {
+        //            // Check if the cell contains form elements (e.g., input, select)
+        //            var formElement = $(this).find(":input");
+        //            if (formElement.length > 0) {
+        //                // If a form element exists, get its value
+        //                row.push(formElement.val());
+        //            } else {
+        //                // If no form element, get the plain text content
+        //                row.push($(this).text());
+        //            }
+        //        });
+        //        tableData.push(row);
+        //    });
+
+        //    $.ajax({
+        //        url: '/Reservation/Reservations/SaveUploadReservationList',
+        //        dataType: 'json',
+        //        method: 'POST',
+        //        data: JSON.stringify({ uploadedList: tableData }),
+        //        success: function (data) {
+        //            if (data.success) {
+        //                alert("Data saved successfully!");
+        //            } else {
+        //                alert("Error saving data.");
+        //            }
+        //        }
+        //    });
+        //});
+
+
+</script>

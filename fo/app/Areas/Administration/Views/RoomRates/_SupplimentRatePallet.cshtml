@@ -1,0 +1,35 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.MealPlan>
+<form id="supplimentRateSetup" data-category-cls="@ViewBag.CategoryId">
+
+    <div class="row">
+        <div class="col-md-12 text-left" style="margin-bottom:10px;">
+            <p>Child rates (<i class="fa fa-child"></i>) will applied witout considering room rates.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-3 supplimentRateSetupCtrl" style="margin-bottom:15px;" data-mealplan="@item.Id">
+                <div class="form-group label-floating">
+                    <label class="control-label">@item.Prefix</label>
+                    <input autocomplete="off" class="form-control text-box single-line number"  type="text" required>
+                </div>
+            </div>
+        }
+
+        <div class="col-md-3 class-childRate" style="margin-bottom:15px;display:none;">
+            <div class="form-group label-floating">
+                <label class="control-label">Child Rate</label>
+                <input autocomplete="off" class="form-control text-box single-line supplimentRateSetup-child number" type="text" required>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-left">
+            <button type="submit" class="btn btn-primary">Apply</button>
+        </div>
+    </div>
+</form>

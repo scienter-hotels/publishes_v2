@@ -1,0 +1,47 @@
+﻿@model Scienter.HotelERP.Common.Domain.AdvancePaymentLink
+@{
+    Layout = "~/Views/Shared/_Customer.cshtml";
+}
+
+<div class="row">
+    
+    <div class="col-md-12">
+        <div class="card" style="height:550px">
+            <div class="row" style="text-align:center;">
+                <h2>
+                    @ViewBag.Title
+                </h2>
+            </div>
+            @if (ViewBag.Title == "Oops!")
+            {
+                <br />
+                <div class="col-md-12 ">
+                    <center> <img src="/Images/error.png" height="120" width="120"/></center>
+                <br />
+                <br />
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-md-12" style="margin-left:15px;">
+                    <center>
+                        <h5>Hi @Model.GuestName,</h5>
+                        <h3><b>@ViewBag.Msg</b></h3>
+                        <br />
+                        <p>Reference No: <b>@Model.ReferenceNo</b></p>
+                    </center>
+                </div>
+            </div>
+            <br />
+            <br />
+            <center>
+                <p>visit us for inquiries at:</p>
+                <p><b><a href="https://www.sigiriyajungles.com/" target="_blank">www.sigiriyajungles.com</a></b></p>
+                <p>SIGIRIYA JUNGLES, AUDANGAWA ROAD,	KIMBISSA,	SIGIRIYA. | HOTLINE : +94-114508508 | HOTEL : +94-664508508 | EMAIL : reservations@sigiriyajungles.com</p>
+            </center>
+
+        </div>
+    </div>
+</div>
+
+

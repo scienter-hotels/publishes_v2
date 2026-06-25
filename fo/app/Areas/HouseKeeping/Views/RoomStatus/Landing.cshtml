@@ -1,0 +1,130 @@
+﻿
+@{
+    ViewBag.Title = "Room Status";
+}
+
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header" data-background-color="purple">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h4 class="title">@ViewBag.Title
+                                <hr class="visible-print" />
+                                </h4>  
+                            </div>
+                            <div class="col-md-4 text-right hidden-print">
+                                <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+
+                                <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                                    <span class="glyphicon glyphicon-th-list"></span>
+                                </button>
+                                
+                            </div>
+                        </div>                                          
+                    </div>
+                    <div class="card-content" id="contentLoadingArea">
+                     
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+    <script>
+         // form load --------------------------------
+        $(document).ready(function () {
+            FillGrid();
+        });
+
+        // show form -----------------------------------
+        $('body').on('click', '.showForm', function (e) {      
+            $.ajax({
+                url: '/housekeeping/roomstatus/form',
+                dataType: 'html',        
+                method: 'POST',                
+                success: function (response) {
+                   
+                    $('#contentLoadingArea').html('').fadeOut();
+                    $('#contentLoadingArea').html(response).fadeIn();                   
+                },
+                error: function (error) {
+                   
+                }
+            });
+        });
+
+        // show grid -----------------------------------
+
+        $('body').on('click', '.showGrid', function (e) {
+            FillGrid();
+        });
+        
+
+        // save --------------------------------------
+        $('body').on('submit', '#roomStatus', function (e) {
+           
+            e.preventDefault();         
+            var roomStatus = {
+                __RequestVerificationToken: $('__RequestVerificationToken').val(),
+                Id: $('#hiddenId').val(),
+                Name: $('#Name').val(),
+                RoomStatusCategoryId: $('#RoomStatusCategoryId').val(),
+                IsActive: $('#IsActive').prop("checked"),
+                Color: $('#cmb-color-in-roomstatus').find('.cmb-color-in-roomstatus:checked').prop('id'),
+               // Color: $('#cmb-color-in-roomstatus').find('.cmb-color-in-roomstatus:checked').
+            };
+
+           
+            $.ajax({
+                url: '/housekeeping/roomstatus/save',
+                dataType: 'html',
+                data: roomStatus,
+                method: 'POST',
+                success: function (response) {
+                    $('#contentLoadingArea').html('').fadeOut();
+                    $('#contentLoadingArea').html(response).fadeIn();      
+                    ShowSuccessMessage('Record has been saved successfully.');
+                },
+                error: function (xhr, status, error) {
+                    ShowErrorMessage('Sorry, There is an error in saving this record.');
+                }
+            });
+        });
+
+        // Edit -------------------------------
+
+       
+
+        // fill grid -----------------------------------
+        function FillGrid() {
+            var gridId = "#existingRoomStatusGrid"; // change this - relevent grid id
+            var paginations = {                                
+                PageIndex: $(gridId).attr('data-page-index'),
+                PageSize: $(gridId).attr('data-page-size'),
+                FilterType: $(gridId).attr('data-filter-type'),
+                SearchKeyword: $(gridId).attr('data-search-keyword') 
+            }
+
+            $.ajax({
+                url: '/housekeeping/roomstatus/selectforgrid',
+                dataType: 'html',
+                data: paginations,
+                method: 'POST',
+                success: function (response) {
+                   
+                    $('#contentLoadingArea').html('').fadeOut();
+                    $('#contentLoadingArea').html(response).fadeIn();                    
+                    GridFunctionalities(); 
+                },
+                error: function (error) {
+                   
+                }
+            });
+        }
+
+    </script>
+

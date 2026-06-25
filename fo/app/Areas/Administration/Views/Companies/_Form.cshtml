@@ -1,0 +1,593 @@
+﻿@model Scienter.HotelERP.Common.Domain.Company
+@using Scienter.HotelERP.Common.Domain
+@{
+    ViewBag.Title = "Create / Edit";
+}
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        overflow-x: hidden;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+</style>
+
+<div class="col-md-12">
+
+    <form id="companies">
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+            <input type="hidden" value="@Model.BackColor" name="CNId" id="hiddenColor" />
+            <input type="hidden" value="@Model.ApprovalId" name="ApprovalId" id="hiddenApprovalId" />
+
+            <div class="row">
+                <!--left_side-->
+                <div class="col-md-8">
+                    <fieldset class="the-fieldset" style="padding: 0px 0px 20px 20px; margin-right: 1.5em;">
+                        <legend class="the-legend">General Details</legend>
+                        <div class="row pad-left-1em">
+                            <div class="col-md-5">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Name</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" required maxlength="100" id="Name" name="Name" type="text" value="@Model.Name">
+                                </div>
+                            </div>
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-5">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Name Alias</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" required maxlength="100" id="NameAlias" name="NameAlias" type="text" value="@Model.NameAlias">
+                                </div>
+                            </div>
+
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-11">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Address</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="200" id="Address" name="Address" type="text" value="@Model.Address">
+                                </div>
+                            </div>
+                            <div class="col-md-1"> </div>
+                        </div>
+                        <div class="row pad-left-1em">
+                            <div class="col-md-2">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Country</label>
+                                    @{Html.RenderAction("CountriesCombo", "Countries", new { name = "CountryId", requiered = true, value = Model?.CountryId });}
+                                </div>
+                            </div>
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-2">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Currency</label>
+                                    @{Html.RenderAction("CurrenciesConvertionCombo", "Currencies", new { area = "Administration", name = "CurrencyId", ChargeTypeCode = "PT", required = true, value = Model?.CurrencyId }); }
+
+                                </div>
+                            </div>
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-2">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Company Profile Type </label>
+                                    @{Html.RenderAction("CompanyProfileTypesCombo", "CompanyProfileTypes", new { name = "CompanyProfileTypeId", requiered = false, value = Model?.CompanyProfileTypeId });}
+                                </div>
+                            </div>
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-2">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Segments </label>
+                                    @{Html.RenderAction("SegmentCombo", "Segments", new { name = "SegmentId", requiered = false, value = Model?.SegmentId });}
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row pad-left-1em">
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Reference No</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="ReferenceNo" name="ReferenceNo" type="text" value="@Model.ReferenceNo">
+                                </div>
+                            </div>
+
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">VAT Registration No</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="300" id="VATRegistrationNo" name="VATRegistrationNo" type="text" value="@Model.VATRegistrationNo">
+                                </div>
+                            </div>
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">SVAT Registration No</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="300" id="SVATRegistrationNo" name="SVATRegistrationNo" type="text" value="@Model.SVATRegistrationNo">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row pad-left-1em">
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Profile Code</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="profilecode" name="profilecode" type="text" value="@Model.ProfileCode">
+                                </div>
+                            </div>
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Contact Person</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="300" id="contactperson" name="contactperson" type="text" value="@Model.ContactPerson">
+                                </div>
+                            </div>
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Default Payment Mode</label>
+                                    @{Html.RenderAction("GuestPaymentModesCombo", "GuestPaymentModes", new { area = "Administration", name = "DefaultPaymentModeId", requiered = true, value = Model.DefaultPaymentModeId });}
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr style="margin: 1em 1.5em 0em 0em!important;" />
+
+                        <div class="row pad-left-1em">
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Rate Code</label>
+                                    @{Html.RenderAction("RateCodeHeadersCombo", "RateCodeHeaders", new { name = "RateCodeId", requiered = false, value = Model?.RateCodeId });}
+                                </div>
+                            </div>
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Booking Policy</label>
+                                    @{Html.RenderAction("BookingPolicyCombo", "CancellationPolicies", new { name = "BookingPolicyId", requiered = false, value = Model?.BookingPolicyId });}
+                                </div>
+                            </div>
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Promotion</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="promotion" name="Promotion" type="text" value="@Model.Promotion">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row pad-left-1em">
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Mapping Code 1</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="300" id="MappingCode1" name="MappingCode1" type="text" value="@Model.MappingCode1">
+                                </div>
+                            </div>
+
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Mapping Code 2</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="300" id="MappingCode2" name="MappingCode2" type="text" value="@Model.MappingCode2">
+                                </div>
+                            </div>
+
+                            <div class="col-md-1"> </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Mapping Code 3</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="300" id="MappingCode3" name="MappingCode3" type="text" value="@Model.MappingCode3">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row pad-left-1em">
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Tel</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="300" id="telno" name="TelNo" type="text" value="@Model.TelNo" required />
+                                </div>
+                            </div>
+                            <div class="col-md-1"> </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Fax</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="300" id="faxno" name="FaxNo" type="text" value="@Model.Fax">
+                                </div>
+                            </div>
+
+                            <div class="col-md-1"> </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Email</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="300" id="email" name="email" type="text" value="@Model.Email" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row pad-left-1em">
+                            <div class="col-md-5">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Confirmation Remarks</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="300" id="ConfirmationRemaks" name="ConfirmationRemaks" type="text" value="@Model.ConfirmationRemaks">
+                                </div>
+                            </div>
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-5">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Profile Remarks</label>
+                                    <input autocomplete="off" class="form-control text-box single-line" maxlength="300" id="ProfileRemarks" name="ProfileRemarks" type="text" value="@Model.ProfileRemarks">
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-md-1"> </div>
+                        </div>
+                        @*<div class="form-group checkbox" style="margin-right: 0px;margin-left: 11px;">
+                                <label>
+                                    @Html.CheckBoxFor(model => model.ShowRatesOnGRC)
+                                    Is Credit Enabled
+                                </label>
+                            </div>*@
+                        <div class="row pad-left-1em">
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Booking Source</label>
+                                    @{Html.RenderAction("BookingSourceCombo", "BookingSources", new { area = "Administration", name = "DefaultBookingSourceId", requiered = true, value = Model.DefaultBookingSourceId });}
+                                </div>
+                            </div>
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-3">
+                                <div class="form-group form-group-margin-override emails-container label-floating">
+                                    <label class="required control-label">Company Email Templates</label>
+                                    <select name="CompanyEmailTemplateId" id="CompanyEmailTemplateId" class="select2 form-control" data-value="@Model.CompanyEmailTemplateId">
+                                        <option>-- Select Email Template --</option>
+                                    </select>
+                                    <input type="hidden" id="hdnCompanyEmailTemplateId" value="@Model.CompanyEmailTemplateId" />
+                                </div>
+                            </div>
+                            <div class="col-md-1"> </div>
+                            <div class="col-md-3">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Color</label>
+                                    <input id="backcolor" type="text" />
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </fieldset>
+                </div>
+                <!--right_side-->
+                <div class="col-md-4">
+                    <div class="row" style="display:none">
+                        @{Html.RenderAction("ListVertical", "Properties", new { selectedPoperties = Model.Properties }); }
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12" style="padding: 4px 0px 5px 0px;">
+                            <fieldset class="the-fieldset" style="padding: 0px 0px 20px 20px; margin-right: 1.5em;">
+                                <legend class="the-legend" style="padding: 0 5px;">Rules</legend>
+                                <div class="row">
+                                    <div class="col-md-8" style="padding-left: 16px;">
+                                        <div class="form-group label-floating " style="margin-right: -16px;margin-left: 0.6em;margin: 2px 0 0 0;padding-bottom: 0px;">
+                                            <label class="radio-inline "><input type="radio" class="CompanyTypes" name="CompanyType" value="L" checked>Local</label>
+                                            <label class="radio-inline "><input type="radio" class="CompanyTypes" name="CompanyType" value="F">Foreign</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="form-group checkbox" style="margin-right: 0px;margin-left: 11px;">
+                                            <label>
+                                                @Html.CheckBoxFor(model => model.ShowRatesOnGRC)
+                                                Show rates on GRC
+                                            </label>
+                                            @Html.ValidationMessageFor(model => model.ShowRatesOnGRC, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="form-group checkbox" style="margin-right: 0px;margin-left: 11px;">
+                                            <label>
+                                                @Html.CheckBoxFor(model => model.IsActive)
+                                                Active
+                                            </label>
+                                            @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="form-group checkbox" style="margin-right: 0px;margin-left: 11px;">
+                                            <label>
+                                                @Html.CheckBoxFor(model => model.FITProfile)
+                                                FIT Profile
+                                            </label>
+                                            @Html.ValidationMessageFor(model => model.FITProfile, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*<div class="row">
+                                        <div class="col-md-8">
+                                            <div class="form-group checkbox" style="margin-right: 0px;margin-left: 11px;">
+                                                <label>
+                                                    @Html.CheckBoxFor(model => model.AddToOccupancy)
+                                                    Add To Occupancy
+                                                </label>
+                                                @Html.ValidationMessageFor(model => model.AddToOccupancy, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="form-group checkbox" style="margin-right: 0px;margin-left: 11px;">
+                                            <label>
+                                                @Html.CheckBoxFor(model => model.IsForeignCurrencyBillRequested)
+                                                Foreign Currency Bill Requested
+                                            </label>
+                                            @Html.ValidationMessageFor(model => model.IsForeignCurrencyBillRequested, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="form-group checkbox" style="margin-right: 0px;margin-left: 11px;">
+                                            <label>
+                                                @Html.CheckBoxFor(model => model.IsRateCodeNoRules)
+                                                Rate Code No Rules
+                                            </label>
+                                            @Html.ValidationMessageFor(model => model.IsRateCodeNoRules, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">           @*Bangaladesh Modification*@
+                                    <div class="col-md-8">
+                                        <div class="form-group checkbox" style="margin-right: 0px;margin-left: 11px;">
+                                            <label>
+                                                @Html.CheckBoxFor(model => model.IsBillPaymentFromLKR)
+                                                Bill Payment  @SessionObjects.LocalCurrency.ISOCode
+                                            </label>
+                                            @Html.ValidationMessageFor(model => model.IsBillPaymentFromLKR, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12" style="padding: 4px 0px 5px 0px;">
+                            <fieldset class="the-fieldset" style="padding: 0px 0px 20px 40px; margin-right: 1.5em;">
+                                <legend class="the-legend" style="padding: 0 5px;">Credit Details</legend>
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">Credit Limit</label>
+                                            <input autocomplete="off" class="form-control text-box single-line number" maxlength="100" id="creditlimit" name="CreditLimit" type="text" value="@Model.CreditLimit">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">Credit Period</label>
+                                            <input type="number" autocomplete="off" class="form-control text-box single-line" min="0" id="creditPeriod" name="CreditLimit" type="text" value="@Model.CreditPeriod">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        @*<input type="checkbox" id="IsCreditEnabled" name="IsCreditEnabled" checked style="margin-left:-14px">
+                                            <label for="checkbox IsCreditEnabled" style="color:black">Is Credit Enabled</label>
+                                            <input type="hidden" id="hdnIsCreditEnabled" value="@Model.IsCreditEnabled" />*@
+
+                                        <div class="form-group checkbox IsCreditEnabled" style="margin-right: 0px;margin-left:-9px;">
+                                            <label>
+                                                @Html.CheckBoxFor(model => model.IsCreditEnabled)
+                                                Is Credit Enabled
+                                            </label>
+                                            @Html.ValidationMessageFor(model => model.IsCreditEnabled, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    @*@if (Model.Id == 0 || (Model.Id > 0 && Model.IsAllowToSave) || (Model.CompanyId > 0 && Model.IsAllowToSave))
+                        {
+                            <div class="row">
+                                <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                                <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                            </div>
+                        }*@
+                    @if (ViewBag.IsEnable)
+                    {
+                        <div class="row">
+                            <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                            <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="~/Scripts/spectrum.js"></script>
+<link href="~/Content/spectrum.css" rel="stylesheet" />
+<script>
+    $(document).ready(function () {
+
+        //2023-08-16--------------------------------------------------------------------------
+        $('#CountryId').addClass('select2');
+        $('#CurrencyId').addClass('select2');
+        $('#CompanyProfileTypeId').addClass('select2');
+        $('#SegmentId').addClass('select2');
+        $('#DefaultPaymentModeId').addClass('select2');
+        $('#RateCodeId').addClass('select2');
+        $('#BookingPolicyId').addClass('select2');
+        $('#DefaultBookingSourceId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+
+        var id = $('#Id').val();
+        var approvalId = $('#hiddenApprovalId').val();
+        var backcol;
+        backcol = $('#hiddenColor').val();
+        if (backcol == null) {
+            backcol: '000000000'
+        }
+
+        $('#backcolor').spectrum({
+            preferredFormat: "rgb",
+            color: 'rgb(' + backcol.substring(0, 3) + ',' + backcol.substring(3, 6) + ' ' + backcol.substring(6, 9) + ')',
+            showInput: true,
+            showPaletteOnly: true,
+            hideAfterPaletteSelect: true,
+            hide: function (color) {
+                var colRgbStr = (color.toRgbString()).match(/\((.*)\)/);
+                var ArrColStr = colRgbStr[1].split(',');
+                var RGBval = "";
+                for (var i = 0; i < ArrColStr.length; i++) {
+                    ArrColStr[i] = '000' + ArrColStr[i].trim();
+                    RGBval = RGBval + ArrColStr[i].substring((ArrColStr[i].length - 3), ArrColStr[i].length);
+                }
+                $('#hiddenColor').val(RGBval);
+            }
+        });
+        if (id > 0) {
+            LoadCompanyTypes();
+        }
+        LoadEmailTemplates();
+
+        //  LoadIsChecked();
+
+        if ($('input.IsCreditEnabled').is(':checked')) {
+            $('#creditlimit').prop('disabled', false);
+            $('#creditPeriod').prop('disabled', false);
+        } else {
+            $('#creditlimit').prop('disabled', true);
+            $('#creditPeriod').prop('disabled', true);
+        }
+
+        if (id == 0 && approvalId == 0) {
+            $("#IsBillPaymentFromLKR").prop('checked', true);
+            $("#IsActive").prop('checked', true);
+        }
+
+    });
+
+    function LoadCompanyTypes() {
+        $.ajax({
+            url: '/administration/Companies/SelectCompanyTypes',
+            dataType: 'JSON',
+            data: { id: $('#Id').val() },
+            method: 'POST',
+            success: function (data) {
+                $('.CompanyTypes').each(function (index, item) {
+                    if ($(item).val() == data.CompanyType) {
+                        $(this).prop('checked', true);
+                    }
+                });
+            }
+        });
+    }
+
+
+
+    $("#Name").keyup(function () {
+
+        var a = $("#Name").val();
+        $("#NameAlias").val(a);
+    });
+
+    function LoadEmailTemplates() {
+        $.ajax({
+            url: '/administration/Companies/SelectCompanyEmailTemplets ',
+            dataType: 'json',
+            method: 'post',
+            success: function (response) {
+                $('#CompanyEmailTemplateId .data-values').remove();
+                $.each(response, function (a, b) {
+                    $('<option class="data-values" value="' + b.Id + '">' + b.Name + '</option>').appendTo('#CompanyEmailTemplateId');
+                });
+            },
+            complete: function () {
+                $('#CompanyEmailTemplateId').val($('#hdnCompanyEmailTemplateId').val());
+            }
+        });
+    }
+
+    function LoadIsChecked() {
+        $.ajax({
+            complete: function () {
+                $("#IsCreditEnabled").prop('checked', false);
+            }
+        });
+    }
+
+    $('body').off('change', '#IsCreditEnabled').on('change', '#IsCreditEnabled', function (e) {
+        if ($(this).prop('checked')) {
+            $('#creditlimit').prop('disabled', false);
+            $('#creditPeriod').prop('disabled', false);
+        } else {
+            $('#creditlimit').prop('disabled', true);
+            $('#creditPeriod').prop('disabled', true);
+        }
+    });
+</script>

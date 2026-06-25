@@ -1,0 +1,184 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.HouseKeepingRoomBoyViewModel
+@{
+
+    ViewBag.Title = "Room Boy Room Inspection";
+}
+
+
+<style>
+    .search-col {
+        margin-top: 20px;
+        padding-left: 5px !important;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                    <div class="row">
+                        <div class=" col-md-3">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Hotel Date *</label>
+                                <input type="date" id="HotelDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class=" col-md-4">
+                            <div class="form-group label-floating">
+                                <label class="control-label">Room Boy *</label>
+
+                                <select id="RoomBoyId" name="" class="form-control" required>
+                                    <option value=""></option>
+
+                                    @foreach (var option in Model.RoomBoys)
+                                    {
+                                        <option value="@option.Id" selected>@option.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        @foreach (var item in Model.RoomDetails)
+                        {
+                            <div class=" col-md-2">
+                                <div class="form-group checkbox" style="margin-top:10px;">
+                                    <label>
+                                        <input type="checkbox" class="room-id" value="@item.Id" data-room-code="@item.Code" /> @item.Name
+                                    </label>
+
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-success btn-save">SAVE</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('#RoomBoyId').val('');
+        $('.room-id').prop('checked', false);
+    });
+
+    $('.btn-save').click(function () {
+        debugger;
+        var selectedRoomIds = [];
+        if ($('#HotelDate').val() == undefined || $('#HotelDate').val().length == 0) {
+            ShowWarningMessage('Please select hotel date.');
+        }
+        else if ($('#RoomBoyId').val() == undefined || $('#RoomBoyId').val().length == 0) {
+            ShowWarningMessage('Please select room boy.');
+        }
+        else if ($('.room-id:checked').length == 0) {
+            //ShowWarningMessage('Please select at least one room.');/////--------------Ganguli Remove this c' Aruna ayya said 2022-10-18
+            var selectedRoom = {};
+            selectedRoom.RoomBoyId = $('#RoomBoyId').val();
+            selectedRoom.HotelDate = $('#HotelDate').val();
+            selectedRoomIds.push(selectedRoom);
+        }
+        else {
+            //var selectedRoomIds = [];
+            $('.room-id').each(function (index, item) {
+                if ($(item).prop('checked')) {
+                    var selectedRoom = {};
+                    selectedRoom.RoomId = $(item).val();
+                    selectedRoom.RoomBoyId = $('#RoomBoyId').val();
+                    selectedRoom.Code = $(item).attr('data-room-code');
+                    selectedRoom.HotelDate = $('#HotelDate').val();
+                    selectedRoomIds.push(selectedRoom);
+                }
+            });
+            console.log(selectedRoomIds);
+        }
+        $.ajax({
+            url: '/HouseKeeping/HouseKeeping/SaveHouseKeepingRoomBoys',
+            method: 'POST',
+            data: { roomWiseRoomBoys: selectedRoomIds },
+            success: function (response) {
+                if (response.startsWith("ERR-")) {
+                    ShowErrorMessage(response);
+                }
+
+                $('.room-id').prop('checked', false);
+                $('#RoomBoyId').val('');
+                ShowSuccessMessage('Saved Successfully');
+            },
+            error: function () {
+                ShowErrorMessage('Sorry there is an error.');
+            }
+        });
+
+    });
+
+    $('#HotelDate').change(function () {
+        LoadSavedRooms();
+    });
+
+    $('#RoomBoyId').change(function () {
+        LoadSavedRooms();
+    });
+
+    function LoadSavedRooms() {
+        debugger;
+        $('.room-id').prop('checked', false);
+        var roomBoyId = $('#RoomBoyId').val();
+        var hotelDate = $('#HotelDate').val();
+
+        if ($('#RoomBoyId').val() == undefined || $('#RoomBoyId').val() == "") {
+            roomBoyId = 0;
+        }
+
+        if ($('#HotelDate').val() == undefined || $('#HotelDate').val() == "") {
+            hotelDate = '2000-01-01';
+        }
+
+        $.ajax({
+            url: '/HouseKeeping/HouseKeeping/SelectHouseKeepingRoomBoysByRoomBoyId?roomBoyId=' + roomBoyId + '&hotelDate=' + hotelDate,
+            method: 'POST',
+            success: function (response) {
+                $('.room-id').each(function (index, item) {
+                    $(response).each(function (index, selectedItem) {
+                        if (selectedItem.RoomId == $(item).val()) {
+                            $(item).prop('checked', true);
+                        }
+                    });
+                });
+
+
+            },
+            error: function () {
+                ShowErrorMessage('Sorry there is an error.');
+            }
+        });
+    }
+
+</script>

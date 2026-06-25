@@ -1,0 +1,68 @@
+﻿
+@model  IEnumerable<Scienter.HotelERP.Common.Domain.Employee>
+
+@{
+    ViewBag.Title = "Exising Employees";
+}
+
+<div class="table-responsive grid-container">
+    <table class="table table-striped"
+           id="existingEmployeeGrid"
+           data-page-index="1"
+           data-page-size="5"
+           @*data-page-count="@Model.FirstOrDefault().PageCount"*@
+           @*data-page-count="5"*@
+           data-filter-type="2"
+           data-search-keyword=""
+           data-grid-top-functionalities="true"
+           data-grid-pageable="true"
+           data-grid-sortable="true">
+        <tr>
+            <th class="text-primary">
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th class="text-primary">
+                @Html.DisplayNameFor(model => model.Age)
+            </th>
+            <th class="text-primary">
+                @Html.DisplayNameFor(model => model.Dob)
+            </th>
+            <th class="col-md-1 text-primary">
+                @Html.DisplayNameFor(model => model.IsActive)
+            </th>
+            <th class="col-md-1 hidden-print"></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Age)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Dob)
+                </td>
+                <td class="col-md-1">
+                    @*@Html.DisplayFor(modelItem => item.IsActive)*@
+                </td>
+                <td class="hidden-print text-right">
+                    @*<a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Employees - @item.Name" data-href="/administration/employees/print/@item.Id">
+                        <span class="glyphicon glyphicon-print"></span>
+                    </a>*@
+
+                    <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/employees/edit/@item.Id">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+
+                    <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/administration/employees/delete/@item.Id">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>

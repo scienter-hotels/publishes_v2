@@ -1,0 +1,133 @@
+﻿
+@*@model Scienter.HotelERP.Common.Domain.GuestPortal_HotelPromotion*@
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<div class="col-md-12">
+    <form id="guestPortalPromotion">
+        @*@Html.AntiForgeryToken()*@
+        <div>
+            @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+
+            <div class="row">
+                <div class="col-md-12">
+
+                    <!-- Name -->
+                    <div class="row">
+                        <div class="col-md-5 form-group label-floating">
+                            <label class="control-label">Name *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="50" id="Name" name="Name" type="text" value="" required>
+                        </div>
+                    </div>
+
+                    <!-- Upload Image -->
+                    <div class="row">
+                        <div class="col-md-5 form-group label-floating">
+                            <label class="control-label">Upload Image *</label>
+                            <input class="form-control" id="ImageFile" name="ImageFile" type="file" accept="image/*" required>
+                        </div>
+                    </div>
+
+                    <!-- Image Preview -->
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div id="imagePreviewContainer" style="display:none; margin-top:10px;">
+                                <label class="control-label">Preview:</label>
+                                <br />
+                                <img id="imagePreview" src="#" alt="Image Preview" style="max-width:100%; height:auto; border:1px solid #ccc; border-radius:8px; padding:5px;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alt Tag -->
+                    <div class="row">
+                        <div class="col-md-5 form-group label-floating">
+                            <label class="control-label">Alt Tag *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="AltTag" name="AltTag" type="text" value="" required>
+                        </div>
+                    </div>
+
+                    <!-- Title -->
+                    <div class="row">
+                        <div class="col-md-5 form-group label-floating">
+                            <label class="control-label">Title *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Title" name="Title" type="text" value="" required>
+                        </div>
+                    </div>
+
+                    <!-- Redirect URL -->
+                    <div class="row">
+                        <div class="col-md-8 form-group label-floating">
+                            <label class="control-label">Redirect URL *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="255" id="RedirectUrl" name="RedirectUrl" type="url" placeholder="https://example.com" required>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="row">
+                        <div class="col-md-8 form-group label-floating">
+                            <label class="control-label">Description</label>
+                            <textarea autocomplete="off" class="form-control text-box single-line" maxlength="200" id="Description" name="Description" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Display Order -->
+                    <div class="row">
+                        <div class="col-md-4 form-group label-floating">
+                            <label class="control-label">Display Order *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" id="DisplayOrder" name="DisplayOrder" type="number" min="0" value="">
+                        </div>
+                    </div>
+
+                    <!-- Active Checkbox -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group checkbox">
+                                <label>
+                                    <input type="checkbox" id="IsActive" name="IsActive" />
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                                &nbsp;
+                                <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Preview Script -->
+@*<script>
+    document.getElementById('ImageFile').addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        const preview = document.getElementById('imagePreview');
+
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = '#';
+            previewContainer.style.display = 'none';
+        }
+    });
+</script>*@
+
+

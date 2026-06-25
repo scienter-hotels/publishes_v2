@@ -1,0 +1,260 @@
+﻿
+@model  IEnumerable<Scienter.HotelERP.Common.Domain.GuestPortal_RoomRequest>
+@{
+
+
+    ViewBag.Title = "Guest Portal Room Request";
+}
+<input type="hidden" name="text" id="type" value="@ViewBag.Type" />
+
+<style>
+    .form-group {
+        margin: 0;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-4" style="position:absolute;z-index:10000;">
+        <select id="customSelect" class="custom-select form-control">
+            <option value="A">All</option>
+            @*<option value="R">Reservation</option>*@
+            <option value="I">In House</option>
+            <option value="C">Checked Out</option>
+        </select>
+    </div>
+</div>
+
+
+<div class="table-responsive">
+    <table class="table table-striped" id="GuestPortalRoomRequest">
+        <thead>
+            <tr>
+                <th hidden></th>
+                <th class="col-md-1 text-primary">
+                    Res / No
+                </th>
+                <th class="col-md-1 text-primary">
+                    Room No
+                </th>
+                <th class="col-md-1 text-primary">
+                    Date
+                </th>
+                <th class="col-md-1 text-primary">
+                    Time
+                </th>
+                <th class="col-md-1 text-primary">
+                    Note
+                </th>
+                <th class="col-md-1 text-primary">
+                    Type
+                </th>
+                <th class="col-md-1 text-primary">
+                    ActionName
+                </th>
+                <th class="col-md-1 text-primary">
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr style="height: 36px !important;" data-reservation_level="@Html.DisplayFor(modelItem => item.ReservationLevel)">
+                <th hidden></th>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReservationNo)
+                    <input type="hidden" name="text" id="guestPoratlRoomRequestReservationHeaderId" value="@item.ReservationHeaderId" />
+                    <input type="hidden" name="text" id="roomRequestId" value="@item.RoomRequestId" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateFormatted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TimeFormatted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AdditionalNotes)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RequestType)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ActionName)
+                </td>
+                <td style="text-align:right !important;">
+                    <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="activityLog" data-guestPoratlRoomRequestReservationHeaderId="@item.ReservationHeaderId" data-ActionTypeId="@item.ActionTypeId" data-id="@item.RoomRequestId" data-title="Reservation Activity Log" data-href="" title="Activity Log" data-toggle="modal" data-target="" data-width="500">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </a>
+                    <a class="btn btn-theme-color-2 btn-sm call-popup-model viewactivityLog" id="viewactivityLog" data-guestPoratlRoomRequestReservationHeaderId="@item.ReservationHeaderId" data-id="@item.RoomRequestId" data-title="Reservation Activity Log" data-href="" title="View Activity" data-toggle="modal" data-target="" data-width="500">
+                        <span class="glyphicon glyphicon-tags"></span>
+                    </a>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    //$(document).ready(function () {
+    //    $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+    //    $('#GuestPortalRoomRequest').DataTable(
+    //        {
+    //            //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+    //            searching: true,
+    //            ordering: true,
+    //            //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    //            select: true,
+    //            //buttons: [
+    //            //    'copy',
+    //            //    'excel',
+    //            //    'csv',
+    //            //    'pdf',
+    //            //    'print'
+    //            //],
+    //            scrollY: '58vh',
+    //            dom: '<"custom-dropdown"lfrtip>',
+    //            initComplete: function () {
+    //                var dropdown = $('<select id="customSelect" class="custom-select">' +
+    //                    '<option value="">Select Option</option>' +
+    //                    '<option value="Option1">Option 1</option>' +
+    //                    '<option value="Option2">Option 2</option>' +
+    //                    '<option value="Option3">Option 3</option>' +
+    //                    '</select>');
+
+    //                $("div.custom-dropdown").append(dropdown);
+
+    //                // Handle the dropdown change event
+    //                $('#customSelect').on('change', function () {
+    //                    var selectedValue = $(this).val();
+    //                    console.log("Selected: " + selectedValue);
+    //                    // Add custom actions based on the selected value
+    //                });
+    //            },
+    //        });
+
+    //});
+    var reservationLevel = $('#customSelect').val();
+    $(document).ready(function () {
+        loadGridData()
+        $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+        $('#GuestPortalRoomRequest').DataTable(
+            {
+                searching: true,
+                ordering: true,
+                dom: 'frtipl',
+                select: true,
+                scrollY: '58vh',
+            });
+    });
+
+    $(document).off('change').on('change', '#customSelect', function () {
+        reservationLevel = $('#customSelect').val();
+        loadGridData();
+    });
+
+    function loadGridData() {
+        var rows = $('#GuestPortalRoomRequest tr');
+        var noRecords = true;
+
+        if (reservationLevel !== "A") {
+            rows.each(function () {
+                var reservationLevelTr = $(this).data('reservation_level');
+                if (reservationLevel !== reservationLevelTr) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                    noRecords = false;
+                }
+            });
+
+            if (noRecords) {
+                $('#GuestPortalRoomRequest tbody').append('<tr class="no-records"><td colspan="100%" style="text-align:center;">No Records Found</td></tr>');
+            } else {
+                $('#GuestPortalRoomRequest .no-records').remove();
+            }
+        } else {
+            rows.show();
+            $('#GuestPortalRoomRequest .no-records').remove();
+        }
+    }
+
+    //$('body').off('submit').on('submit', '#roomRequestActivityForm', function (e) {
+    ////$(document).off('click', '#btnSave').on('click', '#btnSave', function (e) {
+    //    debugger;
+    //    alert('RoomRequestActivityForm');
+    //    e.preventDefault();
+    //    var RoomRequest = {};
+    //    RoomRequest.ActionTypeId = $('#roomRequestActionType').val();
+    //    RoomRequest.AdditionalNotes = $('#additionalNotes').val();
+    //    RoomRequest.ReservationHeaderId = $('#reservationHeaderId').val();
+    //    RoomRequest.RoomRequestId = $('#roomRequestId').val();
+    //    console.log(RoomRequest);
+    //    $.ajax({
+    //        url: '/GuestPortal/RoomRequest/RoomRequestActivitySave',
+    //        method: 'POST',
+    //        data: { roomRequest: RoomRequest },
+    //        beforeSend: function () {
+    //            $('#btnSave').text('Please wait...');
+    //        },
+    //        success: function (response) {
+    //            if (response.startsWith("ERR-")) {
+    //                ShowErrorMessage(response.replace("ERR-", ""));
+    //            } else {
+    //                ShowSuccessMessage('Record has been saved successfully.');
+    //            }
+    //            window.location.reload();
+    //        },
+    //        error: function () {
+    //            ShowWarningMessage('Sorry! There is an Error');
+    //        },
+    //        complete: function () {
+    //            ClearForm();
+    //            $('#btnSave').text('Save');
+    //        }
+    //    });
+    //});
+
+    $('body').on('click', '#activityLog', function () {
+        debugger;
+
+        var code = $('#type').val();
+        $(".guestportal-action-model").modal('show');
+        $('#code').val(code);
+        //$('#hdnreservationHeaderId').val($('#guestPoratlRoomRequestReservationHeaderId').val());
+        $('#requestId').val($(this).attr('data-Id'));
+        $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+        $('#hdnreservationHeaderId').val($(this).attr('data-guestPoratlRoomRequestReservationHeaderId'));
+        if (code === "r") {
+            $('#hdnlabel').val("Room Request Status");
+        } else {
+            $('#hdnlabel').val("Laundry Request Status");
+        }
+
+        LoadActionType(code);
+    });
+
+    $('body').on('click', '.viewactivityLog', function (e) {
+        debugger;
+        var code = $('#type').val();
+        var requestId = $(this).attr('data-id');
+        var reservationHeaderId = $(this).attr('data-guestPoratlRoomRequestReservationHeaderId');
+        //var reservationHeaderId = $('#reservationHeaderId').val();
+        var GuestPortalActivityLogURL = '/GuestPortal/Action/ActivityLog?code=' + code + '&requestId=' + requestId + '&reservationHeaderId=' + reservationHeaderId;
+        if (code === "r") {
+            var title = 'Room Request Status Activity Log ';
+        } else {
+            var title = 'Laundry Request Status Activity Log';
+        }
+
+        //'&guestName=' + guestName + '&guestProfileId=' + GuestProfileId + '&Uuid=' + ResUuid + '';
+
+        CallDetailModelSimple(title, GuestPortalActivityLogURL, 1000);
+    });
+
+</script>
+
+

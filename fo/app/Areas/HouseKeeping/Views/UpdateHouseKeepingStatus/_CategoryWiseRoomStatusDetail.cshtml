@@ -1,0 +1,16 @@
+﻿
+@model  IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.HouseKeepingStatusUpdateTXNView>
+
+@foreach (var item in Model)
+{
+    <div class="row row-height mar-l-r-0">
+        <div class="col-md-3 pad-l-r-0" style="padding-left:1.5em">
+            <span class="@item.GlyphiconType"> <img src="~/Images/@item.GlyphiconType" alt="" width="15" height="15" style="margin-right:10px;" /> </span>
+        </div>
+        <div class="col-md-9 pad-l-r-0"><input type="hidden" id="hidden-room-status" value="@item.RoomStatusId" />
+            @item.RoomStatusName.ToString().Replace('-', '/')
+        </div>
+    </div>
+}
+
+

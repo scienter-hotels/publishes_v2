@@ -1,0 +1,129 @@
+﻿    .ribbonbox {
+  /*height: 600px;*/
+  position: relative;
+  /*border: 1px solid #BBB;*/  
+}
+.ribbon {
+  position: absolute;
+  right: -5px; top: -6px;
+  z-index: 1;
+  overflow: hidden;
+  width: 100px; height: 100px;
+  text-align: right;
+}
+.ribbon2 {
+
+    display: block;
+-webkit-box-sizing: content-box;
+-moz-box-sizing: content-box;
+box-sizing: content-box;
+float: none;
+z-index: auto;
+width: 0;
+height: 80px;
+position: static;
+cursor: default;
+opacity: 1;
+top: 57px;
+right: 0;
+left: 100%;
+margin: -80px 0 -4px 180px;
+padding: -4px 50px -6px 0;
+overflow: visible;
+border-top: 13px solid;
+border-right: 15px solid #1abc9c;
+border-bottom: 13px solid rgba(0,0,0,0);
+border-left: 13px solid #1abc9c;
+-webkit-border-radius: 0;
+border-radius: 0;
+font: normal 100%/normal Arial, Helvetica, sans-serif;
+color: rgba(0,0,0,1);
+text-align: right;
+-o-text-overflow: clip;
+text-overflow: clip;
+white-space: pre-line;
+background: none;
+-webkit-box-shadow: none;
+box-shadow: none;
+text-shadow: none;
+-webkit-transition: none;
+-moz-transition: none;
+-o-transition: none;
+transition: none;
+-webkit-transform: rotateX(1.1459155902616465deg) rotateY(0.5729577951308232deg)   ;
+transform: rotateX(1.1459155902616465deg) rotateY(0.5729577951308232deg)   ;
+-webkit-transform-origin: 100% 50% 0;
+transform-origin: 100% 50% 0;
+
+}
+
+.ribbon span {
+  font-size: 10px;
+  font-weight: bold;
+  color: white;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 20px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  width: 100px;
+  display: block;
+  background: #850272;
+  background: linear-gradient(#850272 0%, #72155e 100%);
+  box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
+  position: absolute;
+  top: 19px; right: -21px;
+}
+.ribbon span::before {
+  content: "";
+  position: absolute; left: 0px; top: 100%;
+  z-index: -1;
+  border-left: 3px solid #850272;
+  border-right: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  border-top: 3px solid #850272;
+}
+.ribbon span::after {
+  content: "";
+  position: absolute; right: 0px; top: 100%;
+  z-index: -1;
+  border-left: 3px solid transparent;
+  border-right: 3px solid #850272;
+  border-bottom: 3px solid transparent;
+  border-top: 3px solid #850272;
+}
+
+    div.box {
+        width: 100px;
+        height: 50px;
+        display: inline-block;
+        vertical-align: top;
+        box-sizing: border-box;
+        /*padding: 10px;*/
+        color: #999;
+        position: relative;
+    }
+
+        div.box.sample:after {
+            content: "PAID";
+            position: absolute;
+            z-index: 1;
+            font-family: Arial,sans-serif;
+            -webkit-transform: rotate(-45deg); /* Safari */
+            -moz-transform: rotate(-45deg); /* Firefox */
+            -ms-transform: rotate(-45deg); /* IE */
+            -o-transform: rotate(-45deg); /* Opera */
+            transform: rotate(-45deg);
+            font-size: 40px;
+            color: #c00;
+            background: #fff;
+            border: solid 4px #c00;
+            padding: 10px;
+            border-radius: 5px;
+            zoom: 1;
+            filter: alpha(opacity=20);
+            opacity: 0.5;
+            -webkit-text-shadow: 0 0 2px #c00;
+            text-shadow: 0 0 2px #c00;
+            box-shadow: 0 0 2px #c00;
+        }

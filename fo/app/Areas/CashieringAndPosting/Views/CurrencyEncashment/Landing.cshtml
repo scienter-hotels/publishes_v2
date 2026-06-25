@@ -1,0 +1,380 @@
+﻿@using Scienter.HotelERP.Common.Domain
+
+@{
+    ViewBag.Title = "Currency Encashment";
+
+}
+<style>
+    .can-toggle.demo-rebrand-1 input[type="checkbox"]:checked:focus ~ label .can-toggle__switch, .can-toggle.demo-rebrand-1 input[type="checkbox"]:checked:hover ~ label .can-toggle__switch {
+        background-color: #dc6f0f;
+    }
+</style>
+
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("IsDirectPrint")" name="" id="IsDirectPrint" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("IsCurrencyEncashmentDirectPrint")" name="" id="IsCurrencyEncashmentDirectPrint" />
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8 hidden-print">
+                        <h4 class="title">
+                            @ViewBag.Title
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <input type="hidden" value="@ViewBag.postingType" name="categoryId" id="categoryId" />
+                <div class="row">
+                    <div class="col-md-4 hidden-print">
+                        @*<fieldset class="the-fieldset">
+                            <legend class="the-legend"> Select Details</legend>*@
+                        @Html.Partial("_Form", new Scienter.HotelERP.Common.Domain.ViewModels.CurrencyEncashmentViewModel())
+                        @*</fieldset>*@
+                    </div>
+                    <div class="col-md-8" style="padding-left:0px;padding-right: 1.7em;">
+                        <fieldset class="the-fieldset" style="margin-top:0.03em;height: 49.88em;">
+                            <div class="pritableArea">
+                                <legend class="the-legend" style="text-align:center;">
+                                    <b style="font-size: 1.1em;font-weight: 600;">Currency Encashment Reciept</b>
+                                </legend>
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row" style="margin-bottom:20px;">
+                                            <div class="col-md-6">
+                                                <p id="roomNolabel">Room No</p>
+                                                <label id="RoomNoInGrid" style="font-size:20px;">
+                                                </label>
+                                            </div>
+                                            <div class="col-md-1">
+
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        Charge Date :
+                                                        <label id="ChargeDateInGrid">
+                                                            @DateTime.Now.ToShortDateString()
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        Invoice# :
+                                                        <label id="DocumentNoInGrid">
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        Cus.Name :
+                                                        <label id="CusNameInGrid">
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="margin-bottom:50px;">
+                                            <div class="col-md-12">
+                                                @Html.Partial("_Grid", new List<Scienter.HotelERP.Common.Domain.ViewModels.CurrencyEncashmentViewModel>())
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="row" style="margin-bottom:10px;">
+                                                    <div class="col-md-8">
+
+                                                    </div>
+                                                    <div class="col-md-4" id="TaxCalcutationTable">
+                                                        @Html.Partial("_TaxCalculation", new List<Scienter.HotelERP.Common.Domain.ViewModels.TaxCalculationsViewModel>())
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <input type="button" id="Save" value="Settle Now" class="btn btn-primary hidden-print disabled" />
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        @if (Scienter.HotelERP.Common.Utility.Configs.GetAppSettingBoolValue("IsDirectPrint"))
+                                                        {
+                                                            <button id="btnprint" value="Print" class="btn btn-primary disabled hidden-print" href="">
+                                                                Print
+                                                                @*<span class="glyphicon glyphicon-print"></span>*@
+                                                            </button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a id="btnprint" href="" class="btn btn-primary disabled hidden-print">Print</a>
+                                                        }
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span style="font-size:11px; float:right; margin-top:20px;"> * All currency amounts are in @SessionObjects.LocalCurrency.Name (@SessionObjects.LocalCurrency.ISOCode)</span>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<script>
+    var C = 'G';
+
+    $(document).ready(function () {
+        $('.room-combo').show();
+        $('.guestname-combo').show();
+        $('.walkin-Name').hide();
+        $('.walkin-passportNo').hide();
+        $('#btnAdd').prop('disabled', false);
+        C = 'G';
+        $($('#convertionType input[type=radio]')[0]).prop('checked', true)
+    });
+
+    $('body').on('change', '#currency-encashment-type', function () {
+        //$('#currency-encashment-type').change(function () {
+
+        C = $('#currency-encashment-type').is(':checked') == true ? 'W' : 'G';
+
+        if (C == 'W') {
+            $('.room-combo').hide();
+            $('.guestname-combo').hide();
+            $('.walkin-Name').show();
+            $('.walkin-passportNo').show();
+            $('#roomNolabel').addClass('hidden');
+        }
+        else {
+            $('.room-combo').show();
+            $('.guestname-combo').show();
+            $('.walkin-Name').hide();
+            $('.walkin-passportNo').hide();
+            $('#roomNolabel').removeClass('hidden');
+        }
+    });
+
+    $('#RoomId').change(function () {
+        var RoomId = $('#RoomId option:selected').val()
+        var GuestId = $('#GuestId option:selected').val()
+
+        $.ajax({
+            url: '/Administration/GuestProfiles/SelectInHouseGuest',
+            dataType: 'Json',
+            data: { RoomId: RoomId },
+            method: 'POST',
+            success: function (data) {
+
+
+                $('.guest-combo').find('option').not(':first-child').remove();
+                $.each(data, function (index, guest) {
+                    $('<option value="' + guest.Id + '">' + guest.Name + '</option>').appendTo($('.guest-combo'));
+                })
+
+                $('.country-combo').find('option').not(':first-child').remove();
+                $.each(data, function (index, country) {
+                    $('<option value="' + country.CountryId + '">' + country.CountryName + '</option>').appendTo($('.country-combo'));
+                })
+
+                $.each(data, function (index, item) {
+                    $(item.PassportNo).val();
+                    passportNumber = item.PassportNo;
+
+
+                })
+
+            },
+        });
+
+    });
+
+    $('#RateType').change(function () {
+        var CurrencyId = $('#CurrencyId option:selected').val();
+        var RateType = $('#RateType').val();
+
+        $.ajax({
+            url: '/Administration/Currencies/SelectRate',
+            dataType: 'Json',
+            data: { CurrencyId: CurrencyId, rateType: RateType },
+            method: 'POST',
+            success: function (data) {
+                $('#Rate').val(data);
+            },
+        });
+
+    });
+
+    $('#btnAdd').click(function () {
+        if ($('#RoomId').val() == undefined || $('#RoomId').val().length == 0) {
+            ShowWarningMessage('Room is mandatory.');
+        }
+        else if ($('#GuestId').val() == undefined || $('#GuestId').val().length == 0) {
+            ShowWarningMessage('Guest is mandatory.');
+        }
+        else if ($('#CountryId').val() == undefined || $('#CountryId').val().length == 0) {
+            ShowWarningMessage('Country is mandatory.');
+        }
+        else if ($('#Rate').val() == undefined || $('#Rate').val().length == 0) {
+            ShowWarningMessage('Rate is mandatory.');
+        }
+        else if ($('#convertionType1').val() == undefined || $('#convertionType1').val().length == 0) {
+            ShowWarningMessage('Convertion is mandatory.');
+        }
+        else if ($('#Amount').val() == undefined || $('#Amount').val().length == 0) {
+            ShowWarningMessage('Amount is mandatory.');
+        }
+        else if ($('#ReferenceNo').val() == undefined || $('#ReferenceNo').val().length == 0) {
+            ShowWarningMessage('Reference No is mandatory.');
+        }
+        else if ($('#Remarks').val() == undefined || $('#Remarks').val().length == 0) {
+            ShowWarningMessage('Remark is mandatory.');
+        }
+        else {
+            var RoomNo = $('#RoomId option:selected').text()
+            var GuestId = $('#GuestId option:selected').text()
+
+            $('#RoomNoInGrid').html(RoomNo)
+            $('<tr><td>' + $('#CurrencyId option:selected').text() + '</td><td>' + $('#Remarks').val() + '</td><td>' + $('#Rate').val() + '</td><td>' + parseFloat($('#Amount').val()).toLocaleString('en', { minimumFractionDigits: 2 }) + '</td><td>' + Number(parseFloat($('#Amount').val()) * parseFloat($('#Rate').val())).toLocaleString('en', { minimumFractionDigits: 2 }) + '</td><td>' + '<button type="button" class="btn btn-danger btn-sm hidden-print" id="rowDelbtn"> <span class="glyphicon glyphicon-minus"></span>  </button>' + '</td></tr>').appendTo($('#CurrencyEncashmentTable'));
+            $('#btnAdd').prop('disabled', true);
+            $('#Save').removeClass('disabled');
+        }
+    });
+
+    $('#CurrencyEncashmentTable').on('click', '#rowDelbtn', function () {
+        $(this).closest('tr').remove();
+    });
+
+    $('#Save').click(function () {
+        CallPasswordModel(function (e) {
+            $('#btnprint').attr('href', '');
+            billDetail = {
+                RoomId: $('#RoomId').val(),
+                GuestId: $('#GuestId').val(),
+                CountryId: $('#CountryId').val(),
+                CurrencyId: $('#CurrencyId').val(),
+                Rate: $('#Rate').val(),
+                Amount: $('#Amount').val(),
+                Remarks: $('#Remarks').val(),
+                Payment: parseFloat($('#Amount').val()) * parseFloat($('#Rate').val()),
+                ConvertionType: $('#convertionType').find('input[type=radio]:checked').val(),
+                CustomerType: C,
+                ReferenceNo: $('#ReferenceNo').val(),
+                Gname: $('#Name').val(),
+                PassportNo: $('#PassportNo').val()
+            }
+
+            $.ajax({
+                url: '/CashieringAndPosting/CurrencyEncashment/save',
+                dataType: 'JSON',
+                data: { currencyEncashmentViewModel: billDetail },
+                method: 'POST',
+                success: function (response) {
+                    //var docType = "CENC";
+                    //var docno = response.InvoiceNo;
+                    //var propertyId = $('#PropertyId').val();
+                    //var userId = $('#UserId').val();
+                    //var printURL = $('#DirectPrintURL').val();
+
+                    //if ($('#IsCurrencyEncashmentDirectPrint').val() == 1) {
+                    //    var ajaxUrl = printURL + 'PRT/' + docType + '/' + docno + '/' + propertyId + '/' + userId + '/';
+                    //    $('#btnprint').attr('href', ajaxUrl);
+                    //} else {
+                    //    var printLink = '/Reporting/Report/ViewReport?ReportName=CurrencyEncashment&FromDate=undefined&ToDate=undefined&FromTime=undefined&ToTime=undefined&Uuid=undefined&ResNo=undefined&Date=undefined&Time=undefined&Arrival=undefined&Departure=undefined&Company=undefined&Status=undefined&RateCode=undefined&GroupReservationNo=undefined%20&RoomRate=undefined&DocNo=' + response.InvoiceNo + '&InvoiceNo=undefined&Type=undefined&SubTitle=undefined&IsPreview=0';
+
+                    //    $('#btnprint').attr('href', printLink);
+                    //}
+                    //$('#DocumentNoInGrid').html(response.InvoiceNo)
+                    //$('#CusNameInGrid').html(response.Name)
+                    if (typeof response === 'string' && response.startsWith("Err-")) {
+                        var errorMessage = response.replace("Err-", "");
+                        ShowErrorMessage(errorMessage); 
+                    } else if (response.InvoiceNo && response.InvoiceNo.length > 0) {
+                        var docType = "CENC";
+                        var docno = response.InvoiceNo;
+                        var propertyId = $('#PropertyId').val();
+                        var userId = $('#UserId').val();
+                        var printURL = $('#DirectPrintURL').val();
+
+                        if ($('#IsCurrencyEncashmentDirectPrint').val() == 1) {
+                            var ajaxUrl = printURL + 'PRT/' + docType + '/' + docno + '/' + propertyId + '/' + userId + '/';
+                            $('#btnprint').attr('href', ajaxUrl);
+                        } else {
+                            var printLink = '/Reporting/Report/ViewReport?ReportName=CurrencyEncashment&FromDate=undefined&ToDate=undefined&FromTime=undefined&ToTime=undefined&Uuid=undefined&ResNo=undefined&Date=undefined&Time=undefined&Arrival=undefined&Departure=undefined&Company=undefined&Status=undefined&RateCode=undefined&GroupReservationNo=undefined%20&RoomRate=undefined&DocNo=' + response.InvoiceNo + '&InvoiceNo=undefined&Type=undefined&SubTitle=undefined&IsPreview=0';
+
+                            $('#btnprint').attr('href', printLink);
+                        }
+                        $('#DocumentNoInGrid').html(response.InvoiceNo)
+                        $('#CusNameInGrid').html(response.Name)
+
+                        ShowSuccessMessage("Saved Successfully."); 
+
+                        $('#btnprint').removeClass('disabled');
+                        $('#Save').addClass('disabled');
+                        $('#Save').prop('disabled', true);
+                    } else {
+                        ShowErrorMessage("An unexpected error occurred.");
+                    }
+                }
+            });
+            
+        });
+    });
+
+    $('body').off('click', '#btnprint').on('click', '#btnprint', function (e) {
+        if ($('#IsCurrencyEncashmentDirectPrint').val() == 1) {
+            e.preventDefault();
+            var ajaxUrl = $('#btnprint').attr('href');
+
+            ReportDirectPrintRequest(ajaxUrl);
+
+            //$.ajax({
+            //    url: ajaxUrl,
+            //    method: 'POST',
+            //    beforeSend: function () {
+            //        $('#btnprint').val('Please wait');
+            //        $('#btnprint').prop('disabled', true);
+            //    },
+            //    complete: function () {
+            //        $('#btnprint').val('Print');
+            //        $('#btnprint').prop('disabled', false);
+            //    },
+            //    success: function (data) {
+            //
+            //        if (data.HttpCode == "200") {
+            //            ShowSuccessMessage('Receipt printed.');
+            //            ;
+            //        } else {
+            //            ShowErrorMessage(data.HttpDescription);
+            //        }
+            //    },
+            //    error: function (data) {
+            //        ShowErrorMessage('Sorry there is an error in printing the receipt.');
+            //    }
+            //});
+
+        } else {
+            
+        }
+
+    });
+
+    $('body').on('click', '#btnClear', function () {
+        $('#btnAdd').prop('disabled', false);
+
+    });
+
+
+</script>

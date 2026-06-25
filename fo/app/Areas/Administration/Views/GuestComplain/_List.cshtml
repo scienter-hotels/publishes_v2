@@ -1,0 +1,46 @@
+﻿
+@model  Scienter.HotelERP.Common.Domain.ViewModels.ComplainView
+
+@{
+    ViewBag.Title = "Complain List";
+}
+@*<meta http-equiv="refresh" content="60" url="~/guestcomplain/list">*@
+
+<div class="row">
+    @*<div class="col-md-2" style="font-family:Verdana,sans-serif;">*@
+        @*<div class="row">
+            <div class="col-md-12">*@
+        @*<h4 class="title-bg">
+
+            You have logged in as,
+        </h4>*@
+
+        @*@*<div class="well">
+            <div class="row">
+                <div class="col-md-3">
+                    @*<img src="~/Images/user.png" width="40px" />*@
+                @*</div>
+                <div class="col-md-9">
+                    <h4 style="margin-top:0px;">@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Name</h4>
+                    <p>
+                        @Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Name
+                    </p>
+                </div>
+            </div>*@
+        @*</div>*@@*@
+
+        @*</div>
+            </div>*@
+
+
+        @*@Html.Partial("_ComplainSummery", Model.ComplainSummaries)*@
+
+
+    @*</div>*@
+    <div class="col-md-12">
+   
+             @Html.Partial("_Grid", Model.ComplainViewModel)
+    </div>
+</div>
+
+

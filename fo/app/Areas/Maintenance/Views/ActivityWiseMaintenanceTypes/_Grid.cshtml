@@ -1,0 +1,63 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.ActivityWiseMaintenanceTypeView>
+
+@{
+    ViewBag.Title = "Activity Wise Maintenance Type";
+}
+
+<div class="table-responsive">
+    <table class="table table-striped" id="existingActivityWiseMaintenanceTypeGrid">
+        <thead>
+            <tr>
+                <th class="text-primary">
+                    Activity
+                </th>
+                <th class="col-md-3 text-primary">
+                    Maintenance Type
+                </th>
+                <th class="col-md-1 hidden-print"></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ActivityName)
+                    </td>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(modelItem => item.MaintenanceTypeName)
+                    </td>
+                    <td class="hidden-print text-right">
+                        <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Asset Wise Maintenance Type @*-@item.Name*@" data-href="/maintenance/ActivityWiseMaintenanceTypes/print/@item.Id">
+                            <span class="glyphicon glyphicon-print"></span>
+                        </a>
+
+                    </td>
+                   
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#existingActivityWiseMaintenanceTypeGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+</script>

@@ -1,0 +1,424 @@
+﻿@model Scienter.DestinityHorizon.Common.Domain.Central_Users
+@using Scienter.DestinityHorizon.Common.Domain
+
+@{
+    ViewBag.Title = "Manage Individual Access";
+}
+
+<link href="~/Scripts/select2/css/select2.css" rel="stylesheet" />
+<script src="~/Scripts/select2/js/select2.full.js"></script>
+
+<style>
+    .IndividualAccess {
+        width: 377px;
+        margin: 10px !important;
+    }
+
+    .set-height{
+        margin-top:-15px !important;
+    }
+
+    .form-group.label-floating label.control-label, .form-group.label-placeholder label.control-label {
+        top: -20px;
+        font-size: 12px;
+        line-height: 1.42857;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header" data-background-color="purple">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="title">
+                    @ViewBag.Title
+                    <hr class="visible-print" />
+                </h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-content form" id="contentLoadingArea">
+        <div class="row form">
+            <div class="col-md-12">
+                <div id="accordion" class="panel-group">
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a href="#panelBodyFive" class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">Individual Access</a>
+                            </h4>
+                        </div>
+
+                        <div id="panelBodyFive" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <input autocomplete="off" class="do-not-clear userId" type="hidden" id="userId" value="@SessionObjects.EditUserId" />
+                                    <div class="col-md-4">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label ">User</label><br />
+                                            <select name="User" id="User" class="set-height form-control active-users-individual-access2 active-users2 select2 IndividualAccess" required>
+                                                <option value=""> -- Select  --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label ">Properties</label><br />
+                                            <select name="Property" id="Property" class="set-height form-control menu-items-active-Properties active-Properties2 active-Properties-IndividualUsers2 IndividualAccess select2" required>
+                                                <option value=""> -- Select  --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">Module</label><br />
+                                            <select name="Module" id="Module" class="set-height form-control menu-items-active-modules2 active-modules2 IndividualAccess select2" required>
+                                                <option value=""> -- Select  -- </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*<div class="row">*@
+                                    <div class="row active-menu-items-row2">
+
+                                    </div>
+                                @*</div>*@
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input type="submit" value="Save" class="btn btn-primary user-wise-individual-access-save2" />
+                                            &nbsp;
+                                            <input type="reset" value="Clear" class="btn btn-default user-wise-individual-access-clear2" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="RoleBaseOrInduval" value="I" class="do-not-clear" />
+
+<script>    
+    $(document).ready(function () {
+        LoadUsersIndividualCombo();
+
+    })
+
+    function LoadUsersIndividualCombo() {
+        var locked = false;
+        if ($('.reason-code').val() == 'UL') {
+            locked = true;
+        }
+        $.ajax({
+            url: '/UsersIndividualAccess/SelectUsersIndividualAccess?locked=' + locked,
+            dataType: 'json',
+            success: function (users) {
+                if ($('.active-users2').length > 0) {
+
+                    $.each($('.active-users2'), function (index, RoleCombo) {
+                        $(RoleCombo).children().not(':first').remove();
+                    })
+
+                    $.each(users, function (index, user) {
+                        $(' <option value="' + user.Id + '">' + user.FullName + '' + '     ' + '' + '(' + user.EmpNumber + ' / ' + user.UserName + ')' + '</option>').appendTo($('.active-users2'));
+                    });
+                }
+
+                if ($('.user-id').val() != "0") {
+                    $('.active-users2').val($('.user-id').val());
+                }
+            }
+        });
+    }
+
+    //User Change Event
+    $('body').on('change', '.active-users2', function () {
+        // //debugger;
+        var Id = $(this).val()
+        //console.log(Id);
+        if (Id != undefined && Id != "") {
+            $.ajax({
+                url: '/Central_UserWiseModules/CentralUserWiseModulesSelectById?Id=' + Id,
+                dataType: 'json',
+                method: 'get',
+                success: function (data) {
+                    if ($('.active-modules2 ').length > 0) {
+                        $('.active-modules2  option').not(':first').remove();
+
+                        $.each(data, function (index, data) {
+                            $(' <option value="' + data.ModuleId + '"> ' + data.Name + ' </option>').appendTo($('.active-modules2 '));
+
+                        });
+                    }
+                }
+            });
+            LoadPropertiesCombo(Id)//-----
+        }
+    });
+
+    //Propery Change Event
+    $('body').on('change', '.active-Properties-IndividualUsers2', function () {
+        var propertyId = $(this).val();
+        //console.log(propertyId);
+        var moduleid = $('.menu-items-active-modules2').val();
+        if ($('.menu-items-active-modules2').val() == 0) {
+            ShowWarningMessage('Select a Module');
+            return false;
+        }
+        ////debugger;
+        LoadSelectedMenuItemsByUserIdNew(moduleid, propertyId);
+    });
+
+    //Module Change Event
+    $('body').on('change', '.active-modules2', function () {
+        var moduleid = $(this).val();
+        if ($('.active-Properties2').val() == 0) {
+            ShowWarningMessage('First select a Property');
+            $('.active-modules2').val("")
+            return false;
+        }
+        var propertyId = $('.active-Properties2').val()
+        $('.active-menu-items-row2').show();
+        $.ajax({
+            url: '/CentralUserRoles/SelectMenuItems?moduleid=' + moduleid,
+            dataType: 'html',
+            type: 'get',
+            success: function (data) {
+                $('.active-menu-items-row2').html(data);
+                
+                LoadSelectedMenuItemsByUserIdNew(moduleid, propertyId);
+
+            }
+        });
+
+    });
+
+    //Properties Load in Central Users Interface
+    function LoadPropertiesCombo(Id) {
+        //debugger;
+        //console.log(Id);
+        $.ajax({
+            method: 'GET',
+            url: '/UsersIndividualAccess/SelectUserWisePropertiesByIdForIndividualAccess?userId=' + Id,
+            datatype: 'html',
+            success: function (data) {
+                ////console.log(data);
+                $.each(data, function (index, item) {
+                    if ($('.active-Properties2').length > 0) {
+                        $('.active-Properties2 option').not(':first').remove();
+
+                        $.each(data, function (index, data) {
+                            $(' <option value="' + data.PropertyId + '"> ' + data.PropertyName + ' </option>').appendTo($('.active-Properties2'));
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    //Active-users-individual-access-save in individual access Interface
+    $('body').on('click', '.user-wise-individual-access-save2', function () {
+        // alert('oaky');
+        var userWiseMenuItems = [];
+        var selectedProperties = [];
+
+        if ($('.active-users-individual-access2').val() === '0') {
+            ShowErrorMessage('Please select a user');
+            return false;
+        }
+
+        if ($('.menu-items-active-modules2').val() === '0') {
+            ShowErrorMessage('Please select a module');
+            return false;
+        }
+
+        //if (($('.menu-item').length > 0 && $('.menu-item:checked').length === 0)) {
+        //    ShowErrorMessage('Please select atleast one menu item');
+        //    return false;
+        //}
+
+
+        if ($('.menu-item:checked').length > 0) {
+            $.each($('.menu-item:checked'), function (index, item) {
+                var userWiseMenuItem =
+                {
+                    UserId: $('.active-users-individual-access2').val(),
+                    ModuleId: $('.menu-items-active-modules2').val(),
+                    MenuItemId: $(item).val(),
+                    MenuLevel: $(item).attr('data-level')
+                }
+                userWiseMenuItems.push(userWiseMenuItem);
+            })
+        } else {
+            var userWiseMenuItem =
+            {
+                UserId: $('.active-users-individual-access2').val(),
+                ModuleId: $('.menu-items-active-modules2').val(),
+                MenuItemId: 0,
+                MenuLevel: "P"
+            }
+            userWiseMenuItems.push(userWiseMenuItem);
+        }
+
+        var applicableProperties = {};
+        applicableProperties = {
+            PropertyId: $('.active-Properties2').val()
+        }
+        selectedProperties.push(applicableProperties);
+        ////console.log(selectedProperties);
+
+
+        $.ajax({
+            url: '/Central_UserWiseIndividualMenuItems/Save',
+            dataType: 'JSON',
+            data: { obj: userWiseMenuItems, applicableProperties: selectedProperties },
+            method: 'POST',
+            success: function (data) {
+                if (data === 'OK') {
+                    ShowSuccessMessage('User wise individual access saved successfully');
+                    ClearUserWiseIndividualAccess();
+
+                } else {
+                    ShowErrorMessage(data.replace('300-', ''));
+                }
+            }
+        });
+        setTimeout(function () {
+            window.location.reload();
+        }, 3000);
+    });
+
+    //ClearUserWiseIndividualAccess
+    $('body').on('click', '.user-wise-individual-access-clear2', function () {
+        ClearUserWiseIndividualAccess();
+        $('.active-menu-items-row2').hide();
+    })
+
+    function ClearUserWiseIndividualAccess() {
+        $('.active-users-individual-access2').val('0');
+        $('.menu-items-active-modules2').val('0');
+        $('.menu-item').prop('checked', false);
+
+    }
+    // role
+    function LoadSelectedMenuItems(moduleid) {
+        alert(2);
+        var userroleid = $('#userroleid').val();
+        if (userroleid > 0) {
+            $.ajax({
+                url: '/CentralUserRoles/SelectMenuItemsByUserRoleId',
+                dataType: 'json',
+                type: 'get',
+                data: { uerroleid: userroleid, moduleid: moduleid },
+                beforeSend: function () {
+                    $('.menu-item').prop('checked', false);
+                    $('.menu-item').prop('disabled', false);
+                },
+                success: function (data) {
+                    //debugger;
+                    $.each(data, function (index, item1) {
+                        $('.menu-item').each(function (index, item) {
+                            if ($(item).val() == item1.MenuItemId.toString()) {
+                                //debugger;
+                                if ($(item).attr('data-level') == 'P') {
+                                    $(this).prop('checked', true);
+
+                                    $($(this).closest('.areacheckboxes').find('.area-checkbox')).prop('checked', true);
+                                    $($(this).closest('.areacheckboxes').find('.area-checkbox')).prop('disabled', false);
+
+                                    $($(this).closest('.parentcheckbox').find('.main-navigation-checkbox')).prop('checked', true);
+                                    $($(this).closest('.parentcheckbox').find('.main-navigation-checkbox')).prop('disabled', false);
+                                }
+                            }
+                        });
+                    });
+
+                }
+            });
+        }
+    }
+
+
+    function LoadSelectedMenuItemsByUserIdNew(moduleid, propertyId = 0) {
+       
+        debugger;
+        //alert($('#userid').val());
+        var userid = $('.active-users-individual-access2').val();
+        //if (userid > 0) {
+        $.ajax({
+            url: '/Central_UserWiseIndividualMenuItems/Central_UserWiseIndividualMenuItems_ByModuleId',
+            dataType: 'json',
+            type: 'get',
+            data: { userid: userid, moduleid: moduleid, propertyId: propertyId },
+            beforeSend: function () {
+                $('.menu-item').prop('checked', false);
+                $('.menu-item').prop('disabled', false);
+            },
+            success: function (data) {
+                //debugger;
+                $.each(data, function (index, item1) {
+                    $('.menu-item').each(function (index, item) {
+                        if ($(item).val() == item1.MenuItemId.toString()) {
+                            //debugger;
+
+                            if ($(item).attr('data-level') == 'P') {
+                                $(this).prop('checked', true);
+
+                                $($(this).closest('.areacheckboxes').find('.area-checkbox')).prop('checked', true);
+                                $($(this).closest('.areacheckboxes').find('.area-checkbox')).prop('disabled', false);
+
+                                $($(this).closest('.parentcheckbox').find('.main-navigation-checkbox')).prop('checked', true);
+                                $($(this).closest('.parentcheckbox').find('.main-navigation-checkbox')).prop('disabled', false);
+                            }
+
+
+                        }
+                    });
+                });
+
+            }
+        });
+        //}
+    }
+
+    // select-all-checkbox
+    $('body').on('change', '.select-all-checkbox', function () {
+        //debugger;
+        if ($(this).is(':checked')) {
+            $('.list-group').find('input[type="checkbox"]').prop('checked', true);
+            $('.list-group').find('input[type="checkbox"]').not('.main-navigation-checkbox').prop('disabled', false);
+        }
+        else {
+            $('.list-group').find('input[type="checkbox"]').prop('checked', false);
+            $('.list-group').find('input[type="checkbox"]').not('.main-navigation-checkbox').prop('disabled', true);
+        }
+    });
+
+
+    $('body').on('change', '.main-navigation-checkbox', function () {
+        //debugger;
+        if ($(this).is(':checked')) {
+            $($(this).closest('.parentcheckbox').find('.area-checkbox')).prop('disabled', false);
+            //$($(this).closest('.parentcheckbox').find('.area-checkbox')).prop('checked', true);         
+        }
+        else {
+            $($(this).closest('.parentcheckbox').find('.area-checkbox')).prop('checked', false);
+            //$($(this).closest('.parentcheckbox').find('.area-checkbox')).prop('disabled', true);
+        }
+    });
+
+    $('body').on('change', '.area-checkbox', function () {
+        //debugger;
+        if ($(this).is(':checked')) {
+            $($(this).closest('.areacheckboxes').find('.page-checkbox')).prop('disabled', false);
+            $($(this).closest('.areacheckboxes').find('.page-checkbox')).prop('checked', true);
+        }
+        else {
+            $($(this).closest('.areacheckboxes').find('.page-checkbox')).prop('checked', false);
+            $($(this).closest('.areacheckboxes').find('.page-checkbox')).prop('disabled', true);
+        }
+    });
+</script>

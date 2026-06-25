@@ -1,0 +1,305 @@
+﻿
+    <input type="hidden" id="reservationHeaderId" value="@ViewBag.ReservationHeaderId" />
+    <ul class="nav nav-tabs">
+        <li id="existingAdvanceLst">
+            <a data-toggle="tab" href="#existingAdvanceList">Existing Advances<div class="ripple-container"></div></a>
+        </li>
+        <li id="chargesLst" class="active">
+            <a data-toggle="tab" href="#chargesList">Charges<div class="ripple-container"></div></a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="existingAdvanceList" class="tab-pane">
+            <div class="col-md-12" id="existingAdvanceLoadingArea" style="padding-left: 0px; padding-right: 0px;">
+                <div class="row" style="margin-top:15px">
+
+                    <div class="col-md-12" id="existingAdvanceListContent">                      
+                        <table class="table table-striped" id="grid2" style="overflow-y:scroll;">
+                            <tr class="grid2thtr">
+                                @*<th class="">Reservation No</th>*@
+                                <th class="col-md-2">Doc No</th>
+                                <th class="col-md-5">Guest Name</th>
+                                <th class="col-md-3">Email</th>
+                                <th class="col-md-2" style="text-align:right;">Amount</th>
+                                <th>Status</th>
+                                <th>Receipt</th>
+                            </tr>
+                            <tr class="no-record">
+                                <td colspan="4">No Records Found.</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div id="chargesList" class="tab-pane active">
+            <div class="col-md-12" id="chargesListLoadingArea" style="padding-left: 0px; padding-right: 0px;">
+
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="form-group  label-floating">
+                            <label class="control-label">Guest Name</label>
+                            <input class="form-control Name" type="text" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group  label-floating">
+                            <label class="control-label">Email</label>
+                            <input class="form-control Email" type="text" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                    </div>
+                </div>
+
+                @*<div class="row" style="margin-top:15px">
+                    <div class="col-md-12" id="ChargesContent">
+                        <table class="table table-striped" id="grid" style="overflow-y:scroll;">
+                            <tr>
+                                <th class="col-md-1"></th>
+                                <th class="col-md-2">Charge Date</th>
+                                <th class="col-md-5">Details</th>
+                                <th class="col-md-4 amntCurr" style="text-align:right;">Amount</th>
+                            </tr>
+                            <tr class="no-record">
+                                <td colspan="4">No Records Found.</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>*@
+
+                <div class="row">
+                    <div class="form-group col-md-4 label-floating">
+                        <label class="control-label">Advance Amount</label>
+                        <input class="form-control RequestAmount" type="number" step="0.01" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12" style="float:right; margin-top:15px">
+                        <button class="btn btn-success btnRequest"> Request</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<script>
+    // form load -----------------------------------------------
+    $(document).ready(function () {
+            FillGrid();
+            FillExistingDataGrid()
+
+    });
+
+    function FillGrid() {
+        var reservationHeaderId = $('#reservationHeaderId').val();
+
+        if ($('#grid').length == 1) {
+            $('#grid tr').not(':first-child').remove();
+
+            var guestName = '';
+            var guestEmail = '';
+            var currCode = '';
+
+            $.ajax({
+                url: '/reservation/reservations/AdvanceRequestGrid?ReservationHeaderId=' + reservationHeaderId,
+                dataType: 'JSON',
+                method: 'POST',
+                success: function (data) {
+                    //if (data.length == 0) {
+                    //    $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#grid'));
+                    //}
+                    //$.each(data, function (index, item) {
+
+                    //    $('#grid tr').not(':first-child').remove();
+
+                    //    //$('<tr class="con-items">' +
+                    //    //    '<td><div class="checkbox" ><label><input type="checkbox" class="itemCheckbox" data-tr-FolDetId="' + item.FolioDetailID + '" data-tr-Amount="' + item.ChargeAmount + '" data-tr-FolioText="' + item.FolioText + '" data-tr-PostingTypeID="' + item.PostingTypeID + '" data-tr-CurrencyCode="' + item.CurrencyCode + '"></label></div></td>' +
+                    //    //    '<td>' + item.ChargeDate + '</td>' +
+                    //    //    '<td>' + item.FolioText + '</td>' +
+                    //    //    '<td style="text-align:right"><span class="formatNumber">' + item.ChargeAmount + '</span> ' + item.CurrencyCode + '</td>' +
+                    //    //    '</tr>').appendTo($('#grid'));
+
+                    //    $('<tr class="con-items">' +
+                    //        '<td><div class="checkbox" ><label><input type="checkbox" class="itemCheckbox" data-tr-FolDetId="' + item.ReservationDetailId + '" data-tr-Amount="' + item.ChargeAmount + '" data-tr-FolioText="' + item.BookingRemark + '" data-tr-CurrencyCode="' + item.CurrencyCode + '"></label></div></td>' +
+                    //        '<td>' + item.ChargeDate + '</td>' +
+                    //        '<td>' + item.BookingRemark + '</td>' +
+                    //        '<td style="text-align:right"><span class="formatNumber">' + item.ChargeAmount + '</span> ' + item.CurrencyCode + '</td>' +
+                    //        '</tr>').appendTo($('#grid'));
+
+                    //    guestName = item.GuestName;
+                    //    guestEmail = item.Email;
+                    //    currCode = item.CurrencyCode;
+                    //});
+
+                    //if (currCode != null) {
+                    //  //  $('.amntCurr').html("Amount " + "(" + currCode + ")");
+                    //}
+
+                    //$('.Name').val(guestName);
+                    //$('.Email').val(guestEmail);
+                }
+            });
+        }
+    }
+
+
+    function FillExistingDataGrid() {
+
+        var reservationHeaderId = $('#reservationHeaderId').val();
+        if ($('#grid2').length == 1) {
+            $('#grid2 tr').not(':first-child').remove();
+
+            var currCode = '';
+
+            $.ajax({
+                url: '/reservation/reservations/ExistingAdvanceSelect?reservationHeaderId=' + reservationHeaderId,
+                dataType: 'JSON',
+                method: 'POST',
+                success: function (data) {
+                    if (data.length == 0) {
+                        $('#grid2 tr').not(':first-child').remove();
+                        $('.nav-tabs a[href="#chargesList"]').tab('show');
+                        $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#grid2'));
+                    } else {
+                        $('.nav-tabs a[href="#existingAdvanceList"]').tab('show');
+                    }
+
+                    var resend = 0;
+                    var url = '';
+                    var status = '';
+                    var appendData = ''
+                    var appendData2 = ''
+                    $.each(data, function (index, item) {
+                        $('#grid2 tr').not(':first-child').remove();
+
+                        url = "/reservation/advance/receipt/" + item.GUID
+
+                        appendData = '<a class="btn btn-theme-color-2 btn-sm btnResendEmail" title="Resend" data-toggle="tooltip" data-href="/reservation/reservations/ResendEmail?Uuid=' + item.GUID + '"> <span class="glyphicon glyphicon-file"></span> </a>';                  
+                        appendData2 = '<a class="btn btn-theme-color-2 btn-sm" title="View Receipt" data-toggle="tooltip" href="' + url + '" target="_blank"><span class="glyphicon glyphicon-file"></span></a>';
+
+                        if (item.StatusCode == "00") {
+                            status = "PAID"
+                            appendData = ''
+                           
+
+                        } else {
+                            appendData2 = ''
+                            resend = 1;
+                            status = "PENDING"
+                        }
+                     
+                        $('<tr class="con-items">' +
+                            //'<td>' + item.ReservationNo + '</td>' +
+                            '<td>' + item.DocNo + '</td>' +
+                            '<td>' + item.GuestName + '</td>' +
+                            '<td>' + item.Email + '</td>' +
+                            '<td style="text-align:right"><span  class="formatNumber">' + item.Total + '</span> ' + item.CurrencyCode+' </td>' +
+                            '<td>' + status + '</td>' +
+                            '<td>' + appendData2 +'</td>' +
+                            '<td>' + appendData +'</td>' +
+                            '</tr>').appendTo($('#grid2'));
+
+                        currCode = item.CurrencyCode;
+                    });
+
+                    if (resend == 1) {
+                        $('.grid2thtr').append($('<th/>', { text: 'Resend' }))
+                    }
+
+                    if (currCode != null) {
+                        $('.amntCurr2').html("Amount " + "(" + currCode + ")");
+                    }
+                }
+            });
+        }
+    }
+
+    $('body').on('click', '.btnResendEmail', function () {
+       
+        $.ajax({
+            url: $(this).attr('data-href'),
+            dataType: 'JSON',
+            method: 'POST',
+            success: function (data) {
+                
+                if (data.toString().startsWith('OK')) {
+                    ShowSuccessMessage('Advance request email sent.');
+                } else {
+                    ShowErrorMessage('Error sending advance request.');
+                    setTimeout(function () { $('#grid-record-detail-model-close').click(); }, 2000);
+                }   
+            },
+            error: function () {
+                ShowErrorMessage('Error sending advance request.');
+            }
+        });
+
+    });
+
+
+    $('body').on('change', '.itemCheckbox', function () {
+        var total = 0.00;
+
+        $.each($('.itemCheckbox'), function (index, item) {
+
+            if ($(item).is(":checked")) {
+                var amount = 0.00;
+                amount = parseFloat($(item).data('trAmount'));
+                total = total + amount;
+            }
+        });
+        $('.RequestAmount').val(total);
+    });
+
+    $('body').off('click', '.btnRequest').on('click', '.btnRequest', function () {
+       
+        if ($('.Email').val() == 'TBA') {
+            ShowWarningMessage('Please enter valid email!');
+        } else {
+            var reservationHeaderid = $('#reservationHeaderId').val();
+            var guestEmail = $('.Email').val();
+            var guestName = $('.Name').val();
+            var requestAmount = $('.RequestAmount').val();
+            //var currencyCodeM = $('.itemCheckbox').attr('data-tr-CurrencyCode');
+
+            var reservationFolioViewObj = {
+                ReservationHeaderID: reservationHeaderid,
+                Email: guestEmail,
+                GuestName: guestName,
+                Total: requestAmount,
+                //CurrencyCode: currencyCodeM
+            }  
+
+            $.ajax({
+                url: '/MealReservation/MealReservation/AdvanceRequestSave',
+                data: { ReservationFolioView: reservationFolioViewObj},
+                dataType: 'JSON',
+                method: 'POST',
+                success: function (data) {
+                    if (data.toString().startsWith('OK')) {
+                        ShowSuccessMessage('Advance request email sent.');
+                        $('.nav-tabs a[href="#existingAdvanceList"]').tab('show');
+                    } else {
+                        ShowErrorMessage('Error sending advance request.');
+                        setTimeout(function () { $('#grid-record-detail-model-close').click(); }, 2000);
+                    }                   
+                },
+                error: function () {
+                    ShowErrorMessage('Error saving advance request.');
+                }
+            });
+
+        }
+    });
+
+
+
+</script>

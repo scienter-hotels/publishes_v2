@@ -1,0 +1,143 @@
+﻿
+@{
+    ViewBag.Title = "Properties";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<style>
+    #dock-container li img {
+        width: 120px;
+        height:80px;
+
+        -webkit-box-reflect: below 2px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(0.7, transparent), to(rgba(255,255,255,.5)));
+        -webkit-transition: all 0.3s;
+        -webkit-transform-origin: 50% 100%;
+            margin-right: 10px;
+         border-radius: 0px; 
+        cursor: pointer !important;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row" style="padding-right: 0px;padding-left: 0px;">
+        <div class="col-md-12" style="padding-right: 0px;padding-left: 0px;">
+            <div class="wrapper">
+                <div class="container">
+                </div>
+                <div id="dock-container">
+                    <ul id="PropertyDiv">
+                        @*<li >*@
+                        @*<a href="#">
+                            <img src="~/Images/properties/icon1.png" />
+                        </a>*@
+                        @*</li>*@
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div class="container">
+    <div class="col-md-12">
+        <div class="col-md-3"> </div>
+        <div class="col-md-6">
+            <div class="card" style="margin-top:90px; height:auto;">
+                <input type="hidden" id="selected-Property" value="" />
+                <input type="hidden" value="" id="UserId" />
+                <div class="card-header card-header-icon" style="padding-bottom:5px;" data-background-color="purple">
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:center;padding: .6em 0em .4em 0em;">
+                            <span href="http://www.scienter.lk" target="_blank">
+                                <span class="text-topic">
+                                    Select your Property
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top:10px; margin-bottom:10px; height:auto;">
+                    <div class="col-md-1"> </div>
+                    <div class="col-md-10">
+                        <div class="row" id="PropertyDiv">
+                           
+                        </div>
+
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3"> </div>
+    </div>
+</div>*@
+<input type="hidden" id="hdnEntraID" value="@ViewBag.Name" />
+
+<script src="~/Scripts/jquery-3.2.1.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var EntraIDUserName = $('#hdnEntraID').val();
+        localStorage.setItem('EntraIDUserName', EntraIDUserName);
+        $.ajax({
+            url: '/Properties/SelectUserWisePropertys',
+            dataType: 'Json',
+            method: 'GET',
+            success: function (data) {
+                debugger;
+                $.each(data, function (index, item) {
+                    $('#PropertyDiv').append('<li><span>' + item.Name +'</span><a href="#"><div class="property-select"><img id="companyName" data-propertyId="' + item.Id + '"  alt=""   src= "' + item.Images + '" /></div></a></li>');
+                })
+                //$.each(data, function (index, item) {
+                //    $('#PropertyDiv').append('<div class="col-md-4 property-select"><image id="companyName" data-propertyId="' + item.Id + '"  alt=""   src= "' + item.Images + '" ></image></div>');
+                //})
+            },
+            error: function () {
+                ShowWarningMessage('Sorry, There is an error.');
+            }
+
+        });
+        PasswordTerminationRemainder();
+    });
+
+
+    function PasswordTerminationRemainder() {
+        $.ajax({
+            url: "/Properties/PasswordTerminationRemainder",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+
+                if (data.startsWith("ERR-")) {
+                    alert(data.replace("ERR-", ""));
+
+                }
+            }
+        });
+    }
+
+    $('body').on('click', '.property-select', function () {
+        debugger;
+        var propertyId = $($(this).find('#companyName')).data('propertyid');
+        //window.location.href = '/Modules/Index';
+
+        if (propertyId != 0) {
+
+            $.ajax({
+                url: '/Properties/PropertyAssign?PropertyId=' + propertyId,
+                dataType: 'json',
+                success: function (properties) {
+                    debugger;
+                    window.location.href = '/modules/index/';
+                },
+            });
+
+        } else {
+            ShowWarningMessage('Please Select Property to Proceed!');
+        }
+    });
+
+</script>
+
+

@@ -1,0 +1,100 @@
+﻿
+@model  IEnumerable<Scienter.HotelERP.Common.Domain.ServiceJob>
+
+@{
+    /**/
+
+    ViewBag.Title = "Existing Service Jobs";
+}
+
+<div class="table-responsive serviceJobGrid">
+    <table class="table table-striped"
+           id="existingServiceHubJobGrid">
+        <thead>
+            <tr>
+                <th class="  text-primary">
+                    Reservation o
+                </th>
+                <th class="  text-primary">
+                    Service Cat.
+                </th>
+                <th class="  text-primary">
+                    Service Type
+                </th>
+                <th class="  text-primary">
+                    Service Location
+                </th>
+                <th class="  text-primary">
+                    Service Action
+                </th>
+                <th class="  text-primary">
+                    Assign Dep.
+                </th>
+                <th class="  text-primary">
+                    Assign Emp.
+                </th>
+                <th class="  text-primary">
+                    Room #
+                </th>
+                <th class="  text-primary">
+                    Guest
+                </th>
+                <th class="hidden-print"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $('#serviceJobGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+
+    //$('body').off('click', '.btn-edit').on('click', '.btn-edit', function (e) {
+    //    e.preventDefault();
+    //    $.ajax({
+    //        method: 'post',
+    //        url: '/reservation/servicehub/ServiceJobEdit/' + $(this).attr('data-id'),
+    //        dataType: 'json',
+    //        success: function (data) {
+    //            var selectedServiceCatId = $('#hdnServiceCategoryId').val();
+    //            var selectedServiceTypeId = $('#hdnServiceTypeId').val();
+    //            var selectedServiceActionId = $('#hdnServiceActionId').val();
+    //            var selectedServiceLocationId = $('#hdnServiceLocationId').val();
+    //            var selectedServiceDeptId = $('#hdnAssignToDepartmentId').val();
+
+    //        }
+    //    });
+    //});
+
+    //$('body').on('click', '.btn-Take', function (e) {
+    //    alert($(this).attr('data-job-id'));
+    //    var id = $(this).attr('data-job-id');
+    //    var serviceJobTakenURL = '/reservation/servicehub/ServiceJobTaken?id=' + id;
+    //    var title = 'Service Job Taken';
+
+    //    CallDetailModelSimple(title, serviceJobTakenURL, 1000);
+    //});
+
+</script>
+
+

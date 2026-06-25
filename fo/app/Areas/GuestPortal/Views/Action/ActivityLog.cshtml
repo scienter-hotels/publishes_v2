@@ -1,0 +1,132 @@
+﻿@*@using Scienter.HotelERP.Common.Domain;
+    @model GuestPortal_Action*@
+
+@model  IEnumerable<Scienter.HotelERP.Common.Domain.GuestPortal_Action>
+@{
+    /**/
+
+    ViewBag.Title = "GuestPortalLogin";
+    Layout = null;
+}
+
+
+
+<style>
+    .table-responsive {
+        height: 500px;
+        overflow-y: auto;
+    }
+
+        .table-responsive #GuestPortalChangeStay thead {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: #fff;
+        }
+
+    #GuestPortalChangeStay td, #notificationTable th {
+        padding: 2px 5px;
+    }
+
+    #GuestPortalChangeStay th {
+        font-weight: 800;
+    }
+</style>
+
+<div class="table-responsive">
+    <table class="table table-striped" id="GuestPortalChangeStay">
+        <thead>
+            <tr>
+                <th class="text-primary">
+                    Status
+                </th>
+                <th class="text-primary">
+                    Internal Note
+                </th>
+                <th class="text-primary">
+                    Guest Notes
+                </th>
+                <th class="text-primary">
+                    User
+                </th>
+                <th class="text-primary">
+                    Date
+                </th>
+                <th class="text-primary">
+                    Time
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr style="height: 36px !important;">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AdditionalNotes)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GuestRemark)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDateTimeFormatted)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedTime)
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@*<form id="guestPortalLogin">
+        <div class="card-content">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label class="required control-label">Guest Name:</label>
+                        <input type="text" id="GuestName" name="GuestName" value="" class="form-control" required />
+                        <input type="hidden" id="ode" name="Code" value="@ViewBag.code" class="form-control" required />
+                        <input type="hidden" id="ReservationHeaderId" name="reservationHeaderId" value="@ViewBag.reservationHeaderId" class="form-control" required />
+                        <input type="hidden" id="RequestId" name="RequestId" value="@ViewBag.requestId" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label class="required control-label">Username:</label>
+                        <input type="text" id="Username" name="Username" value="@Model.AdditionalNotes" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label class="required control-label">Password:</label>
+                        <input type="text" id="Password" name="Password" value="123.123" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label class="required control-label">Email:</label>
+                        <input type="email" id="Email" name="Email" value="" class="form-control" required />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <button type="submit" id="btnSave" value="Send" class="btn btn-primary">
+                        Save
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <button type="reset" id="btnClear" value="Clear" class="btn btn-default">
+                        Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>*@

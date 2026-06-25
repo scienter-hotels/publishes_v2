@@ -1,0 +1,93 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.ReservationDetailsView>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table class="table table-striped" id="ReservationDetailGrid">
+                <thead>
+                    <tr>
+                        <th>
+                            Res#
+                        </th>
+                        <th>
+                            Group#
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Room#
+                        </th>
+                        <th>
+                            Status#
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+                        <td>
+                            @item.ResNo
+                        </td>
+                        <td>
+                            @item.GResNo
+                        </td>
+                        <td>
+                            @item.Name
+                        </td>
+                        <td>
+                            @item.RoomCode
+                        </td>
+                        <td>
+                            @item.Status
+                        </td>
+                        <td>
+                            <div class="form-group checkbox">
+                                <label>
+                                    <input class="data-reservation-no_chkbox" arr-date="@item.Arrival" dep-date="@item.Departure" res_no="@item.ResNo" gres_no="@item.GResNo" name="@item.Name" roomCode="@item.RoomCode" roomId="@item.RoomId" guestprofId="@item.GuestProfileId" type="checkbox" value="@item.ResNo" />
+                                </label>
+                            </div>
+                        </td>
+
+                    </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#ReservationDetailGrid').DataTable(
+            {
+                searching: true,
+                ordering: true,              
+                dom: 'ft',
+                "lengthMenu": [[-1], [ "All"]],
+                scrollY: '40vh',
+            });
+    });
+
+
+   /// $('#ReservationDetailGrid').DataTable(
+            //{
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+               // searching: true,
+              //  ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+              //  dom: 'Bfrtipl',
+               // select: true,
+                //buttons: [
+                //            'copy',
+                //            'excel',
+                //            'csv',
+                //            'pdf',
+                //            'print'
+                //],
+              //  scrollY: '58vh',
+           // });
+</script>

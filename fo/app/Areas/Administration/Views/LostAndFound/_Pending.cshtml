@@ -1,0 +1,90 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.LostAndFoundView>
+
+<div class="table">
+    <table class="table table-striped">
+
+        <tr>
+            <th class="col-md-1 text-primary">
+                Doc ID
+            </th>
+            <th class="col-md-1 text-primary">
+                Guest Name
+            </th>
+            <th class="col-md-1 text-primary">
+                Staff Name
+            </th>
+            <th class="col-md-1 text-primary">
+                Entry Date
+            </th>
+            <th class="col-md-1 text-primary">
+                Found Room
+            </th>
+            <th class="col-md-1 text-primary">
+                Found Floor
+            </th>
+            <th class="col-md-1 text-primary">
+                Remark
+            </th>
+            <th class="col-md-1 text-primary">
+                Image(s)
+            </th>
+            <th class="col-md-1 text-primary">
+                Release
+            </th>
+
+        </tr>
+
+        @foreach (var item in Model)
+        {
+
+        <tr class="pagesDetails">
+            <td>
+                @Html.DisplayFor(modelItem => item.DocNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GuestName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StaffPersonName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TxnDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RoomName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FloorName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Remark)
+            </td>
+            <td>
+                <a class="btn btnViewImages" id="btnViewImages" title="View" data-lost-and-found-record-id="@item.Id" data-title="Lost And Found Image(s)">
+                    <span class="glyphicon glyphicon-eye-open"></span>
+                </a>
+                @*<button class="btn btn-success btnViewImages" id="btnViewImages" data-lost-and-found-record-id="@item.Id" data-title="Lost And Found Image(s)">
+                    View
+                </button>*@
+            </td>
+            <td>
+                <button class="btn call-popup-model btn-primary hidden-print" id="btnRelease" data-title="Lost And Found Release" data-href="/administration/lostandfound/DetailMenu?Id=@item.Id">
+                    Release
+                </button>
+            </td>
+        </tr>
+        }
+
+    </table>
+</div>
+
+<script>
+    $('body').off('click', '.btnViewImages').on('click', '.btnViewImages', function (e) {
+        e.preventDefault();
+        var id = $(this).attr('data-lost-and-found-record-id');
+        var title = "Uploaded Image(s)";
+        var url = '/Administration/LostAndFound/SelectLostAndFoundRelatedImages?id=' + id;
+        CallDetailModelSimple(title, url, 400);
+    });
+  
+</script>

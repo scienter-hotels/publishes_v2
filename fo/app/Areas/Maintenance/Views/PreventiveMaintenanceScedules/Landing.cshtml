@@ -1,0 +1,221 @@
+﻿
+
+@{
+    ViewBag.Title = "Preventive Maintenance Scedule";
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+        var activityId = 0;
+         // form load --------------------------------
+        $(document).ready(function () {
+            FillGrid();
+
+        });
+
+        // show form --------------------------------
+        $('body').on('click', '.showForm', function (e) {
+            $.ajax({
+                url: '/Maintenance/PreventiveMaintenanceScedules/form',
+                dataType: 'html',
+                method: 'POST',
+                success: function (response) {
+
+                    $('#contentLoadingArea #content ').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+
+                }
+
+            });
+        });
+
+        // show grid --------------------------------
+
+        $('body').on('click', '.showGrid', function (e) {
+            FillGrid();
+        });
+
+
+        // save --------------------------------------
+
+        $('body').on('submit', '#preventivemaintenanescedule', function (e) {
+
+            e.preventDefault();
+
+            var staffArray = [];
+
+            $('.data-selected-staff').each(function (index, item) {
+                if ($(this).is(':checked')) {
+                    staffArray.push(
+                       $(this).val()
+                    );
+                }
+            });
+
+            var preventiveMaintenancescedule = {
+                __RequestVerificationToken: $('__RequestVerificationToken').val(),
+                Id:        $('#Id').val(),
+                AssetId: $('#AssetId').val(),
+                ActivityId: $('#ActivityId').val(),
+                Remark: $('#Remark').val(),
+                ReferenceNo: $('#ReferenceNo').val(),
+                Date: $('.datePicker').val(),
+                StaffCategoryId: $('#StaffCategoryId').val(),
+                MaintenanceTypeId: $('#MaintenanceTypeId').val(),
+                
+                SelectedStaffsIds: staffArray,
+                IsActive: $('#IsActive').prop("checked"),
+            };
+
+            if (preventiveMaintenancescedule.SelectedStaffsIds.length == 0) {
+                ShowWarningMessage('Please select a Maintenance Types.');
+            }
+            //else if (preventiveMaintenancescedule.SelectedStaffsIds.length == 0) {
+            //    ShowWarningMessage('Please select a Assignees.');
+
+            else {
+                $.ajax({
+                    url: '/Maintenance/PreventiveMaintenanceScedules/save',
+                    dataType: 'html',
+                    data: preventiveMaintenancescedule,
+                    method: 'POST',
+                    success: function (response) {
+                        ShowSuccessMessage('Record has been saved successfully.');
+                        FillGrid();
+                    }
+                });
+            }
+
+        });
+
+        // save jobs --------------------------------------
+        $('body').on('submit', '#jobs', function (e) {
+           
+            e.preventDefault();
+
+            var staffArray = [];
+
+            $('.data-selected-staff').each(function (index, item) {
+                if ($(this).is(':checked')) {
+                    staffArray.push(
+                       $(this).val()
+                    );
+                }
+            });
+
+            var preventiveMaintenancescedule = {
+                __RequestVerificationToken: $('__RequestVerificationToken').val(),
+                Id: $('#Id').val(),
+                JobNo: $('#JobNo').val(),
+                JobTypeId: $('#JobTypeId').val(),
+                AssetId: $('#AssetId').val(),
+                ActivityId: $('#ActivityId').val(),
+                StatusId: $('#StatusId').val(),
+                Remark: $('#Remark').val(),
+                ReferenceNo: $('#ReferenceNo').val(),
+                PreventiveMaintenanceSceduleId: $('#PreventiveId').val(),
+                StaffCategoryId: $('#StaffCategoryId').val(), 
+                MaintenanceTypeId: $('#MaintenanceTypeId').val(),
+                ProductionCenterId: $('#ProductionCenterId').val(),
+                SelectedStaffsIds: staffArray,
+                IsActive: $('#IsActive').prop("checked"),
+            };
+
+            if (preventiveMaintenancescedule.SelectedStaffsIds.length == 0) {
+                ShowWarningMessage('Please select Assignees.');
+            }
+               
+            else {
+                $.ajax({
+                    url: '/Maintenance/jobs/save',
+                    dataType: 'html',
+                    data: preventiveMaintenancescedule,
+                    method: 'POST',
+                    success: function (response) {
+                        ShowSuccessMessage('Record has been saved successfully.');
+                        FillGrid();
+                    }
+                });
+            }
+
+        });
+        // fill grid -----------------------------------
+        function FillGrid() {
+            var gridId = "#existingPreventiveMaintenancesceduleGrid"; // change this - relevent grid id
+            var paginations = {
+                PageIndex: $(gridId).attr('data-page-index'),
+                PageSize: $(gridId).attr('data-page-size'),
+                FilterType: $(gridId).attr('data-filter-type'),
+                SearchKeyword: $(gridId).attr('data-search-keyword')
+            }
+            $.ajax({
+                url: '/Maintenance/PreventiveMaintenanceScedules/selectforgrid',
+                dataType: 'html',
+                data: paginations,
+                method: 'POST',
+                success: function (response) {
+                    if ($('.grid-container').length > 0) {
+                        $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                        $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                    } else {
+                        $('#contentLoadingArea #content').html('').fadeOut();
+                        $('#contentLoadingArea #content').html(response).fadeIn();
+                    }
+
+                }
+
+            });
+        }
+
+
+    //var checkBoxList = $('#companyWiseMarketsContainer').find($('.SelectedMarket'));
+    //$.each(checkBoxList, function (index, checkBox) {
+    //    var markets = [];
+    //    if(true)
+    //    {
+    //        Market = {
+    //            Id: 0
+    //        }
+    //        markets.push(Market);
+    //    }
+
+    //});
+</script>
+
+
+
+

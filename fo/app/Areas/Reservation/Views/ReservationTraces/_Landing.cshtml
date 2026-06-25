@@ -1,0 +1,459 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.ReservationTraces
+
+<style>
+    .form-group {
+        padding-bottom: 10px;
+        margin: 10px 0 0 0;
+    }
+    .the-fieldset {
+        padding: 0 20px 20px 20px;
+    }
+</style>
+
+<ul class="nav nav-tabs">
+    <li id="tab3"><a data-toggle="tab" href="#tab1">Add Trace</a></li>
+    <li class="active" id="tab4"><a data-toggle="tab" href="#tab2">Traces Grid</a></li>
+</ul>
+
+<div id="tab2" class="tab-pane  grid-tab active">
+    @{Html.RenderAction("TracesGrid", "ReservationTraces");}
+</div>
+
+<div class="col-md-12" style="padding-top:10px;">
+    <form id="ReservationTracesForm">
+        <input type="hidden" id="hiddenreservationheaderId" value="@Model.ReservationHeaderId" />
+        <input type="hidden" id="hiddenreservationtraceId" value="@Model.Id" />
+        <input type="hidden" id="hiddenArrivalDate" value="@ViewBag.arrivalDate" />
+        <input type="hidden" id="hiddenDepartureDate" value="@ViewBag.departureDate" />
+        <input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+        <input type="hidden" id="hidden-ItemId" value="@Model.ItemId" />
+
+        <div class="row">
+            <div class="col-md-2" style="padding-left:1px;">
+                <fieldset class="the-fieldset" style="height:380px;">
+                    <legend class="the-legend">
+                        <div class="checkbox">
+                            <label style="color:black"> <input type="checkbox" id="cb-selectAllRes" /> Res No </label>
+                        </div>
+                    </legend>
+                    <div class="col-md-12" style="padding:0px;overflow-y:auto;  height:303px;" id="reservationNumbersLoadingArea">
+
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-md-2" style="padding-left:1px;">
+                <fieldset class="the-fieldset" style="height:380px;">
+                    <legend class="the-legend">
+                        <div class="checkbox">
+                            <label style="color:black"> <input type="checkbox" id="cb-selectAllDates" /> Dates </label>
+                        </div>
+                    </legend>
+
+                    <div>
+                        @Html.Partial("_ReservationDates")
+
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-md-4" style="padding-left:2px;">
+                <fieldset class="the-fieldset" style="height:380px;">
+                    <legend class="the-legend">
+                        <div class="checkbox">
+                            <label style="color:black"> <input type="checkbox" id="cb-selectAllDepartments" />Departments </label>
+                        </div>
+                    </legend>
+
+                    <div id="departments-in-reservationTraces" class="departments-in-reservationTraces" style="overflow-y:scroll; height:315px ">
+
+                    </div>
+
+                </fieldset>
+            </div>
+            <div class="col-md-4" style="padding-left:1px;padding-right:2px;">
+                <fieldset class="the-fieldset" style="height:380px;">
+                    <legend class="the-legend">
+                        <div class="checkbox">
+                            <label style="color:black"> Traces</label>
+                        </div>
+                    </legend>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group label-floating">
+                                @*  <label class="control-label">Item </label>
+        <select id="ItemId" name="ItemId" class="form-control">
+             <option value="ALL">ALL</option>
+         </select>*@
+                                @Html.LabelFor(model => model, "Item", htmlAttributes: new { @class = "control-label" })
+                                @{Html.RenderAction("TracesCombo", "Traces", new { area = "Administration", name = "ItemId", requiered = true, value = Model?.ItemId });}
+                                @Html.ValidationMessageFor(model => model.ItemId, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group label-floating">
+                                @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control font-size-16px", min = 1, requiered = true } })
+                                @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="form-group label-floating">
+                                @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label" })
+                                <textarea id="Remark" class="form-control" required></textarea>
+                                @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-6" style="padding-left:15px;">
+                            <input type="submit" id="btnAdd" value="Save" class="btn btn-primary btn-width-100" />
+
+                        </div>
+                        <div class="form-group col-md-6" style="padding-left:2px;">
+                            <input type="reset" id="btnClear" value="Clear" class="btn btn-default btn-width-100" />
+                        </div>
+                    </div>
+
+                </fieldset>
+            </div>
+        </div>
+    </form>
+</div>
+
+@*<script src="~/Scripts/ui/reservation-list/side-buttons/traces.js"></script>*@
+
+
+<script>
+    $(document).ready(function () {
+        $('#ReservationTracesForm').hide();
+        FillDepartments();
+        var reservationHeaderId = $('#hiddenreservationheaderId').val();
+        var Type = $('#reservationLevel').val();
+        LoadReservationNumbers(reservationHeaderId, Type);
+    });
+
+
+    $('#tab4').click(function () {
+        $('#ReservationTracesForm').hide();
+        $('#tab2').show();
+        $('#tab4').addClass('active');
+        $('#tab3').removeClass('active');
+    });
+
+    $('#tab3').click(function () {
+        $('#ReservationTracesForm').show();
+        $('#tab1').show();
+        $('#tab2').hide();
+        $('#tab4').removeClass('active');
+        $('#tab3').addClass('active');
+
+    })
+    function FillDepartments() {
+        var dataList = []
+
+        $.ajax({
+            url: '/Administration/Departments/SelectDepartments',
+            dataType: 'json',
+            success: function (data) {
+                dataList = data;
+                $.each(data, function (index, department) {
+                    $('<div class="checkbox">' +
+                '<label>' +
+                    '<input type="checkbox" class="Res-departments-checkBoxGroup" value="' + department.Id + '" />' + department.Name +
+                '</label>').appendTo($('#departments-in-reservationTraces'));
+                    // $('  <div class="input-group margin-botton-10">'
+                    //  + '<span class="input-group-addon"><input type="checkbox" Id="' + department.Id + '" value="' + department.Id + '"  class="form-group checkbox departments-in-reservationTraces" style="font-size:9px;"/></span><span class="input-group-addon width-150px">' + department.Name + '</span></div>').appendTo($('#departments-in-reservationTraces'));
+                })
+            },
+        });
+    }
+
+    //function LoadReservationNumbers() {
+    //    var reservationHeaderId = $('#hiddenreservationheaderId').val();
+    //    var Type = $('#ReservationType').val();
+    //    $.ajax({
+    //        method: 'GET',
+    //        url: '/Reservation/Reservations/SelectReservationNumbersById?reservationHeaderId=' + reservationHeaderId + '&Type=' + Type,
+    //        datatype: 'html',
+    //        success: function (data) {
+    //            //console.log(data);
+    //            $.each(data, function (index, item) {
+    //                var disabled = ""
+    //                var checked = ""
+
+    //                if (item.Id == reservationHeaderId) {
+    //                    disabled = "disabled";
+    //                    checked = "checked";
+    //                }
+
+    //                $(
+    //                    '<ul id="myUL">' +
+    //                    '<li>' +
+    //                    '<div class="checkbox" style="margin-right: -100px;">' +
+    //                    '<label>' +
+    //                    '<input type="checkbox" ' + checked + ' class="checkBoxGroup checbox-item" id="res-item" ' + disabled + ' reservation-no="' + item.ReservationNo + '" name="' + item.ReservationNo + '" value="' + item.Id + '" />' +
+    //                    item.ReservationNo +
+    //                    '</label>' +
+    //                    '</div>' +
+    //                    '</li>' +
+    //                    '</ul>'
+    //                ).appendTo("#reservationNumbersLoadingArea");
+    //            });
+
+    //        }
+    //    });
+    //}
+
+
+    $('#cb-selectAllRes').change(function () {
+        if ($(this).is(':checked')) {
+            var checkBoxList = $('#reservationNumbersLoadingArea').find('.checbox-item');
+
+            $.each(checkBoxList, function (index, department) {
+
+                $(this).prop('checked', true);
+            });
+        } else {
+
+            var checkBoxList = $('#reservationNumbersLoadingArea').find('.checbox-item');
+
+            $.each(checkBoxList, function (index, department) {
+
+                $(this).prop('checked', false);
+            });
+        }
+    });
+
+
+
+    $('body').off('submit', '#ReservationTracesForm').on('submit', '#ReservationTracesForm', function (e) {
+        //debugger;
+        e.preventDefault();
+
+        Dates = [];
+        Departments = [];
+        selectedReservations = [];
+
+        $('.checbox-item').each(function (index, date) {
+
+            if ($(this).prop('checked')) {
+                selectedReservations.push({
+                    ReservationHeaderId: $(this).val()
+                });
+            }
+        });
+
+        $('.Res-dates-checkBoxGroup').each(function (index, date) {
+
+            if ($(this).prop('checked')) {
+                Dates.push({
+                    Date: $(this).val()
+                });
+            }
+        });
+
+        $('.Res-departments-checkBoxGroup').each(function (index, department) {
+
+            if ($(this).prop('checked')) {
+                Departments.push({
+                    DepartmentId: $(this).val()
+                });
+            }
+        });
+
+        
+        ReservationTracesData = {
+            Id: $('#hiddenreservationtraceId').val(),
+            ItemId: $('#ItemId').val(),
+            Quantity: $('#Quantity').val(),
+            Remark: $('#Remark').val(),
+            DatesJson: JSON.stringify(Dates),
+            DepartmentsJson: JSON.stringify(Departments)
+           // ReservationHeaderId: $('#hiddenreservationheaderId').val()
+        }
+        
+
+        if ((Array.isArray(Dates) && Dates.length)) {
+            if ((Array.isArray(Departments) && Departments.length)) {
+                $.ajax({
+                    url: '/Reservation/ReservationTraces/Save',
+                    dataType: 'JSON',
+                    data: { reservationTraces: ReservationTracesData, selectedReservations: selectedReservations },
+                    method: 'POST',
+                    success: function (data) {
+                        var Type = $('#resType').val();
+                        if (data.startsWith('ERR-')) {
+                            ShowErrorMessage('Error Saving the record!');
+                          
+                        }
+                        else {
+                            $("#btnClear").click();
+                           
+                            ShowSuccessMessage('Record has been saved successfully.');
+                            setTimeout(function () {
+                                if (Type == "reservation") {
+                                    closeFullContent();
+                                    LoadReservationGrid();
+                                } else {
+                                    //location.reload()
+                                    LoadInhouseReservationGrid();
+                                }
+
+
+                            }, 2500);
+                            
+                        }
+                    }                              
+                });
+            } else {
+                ShowWarningMessage("Please Select a Department");
+            }
+        } else {
+            ShowWarningMessage("Please Select a Date");
+        }
+    });
+
+    $('#cb-selectAllDepartments').change(function () {
+        if ($(this).is(':checked')) {
+            var checkBoxList = $('#departments-in-reservationTraces').find('.Res-departments-checkBoxGroup');
+
+            $.each(checkBoxList, function (index, department) {
+
+                $(this).prop('checked', true);
+            });
+        } else {
+
+            var checkBoxList = $('#departments-in-reservationTraces').find('.Res-departments-checkBoxGroup');
+
+            $.each(checkBoxList, function (index, department) {
+
+                $(this).prop('checked', false);
+            });
+        }
+    });
+
+    //$('.success-popup-ok, .error-popup-ok').closest('.modal').on('hide.bs.modal', function (e) {
+    //   
+    //    ReservationTracesData = {
+    //        arrivalDate: $('#hiddenArrivalDate').val(),
+    //        departureDate: $('#hiddenDepartureDate').val(),
+    //        reservationHeaderId: $('#hiddenreservationheaderId').val()
+    //    }
+
+    //    $.ajax({
+    //        url: '/Reservation/ReservationTraces/ReservationTracesByDates',
+    //        dataType: 'html',
+    //        data: ReservationTracesData,
+    //        success: function (response) {
+
+    //        }
+    //    });
+    //})
+
+
+
+    $('#cb-selectAllDates').change(function () {
+        if ($(this).is(':checked')) {
+            var checkBoxList = $('#datesInReservationTraces').find('.Res-dates-checkBoxGroup');
+
+            $.each(checkBoxList, function (index, department) {
+
+                $(this).prop('checked', true);
+            });
+        } else {
+
+            var checkBoxList = $('#datesInReservationTraces').find('.Res-dates-checkBoxGroup');
+
+            $.each(checkBoxList, function (index, department) {
+
+                $(this).prop('checked', false);
+            });
+        }
+    });
+
+    function FillGrid() {
+        resheadId = $('#hiddenreservationheaderId').val()
+
+        $.ajax({
+            url: '/Reservation/ReservationTraces/TracesGrid',
+            dataType: 'html',
+            data: { reservationHeaderId: resheadId },
+            method: 'GET',
+            success: function (response) {
+                $('#ReservationTracesForm').hide();
+                $('#tab2').show();
+                $('#TracesGrid').html('');
+                $('#TracesGrid').html(response);
+            }
+        });
+    }
+
+    $('body').off('click', '#btnDelete').on('click', '#btnDelete', function (e) {
+        
+        var traceId = $(this).attr("data-trace-Id");
+
+        $.ajax({
+            url: '/reservation/ReservationTraces/Delete?Id='+traceId,
+            dataType: 'json',
+            method: 'POST',
+            success: function (data) {
+                if (data.startsWith("OK"))
+                {
+                    FillGrid();
+                    ShowSuccessMessage("Traces Deleted");
+                }
+                else
+                { }
+            }
+        });
+
+    });
+
+    $('body').off('click', '.btnEdit').on('click', '.btnEdit', function (e) {
+       
+        var traceId = parseInt($(this).closest('tr').attr('value'))
+        var checkBoxList = $('#datesInReservationTraces').find('.Res-dates-checkBoxGroup');
+        var departmentList = $('#departments-in-reservationTraces').find('.Res-departments-checkBoxGroup');
+        $.ajax({
+            url: '/reservation/reservationTraces/Edit?traceId=' + traceId,
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+
+                $('#tab2').hide();
+                $('#tab1').show();
+                $('#ReservationTracesForm').show();
+                $('#hiddenreservationtraceId').val(data.Id)
+                $('#ItemId').val(data.ItemId),
+                $('#Quantity').val(data.Quantity),
+                $('#Remark').val(data.Remark)
+
+                $.each(checkBoxList, function (index, eachCheckBox) {
+                    checkBoxVal = $(eachCheckBox).data('date-value');
+                    var returnVal = $.grep(data.Dates, function (date, index) {
+                        return date.Date == checkBoxVal;
+                    })
+                    if (returnVal.length > 0) {
+                        $(eachCheckBox).prop('checked', true);
+                    }
+                });
+
+                $.each(departmentList, function (index, eachDeptCheckBox) {
+
+                    deptcheckBoxVal = $(eachDeptCheckBox).val();
+
+                    var returnVal = $.grep(data.DepartmentsList, function (department, index) {
+
+                        return department.DepartmentId == deptcheckBoxVal;
+                    })
+
+                    if (returnVal.length > 0) {
+                        $(eachDeptCheckBox).prop('checked', true);
+                    }
+
+                });
+                $('#tab4').removeClass('active');
+                $('#tab3').addClass('active');
+            }
+        });
+
+    });
+
+
+</script>

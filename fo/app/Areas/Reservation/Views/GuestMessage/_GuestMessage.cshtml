@@ -1,0 +1,193 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.GuestMessageView
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+    </style>
+<div class="col-md-12">
+    <form id="GuestMesageForm">
+        <div class="row">
+            <input type="hidden" value="" name="Id" id="Id" />
+            <div class="col-md-3">
+                <div class="form-group">
+                    <p id="roomNolabel">Room No</p>
+                        <label id="roomLabelId" style="font-size:30px; font-weight:bold; color:black;">
+                        </label>
+                </div>
+            </div>
+            <div class="col-md-9" style="text-align:right;">
+                <div class="form-group">
+                    Date :
+                    <label id="ChargeDateInGrid" style="color:black">
+                        @DateTime.Now
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group label-floating" style="margin-top:10px;">
+                    <label class="control-label">
+                        From
+                    </label>
+                    <input type="text" name="From" id="From" class="form-control" required autocomplete="off" />
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="guestname-combo form-group label-floating" style="margin-top:8px;">
+                    @Html.LabelFor(model => model.GuestId, "To", htmlAttributes: new { @class = "control-label" })
+                    @{Html.RenderAction("GuestProfileCombo", "GuestProfiles", new { area = "Administration", name = "GuestId", requiered = true, value = Model?.GuestId });}
+                    @Html.ValidationMessageFor(model => model.GuestId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group label-floating col-md-12" style="margin-top:10px;">
+                    <label class="control-label">
+                        Message
+                    </label>
+                    <textarea rows="5" cols="50" name="Message" id="Message" class="form-control" required></textarea>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                    &nbsp;
+                    <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                </div>
+            </div>
+
+</form>
+
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var hiddenroomid = $('#hiddenRoomId').val()
+        var hiddenroomCode = $('#hiddenRoomCode').val()
+
+        //2023-08-16--------------------------------------------------------------------------
+       
+            $('#GuestId').addClass('select2');
+
+            $('.select2').select2();
+
+            setTimeout(function () {
+                $('.select2.select2-container').addClass('form-control');
+                $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+                $('.select2-selection__arrow').css('display', 'none');
+                $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+            }, 900);
+
+            $('body').off('click', '.select2').on('click', '.select2', function () {
+                setTimeout(function () {
+                    $('.select2-results ul li').removeClass('select2-results__option--selected');
+                }, 200);
+            });
+       
+        //-------------------------------------------------------------------------------------------
+
+        //$('<option value="' + hiddenroomid + '">' + hiddenroomCode + '</option>').appendTo($('.inhouseRoom-combo'));
+        getGuest();
+        $('#roomLabelId').text(hiddenroomCode)
+    });
+
+    function getGuest() {
+
+        //var RoomId = $('#RoomId option:selected').val()
+        var RoomId = $('#hiddenRoomId').val()
+
+        $.ajax({
+            url: '/Administration/GuestProfiles/SelectInHouseGuest',
+            dataType: 'Json',
+            data: { RoomId: RoomId },
+            method: 'POST',
+            success: function (data) {
+
+                $('.guest-combo').find('option').not(':first-child').remove();
+                $.each(data, function (index, guest) {
+
+                    $('<option value="' + guest.Id + '">' + guest.Name + '</option>').appendTo($('.guest-combo'));
+                })
+
+                $('#resNoId').text(data[0].ReservationNo);
+            },
+        });
+    }
+
+    $('body').off('submit', '#GuestMesageForm').on('submit', '#GuestMesageForm', function (e) {
+
+        e.preventDefault();
+        var guestMessage = {
+            Id: $('#Id').val(),
+            RoomId: $('#hiddenRoomId').val(),
+            GuestId: $('#GuestId').val(),
+            To: $('#GuestId').val(),
+            From: $('#From').val(),
+            Message: $('#Message').val()
+        };
+
+        $.ajax({
+            url: '/Reservation/GuestMessage/save',
+            dataType: 'html',
+            data: guestMessage,
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+                $("#btnClear").click();
+                FillGrid();
+                LoadInhouseReservationGrid();
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in saving this record.');
+
+            }
+        });
+    });
+
+
+    ////$('body').on('click', '.grid-record-delete-yes-btn', function (e) {
+    ////
+    ////    refreshGrid();
+
+    //});
+</script>
+

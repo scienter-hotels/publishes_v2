@@ -1,0 +1,119 @@
+﻿<form id="rate-code-copy">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label"> Source Rate Code *</label>
+                @{Html.RenderAction("RateCodeHeadersCombo", "RateCodeHeaders", new { name = "SourceRateCodeHeaderID", requiered = true, value = "" });}
+            </div>
+            <div class="form-group label-floating">
+                <label class="control-label"> Destinity Rate Code *</label>
+                @{Html.RenderAction("RateCodeHeadersCombo", "RateCodeHeaders", new { name = "DestinityRateCodeHeaderID", requiered = true, value = ViewBag.rateCodeId });}
+            </div>
+            <div class="form-group label-floating">
+                <label class="control-label">Season *</label>
+                @{Html.RenderAction("SeasonsCombo", "Seasons", new { name = "SeasonId", requiered = true, value = "" });}
+            </div>
+            <div class="row">
+                    <div class="col-md-6 form-group  label-floating percentage">
+                        <input type="radio" id="percentage" name="type" value="percentage">
+                        <label for="percentage" style="color:black;">Percentage</label>
+                    </div>
+                    <div class="col-md-6 form-group  label-floating amount">
+                        <input type="radio" id="amount" name="type" value="amount">
+                        <label for="amount" style="color:black;">Amount</label>
+                    </div>
+            </div>
+            <div class="form-group label-floating">
+                <div class="form-group label-floating">
+                    <label class="control-label">Value *</label>
+                    <input autocomplete="off" class="form-control text-box single-line rate-Value" id="rate-Value" name="Discount" type="number" value="" required>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-Event" style="padding-left: 0px;">
+                <input type="submit" id="btnRateCodeCopy" value="Copy" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $('body').on('change', '#DestinityRateCodeHeaderID', function () {
+        var source = $('#SourceRateCodeHeaderID').val();
+        var destinity = $('#DestinityRateCodeHeaderID').val();
+
+        if (source == destinity) {
+            ShowWarningMessage('Source rate code and destinity rate code cannot be same.');
+            $('#DestinityRateCodeHeaderID').val('')
+        } else {
+            return false;
+        }
+    });
+
+    $('body').on('change', '#SourceRateCodeHeaderID', function () {
+        var source = $('#SourceRateCodeHeaderID').val();
+        var destinity = $('#DestinityRateCodeHeaderID').val();
+
+        if (source == destinity) {
+            ShowWarningMessage('Source rate code and destinity rate code cannot be same.');
+            $('#SourceRateCodeHeaderID').val('')
+        } else {
+            return false;
+        }
+    });
+
+    $('body').off('click', '#percentage').on('click', '#percentage', function (e) {
+        var type = 'percentage';
+        $("#rate-Value").attr('max', '100');
+        $("#rate-Value").attr('min', '-100');
+    });
+
+    $('body').off('click', '#amount').on('click', '#amount', function (e) {
+        var type = 'amount';
+        $("#rate-Value").attr('max', '10000000000000');
+        $("#rate-Value").attr('min', '-10000000000000');
+    });
+
+    $('body').off('submit', '#rate-code-copy').on('submit', '#rate-code-copy', function (e) {
+        e.preventDefault();
+        var source = $('#SourceRateCodeHeaderID').val();
+        var destinity = $('#DestinityRateCodeHeaderID').val();
+
+        if (source == destinity) {
+            ShowWarningMessage('Source rate code and destinity rate code cannot be same.');
+            $('#SourceRateCodeHeaderID').val('')
+            return false;
+        }
+        var valueType = ""
+        if ($('input[name=type]:checked').val() == "percentage") {
+            valueType = "percentage"
+        }
+        else if ($('input[name=type]:checked').val() == "amount") {
+            valueType = "amount"
+        }
+        var rateCodeCopy = {
+            SourceRateCodeId: $('#SourceRateCodeHeaderID').val(),
+            DestinityRateCodeId: $('#DestinityRateCodeHeaderID').val(),
+            SeasonId: $('#SeasonId').val(),
+            ValueType: valueType,
+            RateValue: $('#rate-Value').val(),
+        };
+        console.log(rateCodeCopy);
+        $.ajax({
+            url: '/administration/RateCodeHeaders/InsertRateCodeCopy',
+            dataType: 'JSON',
+            data: rateCodeCopy,
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+            },
+            error: function () {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+
+        });
+    });
+</script>

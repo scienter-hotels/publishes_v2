@@ -1,0 +1,127 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.SelectedRoom>
+<form Id="ConfirmSetup">
+    <input type="hidden" id="resId" class="resId" value="@Model.FirstOrDefault().ReservationHeaderId" />
+    <input type="hidden" id="actCatId" class="actCatId" value="@Model.FirstOrDefault().ConfirmCategoryId" />
+  
+    <div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group  label-floating">
+                    <label class="control-label">Actual Room Category</label>
+                    @{Html.RenderAction("RoomCategoryCombo", "RoomCategories", new { area = "Administration", name = "ActualRoomCategory" , value = Model?.FirstOrDefault().RoomCategoryId });}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped" id="existingReservationNoteGrid">
+                    <tr>
+                        @foreach (var item in Model)
+                        {
+                            <th class="text-primary">
+                                @Html.DisplayFor(modelItem => item.RoomTypeName)
+                            </th>
+                        }
+                    </tr>
+                    <tr>
+                        @foreach (var item in Model)
+                        {
+                            <td>
+                                @Html.DisplayFor(modelItem => item.NoOfRooms)
+                            </td>
+                        }
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group  label-floating">
+                    <label class="control-label">Confirm Room Category</label>
+                    @{Html.RenderAction("RoomCategoryCombo", "RoomCategories", new { area = "Administration", name = "ConfirmRoomCategory", value = Model?.FirstOrDefault().RoomCategoryId });}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div id="existingSetups">
+            
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <button type="submit" id="ConfirmSetup" class="btn btn-primary ">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+<script>
+
+    $(document).ready(function () {
+       
+        FillGrid();
+        if ($('#actCatId').val() != null && $('#actCatId').val() != 0)
+        { $('#ConfirmRoomCategory').val($('#actCatId').val()) }
+
+        $('#ActualRoomCategory').prop("disabled", true);
+        
+      
+    });
+
+    //------------------------------------------------------------------------------------------------------
+
+    $('body').off('submit', '#ConfirmSetup').on('submit', '#ConfirmSetup', function (e) {
+        e.preventDefault();
+        confirmationsetups = {
+            ReservationHeaderId :   $('#resId').val(),
+            ActualCategoryId    :   $('#ActualRoomCategory').val(),
+            ConfirmCategoryId   :   $('#ConfirmRoomCategory').val()
+    }
+
+        $.ajax({
+            url: '/reservation/reservations/ConfirmationSetupSave',
+            dataType: 'HTML',
+            data: confirmationsetups,
+            method: 'POST',
+            success: function (response) {
+                FillGrid()              
+                ShowSuccessMessage('Setups has been saved successfully.');
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in saving this note.');
+            }
+        });
+    })
+
+    //-------------------------------------------------------------------------------
+    function FillGrid() {
+       
+        $.ajax({
+            url: '/reservation/reservations/ExistingConfirmationSetup?resNo=' + $('#resId').val(),
+            dataType: 'HTML',
+            method: 'POST',
+            success: function (response) {
+                $('#existingSetups ').html('').fadeOut();
+                $('#existingSetups ').html(response).fadeIn();
+
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error loading existing setups.');
+            }
+        });
+
+    }
+
+</script>

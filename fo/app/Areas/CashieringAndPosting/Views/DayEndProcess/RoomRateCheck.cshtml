@@ -1,0 +1,632 @@
+﻿@*@{
+        Layout = null;
+    }
+
+    <!DOCTYPE html>
+
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>RoomRateCheck</title>
+    </head>
+    <body>
+        <div>
+        </div>
+    </body>
+    </html>*@
+
+
+
+@model Scienter.HotelERP.Common.Domain.DayEnd
+<style>
+
+    /******************************************************/
+    /*Wizard for cashier's desk*/
+    /******************************************************/
+
+    #msform {
+        text-align: center;
+        position: relative;
+        margin-top: 20px
+    }
+
+        #msform fieldset .form-card {
+            background: #fff;
+            border: 0 none;
+            border-radius: 0px;
+            width: 100%;
+            margin: 0 0% 3% 0%;
+            position: relative;
+        }
+
+        #msform fieldset {
+            background: white;
+            border: 0 none;
+            border-radius: 0.5rem;
+            box-sizing: border-box;
+            width: 100%;
+            margin: 0;
+            padding-bottom: 20px;
+            position: relative
+        }
+
+            #msform fieldset:not(:first-of-type) {
+                display: none
+            }
+
+            #msform fieldset .form-card {
+                text-align: left;
+                color: #4d4d4d;
+            }
+
+        #msform input,
+        #msform textarea {
+            padding: 0px 8px 4px 8px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            border-radius: 0px;
+            margin-bottom: 25px;
+            margin-top: 2px;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: inherit;
+            color: #2C3E50;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
+
+            #msform input:focus,
+            #msform textarea:focus {
+                -moz-box-shadow: none !important;
+                -webkit-box-shadow: none !important;
+                box-shadow: none !important;
+                border: none;
+                font-weight: bold;
+                border-bottom: 2px solid #e67e22;
+                outline-width: 0
+            }
+
+        #msform .action-button {
+            /*width: 100px;
+            background: #094F70;
+            font-weight: bold;*/
+            color: #fff;
+            border: 0 none;
+            border-radius: 0px;
+            cursor: pointer;
+            padding: 10px 5px;
+            margin: 10px 12px;
+        }
+
+            #msform .action-button:hover,
+            #msform .action-button:focus {
+                /*box-shadow: 0 0 0 2px white, 0 0 0 3px #e67e22*/
+            }
+
+        #msform .action-button-previous {
+            /*width: 100px;
+            background: #616161;
+            font-weight: bold;*/
+            color: white;
+            border: 0 none;
+            border-radius: 0px;
+            cursor: pointer;
+            padding: 10px 5px;
+            margin: 10px 5px
+        }
+
+            #msform .action-button-previous:hover,
+            #msform .action-button-previous:focus {
+                /*box-shadow: 0 0 0 2px white, 0 0 0 3px #616161*/
+            }
+
+    select.list-dt {
+        border: none;
+        outline: 0;
+        border-bottom: 1px solid #ccc;
+        padding: 2px 5px 3px 5px;
+        margin: 2px
+    }
+
+        select.list-dt:focus {
+            border-bottom: 2px solid #e67e22
+        }
+
+    .card {
+        z-index: 0;
+        border: none;
+        position: relative
+    }
+
+    .fs-title {
+        font-size: 1em;
+        color: #094f70;
+        margin-bottom: 10px;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    #progressbar {
+        margin-bottom: 30px;
+        overflow: hidden;
+        color: lightgrey
+    }
+
+        #progressbar .active {
+            color: #000000
+        }
+
+        #progressbar li {
+            list-style-type: none;
+            font-size: 12px;
+            width: 20%;
+            float: left;
+            position: relative
+        }
+
+        #progressbar #front-office:before {
+            /*font-family: FontAwesome;*/
+            content: "1"
+        }
+
+        #progressbar #food-beverage:before {
+            /*font-family: FontAwesome;*/
+            content: "2"
+        }
+
+        #progressbar #pseudo-rooms:before {
+            /*font-family: FontAwesome;*/
+            content: "3"
+        }
+
+        #progressbar #room-rates:before {
+            /*font-family: FontAwesome;*/
+            content: "4"
+        }
+
+        #progressbar #day-end:before {
+            /*font-family: FontAwesome;*/
+            content: "5"
+        }
+
+        #progressbar li:before {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            display: block;
+            font-size: 18px;
+            color: #ffffff;
+            background: lightgray;
+            border-radius: 0;
+            margin: 0 auto 10px auto;
+            padding: 0px;
+        }
+
+        #progressbar li:after {
+            content: '';
+            width: 100%;
+            height: 2px;
+            background: lightgray;
+            position: absolute;
+            left: 0;
+            top: 25px;
+            z-index: -1
+        }
+
+        #progressbar li.active:before,
+        #progressbar li.active:after {
+            background: #e67e22;
+        }
+
+    .radio-group {
+        position: relative;
+        margin-bottom: 25px
+    }
+
+    .radio {
+        display: inline-block;
+        width: 204;
+        height: 104;
+        border-radius: 0;
+        background: lightblue;
+        box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.2);
+        box-sizing: border-box;
+        cursor: pointer;
+        margin: 8px 2px
+    }
+
+        .radio:hover {
+            box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.3)
+        }
+
+        .radio.selected {
+            box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1)
+        }
+
+    .fit-image {
+        width: 100%;
+        object-fit: cover
+    }
+
+    #progressbar li strong {
+        font-size: 1.2em;
+        color: #094f70;
+    }
+    /************/
+    .progress-responsive {
+        width: 100%;
+        margin-top: 1em;
+    }
+    /* Progress bar containers */
+    figure {
+        position: relative;
+        width: 100%;
+        height: 1.4em;
+        border: 1px solid #ff9800;
+        border-radius: 0px;
+        background: #ddd;
+    }
+        /* Progress bar shape */
+        figure div:first-child {
+            height: 1.5em;
+            border-radius: 0px;
+        }
+
+    .progress-responsive .progress-responsive__bar {
+        background: #e67e22;
+    }
+    /* Percent text */
+    figure div:last-child {
+        position: absolute;
+        top: 1px;
+        /*right: 8px;*/
+        font-size: 1.1em;
+        font-weight: normal;
+        font-family: inherit;
+        color: #fff;
+    }
+
+    th {
+        padding: 10px !important;
+        background-color: #094f70 !important;
+        color: #fff;
+        font-weight: normal !important;
+    }
+
+    td {
+        padding: 4px !important;
+    }
+
+    .room-rate-table td, .room-rate-table th {
+        font-size: 10px !important;
+    }
+
+
+    .stepLoading h3 {
+        font-weight: bold;
+        color: #094f70;
+    }
+
+    .stepContent p {
+        text-align: center;
+        font-size: 20px;
+    }
+
+    fieldset {
+        min-height: 320px;
+    }
+
+    .table-responsive {
+        min-height: 300px;
+    }
+
+    .stepContent {
+        min-height: 280px;
+    }
+</style>
+
+
+
+
+<div class="col-md-12">
+    <form id="RoomRateCheck">
+        <div class="">
+
+            <div class="row">
+
+
+                <div class="form-card">
+
+                    @*<div>*@
+
+                        <div class="stepLoading">
+                            <center>
+
+                            </center>
+                        </div>
+
+
+                        @*Room Rates Grid Start*@
+
+                        <div class="stepContent">
+
+                            @*@if (Model.DayEndRoomRatesCheck.Count > 0)
+                {*@
+                            <div class="table-responsive">
+                                <table class="table table-striped room-rate-table" id="tblDayEndRoomRate">
+                                    <tr>
+
+                                        <th width="150px">Res.No</th>
+
+                                        <th width="100px" class="text-center">Rate<span style="color:transparent;">_</span>Code</th>
+                                        <th width="100px">Res.<span style="color:transparent;">_</span>Type</th>
+                                        <th width="100px">Type</th>
+                                        @*<th width="150px">Rate<span style="color:transparent;">_</span>Code</th>*@
+                                        <th width="100px" class="text-center">Room<span style="color:transparent; text-align:right">_</span>No</th>
+                                        <th width="100px" class="text-center">Guest</th>
+                                        <th width="100px" class="text-center">Arrival</th>
+                                        <th width="100px" class="text-center">Departure</th>
+                                        <th width="100px" class="text-center">Category</th>
+                                        <th width="100px" class="text-center">Room<span style="color:transparent;">_</span>Type</th>
+                                        <th width="100px" class="text-center">Meal<span style="color:transparent;">_</span>Plan</th>
+                                        <th width="100px" class="text-center">Currency</th>
+                                        <th width="100px" class="text-center">Conv.<span style="color:transparent;">_</span>R.</th>
+                                        <th width="100px" class="text-center">Orig.<span style="color:transparent;">_</span>R.</th>
+                                        <th width="100px" class="text-center">Loc.<span style="color:transparent;">_</span>R.</th>
+                                        <th></th>
+                                    </tr>
+
+                                    @foreach (var item in Model.DayEndRoomRatesCheck)
+                                    {
+                                        <tr class="data-single-guest">
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line ReservationNo font-size-10px" maxlength="100" name="ReservationNo" type="text" value="@item.ReservationNo" required>
+                                                </div>
+
+                                            </td>
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line ReservationType font-size-10px" maxlength="100" name="ReservationType" type="text" value="@item.ReservationType" required>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line Type font-size-10px" maxlength="100" name="Type" type="text" value="@item.Type" required>
+                                                </div>
+                                            </td>
+
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line RateCode font-size-10px" maxlength="100" name="RateCode" type="text" value="@item.RateCode" required>
+                                                </div>
+                                            </td>
+
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line RoomNo text-center font-size-10px" maxlength="100" name="RoomNo" type="text" value="@item.RoomNo" required>
+                                                </div>
+                                            </td>
+
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line Guest font-size-10px" maxlength="100" name="Guest" type="text" value="@item.Guest" required>
+                                                </div>
+                                            </td>
+
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line Arrival font-size-10px" maxlength="100" name="Arrival" type="text" value="@item.Arrival" required>
+                                                </div>
+                                            </td>
+
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line Departure font-size-10px" maxlength="100" name="Departure" type="text" value="@item.Departure.ToString("dd/MM/yyyy")" required>
+                                                </div>
+                                            </td>
+
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line Category font-size-10px" maxlength="100" name="Category" type="text" value="@item.Category" required>
+                                                </div>
+                                            </td>
+
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line RoomType font-size-10px" maxlength="100" name="RoomType" type="text" value="@item.RoomType" required>
+                                                </div>
+                                            </td>
+
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line MealPlan font-size-10px" maxlength="100" name="MealPlan" type="text" value="@item.MealPlan" required>
+                                                </div>
+                                            </td>
+
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line CurrencyCode font-size-10px" maxlength="100" name="CurrencyCode" type="text" value="@item.CurrencyCode" required>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line ConvertionRate font-size-10px" maxlength="100" name="ConvertionRate" type="text" value="@item.ConvertionRate.ToString("#,###.00")" required>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line OriginalRate font-size-10px" maxlength="100" name="OriginalRate" type="text" value="@item.OriginalRate.ToString("#,###.00")" required>
+                                                </div>
+                                            </td>
+
+
+                                            <td>
+                                                <div class="form-group label-floating">
+                                                    <input autocomplete="off" class="form-control text-box single-line RoomRate font-size-10px" maxlength="100" name="RoomRate" type="text" value="@item.RoomRate.ToString("#,###.00")" required>
+                                                </div>
+                                            </td>
+
+
+
+                                            <td style="margin-right:0.2em">
+                                                <div class="form-group checkbox">
+                                                    <label>
+                                                        <input class="verifyRoomRate-checkBox" id="Id" type="checkbox" value="@item.IsVerified" data-reservation-no="@item.ReservationNo" />
+                                                    </label>
+                                                </div>
+                                            </td>
+
+
+
+
+
+                                        </tr>
+                                    }
+                                </table>
+
+                            </div>
+
+
+                            <button type="button" class="btn-primary btn btn-block save-room-change next action-button btn-get-dayend-summary" name="btnSave" id="btnSave" value="Verify" style="width: 10em;float: right;">
+                                Verify
+                                <div class="ripple-container"></div>
+                            </button>
+
+                        </div>
+
+
+                        @*Room Rates Grid End*@
+
+
+                    </div>
+                </div>
+
+
+        </div>
+    </form>
+</div>
+
+
+
+<script>
+
+
+    $("#btnSave").click(function () {
+        //
+        //e.preventDefault();
+
+        var roomRateList = [];
+
+        $('.data-single-guest').each(function (index, item) {
+            var roomRateArray = {};
+
+          
+
+            var isVerifyCheckBoxSelected = false;
+
+            if ($($(item).find('.verifyRoomRate-checkBox')).prop('checked')) {
+                isVerifyCheckBoxSelected = true;
+            }
+            else
+            {
+                isVerifyCheckBoxSelected = false;
+            }
+
+            //alert(isVerifyCheckBoxSelected);
+
+           
+            roomRateArray =
+                {
+                    //ReservationNo: $($(item).find('.guest-checkBox')).attr('data-reservation-no'),
+                    //Id: $($(item).find('.guest-checkBox')).val(),
+                    //SalutationId: $($(item).find('#SalutationId')).val(),
+                    //FirstName: $($(item).find('.FirstName')).val(),
+                    //LastName: $($(item).find('.LastName')).val(),
+                    //Email: $($(item).find('.Email')).val(),
+                    //ContactNo: $($(item).find('.ContactNo')).val(),
+                    //DOB: $($(item).find('.DOB')).val(),
+                    //CountryId: $($(item).find('#CountryId')).val(),
+                    //NationalityId: $($(item).find('#NationalityId')).val(),
+
+                
+
+                //ReservationNo: $($(item).find('.verifyRoomRate-checkBox')).attr('data-reservation-no'),
+              //  IsVerified: $($(item).find('.verifyRoomRate-checkBox')).val(),
+
+                IsVerified: isVerifyCheckBoxSelected,
+
+                ReservationNo: $($(item).find('.ReservationNo')).val(),
+                RateCode: $($(item).find('.RateCode')).val(),
+                ReservationType: $($(item).find('.ReservationType')).val(),
+                Type: $($(item).find('.Type')).val(),
+
+                RateCode: $($(item).find('.RateCode')).val(),
+
+                RoomNo: $($(item).find('.RoomNo')).val(),
+                Guest: $($(item).find('.Guest')).val(),
+                Arrival: $($(item).find('.Arrival')).val(),
+                Departure: $($(item).find('.Departure')).val(),
+                Category: $($(item).find('.Category')).val(),
+                RoomType: $($(item).find('.RoomType')).val(),
+                MealPlan: $($(item).find('.MealPlan')).val(),
+                CurrencyCode: $($(item).find('.CurrencyCode')).val(),
+                ConvertionRate: $($(item).find('.ConvertionRate')).val(),
+                OriginalRate: $($(item).find('.OriginalRate')).val(),
+                RoomRate: $($(item).find('.RoomRate')).val(),
+             
+                // RoomId: $($(item).find('#RoomId')).val(),
+
+                }
+
+            roomRateList.push(roomRateArray);
+            
+        });
+
+     
+
+        $.ajax({
+            url: '/CashieringAndPosting/DayEndProcess/RoomRateSave',
+            dataType: 'JSON',
+            data: { roomRateList: roomRateList },
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Saved successfully.');
+                setTimeout(function () {
+                    window.location.reload();
+                }, 2500);
+            }
+        });
+
+    });
+
+
+
+
+
+
+              
+
+
+
+
+</script>
+
+
+
+
+

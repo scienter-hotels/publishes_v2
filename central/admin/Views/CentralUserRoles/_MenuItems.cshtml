@@ -1,0 +1,66 @@
+﻿@model List<Scienter.DestinityHorizon.Common.Domain.Central_MenuItems>
+
+<div class="row">
+    <div class="col-md-4" style="margin-left:15px;">
+
+        <input type="hidden" value="@ViewBag.UserRoleId" id="userroleid" />
+        <input type="hidden" value="@ViewBag.UserId" id="userid" />
+
+        <div class="row">
+            <div class="col-md-7">
+                <input type="text" value="" id="searchid" class="form-control" placeholder="Search Menu Item" />
+            </div>
+            <div class="col-md-5" style="padding-top:25px;">
+                <lable style="font-size:12px;"> <input type="checkbox" class="select-all-checkbox" /> Select / Deselect All</lable>
+            </div>
+        </div>
+       
+
+        <ul class="list-group">
+            @foreach (var item in Model)
+            {
+            <li class="list-group-item parentcheckbox">
+                <label class="menus l1">
+                    <input type="checkbox" class="main-navigation-checkbox menu-item" id="main-navigation-checkbox" value="@item.Id" data-level="M" />
+                    @item.Name
+                </label>
+                <ul class="list-group">
+                    @foreach (var item2 in item.Areas)
+                    {
+                        <li class="list-group-item areacheckboxes">
+                            <label class="menus l2">
+                                <input type="checkbox" class="area-checkbox menu-item" id="area-checkbox" value="@item2.Id" disabled  data-level="A"/>
+                                @item2.Name
+                            </label>
+                            <ul class="list-group">
+                                @foreach (var item3 in item2.Pages)
+                                {
+                                <li class="list-group-item pagecheckboxes">
+                                    <label class="menus l3">
+                                        <input type="checkbox" class="page-checkbox menu-item" id="page-checkbox" value="@item3.Id" disabled   data-level="P"/>
+                                        @item3.Name
+                                    </label>
+                                </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </li>
+            }
+        </ul>
+    </div>
+</div>
+
+<script>
+    $("#searchid").on('keyup', function () {
+        var value = $(this).val().toLowerCase();
+        $(".parentcheckbox li").each(function () {
+            if ($(this).text().toLowerCase().search(value) > -1) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    })
+</script>

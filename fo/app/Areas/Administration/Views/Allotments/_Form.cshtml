@@ -1,0 +1,318 @@
+﻿@model Scienter.HotelERP.Common.Domain.AllotmentHeaders
+<script src="~/Scripts/ui/common/scienter.common.datatimepicker.js"></script>
+
+@{
+    ViewBag.Title = "Create / Edit Allotments";
+}
+
+
+<div class="col-md-12">
+
+    <form id="allotment">
+        <div class="">
+
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+
+            <div class="row">
+                <div class="col-md-5">
+                    <div style="padding:25px; border:1px solid #ccc; border-radius:5px;" class="border-container-1">
+                        <div class="row">
+                            <div class="form-group label-floating col-md-6">
+                                <label class="control-label">Agent *</label>
+                                @{Html.RenderAction("CompaniesCombo", "Companies", new { name = "AgentId", value = Model.AgentId, required = true });}
+                            </div>
+
+                            <div class="form-group label-floating col-md-6">
+                                <label class="control-label">Market *</label>
+                                @{Html.RenderAction("MarketCombo", "Markets", new { name = "MarketId", value = Model.MarketId, required = true });}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group label-floating col-md-12">
+                                <label class="control-label">Allotment *</label>
+                                <input autocomplete="off" class="form-control text-box single-line" maxlength="20" id="Name" name="Name" type="text" value="@Model.Name" required>
+                            </div>
+                        </div>
+
+                        @*commented by stehani to skip single date option on 2023-06-06
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <div style="padding:0px 25px; background-color:#f2f2f2; border:1px solid #ccc; border-radius:5px;">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group checkbox" style="margin-top:8px; padding-bottom:5px;">
+                                                    <label>
+                                                        <input type="radio" name="multipleSingle" class="allotementType" checked value="MUL" required />
+                                                    </label>
+                                                    Date Range
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="form-group checkbox" style="margin-top:8px; padding-bottom:0px;">
+                                                    <label>
+                                                        <input type="radio" name="multipleSingle" class="allotementType" value="SIN" required />
+                                                    </label>
+                                                    Single Date
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>*@
+
+                        <div id="MultipleDateRange">
+
+                            @*<div class="row">
+                                <div class="form-group label-floating col-md-4">
+                                    <label class="control-label">From Date*</label>
+                                    <div id="dobContainerInSeasons" class='input-group date'>
+                                        <input autocomplete="off" class="form-control datePicker text-box single-line" maxlength="100" id="FromDate" name="FromDate" type="text" value="@Model.FromDate" required>
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2"></div>
+                                <div class="form-group label-floating col-md-4">
+                                    <label class="control-label">To Date*</label>
+                                    <div id="dobContainerInSeasons" class='input-group date'>
+                                        <input autocomplete="off" class="form-control datePicker text-box single-line" maxlength="100" id="ToDate" name="ToDate" type="text" value="@Model.ToDate" required>
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-primary" style="margin-top:30px;" id="btnAddThisDateRange">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>*@
+
+                            @*<div class="row">
+                                <div classs="col-md-12">
+                                    <div style="min-height:50px;">
+                                        <table class="table table-stripped" width="100%" id="tblDateRanges">
+                                            <tr>
+                                                <th>From Date</th>
+                                                <th>To Date</th>
+                                                <th width="40px">
+                                                </th>
+                                            </tr>
+
+                                        </table>
+
+                                    </div>
+                                </div>
+                            </div>*@
+
+                            @*commented by stehani to skip day wise insert on 2023-06-06
+                                <div class="row">
+                                    @foreach (var item in Model.SelectedDays)
+                                    {
+                                        string isChecked = "";
+                                        if (item.IsSelected)
+                                        {
+                                            isChecked = "checked";
+                                        }
+                                        <div class="col-md-4">
+                                            <div class="form-group checkbox" style="margin-top:8px; padding-bottom:0px;">
+                                                <label>
+                                                    <input type="checkbox" class="days-checkBoxes" value="@item.Day" @ />
+                                                </label> @
+                                            </div>
+                                        </div>
+                                    }
+
+
+                                </div>*@
+                        </div>
+
+
+
+                        @*<div id="SingleDateRange" style="display:none;">
+                            <div class="row">
+                                <div class="form-group label-floating col-md-5">
+                                    <label class="control-label">Allotement Date*</label>
+                                    <div id="dobContainerInSeasons" class='input-group date'>
+                                        <input autocomplete="off" class="form-control datePicker text-box single-line" maxlength="100" id="SingleDate" name="SingleDate" type="text" value="@Model.FromDate" required>
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+
+                        <div class="row">
+                            <div class="form-group label-floating col-md-4">
+                                <label class="control-label">Reservation Status *</label>
+                                @{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { name = "ReservationStatusId", value = Model.ReservationStatusId, required = true });}
+                            </div>
+                            <div class="form-group label-floating col-md-4">
+                                <label class="control-label">Release Period Days *</label>
+                                <input autocomplete="off" class="form-control text-box single-line" id="ReleasePeriodDays" name="ReleasePeriodDays" type="number" value="@Model.ReleasePeriodDays" required>
+                            </div>
+                            <div class="form-group label-floating col-md-4">
+                                <label class="control-label">Remind Days *</label>
+                                <input autocomplete="off" class="form-control text-box single-line" id="RemindDays" name="RemindDays" type="number" value="@Model.RemindDays" required>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-md-7">
+                    <div style="padding:25px; border:1px solid #ccc; border-radius:5px;" class="border-container-2">
+
+                        <div class="row">
+                            <div class="form-group label-floating col-md-3">
+                                <label class="control-label">From Date *</label>
+                                <div id="dobContainerInSeasons" class='input-group date'>
+                                    <input autocomplete="off" class="form-control datePicker text-box single-line" maxlength="100" id="FromDate" name="FromDate" type="text" value="@Model.FromDate" required>
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group label-floating col-md-3">
+                                <label class="control-label">To Date *</label>
+                                <div id="dobContainerInSeasons" class='input-group date'>
+                                    <input autocomplete="off" class="form-control datePicker text-box single-line" maxlength="100" id="ToDate" name="ToDate" type="text" value="@Model.ToDate" required>
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group label-floating col-md-3">
+                                <label class="control-label">Room Category *</label>
+                                @{Html.RenderAction("RoomCategoryCombo", "RoomCategories", new { name = "RoomCategoryId", value = Model.ReservationStatusId, required = false });}
+                            </div>
+                            <div class="form-group label-floating col-md-2">
+                                <label class="control-label">Count *</label>
+                                <input type="number" class="form-control" id="NoOfRooms" step="1" style="text-align:center;" min="1" max="" />
+                            </div>
+
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-sm btn-primary" style="margin-top:30px;" id="btnAddThisAllotment">+</button>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div style="min-height:100px;">
+                                    <table class="table table-stripped" width="100%" id="tblAllotments">
+                                        <tr>
+                                            <th>From</th>
+                                            <th>To</th>
+                                            <th style="display:none;">Room Category</th>
+                                            <th>Category</th>
+                                            <th width="60px">Rooms</th>
+                                            <th width="40px"></th>
+                                        </tr>
+                                        @foreach (var item in Model.AllotmentDetails)
+                                        {
+                                        <tr class="data-row">
+                                            <td class="data-FromDate">@item.FromDate.ToShortDateString()</td>
+                                            <td class="data-ToDate">@item.ToDate.ToShortDateString()</td>
+                                            <td style="display:none;" class="data-RoomCategoryId">@item.RoomCategoryId</td>
+                                            <td class="data-RoomCategoryName">@item.RoomCategoryName</td>
+                                            <td class="data-NoOfRooms">@item.NoOfRooms</td>
+                                            <td>
+                                                <button type="button" class="btn btn-danger btn-sm btnDeleteAllotment">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        }
+                                    </table>
+
+                                </div>
+                               
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group checkbox" style="margin-top:8px; padding-bottom:0px;margin-left:10px;">
+                            <label>
+                                <input type="checkbox" id="IsActive" value="1" checked />
+                            </label> Active
+                        </div>
+                    </div>
+
+                <div class="form-group" style="margin-top:10px;">
+                    <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                    &nbsp;
+                    <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+</div>
+
+
+<input type="hidden" value="@Model.AllotmentType" id="allotmentType" />
+
+<script>
+    $(document).ready(function () {
+        //2023-08-16--------------------------------------------------------------------------
+        $('#MarketId').addClass('select2');
+        $('#AgentId').addClass('select2');
+        $('#ReservationStatusId').addClass('select2');
+        $('#RoomCategoryId').addClass('select2');
+        $('#CountryId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+
+        setTimeout(function () {
+            if ($('#allotmentType').val() == "MUL") {
+                $('#SingleDateRange').hide();
+                $('#MultipleDateRange').fadeIn();
+
+            } else {
+                $('#MultipleDateRange').hide();
+                $('#SingleDateRange').fadeIn();
+            }
+
+            $('.allotementType').each(function (index, item) {
+
+                var a = $(item).val();
+                if (a == $('#allotmentType').val()) {
+                    $(item).prop("checked", true);
+                } else {
+                    $(item).prop("checked", false);
+                }
+            });
+        }, 1000);
+    });
+
+    $('body').off('change', '#RoomCategoryId').on('change', '#RoomCategoryId', function (e) {
+        var available = $('#RoomCategoryId option:selected').attr('data-totalNoOfRooms');
+        $("#NoOfRooms").attr('max', available);
+    })
+</script>

@@ -1,0 +1,34 @@
+﻿@model Scienter.HotelERP.Common.Domain.SelectedRoom
+
+
+@if (Model?.ConfirmCategoryId > 0  )
+{
+    <table class="table table-striped" id="existingReservationNoteGrid">
+        <tr>
+            <th class="text-primary">
+             Reservation No
+            </th>
+            <th class="text-primary">
+                Actual Category
+            </th>
+            <th class="text-primary">
+                Confirm Category
+            </th>
+        </tr>
+    
+              
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.ReservationNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.ActualCategoryName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => Model.ConfirmCategoryName)
+                </td>
+            </tr>
+        
+    </table>
+}
+

@@ -1,0 +1,132 @@
+﻿
+
+
+@model Scienter.HotelERP.Common.Domain.GuestPortal_HotelPromotion
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<div class="col-md-12">
+    <form id="guestPortalHotelPromotionForm">
+        @Html.AntiForgeryToken()
+        <div>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @*@Html.HiddenFor(model => model.Id)*@
+            <input type="hidden" value="@ViewBag.Type" name="Code" id="Code" />
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+            <div class="row">
+                <div class="col-md-12">
+
+                    <div class="row">
+                        <div class="col-md-5 form-group label-floating">
+                            <label class="control-label">Name *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="50" id="Name" name="Name" type="text" value="@Model.Name" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8 form-group label-floating">
+                            <label class="control-label">Description </label>
+                            <textarea autocomplete="off" class="form-control text-box single-line" maxlength="200" id="Description" name="Description" type="text" rows="3" required>@Model.Description</textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 form-group label-floating">
+                            <label class="control-label">Display Order *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" @*min="0"*@ id="DisplayOrder" name="DisplayOrder" type="number" value="@Model.DisplayOrder" required>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 form-group label-floating">
+                            <label class="control-label">Image *</label>
+                        </div>
+                        <div style="margin-bottom:5px;" class="fileuploadedwrapper">
+                            <img class="img img-thumbnail" src="/Attachments/no-image.jpg" style="max-height:130px" id="imgPreview">
+                            <input type="file" name="Image" id="Image" accept="" class="fileuploaded" value="/Attachments/no-image.jpg" required>
+                            <input type="hidden" name="docBytes" id="docBytes" class="docBytes">
+                            <small class="form-text text-muted" style="margin-top:5px; color:red">
+                                Tip: Use an image that's 800x450 or in 16:9 HD to make it look great!
+                            </small>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group checkbox">
+                                <label>
+                                    @Html.CheckBoxFor(model => model.IsActive)
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <input type="submit" id="btnSave" value="Save" class="btn btn-primary" disabled />
+                                &nbsp;
+                                <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        
+    });
+
+    
+
+    $(".fileuploaded").change(function (e) {
+        readDocURL(this);
+        previewImage();
+        
+    });
+
+    function previewImage() {
+        setTimeout(function() {
+            $('#imgPreview').attr('src', $('.docBytes').val());
+        },500)
+    }
+    
+    function readDocURL(input) {
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+
+                var docBytes = e.target.result;
+
+                if (
+                    docBytes.toLowerCase().indexOf("pdf") < 0 &&
+                    docBytes.toLowerCase().indexOf("jpg") < 0 &&
+                    docBytes.toLowerCase().indexOf("jpeg") < 0 &&
+                    docBytes.toLowerCase().indexOf("png") < 0 &&
+                    docBytes.toLowerCase().indexOf("xlx") < 0 &&
+                    docBytes.toLowerCase().indexOf("doc") < 0
+                ) {
+                    ShowMessage('Invalid file type. Only WORD, EXCELL, PDF, JPG, PNG files are allowed.', 'ERR');
+
+
+                    docBytes = "";
+                }
+                $(input).closest('.fileuploadedwrapper').find('.docBytes').val(docBytes);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+
+    }
+</script>
+
+

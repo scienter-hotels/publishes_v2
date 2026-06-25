@@ -1,0 +1,298 @@
+﻿
+@{
+    ViewBag.Title = "Landing";
+}
+
+
+@{
+    ViewBag.Title = "Company Wise Contacts";
+}
+
+
+<div class="row">
+
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+                        <input type="hidden" value="@ViewBag.CompanyId" name="Id" id="CompanyIdfromCompanyClick" />
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+
+    var companywiserepresentativesArr = [];
+
+    $('body').on('click', '#add-company-wise-representatives', function (e) {
+        companywiserepresentativesArr.push(
+            {
+                RepresentativeName: $('#representativename').val(),
+                RepresentativeEmail: $('#representativeemail').val(),
+                RepresentativeContactNo: $('#contactno').val(),
+                DesignationId: $('#DesignationId').val(),
+                RepresentativeAddress: $('#representativeaddress').val(),
+            }
+        )
+        
+        DrawCompanyWiseRepresentativesGrid(companywiserepresentativesArr);
+        
+    });
+
+    function DrawCompanyWiseRepresentativesGrid(repArr) {
+        $('#companywiserepresentative tr').not(':first').remove();
+
+        $.each(repArr, function (index, eachItem) {
+            
+            $('#companywiserepresentative').append(
+                ' <tr class="data-company-row">' +
+                '<td>' + eachItem.RepresentativeName + '</td>' +
+                '<td>' + eachItem.RepresentativeEmail + '</td>' +
+                '<td>' + eachItem.RepresentativeContactNo + '</td>' +
+                ' <td style="text-align:right;">' +
+                '<a class="btn btn-icons btn-inverse-secondary company-editbtn-id"  CompanyId="' + eachItem.Id + '" representativename="' + eachItem.RepresentativeName + '" representativeemail="' + eachItem.RepresentativeEmail + '" contactno="' + eachItem.RepresentativeContactNo + '" DesignationId="' + eachItem.DesignationId + '" representativeaddress="' + eachItem.RepresentativeAddress + '" ><span class="glyphicon glyphicon-pencil"></span></a >' +
+                '</td >' +
+                '</tr>'
+            );
+        })
+    }
+
+    //-----------Edit Family Details-------------------//
+    $('body').on('click', '.company-editbtn-id', function () {
+        
+        var Id = $(this).attr('CompanyId');
+        var rname = $(this).attr('representativename');
+        var remail = $(this).attr('representativeemail');
+        var rcontactno = $(this).attr('contactno');
+        var raddress = $(this).attr('representativeaddress');
+        var rdesignation = $(this).attr('DesignationId');
+
+        $('#Id').val(Id);
+        $('#representativeemail').val(remail);
+        $('#DesignationId').val(rdesignation).trigger('change');
+        $('#representativename').val(rname);
+        $('#contactno').val(rcontactno);
+        $('#representativeaddress').val(raddress);
+
+    });
+
+
+
+    // form load --------------------------------
+    $(document).ready(function () {
+        
+        var CompanyId = $('#CompanyIdfromCompanyClick').val();
+        if (CompanyId != 0) {
+            $.ajax({
+                url: '/administration/companywisecontacts/form',
+                dataType: 'html',
+                //method: 'POST',
+                success: function (response) {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                    $('#CompanyId').val(CompanyId);
+                    $("#CompanyId").prop('disabled', true);
+                   
+                   
+                }
+            });
+
+        }
+        else {
+            FillGrid();
+        }
+    
+    });
+
+    // show form --------------------------------
+    $('body').on('click', '.showForm', function (e) {
+
+        
+        $.ajax({
+            url: '/administration/companywisecontacts/form',
+            dataType: 'html',
+            //method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+
+            }
+
+        });
+    });
+
+    // show grid --------------------------------
+
+
+    $('body').on('click', '.showGrid', function (e) {
+        FillGrid();
+
+    });
+
+
+    // save --------------------------------------
+    $('body').on('submit', '#companywisecontacts', function (e) {
+        
+        e.preventDefault();
+
+       
+
+        if (companywiserepresentativesArr.length == 0) {
+            ShowWarningMessage('Please add at lease one contact number.');
+            return false;
+        }
+
+        var company = {
+            __RequestVerificationToken: $('__RequestVerificationToken').val(),
+            CompanyId: $('#CompanyId').val(),
+            Id: $('#Id').val(),
+            Representatives: companywiserepresentativesArr
+        };
+        CompanyWiseRepresentativeGridClear();
+        
+
+        $.ajax({
+            url: '/administration/companywisecontacts/save',
+            dataType: 'html',
+            data: company,
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+                FillGrid();
+                CompanyWiseRepresentativeGridClear();
+            }
+
+        });
+
+    });
+    function CompanyWiseRepresentativeGridClear() {
+        
+        $("#companywiserepresentative  > tr").remove();
+    }
+
+    // fill grid -----------------------------------
+    function FillGrid() {
+        var gridId = "#existingCompanyGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/administration/companywisecontacts/selectforgrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+                GridFunctionalities();
+            }
+
+        });
+    }
+    //-------------------------------------------------
+    $('body').on('click', '#btnAdd', function (e) {
+        FillRepresentativeGrid();
+    });
+
+    //-------------------------------------
+    function FillRepresentativeGrid() {
+        
+        var Id = 4;
+        if ($('#companywiserepresentative').length == 1) {
+            $('#companywiserepresentative tr').not(':first-child').remove();
+            var reqUrl = '/CompanyWiseContacts/SelectCompanyWiseRepresentative';
+            $.ajax({
+                url: reqUrl,
+                dataType: 'JSON',
+                data: { id: Id },
+                beforeSend: function () {
+                    $('#familymaingrid').hide();
+                    $("#loadingProjects").show();
+                },
+                complete: function () {
+                    $('#familymaingrid').show();
+                    $("#loadingProjects").hide();
+                },
+                method: 'POST',
+                success: function (data) {
+                    if (data.length == 0) {
+                        $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#companywiserepresentative'));
+                    }
+                    $('#companywiserepresentative tr:not(:first)').empty();
+                    $.each(data, function (index, item) {
+
+                        $('<tr class= "data-company-row">' +
+                            '<td>' + item.Name + '</td>' +
+                            '<td>' + item.Email + '</td>' +
+                            '<td>' + item.ContactNo + '</td>' +
+                            ' <td style="text-align:right;">' +
+                            //'<button type="button" class="btn btn-icons btn-inverse-secondary" id="data-familydetails-editbtn-id" data-member-id="' + item.MemberId + '" data-familyrecord-id="' + item.Id + '" data-cardno="' + item.CardNo + '" data-familyfirstname="' + item.FirstNameofFamilyMember + '" data-familylastname="' + item.LastNameofFamilyMember + '" data-relationshipid="' + item.RelationshipId + '" data-familydob="' + item.DOBofFamilyMember + '" data-age="' + item.Age + '" > <div><i class="icon-pencil"></i></div></button >' +
+                            //'<button type="button" class="btn btn-icons btn-inverse-secondary" id="data-familydetails-deletebtn-id" data-member-id="' + item.MemberId + '" data-familyrecord-id="' + item.Id + '"><div><i class="icon-trash"></i></div></button>' +
+                            '</td >' +
+                            '</tr>').appendTo($('#companywiserepresentative'));
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+    }
+    //-------------------Edit-------------------------//
+    $('body').on('click', '#data-company-editbtn-id', function () {
+        
+        var recordId = $(this).attr('data-company-id');
+        
+        $.ajax({
+            url: '/CompanyWiseContacts/edit',
+            dataType: 'html',
+            data: { id: recordId },
+            method: 'POST',
+            success: function (data) {
+                
+                DrawCompanyWiseRepresentativesGrid(companywiserepresentativesArr);
+                DrawCompanyWiseRepresentativesGrid();
+
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    });
+
+</script>
+
+
+

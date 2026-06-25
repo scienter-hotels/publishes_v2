@@ -1,0 +1,75 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.GuestMessageView>
+<div class="col-md-12" style="padding-left:0px;padding-right:0px;">
+    <table style="width:100%;" class="table" 
+           id="GuestMessageGrid"
+           data-page-index="1"
+           data-page-size="5"
+           data-filter-type="2"
+           data-search-keyword=""
+           data-grid-top-functionalities="true"
+           data-grid-pageable="true"
+           data-grid-sortable="true">
+        <tr>
+            <th class="text-primary">
+                Room
+            </th>
+            <th class="text-primary">
+                From
+            </th>
+            <th class="text-primary">
+                Message
+            </th>
+            <th class="text-primary">
+                D/T
+            </th>
+            <th class="text-primary">
+               
+            </th>
+            <td class="hidden-print text-right"></td>
+            <td class="text-right"></td>
+
+        </tr>
+        @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.RoomName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.From)
+            </td>
+            <td style="word-break: break-word;">
+                @Html.DisplayFor(modelItem => item.Message)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MessageDateTime)
+            </td>
+            <td class="hidden-print text-right">
+                @if (!item.IsDelivered)
+                {
+                    <a class="btn btn-success btn-sm" id="btnMarkAsDelivered" data-id="@item.Id" title="Mark As Delivered">
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </a>
+                }
+
+            </td>
+            <td class="hidden-print text-right">
+                <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/Reservation/GuestMessage/delete/@item.Id">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a>
+            </td>
+            <td>
+                <a class="btn btn-warning btn-sm" title="Print Undelivered Messages" href="/Reporting/Report/ViewReport?ReportName=GuestMessages&FromDate=undefined&ToDate=undefined&FromTime=undefined&ToTime=undefined&Uuid=undefined&ResNo=@item.ReservaitonNo&Date=undefined&Time=undefined&Arrival=undefined&Departure=undefined&Company=undefined&Status=undefined&RateCode=undefined&GroupReservationNo=undefined%20&RoomRate=undefined&DocNo=undefined&InvoiceNo=undefined&Type=undefined&SubTitle=undefined&IsPreview=0">
+                    <span class="glyphicon glyphicon-print"></span>
+                </a>
+            </td>
+        </tr>
+    }
+
+    </table>
+</div>
+<script>
+
+</script>
+
+ 

@@ -1,0 +1,205 @@
+﻿@model Scienter.HotelERP.Common.Domain.RoomDetail
+
+<style>
+    .h1-font-size {
+        font-size: 3em !important;
+    }
+
+    .col12override {
+        padding: 0px !important;
+        border-left: 1px solid #999;
+        padding-left: 10px !important;
+    }
+</style>
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+<div class="row">
+    <br />
+    <div class="col-md-8 col-md-offset-2">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-4">
+                        <input type="hidden" value="@Model.Id" id="hidden-roomId" class="hidden-roomId-popup" />
+                        <input type="hidden" value="" id="hidden-reservationHeaderId" />
+                        <h4 class="h1-font-size"><strong>@Model.Name</strong></h4>
+                        <div id="attributeLoadingArea" style="margin-top:1em">
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <div class="row col12override" id="roomAllocationAttributesContanier">
+                            <div class="col-md-12">
+                                <h4>Reservation Details</h4>
+                            </div>
+                            <br />
+                            <hr />
+                            <br />
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        Res. No.:
+                                    </div>
+                                    <div class="col-md-7">
+                                        <label class="res-no"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        Guest Name:
+                                    </div>
+                                    <div class="col-md-7">
+                                        <label class="guest-name"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        Arrival:
+                                    </div>
+                                    <div class="col-md-7">
+                                        <label class="arrival-date"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        Depature:
+                                    </div>
+                                    <div class="col-md-7">
+                                        <label class="depature-date"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <hr />
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                @if (Model.IsAllocatedForReservation)
+                {
+                    <button class="btn btn-danger deallocate-button-pop" data-dismiss="modal">De-Allocate</button>
+                }
+                else
+                {
+                    <button class="btn btn-primary allocate-button-pop" data-dismiss="modal">Allocate</button>
+                }
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <script>
+       
+        $(function () {
+            $('#hidden-reservationHeaderId').val($('#hidden-reservation-header-id').val());
+            $('.res-no').html($('#hidden-reservation-no').val());
+            $('.arrival-date').html($('#hidden-arrival-date').val());
+            $('.depature-date').html($('#hidden-departure-date').val());
+            $('.guest-name').html($('#hidden-guest-name').val());
+            
+            $.ajax({
+                 url: '/Reservation/RoomAllocationAttributes/RoomAllocationAttributesCheckBoxList?reservationHeaderId=' + $('#hidden-reservation-header-id').val(),
+                dataType: 'html',
+                method: 'GET',
+                success: function (response) {                      
+                    $('#attributeLoadingArea').html(response).fadeIn(); 
+          
+                },
+                error: function (error) {
+                    
+                }
+            });
+        })
+
+        $('body').off('click').on('click', '.allocate-button-pop, .deallocate-button-pop', function () {
+
+        
+            var operation;
+            if ($(this).hasClass('deallocate-button-pop')) { 
+                operation = 'delete';   
+            } else if ($(this).hasClass('allocate-button-pop')) {
+                operation = 'insert';
+            }
+            AjaxforSave(operation)
+        });
+
+        function AjaxforSave(operation) {
+            var reservationWiseAttributes;
+            var attributes = [];
+
+            if ($('.room-allocation-attribute:checked').length > 0) {
+                $('.room-allocation-attribute:checked').each(function (index, eachCheckBox) {
+                    var rmAttr = {
+                        id: $(eachCheckBox).val()
+                    }
+                    attributes.push(rmAttr);
+                })
+            } else {
+                var rmAttr = {
+                    id: 0
+                }
+                attributes.push(rmAttr);
+            }
+
+            reservationWiseAttributes = {
+                ReservationHeader: rh = {
+                    Id: $('#hidden-reservationHeaderId').val()                    
+                },
+                Room: rm = {
+                    Id: $('.hidden-roomId-popup').val()
+                },
+                RoomAllocationAttributes: attributes,
+                Operation: operation
+            }
+
+            if (operation == 'delete') {
+                if ($('.room-allocation-attribute:checked').length > 0) {
+                    ShowWarningMessage('There are rules enable, Deallocattion cannot be done.');
+                    return false;
+                } 
+            }
+           
+            $.ajax({
+                method: 'post',
+                url: '/reservation/reservations/SaveReservationWiseRoomsAndAttributes',
+                data: reservationWiseAttributes,
+                datatype: 'json',
+                success: function (data) {
+                    if (operation == 'insert')
+                        ShowSuccessMessage('Room Allocated');
+                    if (operation == 'delete') {
+                        ShowSuccessMessage('Room De-Allocated');
+                    }
+
+                    //Update Uuid
+                    window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+                    console.log("Uuid");
+                    //var paginations = Paginations(1);
+                    //FillGrid(paginations);                    
+                },
+            });           
+
+        }
+
+        $('body').on('click', '.success-popup-ok, .error-popup-ok', function () {
+            //Update Uuid
+            window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+            console.log("Uuid");
+        })
+
+        $('.success-popup-ok, .error-popup-ok').closest('.modal').on('hide.bs.modal', function (e) {
+            //Update Uuid
+            window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+            console.log("Uuid");
+        })
+    </script>

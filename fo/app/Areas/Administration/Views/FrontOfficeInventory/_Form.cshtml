@@ -1,0 +1,78 @@
+﻿@model Scienter.HotelERP.Common.Domain.FrontOfficeInventory
+<style>
+    .form-group {
+        margin-top: 10px !important;
+    }
+</style>
+
+<form id="inventoryItems">
+
+    <input type="hidden" id="Id" value="@Model.Id" />
+
+    <div class="row">
+        <div class="col-md-4" style="padding-left: 15px;">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Name</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Name" name="Name" type="text" value="@Model.Name" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Description</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Description" name="Description" type="text" value="@Model.Description" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Actual Quantity</label>
+                        <input autocomplete="off" class="form-control text-box single-line" min="0" id="ActualQty" name="ActualQty" type="number" value="@Model.ActualQty" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group label-floating">
+                        <label class="control-label">OBR Quantity</label>
+                        <input autocomplete="off" class="form-control text-box single-line" min="0" id="OverBookingQty" name="OverBookingQty" type="number" value="@Model.OverBookingQty" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    @{
+                        string check = "";
+                        if (Model.IsActive)
+                        {
+                            check = "checked";
+                        }
+
+                        <div class="form-group checkbox">
+                            <label><input type="checkbox" @check name="IsActive" id="IsActive" value="True" /> IsActive </label>
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-4" style="display:none">
+                @{Html.RenderAction("ListVertical", "Properties", new { selectedPoperties = Model.Properties }); }
+        </div>
+    </div>
+
+        <div class="row">
+            <div class="form-group">
+                <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                &nbsp;
+                <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+            </div>
+        </div>
+
+</form>

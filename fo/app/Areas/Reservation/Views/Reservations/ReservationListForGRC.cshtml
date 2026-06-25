@@ -1,0 +1,184 @@
+﻿
+@{
+    ViewBag.Title = "Reservation List";
+}
+
+<style>
+    .panel-default {
+        border: none;
+    }
+
+    .panel-body-padding {
+        padding-top: 0px !important;
+    }
+
+    #reservationGrid {
+        margin-top: -20px;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <a class="btn btn-sm btn-theme-color-2" href="~/reservation/reservations/makereservation">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                        <a class="btn btn-sm  btn-theme-color-2" href="~/reservation/reservations/list">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="row">
+                    <div class="col-md-12" id="reservationGrid">
+                        <div id="content" style="padding-top:15px;">
+
+                        </div>
+                        @Html.Partial("_Loading")
+                    </div>
+                    <div class="col-md-2" style="display:none;" id="reservationOptions">
+                        @Html.Partial("_GRCSideButtons")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="type" value="@ViewBag.type" />
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script src="~/Scripts/ui/common/Scienter.Common.TimeFormat.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        //ScorelToTop60px();
+        FillGrid();
+    });
+
+    $('body').on('click', '.showForm', function (e) {
+        window.location.href = '/reservation/reservations/makereservation';
+    });
+
+    // fill grid -- ReservationHeader -----------------------------------
+    function FillGrid() {
+       
+        var gridId = "#existingReservationGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).closest('.grid-container').attr('data-page-index'),
+            PageSize: $(gridId).closest('.grid-container').attr('data-page-size'),
+            FilterType: $(gridId).closest('.grid-container').attr('data-filter-type'),
+            SearchKeyword: $(gridId).closest('.grid-container').attr('data-search-keyword')
+        }
+        // $("id").val() = "reservation";
+
+      
+            actionURL = "/reservation/reservations/grcreservationlist";
+     
+
+        $.ajax({
+            url: actionURL,
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+
+    function SaveBill() {
+       
+        $('#grid-record-detail-model').modal('show');
+        guestInfo = [];
+        guestInfo.push({
+            ReservationNo: $('#resNo_AP').val(),
+            groupresNo: $('#gresNo_AP').val(),
+            GuestName: $('#guestName_AP').val(),
+            RoomCode: $('#roomNo_AP').val(),
+            RoomId: $('#roomId_AP').val(),
+            GuestProfileId: $('#guestProf_AP').val(),
+        });
+        var advancepayment = {
+            BillTypeId: $('#Ad_pPostingTypeId').val(),
+            TaxGroupId: $('#Ad_pTaxId').val(),
+            Amount: Billtotal,
+            Remarks: $('#AdvancedPayRemark').val(),
+            PostingCategoryId: $('#Ad_pPostingCatgId').val(),
+            DRCR: 'D',
+            ChargeCodeId: $('#Ad_pChargeCodeId').val(),
+            RoomDetails: guestInfo,
+            BillPaymentDetails: billpaymentArray
+        };
+
+
+        $.ajax({
+            url: '/CashieringAndPosting/AdvancedPayment/SaveAdvancePayment',
+            dataType: 'Json',
+            data: advancepayment,
+            method: 'POST',
+            success: function (response) {
+
+                $('#grid-record-detail-model').modal('show');
+                $('#btnprint').removeClass('disabled');
+                $('#btnSave').prop('disabled', true);
+                $('#preview').text('');
+                $('.ribbon').addClass('hidden');
+                $('#billPayment').hide();
+                $('#ReportLoadingArea').show();
+                $('#ReportFooter').show();
+                $('#ribbonId').show();
+                $('#btnbillpaymentforreservation').addClass('disabled');
+                getInvoiceNo(response);
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error in saving this record.');
+            },
+            timeout: 10000
+
+        });
+
+        $('.currencyTc').removeClass('hidden');
+        $('#AddPayment').addClass('hidden');
+        $('#btnClear').val('New');
+    }
+
+
+    function getInvoiceNo(response) {
+        $('#Advancedpayment-billheader').html('');
+
+        var elements = '<tr>' +
+                           '<td class="report-width75perc" style="width:60%" >' +
+                                '<div class="row" style="padding-left:20px">  <b>Reservation No:&nbsp</b>' + response.ReservationNo + '</div>' +
+                                '<div class="row" style="padding-left:20px">  <b>Room:&nbsp</b>' + response.RoomCode + '</div>' +
+                                '<div class="row" style="padding-left:20px"><b>Name:&nbsp</b>' + response.GuestName + '</div>' +
+                           '</td>' +
+                           '<td class="report-width25perc" style="width:40%">' +
+                               '<div class="row" style="padding-left:10px"><b>Receipt No:&nbsp </b>' + response.InvoiceNo + ' </div>' +
+                               '<div class="row" style="padding-left:10px">  <b>Date:&nbsp</b>' + fomatTime(response.RecordInsertTime,'d') + '</div>' +
+                           '</td>' +
+                           '</tr>';
+
+
+        $(elements).appendTo($('#Advancedpayment-billheader'));
+
+    }
+</script>
+
+
+
+

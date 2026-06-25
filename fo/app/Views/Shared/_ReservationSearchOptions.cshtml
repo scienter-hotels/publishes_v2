@@ -1,0 +1,181 @@
+﻿@using Scienter.HotelERP.Common.Domain;
+<div class="searchCriterias">
+    <div class="row">
+
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <label>Arr. From</label>
+                    <input type="text" class="effective-to form-control text-box single-line" id="Search_FromDate" name="FromDate" value="@Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate.AddYears(-1)" autocomplete="off" />
+                </div>
+
+                <div class="col-md-4">
+                    <label>Arr. To</label>
+                    <input type="text" class="effective-to form-control text-box single-line" id="Search_ToDate" name="ToDate" value="@Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate" autocomplete="off" />
+                </div>
+                <div class="col-md-4">
+                    <label>Status</label>
+                    <select id="Search_StatusId" name="Search_StatusId" class="form-control select2">
+                        <option value="ALL">ALL</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="row">
+
+                <div class="col-md-3">
+                    <label>Group / Res. No</label>
+                    <input type="text" placeholder="ALL" id="Search_ReservationNo" name="Search_ReservationNo" class="form-control" />
+                </div>
+
+
+
+                <div class="col-md-9 ">
+
+                    <div class="row">
+
+                        <div class="col-md-5">
+                            <label>Voucher No</label>
+                            <input type="text" placeholder="ALL" id="Search_VoucherNo" name="Search_VoucherNo" class="form-control" />
+                        </div>
+
+                        <div class="col-md-7">
+                            <label>Guest (Name / Email / Contact)</label>
+                            <input type="text" placeholder="ALL GUESTS" id="Search_GuestName" name="Search_GuestName" class="form-control" />
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="col-md-2 advanceSearch">
+            <label>Company</label>
+            <select id="Search_CompanyId" name="Search_CompanyId" class="form-control select2">
+                <option value="ALL">ALL</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 advanceSearch">
+            <label>Market</label>
+            <select id="Search_MarketId" name="Search_MarketId" class="form-control select2">
+                <option value="ALL">ALL</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 advanceSearch">
+            <label>Segment</label>
+            <select id="Search_SegmentId" name="Search_SegmentId" class="form-control select2">
+                <option value="ALL">ALL</option>
+            </select>
+        </div>
+        <div class="col-md-2 advanceSearch">
+            <label>Room Caregory</label>
+            <select id="Search_RoomCategoryId" name="Search_RoomCategoryId" class="form-control select2">
+                <option value="ALL">ALL</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 advanceSearch">
+            <label>Room Type</label>
+            <select id="Search_RoomTypeId" name="Search_RoomTypeId" class="form-control select2">
+                <option value="ALL">ALL</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 advanceSearch">
+            <label>Meal Plan</label>
+            <select id="Search_MealPlanId" name="Search_MealPlanId" class="form-control select2">
+                <option value="ALL">ALL</option>
+            </select>
+        </div>
+
+
+        <div class="col-md-2 advanceSearch">
+            <label>Room No</label>
+            <select id="Search_RoomId" name="Search_RoomId" class="form-control select2">
+                <option value="ALL">ALL</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 advanceSearch">
+            <label>Visit Purpose</label>
+            <select id="Search_VisitPurposeId" name="Search_VisitPurposeId" class="form-control select2">
+                <option value="ALL">ALL</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 advanceSearch">
+            <label>Booking Source</label>
+            <select id="Search_BookingSourceId" name="Search_BookingSourceId" class="form-control select2">
+                <option value="ALL">ALL</option>
+            </select>
+        </div>
+
+        <div class="col-md-2 advanceSearch">
+            <label>Rate Code</label>
+            <select id="Search_RateCodeHeaderId" name="Search_RateCodeHeaderId" class="form-control select2">
+                <option value="ALL">ALL</option>
+            </select>
+        </div>
+
+
+        <div class="col-md-2 advanceSearch">
+            <label>Title</label>
+            <select id="Search_SalutationId" name="Search_SalutationId" class="form-control select2">
+                <option value="ALL">ALL</option>
+            </select>
+        </div>
+
+
+
+        <div class="col-md-2 advanceSearch">
+            <label>Tour No</label>
+            <input type="text" placeholder="ALL" id="Search_TourNo" name="Search_TourNo" class="form-control" />
+        </div>
+
+
+
+        <div class="col-md-2">
+
+            <div class="row">
+                <div class="col-md-12" style="padding-left: 0px;">
+                    <a style="font-size: 10px;font-weight: bold;float: right;margin-bottom: 10px;cursor: pointer;margin-top: -3px;" id="btnAdvanceSearch">
+                        SHOW ADVANCE SEARCH
+                    </a>
+                    <table style="border:0px; width:100%;">
+                        <tr>
+                            <td style="padding-right:10px;">
+                                <button class="btn btn-theme-color-1" title="Clear Search Criteria" onclick="window.location.href='/reservation/inhousereservationlist/list/inhouse'"
+                                        style="
+                                                        width: 100%;
+                                                        margin-top: -15px;
+                                                        padding-left: 10px;
+                                                        padding-right: 10px;
+                                                        /* font-size: 12px; */
+                                                        height: 32px;
+                                                        background-color: #878787;
+                                                        ">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
+                            </td>
+                            <td>
+                                <button title="Search Now" class="btn btn-theme-color-2" style="width:100%; margin-top: -15px;" id="btnSearch">SEARCH</button>
+
+                            </td>
+                        </tr>
+                    </table>
+
+
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>

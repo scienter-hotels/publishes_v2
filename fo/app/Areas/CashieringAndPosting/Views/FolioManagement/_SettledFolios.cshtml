@@ -1,0 +1,368 @@
+﻿<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        overflow-x: hidden;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+</style>
+
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("IsDirectPrint")" name="" id="IsDirectPrint" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" name="" id="PropertyId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" name="" id="UserId" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("DirectPrintURL")" id="DirectPrintURL" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Username" name="" id="userName" />
+
+<div id="" class="settled-folios" style="padding-top:20px;">
+
+    <div class="row" style="padding:0px">
+
+        <div class="form-group label-floating margin-top-10px col-md-3">
+            <input type="hidden" class="form-control" id="txtInvoice" value="" />
+            <label class="control-label">
+                Folio
+            </label>
+            <select id="folio-list" name="" class="select2 form-control"></select>
+        </div>
+        <div class="form-group label-floating margin-top-10px col-md-2">
+            <label class="control-label">
+                Room
+            </label>
+            <input type="text" class="form-control" id="txtRoom" value="" />
+        </div>
+
+        <div class="col-md-7">
+            <div class="row">
+                <div class="col-md-6" style="padding:0px;">
+
+                    <a id="btnPreview" class="btn btn-success " style="" target="_blank">
+                        Preview
+                    </a>
+
+                    @if (Scienter.HotelERP.Common.Utility.Configs.GetAppSettingBoolValue("IsDirectPrint"))
+                    {
+                        <button id="btnprint" class="btn btn-primary" target="">
+                            Print
+                        </button>
+                    }
+                    else
+                    {
+                        <a id="btnprint" class="btn btn-primary hidden-print" target="">
+                            <span class="glyphicon glyphicon-print"></span>
+                        </a>
+                    }
+                </div>
+                <div class="col-md-3" style="padding:0px;">
+                    <a id="btn-LKR-Preview" class="btn btn-primary" style="background-color:#2f9b04 !important;" target="_blank">
+                        LKR Bill
+                    </a>
+                </div>
+
+                <div class="col-md-3" style="padding:0px;">
+
+                    <a id="btnReinsted" class="btn btn-danger" style="">
+                        Void
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped" id="tbl-all-settled-folios">
+                <tr>
+                    <th class="">Room</th>
+                    <th class="">Date</th>
+                    <th class="">Description</th>
+                    <th class="" style="text-align:right">Amount</th>
+                </tr>
+                <tbody class="tb-all-settled-folios">
+                    @*LOAD FROM JQUERY*@
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+
+    <div class="row" style="margin-top:30px;">
+
+
+    </div>
+</div>
+
+
+
+
+
+
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        //2023-08-16--------------------------------------------------------------------------
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+        LoadSettledFolioNoList(); //added by Ishara
+    })
+
+    var ResheaderId = $('.reservation-header-id').val();
+    var RoomId = $('.reservation-room-id').val();
+
+
+    //Edited By Ishara - modify only load values of selected folio no date- 2023-06-06---->>
+    //Load Folio-No list
+    function LoadSettledFolioNoList() {
+        $('#folio-list').html('')
+        $('.tb-all-settled-folios').html('')
+        $('#txtInvoice').val()
+        $('#txtRoom').val()
+
+        var currentFolioNo
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/LoadManageSettledFolios',
+            dataType: 'json',
+            data: { ReservationHeaderId: ResheaderId, RoomNo: RoomId },
+            method: 'GET',
+            success: function (data) {
+                if (data.length > 0) {
+                    $('#txtInvoice').val(data[0].InvoiceNo)
+                    $('#txtRoom').val(data[0].RoomName)
+                    $('.tb-all-settled-folios tr').remove();
+                    $('#folio-list option').remove();
+                    $.each(data, function (index, item) {
+                        currentFolioNo = item.FolioNo;
+
+                        $('#folio-list').append('<option value="' + item.FolioNo + '" data-invoiceNo="' + item.InvoiceNo+ '" >' + item.FolioNo + ' - ' + item.InvoiceNo + '</option>')
+                    });
+                }
+            },
+            complete: function (data) {
+                LoadSettledFolios();
+            }
+        });
+    }
+
+    //Load Folios
+    function LoadSettledFolios() {
+        //Edited By Ishara to modify table only load values of selected folio no
+        var FolioNo = $('#folio-list').val();
+        if (FolioNo == null) {
+            FolioNo = 0;
+        }
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/ManageSettledFoliosByRoom',
+            dataType: 'json',
+            data: { ReservationHeaderId: ResheaderId, RoomNo: RoomId, FolioNo: FolioNo },
+            method: 'GET',
+            cache: false,
+            beforeSend: function () {
+                $('.tb-all-settled-folios tr').remove();
+            },
+            success: function (data) {
+                if (data.length > 0) {
+                    //$('#txtInvoice').val(data[0].InvoiceNo)
+                    //$('#txtRoom').val(data[0].RoomName)
+
+                    //$('#folio-list option').remove();
+                    $.each(data, function (index, item) {
+
+                        $('.tb-all-settled-folios').append('<tr>'
+                            + '<td>' + item.RoomName + '</td>'
+                            + '<td>' + item.ChargeDate + '</td>'
+                            + '<td>' + item.FolioText + '</td>'
+                            + '<td style="text-align:right" class="formatNumber">' + item.ChargeAmount + '</td>'
+                            + '</tr>')
+                    });
+                }
+            }
+        });
+    }
+
+    //Change Folio-No event
+    $('#folio-list').on('change', function (e) {
+        LoadSettledFolios();
+    })
+
+
+
+    // Void Folios
+    $('#btnReinsted').on('click', function (e) {
+
+
+        if (!$('#folio-list').val()) {
+
+            ShowWarningMessage('Select a Folio')
+
+        } else {
+            VoidSettledFolios();
+
+            LoadSettledFolios()
+
+            $('.all-transaction').html('')
+            $('.tbl-folioWiseTable').html('')
+            $('.btn-folio-numbers').html('')
+            LoadAllTransactions(RoomId, ResheaderId)
+            GetAllFoliosNumbers(RoomId, ResheaderId)
+        }
+    })
+
+    function VoidSettledFolios() {
+
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/VoidSettledFoliosByRoom',
+            dataType: 'json',
+            data: { ReservationHeaderId: ResheaderId, RoomNo: RoomId, FolioNo: $('#folio-list').val() }, //
+            method: 'POST',
+            success: function (response) {
+
+                if (response.toString().startsWith('ERR')) {
+                    ShowWarningMessage(response.replace('ERR-', ''));
+                } else {
+                    ShowSuccessMessage('Folio Reinstated Successfully !');
+                    if ($('#PrintingMethod').val() == 'F') {
+
+                        var fiscalPrinterUrl = '/Base/FiscalPrinter_VoidFolioInvoice?invoiceNo=' + $('#folio-list option:selected').attr('data-invoiceNo');
+                        FiscalPrinterRequest(fiscalPrinterUrl);
+
+                        //$.ajax({
+                        //    url: 'Base/FiscalPrinter_VoidFolioInvoice',
+                        //    dataType: 'json',
+                        //    data: { invoiceNo: $('#folio-list').val() },
+                        //    method: 'POST',
+                        //    success: function (response) {
+                        //        var fiscalPrinterUrl = ''
+                        //        FiscalPrinterRequest(fiscalPrinterUrl);
+                        //    }
+                        //});
+                    }
+                }
+            },
+            complete: function (data) {
+                LoadSettledFolioNoList();
+            }
+        });
+    }
+
+
+    //Print Settled FOlios
+    $('body').off('click', '#btnprint').on('click', '#btnprint', function (e) {
+
+        if (!$('#folio-list').val()) {
+
+            ShowWarningMessage('Select a Folio')
+            return false;
+        } else {
+            var docType = "INV";
+            var docno = ResheaderId;//
+            var propertyId = $('#PropertyId').val();
+            var userId = $('#UserId').val();
+            var printURL = $('#DirectPrintURL').val();
+            var folioNo = $('#folio-list').val();
+            var userName = $('#userName').val();
+            var IsBilPreview = "0";
+            var isPrintCopy = true;
+
+            if ($('#IsDirectPrint').val() == 1) {
+                e.preventDefault();
+                var ajaxUrl = printURL + 'PRT/' + docType + '/' + docno + '/' + propertyId + '/' + userId + '/' + folioNo + '/' + userName + '/' + IsBilPreview + '/';
+                //alert(ajaxUrl);
+                ReportDirectPrintRequest(ajaxUrl);
+            } else {
+                if ($('#PrintingMethod').val() == 'F') {
+                    var fiscalPrinterUrl = '/Base/FiscalPrinter_FolioInvoice?folioNo=' + folioNo + '&reservationHeaderId=' + ResheaderId + '&IsPreview=0' + '&IsLKROnlyInvoice=0' +'&isPrintCopy=' + isPrintCopy;
+                    FiscalPrinterRequest(fiscalPrinterUrl);
+                }
+                else {
+                    $('#btnprint').attr("href", '/Reporting/Report/ViewReport?ReportName=FolioInvoiceDetail&ReservationHeaderId=' + ResheaderId + '&FolioNo=' + $('#folio-list').val() + '&IsPreview=0' + '&IsLKROnlyInvoice=0');
+                }       
+                
+            }
+        }
+    });
+
+    $('body').on('click', '#btn-LKR-Preview', function (e) {
+        $('#btn-LKR-Preview').attr("href", '/Reporting/Report/ViewReport?ReportName=FolioInvoiceDetail&ReservationHeaderId=' + ResheaderId + '&FolioNo=' + $('#folio-list').val() + '&IsPreview=0' + '&IsLKROnlyInvoice=1');
+    });
+
+    $('body').on('click', '#btnPreview', function (e) {
+
+        if (!$('#folio-list').val()) {
+
+            ShowWarningMessage('Select a Folio')
+            return false;
+
+        } else {
+            var docType = "INV";
+            var docno = ResheaderId;//
+            var propertyId = $('#PropertyId').val();
+            var userId = $('#UserId').val();
+            var printURL = $('#DirectPrintURL').val();
+            var folioNo = $('#folio-list').val();
+            var userName = $('#userName').val();
+            var IsBilPreview = "0";
+
+            //if ($('#IsDirectPrint').val() == 1) {
+            //    var ajaxUrl = printURL + 'PRT/' + docType + '/' + docno + '/' + propertyId + '/' + userId + '/' + folioNo + '/' + userName + '/' + IsBilPreview + '/';
+
+            //    ReportDirectPrintRequest(ajaxUrl);
+            //} else {
+            $('#btnPreview').attr('href', '/Reporting/Report/ViewReport?ReportName=FolioInvoiceDetail&ReservationHeaderId=' + ResheaderId + '&FolioNo=' + $('#folio-list').val() + '&IsPreview=0' + '&IsLKROnlyInvoice=0');
+
+            // }
+        }
+    })
+
+</script>

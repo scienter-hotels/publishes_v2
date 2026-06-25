@@ -1,0 +1,68 @@
+﻿@model  List<Scienter.HotelERP.Common.Domain.EventReservations>
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("FilesUploadTo")" name="" id="FilesUploadTo" />
+<table class="table table-striped">
+    <tr>
+        <th>Event No</th>
+        <th>Event</th>
+        <th width="80px" class="text-right">Start</th>
+        <th width="80px" class="text-right">End</th>
+        <th width="50px" class="text-right">Meal Time</th>
+        <th width="50px" class="text-right">Max Paxs</th>
+        <th width="50px" class="text-right">Res. Paxs</th>
+        <th width="50px" class="text-right">Edit</th>
+        <th width="50px" class="text-right">Attch.</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+    <tr>
+        <td>@item.EventNo</td>
+        <td>@item.Name</td>
+        <td class="text-right">@item.StartAt</td>
+        <td class="text-right">@item.EndAt</td>
+        <td class="text-right">@item.MealTime</td>
+        <td class="text-right">@item.MaxPaxs</td>
+        <td class="text-right">@item.ExistingPaxs</td>
+        <td class="text-right">
+            <a onclick="addNewEvent(@item.Id)">
+                <i class="fa fa-pencil" style="font-size: 13px;"></i>
+            </a>
+        </td>
+
+        @if (@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("FilesUploadTo") == "AzureBlobStorage")
+        {
+            <td class="text-right">
+                @{
+                    string imageUrl = "/Reservation/EventReservations/Download?DocumentUrl=" + item.Attachment;
+                    if (item.Attachment.Contains("windows.net"))
+                    {
+                        imageUrl = item.Attachment;
+                    }
+                }
+
+                @if (!string.IsNullOrEmpty(item.Attachment) && item.Attachment.Length > 0)
+                {
+                    <a class="" href="@imageUrl" download target="_blank" style="padding:8px 10px;">
+                        <i class="fa fa-download" style="font-size: 13px;"></i>
+                    </a>
+                }
+
+            </td>
+        }
+        else
+        {
+            <td class="text-right">
+                @if (!string.IsNullOrEmpty(item.Attachment) && item.Attachment.Length > 0)
+                {
+                    <a class="" href="/Reservation/EventReservations/Download?DocumentUrl=@item.Attachment" download target="_blank" style="padding:8px 10px;">
+                        <i class="fa fa-download" style="font-size: 13px;"></i>
+                    </a>
+                }
+
+            </td>
+
+        }
+
+
+    </tr>
+    }
+</table>

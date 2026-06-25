@@ -1,0 +1,242 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.RoomWiseStatusDetailsView>
+@using Scienter.HotelERP.Common.Domain;
+@using Scienter.HotelERP.Common.Domain.ViewModels;
+
+<style>
+    h3 {
+        font-weight: bold;
+    }
+
+    .custom-top-padding {
+        padding-top: 5px;
+    }
+
+    .well {
+        font-size: 12px;
+    }
+
+    .override-from-group-margin {
+        margin-top: 0px;
+    }
+
+    .colorBox {
+        height: 12px;
+        width: 12px;
+    }
+
+    .box1 {
+        background-color: #FE0101;
+    }
+
+    .box2 {
+        background-color: #038959;
+    }
+
+    .box3 {
+        background-color: #ff9800;
+    }
+
+    .row-height {
+        padding-top: 3px;
+        height: 25px;
+    }
+
+    .well-height {
+        height: 150px;
+    }
+
+    .col-padding-overide {
+        padding: 1px !important;
+    }
+
+    .room-number-height {
+        height: 50px;
+        margin-top: 20px;
+    }
+
+    .content-align-center {
+        text-align: center;
+        margin-left: 0px;
+    }
+
+    .room-detail-area-height {
+        max-height: 430px !important;
+    }
+
+    .well {
+        margin-bottom: 5px;
+    }
+</style>
+
+<div class="row room-detail-area-height room-wise-status-area right-side">
+    @foreach (var item in Model)
+    {
+        HouseKeepingStatusUpdateTXNView houseKeepingStatusUpdateTXNViews = item.HouseKeepingStatusUpdateTXNViews.Where(x => x.RoomStatusCategoryId == ViewBag.RoomStatusCategory).FirstOrDefault();
+        string backgrounColor = houseKeepingStatusUpdateTXNViews.ColorCode;
+        string foreGroundColor = houseKeepingStatusUpdateTXNViews.SecondColor;
+        string fontColor =houseKeepingStatusUpdateTXNViews.Fontcolor;
+
+        if (string.IsNullOrEmpty(backgrounColor))
+        {
+            backgrounColor = "#ccc";
+        }
+
+        if (string.IsNullOrEmpty(foreGroundColor))
+        {
+            foreGroundColor = "#ccc";
+        }
+
+        if (string.IsNullOrEmpty(fontColor))
+        {
+            fontColor = "#4d4d4d";
+        }
+
+        string[] clsArr;
+        string cls = "";
+
+        clsArr = item.FloorName.ToLower().Split(' ');
+
+        for (int i = 0; i < clsArr.Length; i++)
+        {
+            if (i != (clsArr.Length - 1))
+            {
+                cls = cls + clsArr[i] + "-";
+            }
+            else
+            {
+                cls = cls + clsArr[i] + " ";
+            }
+        }
+
+        foreach (var RoomStatusItem in item.HouseKeepingStatusUpdateTXNViews)
+        {
+            clsArr = RoomStatusItem.RoomStatusName.ToLower().Split(' ');
+
+            for (int i = 0; i < clsArr.Length; i++)
+            {
+                if (i != (clsArr.Length - 1))
+                {
+                    cls = cls + clsArr[i] + "-";
+                }
+                else
+                {
+                    cls = cls + clsArr[i] + " ";
+                }
+            }
+        }
+
+        <div class="col-md-2 @cls pad-l-r-0 room-box room-@item.Name" style="padding: 0px 0px 0px 5px;" data-class="@item.Name">
+            <div style="background-color:@backgrounColor !important; color:@fontColor !important" class="well well-height override-well">
+                <div class="row mar-l-r-0">
+                    <div class="col-md-4 room-number-height pad-l-r-0">
+                        <div class="col-md-12 pad-l-r-0">
+                            <div class="row" style="margin-right: 0px;margin-left: 0px;">
+                                <div class="col-md-12 content-align-center pad-l-r-0" style="margin-left:0px !important">
+                                    <h4 class="room-number"><strong>@item.Name</strong></h4>
+                                </div>
+                            </div>
+                            <input type="hidden" class="hidden-roomId" id="hidden-roomId" value="@item.Id" />
+
+                            @* Check Out of order/Back To back values in hidden *@
+                            <input type="hidden" class="hidden-isOutOfOrder" id="hidden-roomId" value="@item.IsOutOfOrder" />
+                            <input type="hidden" class="hidden-outOfOrderReason" id="hidden-roomId" value="@item.OutOfOrderReason" />
+                            <input type="hidden" class="hidden-isBackToBack" id="hidden-roomId" value="@item.IsBackToBack" />
+                            @* ----------------------------------- *@
+                        </div>
+                        <div class="col-md-12 custom-top-padding content-align-center pad-l-r-0">
+                            <span> <img src="~/Images/question_mark.png" alt="Alternate Text" class="question pop-right-side-area" /></span>
+                            <span> <img src="~/Images/user_mark.png" alt="Alternate Text" class="question  pop-right-side-area" /></span>
+                            <span> <img src="~/Images/resize_mark.png" alt="Alternate Text" class="question flip-icon" /></span>
+
+                            @*<span style="cursor:pointer" class="glyphicon glyphicon-question-sign pop-right-side-area"></span>
+                                <span style="cursor:pointer" class="glyphicon glyphicon-user pop-right-side-area"></span>
+                                <span style="cursor:pointer" class="glyphicon glyphicon-resize-horizontal flip-icon"></span>*@
+                        </div>
+                        <div class="col-md-12 content-align-center pad-l-r-0">
+                            <div class="form-group checkbox override-from-group-margin custom-top-padding">
+                                <label>
+                                    <input type="checkbox" class="check-on-each" />
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8 pad-l-r-0">
+                        <div id="card" class="flip-card">
+                            <div style="background-color:@foreGroundColor !important" class="front card-height front-card front-card-flipped">
+                                @{Html.RenderAction("CategoryWiseRoomStatusDetail", new { lstHouseKeepingStatusUpdateTXNView = @item.HouseKeepingStatusUpdateTXNViews });}
+                            </div>
+                            <div style="background-color:@foreGroundColor !important" class="back card-height back-card">
+                                <div class="row row-height mar-l-r-0">
+                                    <div class="col-md-3 pad-l-r-0" style="padding-left:1.5em">
+                                        <span><img src="~/Images/category.png" alt="" width="15" height="15" /></span>
+                                    </div>
+                                    <div class="col-md-9 pad-l-r-0">
+
+                                        <span>@item.RoomCategoyName</span>
+                                    </div>
+                                </div>
+                                <div class="row row-height mar-l-r-0">
+                                    <div class="col-md-3 pad-l-r-0" style="padding-left:1.5em">
+                                        <span><img src="~/Images/list.png" alt="" width="17" height="17" /></span>
+                                    </div>
+                                    <div class="col-md-9 pad-l-r-0">
+
+                                        <span>@item.RoomTypeName</span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 room-status-history hide pad-l-r-0">
+                            @{Html.RenderAction("CategoryWiseRoomStatusDetailList", new { lstHouseKeepingStatusUpdateLogView = @item.HouseKeepingStatusUpdateLogViews });}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+<script src="~/Scripts/jquery.flip.min.js"></script>
+<script>
+
+    $('.flip-card').flip({
+        trigger: 'manual'
+    });
+
+    $('body').on('click', '.flip-icon', function () {
+        var backCardTableHeight = 0;
+        var frontCard = $(this).closest('.well').find('.front-card');
+        var backCard = $(this).closest('.well').find('.back-card');
+
+        //Change the flipped card idintical css
+        if ($(frontCard).hasClass('front-card-flipped')) {
+            $(frontCard).removeClass('front-card-flipped');
+            $(backCard).addClass('back-card-flipped');
+        } else if ($(backCard).hasClass('back-card-flipped')) {
+            $(backCard).removeClass('back-card-flipped');
+            $(frontCard).addClass('front-card-flipped');
+        }
+
+        //flip the card sides
+        $(this).closest('.well').find('.flip-card').flip('toggle');
+
+        if ($(frontCard).hasClass('front-card-flipped')) {
+            changeWellHeight($(this).closest('.well'));
+        } else if ($(backCard).hasClass('back-card-flipped')) {
+            changeWellHeight($(this).closest('.well'));
+        }
+    });
+
+    $('body').on('click', '.pop-right-side-area', function () {
+
+        var clonedHistoryDiv = $(this).closest('.well').find('.room-status-history').clone();
+        $('body').find('#rightMenu .right-menu-content-area').html(clonedHistoryDiv.removeClass('hide'))
+        openRightMenu();
+    })
+
+    $('body').on('click', '.close-right', function () {
+        $(this).siblings('.right-menu-content-area').html('');
+    })
+</script>

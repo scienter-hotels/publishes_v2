@@ -1,0 +1,645 @@
+﻿
+@{
+    ViewBag.Title = "Spa Reservation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+
+    .card form [class*="col-"] {
+        padding: 0px;
+    }
+
+    .form-group {
+        padding-bottom: 0px;
+    }
+
+
+    .the-fieldset .test {
+        border: 1px solid #bebebe;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 0px;
+    }
+
+
+    .btn-padding-override {
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-bottom: 0px !important;
+        font-size: 10.5px !important;
+    }
+
+    .btn-right-padding5px {
+        padding: 0px;
+        padding-right: 5px;
+    }
+
+    .row-padding0px {
+        padding: 0px;
+    }
+
+    .dataTables_filter {
+        width: 30% !important;
+        float: left !important;
+    }
+
+    .dt-buttons {
+        width: 70% !important;
+    }
+
+
+    .card .card-content {
+        padding: 2px 20px;
+        min-height: 530px !important;
+        min-height: 530px !important;
+    }
+    .btn.btn-sm, .btn-group-sm .btn, .navbar .navbar-nav > li > a.btn.btn-sm, .btn-group-sm .navbar .navbar-nav > li > a.btn {
+        padding: 3px 8px !important;
+        font-size: 10px !important;
+    }
+
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+                    
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<script src="~/Scripts/ui/common/scienter.grid2.js"></script>*@
+<script src="~/Scripts/jquery.validate.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        FillGrid();
+        $('#contentLoadingReservationdetails').addClass('hidden');
+    });
+
+    $('body').on('click', '.showGrid', function (e) {
+        FillGrid();
+    });
+
+
+    function FillGrid() {
+        var gridId = "#spaReservationGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/spareservation/spareservation/grid',
+            dataType: 'html',
+            //data: paginations,
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+                GridFunctionalities();
+            }
+
+        });
+    }
+
+    $('body').on('click', '.showForm', function (e) {
+        ShowForm();
+    });
+
+    function ShowForm() {
+        $.ajax({
+            url: '/spareservation/spareservation/form',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+
+        });
+    }
+
+    $('body').on('click', '#btnAdd', function () {
+        var id = $('#itemId').val();
+        var selectedOption = $('#itemId').find('option:selected');
+        var itemName = selectedOption.data('item-name');
+        var itemPrice = selectedOption.data('item-sellingprice');
+        
+        var quantity = $('#quantity').val();
+        var roundedValue = Math.round(Number(quantity))
+
+        var total = (itemPrice * roundedValue).toFixed(2);
+
+        ////var tableTr = '<tr>' +
+        ////    '<td data-name="' + id + '" style="padding-left:25px; ">' + itemName + '</td>' +
+        ////    '<td data-qty="' + roundedValue + '" style="padding-left:25px; ">' + roundedValue + '</td>' +
+        ////    '<td style="text-align:right;">' +
+        ////    '<button type="button" class="hidden-print btn btn-danger btn-sm btnRowRemove"><span class="glyphicon glyphicon-trash"></span></button>' +
+        ////    '</td>'
+        ////'<tr>'
+
+        ////$(tableTr).appendTo('#itemtableBody');
+        ////$('#quantity').val(1);
+
+        DrawItemTableBody(id, itemName, roundedValue, total)
+        
+
+    });
+
+    function DrawItemTableBody(id, name, quantity, price) {
+        var tableTr = '<tr>' +
+            '<td data-name="' + id + '" style="padding-left:25px; ">' + name + '</td>' +
+            '<td data-qty="' + quantity + '" style="padding-left:25px; text-align:right">' + quantity + '</td>' +
+            '<td data-price="' + price + '" style="padding-left:25px; text-align:right">' + price + '</td>' +
+            '<td style="text-align:right;">' +
+            '<button type="button" class="hidden-print btn btn-danger btn-sm btnRowRemove"><span class="glyphicon glyphicon-trash"></span></button>' +
+            '</td>'
+        '<tr>'
+
+        $(tableTr).appendTo('#itemtableBody');
+        $('#quantity').val(1);
+    }
+
+    function DrawItemTableSpaReservation() {
+        var packageHeaderId = $('#packageHeaderId').val();
+        if (packageHeaderId > 0) {
+            $('#contentLoadingSpaReservationItemGrid').removeClass('hidden');
+            $.ajax({
+                url: '/spareservation/spareservation/selectpackageheaderwisespaitems',
+                method: 'POST',
+                data: { packageHeaderId: packageHeaderId },
+                success: function (response) {
+                    //console.log(response);
+                    $('#itemtableSpaReservation td').remove();
+
+                    $(response).each(function (index, item) {
+                        DrawItemTableBody(item.Id, item.Name, item.Quantity,0);
+                        ////var tableTr = '<tr>' +
+                        ////    '<td data-name="' + item.Id + '" style="padding-left:25px; ">' + item.Name + '</td>' +
+                        ////    '<td data-qty="' + item.Quantity + '" style="padding-left:25px; ">' + item.Quantity + '</td>' +
+                        ////    '<td style="text-align:right;">' +
+                        ////    '<button type="button" class="hidden-print btn btn-danger btn-sm btnRowRemove"><span class="glyphicon glyphicon-trash"></span></button>' +
+                        ////    '</td>'
+                        ////'<tr>'
+
+                        ////$(tableTr).appendTo('#itemtableBody');
+                        ////$('#quantity').val(1);
+                    });
+                },
+                complete: function (response) {
+
+                }
+            });
+        } else {
+            $('#contentLoadingSpaReservationItemGrid').removeClass('hidden');
+
+            var qty = $('#quantity').val();
+
+            var selectedOption = $('#itemId option:selected');
+            var selectedName = selectedOption.text();
+            var selectedId = selectedOption.val();
+            var selectedPrice = selectedOption.data('item-sellingprice');
+
+            DrawItemTableBody(selectedId, selectedName, qty, selectedPrice);
+
+            ////var tableTr = '<tr>' +
+            ////    '<td data-name="' + selectedId + '" style="width:40%; padding-left:10px; padding-top:10px!important;">' + selectedName + '</td>' +
+            ////    '<td data-qty="' + qty + '" style="width:40%; padding-left:10px; padding-top:10px!important;">' + qty + '</td>' +
+            ////    '<td style="width:20%; text-align:right; padding-top:10px!important;">' +
+            ////    '<button type="button" class="hidden-print btn btn-danger btn-sm btnRowRemove"><span class="glyphicon glyphicon-minus"></span></button>' +
+            ////    '</td>'
+            ////'<tr>'
+
+            ////$(tableTr).appendTo('#itemtableBody');
+            ////$('#quantity').val(1);
+        }              
+    }
+
+    $('body').on('click', '.btnRowRemove', function (e) {
+        var price = $(this).closest('tr').find('td[data-price]').data('price');
+
+        if (price === 0) {
+            $('#itemtableSpaReservation td').remove();
+            ShowWarningMessage("Please select the room no before placing the reservation");
+        }
+        $(this).closest('tr').remove();
+        
+    });
+
+    $('body').on('click', '#btnCheckAvailability', function () {
+        var spa = {};
+        spa.Date = $('#date').val();
+        spa.From = $('#from').val();
+        spa.To = $('#to').val();
+
+        if ($('#from').val() === 'Select' || $('#to').val() === 'Select') {
+            ShowWarningMessage('Please select from and To');
+        } else {
+            $('#contentLoadingSpaReservationDetails').removeAttr('hidden');
+            $('.contentLoadingSpaEditVenue').removeAttr('disabled');
+            CheckAvailableVenues(spa);
+        }
+        
+    });
+
+    function CheckAvailableVenues(spa) {
+        $.ajax({
+            url: '/spareservation/spareservation/checkavailablevenues',
+            method: 'POST',
+            data: { spa: spa },
+            success: function (response) {
+                var selectElement = $('#venueId');
+                selectElement.empty();
+
+                $.each(response, function (index, item) {
+                    var optionString = '<option value="' + item.Id + '">' + item.Name + '</option>';
+                    selectElement.append(optionString);
+                });
+            },
+            complete: function (response) {
+
+            }
+        });
+    }
+
+    $('body').on('click', '#btnSave', function (e) {
+        var dataList = [];
+
+        $('#itemtableSpaReservation tbody tr').each(function () {
+            var rowData = {
+                ItemId: $(this).find('td[data-name]').attr('data-name'),
+                Qty: $(this).find('td[data-qty]').attr('data-qty'),
+                Price: $(this).find('td[data-price]').attr('data-price')
+            };
+
+            dataList.push(rowData);
+        });
+
+        var filteredDataList = dataList.filter(function (item) {
+            return item.ItemId !== undefined && item.Qty !== undefined && item.Price !== undefined;
+        });
+
+        console.log(dataList);
+
+        var spaReservations = {};
+        spaReservations.ItemList = filteredDataList;
+        //spaReservations.ItemList = dataList;
+        spaReservations.Id = $('#resId').val();
+        spaReservations.TherapistId = $('#employeeId').val();
+        spaReservations.VenueId = $('#venueId').val();
+        spaReservations.Date = $('#date').val();
+        spaReservations.FromId = $('#from').val();
+        spaReservations.ToId = $('#to').val();
+        spaReservations.ReservationHeaderId = $('#reservationHeaderId').val();
+        spaReservations.GuestProfileId = $('#guestProfileId').val();
+        spaReservations.StatusId = $('#statusId').val();
+
+        //alert($('#venueId').val());
+
+        if (spaReservations.ReservationHeaderId == 0) {
+            ShowWarningMessage("Please select the guest before placing the reservation");
+        } else if (spaReservations.VenueId == null) {
+            ShowWarningMessage("Please select the venue before placing the reservation");
+        }
+        else{
+            $.ajax({
+                url: '/spareservation/spareservation/save',
+                method: 'POST',
+                data: { spaReservation: spaReservations },
+                success: function (response) {
+                },
+                complete: function (response) {
+                    //if (response.startsWith("ERR-")) {
+                    //    ShowErrorMessage(response.replace("ERR-", ""));
+                    //} else {
+                    //    ShowSuccessMessage('Saved successfully.');
+                    //}
+
+                    if (typeof response === 'string' && response.responseJSON.startsWith("ERR-")) {
+                    //if (response.startsWith("ERR-")) {
+                        ShowErrorMessage(response.replace("ERR-", ""));
+                    } else {
+                        ShowSuccessMessage('Updated successfully.');
+                    }
+                    FillGrid();
+                    setTimeout(function () {
+                        //FillGrid();
+                        window.location.reload();
+                    }, 2500);
+
+                },
+                error: function () {
+                    ShowErrorMessage('Sorry, There is an error. Please try again');
+                }
+            });
+        }
+
+        
+    });
+
+    $('body').on('change', '#venueId', function () {
+        var id = $('#venueId').val();
+        //ShowWarningMessage('Please choose a gender to continue');
+
+    });
+
+    $('body').on('change', '#genderId', function () {
+
+        $('#contentLoadingSpaTherapist').removeAttr('hidden');
+
+        var therapist = {};
+        therapist.VenueId = $('#venueId').val();
+        therapist.Gender = $('#genderId').val();
+        therapist.Date = $('#date').val();
+        therapist.From = $('#from').val();
+        therapist.To = $('#to').val();
+        SelectTherapist(therapist);
+
+    });
+
+    $('body').on('change', '#employeeId', function () {
+        $('#contentLoadingSpaRoomNo').removeAttr('hidden');
+        $('#contentLoadingSpaPackage').removeAttr('hidden');
+    });
+
+    function SelectTherapist(therapist) {
+        $.ajax({
+            url: '/spareservation/spareservation/selecttherapist',
+            method: 'POST',
+            data: { spa: therapist },
+            success: function (response) {
+                var selectElement = $('#employeeId');
+                selectElement.empty();
+
+                $.each(response, function (index, item) {
+                    var optionString = '<option value="' + item.Id + '">' + item.Name + '</option>';
+                    selectElement.append(optionString);
+                });
+                SelectRoomNo();
+            }
+        });
+    }
+
+    function SelectRoomNo() {
+        $.ajax({
+            url: '/spareservation/spareservation/selectroomno',
+            method: 'POST',
+            success: function (response) {
+                var selectElement = $('#roomId');
+                selectElement.empty();
+
+                $.each(response, function (index, item) {
+                    var optionString = '<option value="' + item.Id + '" data-packageheaderid="' + item.PackageHeaderId+'">' + item.Name + '</option>';
+                    selectElement.append(optionString);
+                });
+
+            }
+        });
+    }
+
+    $('body').on('change', '#roomId', function () {
+        var roomId = $('#roomId').val();
+        var packageHeaderId = $('#roomId option:selected').attr('data-packageheaderid');
+        $('#packageHeaderId').val(packageHeaderId);
+        $('#contentLoadingSpaItemDetails').removeAttr('hidden');
+
+        SelectGuestDetails(roomId);
+
+        //setTimeout(function(){
+        //    $('#contentLoadingSpaItemDetails').removeAttr('hidden');
+        //}, 2500);
+        
+        
+        DrawItemTableSpaReservation();
+        SelectSpaPackage();
+        $('#packageId').val(packageHeaderId);
+        $('#packageId').prop('disabled', true);
+    });
+
+    function SelectSpaPackage() {
+        $.ajax({
+            url: '/spareservation/spareservation/selectspapackage',
+            method: 'POST',
+            success: function (response) {
+                var selectElement = $('#packageId');
+                selectElement.empty();
+
+                $.each(response, function (index, item) {
+                    var optionString = '<option value="' + item.Id + '">' + item.Name + '</option>';
+                    selectElement.append(optionString);
+                });
+
+            }
+        });
+    }
+
+    function SelectGuestDetails(roomId) {
+        $.ajax({
+            url: '/spareservation/spareservation/selectguestdetails',
+            method: 'POST',
+            data: { roomId: roomId },
+            success: function (response) {
+                $('#reservationdetails').removeClass('hidden');
+
+                $('#reservationdetails td').remove();
+                $(response).each(function (index, item) {
+                    console.log(item);
+
+                    $('<tbody>' +
+                        //'<td><input data-guestProfileid="' + item.Id + '" data-resId="' + item.ReservationHeaderId + '" type="checkbox" class="rescheckbox" name="name" value="" required /></td>' +
+                        '<td class="hidden-print text-right">' +
+                        '<td data-id="' + item.ReservationHeaderId + '">' + item.ReservationNo + '</td>' +
+                        //'<td>' + item.PassportNo + '</td>' +
+                        '<td>' + item.GuestName + '</td>' +
+                        '<td>' + item.Arrival + '</td>' +
+                        '<td>' + item.Departure + '</td>' +
+                        '<td><input data-guestProfileid="' + item.Id + '" data-resId="' + item.ReservationHeaderId + '" type="checkbox" class="rescheckbox" name="name" value="" required /></td>' +
+                        //'<td class="hidden-print text-right">' +
+                        '</td>' +
+                        '</tbody>').appendTo('#reservationdetails');
+
+                });
+
+            }
+
+        });
+    }
+    
+    $('body').on('change', '.rescheckbox', function () {
+        if ($(this).is(':checked')) {
+            var guestProfileId = $(this).attr('data-guestProfileid');
+            var reservationHeaderId = $(this).attr('data-resId');
+            $('#guestProfileId').val(guestProfileId);
+            $('#reservationHeaderId').val(reservationHeaderId);
+        }
+
+        if ($(this).is(':checked')) {
+            $('.rescheckbox[name="name"]').not(this).prop('checked', false);
+        }
+    });
+    
+    $('body').off('click', '#spaReservationGrid tr').on('click', '#spaReservationGrid tr', function () {
+        debugger
+        var check = $(this).find('input.spaRes-checkBox').prop('checked');
+        if (check) {
+            $(this).find('input.spaRes-checkBox').prop('checked', false);
+            if (!$('#main-grid-content').hasClass('col-md-12')) {
+                $('#main-grid-content').removeClass('col-md-10');
+                $('#main-grid-content').addClass('col-md-12');
+                $('#side-buttons').addClass('hidden').removeClass('col-md-2');
+                $('input.spaRes-checkBox:checked').closest('tr').removeClass('selectdRecord');
+            }
+        } else {
+            debugger
+            $(this).find('input.spaRes-checkBox').prop('checked', true);
+            $(this).addClass('selectdRecord');
+            if (!$('#main-grid-content').hasClass('col-md-10')) {
+                $('#main-grid-content').removeClass('col-md-12');
+                $('#main-grid-content').addClass('col-md-10');
+                $('#side-buttons').removeClass('hidden').addClass('col-md-2');
+            }
+        }
+        $('#spaReservationGrid tr').not(this).find('input.spaRes-checkBox').prop('checked', false); 
+        $('#spaReservationGrid tr').not(this).closest('tr').removeClass('selectdRecord');
+        $(this).addClass('selectdRecord');
+    });
+
+    $('body').on('click', '#btncheckIn', function () {
+        var spaResId = $("input:checkbox:checked").val();
+        var spaResNo = $("input:checkbox:checked").attr('data-sparesno');
+        var spavenue = $("input:checkbox:checked").attr('data-spavenue');
+        var spatherapist = $("input:checkbox:checked").attr('data-spatherapist');
+        var statusId = $("input:checkbox:checked").attr('data-statusid');
+
+        if (statusId == 'X') {
+            ShowWarningMessage('You can not check in because this reservation is canceled');
+        } else {
+            var spaActiveUrl = '/spareservation/spareservation/active?resId=' + spaResId + '&resNo=' + spaResNo + '&venue=' + spavenue + '&therapist=' + spatherapist;
+            var title = 'Check In Reservation - ' + spaResNo;
+            CallDetailModelSimple(title, spaActiveUrl, 400);
+        }
+    });
+
+    $('body').on('click', '#btnedit', function () {
+        var spaResId = $("input:checkbox:checked").val();
+        var spaResNo = $("input:checkbox:checked").attr('data-sparesno');
+        var spaEditUrl = '/spareservation/spareservation/selectbyid?id=' + spaResId;
+        var title = 'Edit In Reservation' + ' - ' +spaResNo;
+        CallDetailModelSimple(title, spaEditUrl, 1000);
+        
+    });
+
+    $('body').on('click', '#btncancel', function () {
+        var spaResId = $("input:checkbox:checked").val();
+        var statusId = $("input:checkbox:checked").attr('data-statusid');
+        if (statusId == 'X') {
+            ShowWarningMessage('This reservation is already canceled');
+        }
+        else if (confirm("Do you want to cancel this reservation")) {
+            $.ajax({
+                url: '/spareservation/spareservation/cancelreservation',
+                method: 'POST',
+                data: { id: spaResId },
+                success: function (response) {
+                    if (response.startsWith("ERR-")) {
+                        ShowErrorMessage(response.replace("ERR-", ""));
+                    } else {
+                        ShowSuccessMessage('Cancel successfully.');
+                    }
+                },
+                complete: function () {
+                    FillGrid();
+                }
+            });
+        }
+        
+    });
+
+    $('body').on('change', '#statusId', function () {
+        
+        var spa = {};
+        spa.Date = $('#date').val();
+        spa.From = $('#from').val();
+        spa.To = $('#to').val();
+
+        CheckAvailableVenues(spa);
+        //if (confirm("If the venue has changed while changing the status")) {
+            $('.contentLoadingSpaEditVenue').removeAttr('disabled');
+        //}
+        
+
+    });
+
+</script>
+

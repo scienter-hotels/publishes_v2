@@ -1,0 +1,33 @@
+﻿@*@model List<Scienter.HotelERP.Common.Domain.MiniDashboardChartCategories>*@
+
+<br />
+<br />
+<center>
+    <img src="~/Images/user-black.png" width="60px;" /><br /><br />
+    
+    <h4 style="text-transform:capitalize;">Hi @Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Username !</h4>
+    <span style="font-size:12px;"> Hotel Date : @Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate.ToString("dd/MM/yyyy")</span>
+    <br />
+    <hr />
+
+    @if (Scienter.HotelERP.Common.Utility.Configs.GetAppSettingBoolValue("IsCentralLoginEnabled"))
+    {
+        <a href="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("LoginPortalUrl")/login/resetpassword" style="margin-bottom:8px; margin-top:10px; display:block;">Change Password</a>
+        <a href="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("LoginPortalUrl")/login" style="font-weight:bold; color:#710101; margin-bottom:8px; display:block;">Logout</a>
+    }
+    else
+    {
+        <a href="/userAccess/users/changepassword" style="margin-bottom:8px; margin-top:10px; display:block;">Change Password</a>
+        <a href="/saaslogin/landing" style="font-weight:bold; color:#710101; margin-bottom:8px; display:block;">Logout</a>
+    }
+
+</center>
+
+
+
+
+
+
+
+
+

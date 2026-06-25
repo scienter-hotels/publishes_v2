@@ -1,0 +1,271 @@
+﻿/*=======================
+  GENERAL STYLES
+=========================*/
+.override-card-padding {
+    padding-bottom: 0px !important;
+    padding-left: 20px !important;
+    padding-top: 5px !important;
+}
+
+.override-well {
+    padding: 0px;
+    /*background-color:#c5c5c5;*/
+}
+
+.row-padding {
+    padding-left: 30px;
+}
+
+.font {
+    font-size: 12px;
+}
+
+.form-control-area {
+    height: 50px !important;
+}
+
+.override-card-two-height {
+    height: auto !important;
+    /*height: 485px !important;*/
+}
+
+/*=======================
+  FORM & GROUP STYLES
+=========================*/
+div[class^="form-group"] {
+    margin-top: 5px;
+}
+
+.floors .form-group,
+.fo-status .form-group {
+    align-items: center;
+    display: flex;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.floors .list-group-item,
+.fo-status .list-group-item {
+    border: none;
+    padding: 6px !important;
+}
+
+    .floors .list-group-item:hover,
+    .fo-status .list-group-item:hover {
+        background: #ccc !important;
+        border-bottom: none;
+        color: #094f70;
+        cursor: pointer;
+    }
+
+.floors li:nth-child(odd),
+.fo-status li:nth-child(odd) {
+    background-color: #ddd;
+}
+
+/*=======================
+  ROOM STYLES
+=========================*/
+.out-of-order-rooms .well {
+    background-color: white;
+    border: 1px solid #e3e3e3;
+    border-radius: 0px;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+    margin-bottom: 0px;
+    min-height: 20px;
+    padding: 0;
+}
+
+.room-code1 {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 6em;
+}
+
+.room-status1 {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.room-status-code1 {
+    align-items: center;
+    display: flex;
+    font-size: 11px;
+    font-weight: 500;
+    justify-content: center;
+    margin-top: 20px;
+    text-align: left;
+}
+
+.room-details-col,
+.guest-details-col {
+    border-bottom: 1px solid #fff;
+    display: grid;
+    padding-bottom: 5px;
+    padding-left: 8px;
+    padding-top: 5px;
+    place-items: start;
+}
+
+.room-guest-details-div {
+    border-left: 1px solid #fff;
+    text-shadow: 1px 1px 3px #000;
+}
+
+/*=======================
+  STICKY & CONTAINER
+=========================*/
+.top-sticky {
+    background-color: #eeeeee;
+    border: 1px solid #ccc;
+    margin-left: -16px;
+    margin-right: 14px;
+    margin-top: -0.2em;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.details-container-div {
+    display: flex;
+    justify-content: end;
+    padding: 0px 15px 15px 0;
+}
+
+/*=======================
+  ROOM BOX
+=========================*/
+.room-box {
+    cursor: default;
+    margin: 1px 0px;
+    padding: 5px 4px !important;
+}
+
+    .room-box .main-row {
+        margin: -5px;
+    }
+
+    .room-box .well {
+        border-radius: 5px !important;
+        padding: 5px;
+    }
+
+    .room-box .hk-image-div {
+        display: grid;
+        justify-content: center;
+        padding: 0px 8px;
+        place-items: center;
+    }
+
+.hk-image-div .hk-image {
+    border: 2px solid #fff;
+    border-radius: 50%;
+    width: 90%;
+}
+
+    .room-box .guest-name-div {
+        display: grid;
+        padding-left: 8px;
+        padding-top: 0.1rem;
+        place-items: start;
+    }
+
+        .room-box .guest-name-div .guest-name-div-span,
+        .room-box .res-no-div .res-no-div-span {
+            font-size: 12px !important;
+            overflow: hidden;
+            place-items: start;
+            text-overflow: ellipsis;
+            width: 7.2em;
+        }
+
+    .room-box .res-no-div {
+        display: grid;
+        margin-bottom: -7px;
+        padding-left: 8px;
+        padding-top: 0.1rem;
+        place-items: start;
+    }
+
+
+
+/*=======================
+  COLUMN STYLES
+=========================*/
+.col-floors{
+    width:13% !important;
+}
+
+.col-rooms {
+    width: 87% !important;
+}
+
+.col-md-2-5 {
+    padding: 1px;
+    width: 16.57%;
+}
+
+.right-well {
+    align-items: center;
+    display: flex;
+    height: 3.58em;
+    padding-bottom: 1.3em;
+    padding-left: 6px;
+    padding-right: 0px;
+    padding-top: 0px;
+}
+
+.left-well {
+    padding: 0.3em 0em 0.01em 0.3em;
+}
+
+/*=======================
+  MISC STYLES
+=========================*/
+.co-ch {
+    opacity: 0.5;
+}
+
+#RoomLoadingGrid {
+    margin-top: -7px !important;
+    padding-bottom: 15px;
+}
+
+.room-sattus-chart-label {
+    color: #4d4d4d;
+    font-size: 10px;
+    line-height: 12px;
+    margin-top: 12px;
+    text-align: center;
+}
+
+.equal-height-row {
+    align-items: stretch;
+    display: flex;
+}
+
+    .equal-height-row > [class*='col-'] {
+        display: flex;
+        flex-direction: column;
+    }
+
+
+
+/*=======================
+  FHD Screens (min-width: 1367px)
+=========================*/
+
+
+@media (min-width: 1367px) {
+    .hk-image-div .hk-image {
+        width: 75%;
+    }
+
+    .col-md-2-5 {
+        width: 12.5%;
+    }
+}

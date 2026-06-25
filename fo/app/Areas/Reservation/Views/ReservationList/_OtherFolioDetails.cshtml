@@ -1,0 +1,70 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.ViewModels.ReservationFolioView>
+@using System.Linq;
+
+<style>
+    input[type="checkbox"][readonly] {
+        pointer-events: none;
+    }
+</style>
+
+@if (Model.Count > 0)
+{
+    var folioheaderId = Model?.FirstOrDefault().FolioHeaderID;
+    var fdId = Model?.FirstOrDefault().FolioDetailID;
+    var flock = Model?.FirstOrDefault().IsLock.ToString();
+
+    <input type="hidden" id="folioHeaderId" value="@folioheaderId" />
+    <input type="hidden" id="fdId" value="@fdId" />
+    <input type="hidden" id="flock" value="@flock" />
+}
+<div class="col-md-12" style="background-color:#f8f8f8; min-height: 120px; height: 120px; overflow-y:scroll;">
+    <table class="table" id="otherGrid">
+        <tr>
+            <th class="text-primary">Charge Date</th>  
+            <th class="text-primary">Folio Text</th>
+            <th class="text-primary">Curr.</th>
+            <th class="text-primary text-right">C.Rate</th>
+            <th class="text-primary text-right">Amount</th>
+            <th class="text-primary text-right">Tax</th>
+            <th class="text-primary text-right">Total</th>
+        </tr>
+
+
+        @if (Model.Count > 0)
+        {
+            decimal taxTotal = 0;
+            decimal total = 0;
+            foreach (var item in Model)
+            {
+                if (item.FolioTaxBreakList != null)
+                {
+                    taxTotal = item.FolioTaxBreakList.Sum(x => x.Amount);
+                }
+                else
+                {
+                    taxTotal = taxTotal + item.TaxAmount;
+                }
+                total = item.FAmount + taxTotal;
+
+                <tr>
+                    <td>@Convert.ToDateTime(item.ChargeDate).ToString("dd/MM/yyyy")</td>
+                    <td title="@item.FolioText">@(item.FolioText.Length > 28 ? item.FolioText.Substring(0, 17) + "..." : item.FolioText)</td>
+                    <td>@item.CurrencyCode</td>
+                    <td class="text-center number">@Convert.ToDecimal(item.ConvertionRate).ToString("#,##0.00")</td>
+                    <td class="text-center number">@Convert.ToDecimal(item.FAmount).ToString("#,##0.00")</td>
+                    <td class="text-center number">@Convert.ToDecimal(taxTotal).ToString("#,##0.00")</td>
+                    <td class="text-center number">@Convert.ToDecimal(total).ToString("#,##0.00")</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="15">No Records</td>
+            </tr>
+
+        }
+    </table>
+</div>
+
+

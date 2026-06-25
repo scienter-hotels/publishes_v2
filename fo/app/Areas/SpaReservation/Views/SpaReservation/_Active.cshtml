@@ -1,0 +1,127 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.Spa_Item>
+
+<input type="hidden" name="name" id="spaReservationHeaderId" value="@ViewBag.ReservationHeaderId" />
+<input type="hidden" name="name" id="spaReservationNo" value="@ViewBag.ReservationNo" />
+<input type="hidden" name="name" id="spaVenue" value="@ViewBag.Venue" />
+<input type="hidden" name="name" id="spaTherapist" value="@ViewBag.Therapist" />
+
+<form id="spaCheckin">
+    <div class="row">
+        <div class="col-md-10" style="margin-bottom:10px;">
+            <div class="row">
+                <div class="col-md-6">
+                    Reservation No:
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-5">
+                    @ViewBag.ReservationNo
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-10" style="margin-bottom:10px;">
+            <div class="row">
+                <div class="col-md-6">
+                    Venue:
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-5">
+                    @ViewBag.Venue
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-10" style="margin-bottom:10px;">
+            <div class="row">
+                <div class="col-md-6">
+                    Therapist:
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-5">
+                    @ViewBag.Therapist
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ITEM</th>
+                    <th>QTY</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.Name
+                        </td>
+                        <td>
+                            @item.Quantity
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-10">
+            <b>Do you want to confirm check-in?</b>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="form-group col-md-12">
+            <input type="button" id="btnSpaCheckIn" value="Check-in" class="btn btn-primary" />
+        </div>
+    </div>
+
+</form>
+
+<script>
+
+    $('body').on('click', '#spaCheckin', function (e) {
+
+        //var resId = $('#spaReservationHeaderId').val();
+
+        //var spaEditUrl = '/spareservation/spareservation/selectbyid?id=' + resId;
+        //var title = 'Edit In Reservation';
+        //CallDetailModelSimple(title, spaEditUrl, 1000);
+
+        var resId = $('#spaReservationHeaderId').val();
+
+        $.ajax({
+            url: '/spareservation/spareservation/saveactive',
+            method: 'POST',
+            data: { resId: resId },
+            success: function (response) {
+            },
+            complete: function (response) {
+                debugger;
+                //if (response.startsWith("ERR-")) {
+                //    ShowErrorMessage(response.replace("ERR-", ""));
+                //} else {
+                //    ShowSuccessMessage('Saved successfully.');
+                //}
+
+                if (typeof response === 'string' && response.responseJSON.startsWith("ERR-")) {
+                    ShowErrorMessage(response.replace("ERR-", ""));
+                } else {
+                    ShowSuccessMessage('CheckedIn successfully.');
+                }
+                window.location.href = '/SpaReservation/ActiveSpaReservation/Landing';
+
+            }
+        });
+    });
+
+</script>

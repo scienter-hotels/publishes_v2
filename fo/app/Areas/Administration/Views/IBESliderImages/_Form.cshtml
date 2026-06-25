@@ -1,0 +1,138 @@
+﻿
+@model Scienter.HotelERP.Common.Domain.ViewModels.IBESliderImagesView
+
+
+@{
+    ViewBag.Title = "Existing IBE Slider Images";
+}
+    @*int pageCount = 1;
+    if (Model.Count() > 0)
+    {
+        pageCount = Model.FirstOrDefault().PageCount;
+    }*@
+
+
+<div class="col-md-12">
+    <form id="IBESliderImages">
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Title </label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Title" name="Name" type="text" value="@Model.Title" >
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Description </label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="500" id="Description" name="Description" type="text" value="@Model.Description" >
+                    </div>
+                </div>
+            </div>
+            @*<div class="form-group">
+                Image *
+                @{
+                    if (Model != null)
+                    {
+                        <img id="GImg1" src="@Model.Image" style="height:100px; width:150px;" name="IBESliderImages" />
+                        <input type="hidden" name="IBESliderImagesHdn" id="IBESliderImagesHdn" />
+                    }
+
+                    else
+                    {
+                        <img id="blah" src="~/Images/no-image.png" style="height:100px; width:120px;" name="IBESliderImages" />
+                        <input type="hidden" name="IBESliderImagesHdn" id="IBESliderImages" />
+
+                    }
+
+                }
+                <input type="file" name="IBESliderImages" id="IBESliderImages" accept=".jpg, .png, .gif, .jpeg" />
+            </div>*@
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="control-label">Image</label>
+                        <br />
+                        @{
+                            if (Model != null)
+                            {
+                                <img id="Image" src="@Model.Image" style="height:80px; width:200px;" name="Image" />
+                                <input type="hidden" name="IBESliderImagesHdn" id="IBESliderImagesHdn" />
+                            }
+                            else
+                            {
+                                <img id="blah" src="~/Images/no-image.png" style="height:80px; width:200px;" name="GuestProfileImage" />
+                                <input type="hidden" name="GuestImage" id="GuestImage" />
+                            }
+                        }
+                        <input type="file" name="fileIBESliderlImage" id="fileIBESliderlImage" style="cursor:pointer;" accept=".jpg, .png, .gif, .jpeg" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row hidden">
+                <div class="col-md-6">
+                    <label>Property Id</label>
+                    <select id="PropertyId" class="form-control" value="@Model.PropertyId" required>
+                        <option value="1">1</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsActive)
+                            @*<input type="checkbox" checked name="IsActive" value="True" />*@Active
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                        &nbsp;
+                        <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+                        
+    
+<script type="text/javascript">
+    $(document).ready(function () {
+        
+        $("#fileIBESliderlImage").change(function () {
+            readURL(this);
+        });
+
+
+        function readURL(input) {
+           
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {                    
+                        $('#Image').attr('src', e.target.result);
+                        $('#IBESliderImagesHdn').val(e.target.result);
+                        console.log(e.target.result);
+                   
+
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    });
+</script>
+
+

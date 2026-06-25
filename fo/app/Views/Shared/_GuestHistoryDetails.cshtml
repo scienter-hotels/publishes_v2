@@ -1,0 +1,257 @@
+﻿<link href="~/Content/guest-history.css" rel="stylesheet" />
+<link href="~/Content/remix-icons/remix-icons.css" rel="stylesheet" />
+
+<input type="hidden" id="hdnProfileId" value="" />
+
+<div class="guest-history container-fluid">
+
+    <div class="row" style="padding:0 15px;">
+        <div class="col-md-11 header-div-style">
+            <h2 id="fullContentTitleG">Guest History</h2>
+        </div>
+        <div class="col-md-1 header-div-style" style="text-align: right;align-items: center;">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeFullContent() " style="color:white;">&times;</a>
+        </div>
+    </div>
+
+    <div class="row user-details" style="margin: 0;">
+
+        <div class="col-md-2">
+
+            <div class="card main-card-height main-card-height-padding" style="box-shadow: none !important;">
+                <div class="card-body main-card-scroll left-card">
+                    <center>
+                        <img src="~/Images/guest-history/no-passport-image.png" style="width:100%;margin-bottom:15px;" />
+                    </center>
+                    <table class="table">
+                        <tr title="Name">
+                            <td><i class="ri-shield-user-line"></i></td>
+                            <td> </td>
+                            <td><b id="lblName">Name Goes Here</b></td>
+                        </tr>
+                        <tr title="Email">
+                            <td><i class="ri-mail-unread-line"></i></td>
+                            <td> </td>
+                            <td id="lblEmail"></td>
+                        </tr>
+                        <tr title="Contact Number">
+                            <td><i class="ri-phone-line"></i></td>
+                            <td> </td>
+                            <td id="lblContactNo"></td>
+                        </tr>
+                        <tr title="Date of Birth">
+                            <td><i class="ri-calendar-event-line"></i></td>
+                            <td> </td>
+                            <td id="lblDOB"></td>
+                        </tr>
+                        <tr title="Country">
+                            <td><i class="ri-user-location-line"></i></td>
+                            <td> </td>
+                            <td id="lblCountry"></td>
+                        </tr>
+                        <tr title="Nationality">
+                            <td><i class="ri-flag-line"></i></td>
+                            <td> </td>
+                            <td id="lblNationality"></td>
+                        </tr>
+                        <tr title="Passport/NIC Number">
+                            <td><i class="ri-passport-line"></i></td>
+                            <td> </td>
+                            <td id="lblPassport"></td>
+                        </tr>
+
+
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-10 " style="padding: 15px;">
+
+            <div class="row" style="margin:0;">
+                <div class="col-md-12" style="padding:0;">
+
+                    <ul class="nav nav-tabs nav-tabs-custom nav-justified" role="tablist">
+
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#" role="tab" data-tab-id="reservationsTab" id="reservationsTabHeader">
+                                <span class="d-block d-sm-none"><i class="ri-user-heart-line"></i></span>
+                                <span class="d-none d-sm-block">Reservations</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link " data-bs-toggle="tab" href="#" role="tab" data-tab-id="summaryTab" id="summaryTabHeader">
+                                <span class="d-block d-sm-none"><i class="ri-home-4-line"></i></span>
+                                <span class="d-none d-sm-block">Summary</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#" role="tab" data-tab-id="preferencesTab" id="preferencesTabHeader">
+                                <span class="d-block d-sm-none"><i class="ri-user-smile-line"></i></span>
+                                <span class="d-none d-sm-block">Preferences</span>
+                            </a>
+                        </li>
+                        @*<li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#" role="tab" data-tab-id="AllergiesTab">
+                <span class="d-block d-sm-none"><i class="ri-user-unfollow-line"></i></span>
+                <span class="d-none d-sm-block">Allergies</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#" role="tab" data-tab-id="NotesTab">
+                <span class="d-block d-sm-none"><i class="ri-file-user-line"></i></span>
+                <span class="d-none d-sm-block">Notes</span>
+            </a>
+        </li>*@
+                    </ul>
+
+                    <div class="card bottom-tab-card main-card-height right-card">
+                        <div class="card-body main-card-scroll">
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="reservationsTab" role="tabpanel">
+
+                                    <div class="card inside-card" style=" display:none;">
+                                        <div class="card-header bg-transparent border-success">
+                                            <h5 class="my-0 text-primary h5"><i class="mdi mdi-home-remove-outline me-3"></i>Reservations</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive fixed-height-scroll">
+                                                <table class="table table-striped" style="margin-bottom:0px !important;" id="resTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Property</th>
+                                                            <th>Arrival</th>
+                                                            <th>Departure</th>
+                                                            <th>Res No</th>
+                                                            <th>Agent</th>
+                                                            <th># Nights</th>
+                                                            <th>Segment</th>
+                                                            <th>R.Status</th>
+                                                            <th style="text-align:right;">Room Rate</th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card inside-card" style=" display:none;margin-top: 30px;">
+                                        <div class="card-header bg-transparent border-warning">
+                                            <h5 class="my-0 text-primary h5"><i class="mdi mdi-home-outline me-3"></i>InHouse Reservations</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive fixed-height-scroll">
+                                                <table class="table table-striped" style="margin-bottom:0px !important;" id="inhouseResTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Property</th>
+                                                            <th>Arrival</th>
+                                                            <th>Departure</th>
+                                                            <th>Res No</th>
+                                                            <th>Agent</th>
+                                                            <th># Nights</th>
+                                                            <th>Segment</th>
+                                                            <th>R.Status</th>
+                                                            <th style="text-align:right;">Room Rate</th>
+                                                        </tr>
+
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card inside-card" style=" display:none;margin-top: 30px;">
+                                        <div class="card-header bg-transparent border-info">
+                                            <h5 class="my-0 text-primary h5"><i class="mdi mdi-home-export-outline me-3"></i>Checked Out Reservations</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive fixed-height-scroll">
+                                                <table class="table table-striped" style="margin-bottom:0px !important;" id="checkedOutResTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Property</th>
+                                                            <th>Arrival</th>
+                                                            <th>Departure</th>
+                                                            <th>Res No</th>
+                                                            <th>Agent</th>
+                                                            <th># Nights</th>
+                                                            <th>Segment</th>
+                                                            <th>R.Status</th>
+                                                            <th style="text-align:right;">Room Rate</th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="tab-pane" id="summaryTab" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-md-12 stat-div">
+                                            <div class="row" id="statDrawingContainer">
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="tab-pane" id="preferencesTab" role="tabpanel">
+                                    <div class="card inside-card">
+                                        <div class="card-body">
+                                            <div class="fixed-height-scroll">
+                                                <table class="table table-striped" id="tblPreference">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Property    </th>
+                                                            <th>ReservationNo   </th>
+                                                            <th>Date   </th>
+                                                            <th>FolioText  </th>
+                                                            <th style="text-align:right;">Amount   </th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*<div class="tab-pane" id="AllergiesTab" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    AllergiesTab
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane" id="NotesTab" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    NotesTab
+                </div>
+            </div>
+        </div>*@
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+<script src="~/Scripts/ui/guest-history/guest-history.js"></script>

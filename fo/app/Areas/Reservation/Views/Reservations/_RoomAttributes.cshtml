@@ -1,0 +1,63 @@
+﻿<div class="col-md-12 ">
+    <input type="hidden" value="@ViewBag.ReservationHeaderId" id="ReservationHeaderId" />
+    <input type="hidden" value="@ViewBag.RoomId" id="RoomId" />
+    <div class="row">
+        @{Html.RenderAction("RoomAllocationAttributesCheckBoxList", "RoomAllocationAttributes", new { area = "Reservation", name = "RoomAllocationAttribute", reservationHeaderId = ViewBag.ReservationHeaderId });}
+    </div>
+    <div class="row">
+        <button type="button" class="btn btn-primary" id="Save-attributes">Save</button>
+    </div>
+</div>
+
+<script>
+    $('body').on('click', '#Save-attributes', function () {   
+        var operation = 'insert';   
+        SaveAttributes(operation)
+    });
+
+    function SaveAttributes(operation) { 
+        var reservationWiseAttributes;
+        var attributes = [];
+
+        if ($('.room-allocation-attribute:checked').length > 0) {
+
+            $('.room-allocation-attribute:checked').each(function (index, eachCheckBox) {
+                var rmAttr = {
+                    id: $(eachCheckBox).val()
+                }
+                attributes.push(rmAttr);
+            })
+        } else {
+            var rmAttr = {
+                id: 0
+            }
+            attributes.push(rmAttr);
+        }
+
+        reservationWiseAttributes = {
+            ReservationHeader: rh = {
+                Id: $('#ReservationHeaderId').val()
+            },
+            Room: rm = {
+                Id: $('#RoomId').val()
+            },
+            RoomAllocationAttributes: attributes,
+            Operation: operation
+        }
+
+        $.ajax({
+            method: 'post',
+            url: '/reservation/reservations/SaveReservationWiseRoomsAndAttributes',
+            data: reservationWiseAttributes,
+            datatype: 'html',
+            success: function (data) {     
+                ShowSuccessMessage('Attributes allocated');
+               
+                setTimeout(function () {
+                    location.reload();
+                }, 2000)
+            },
+        })
+    }
+
+</script>

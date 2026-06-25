@@ -1,0 +1,51 @@
+﻿@model Scienter.HotelERP.Common.Domain.ViewModels.ReservationView
+@{
+    string Ischecked = "";
+}
+
+@*<div class="row">
+    <div class="col-md-12">*@
+
+    <fieldset class="the-fieldset" style="height:490px;">
+        <legend class="the-legend">Reservation</legend>
+        
+            <input type="text" class="form-control" placeholder="Search Reservation" onkeyup="searchReservation()" id="txtSearch" />
+            <div class="div-scroll">
+            <ul id="myUL">
+
+                @foreach (var item in Model.Reservations)
+            {
+                Ischecked = "";
+                if ((Model.SelectedReservationHeaderId == item.ReservationHeaderId))
+                {
+                    Ischecked = "checked";
+                }
+
+                <li>
+
+                    <div class="form-group checkbox">
+                        <label>
+                            <input type="checkbox" value="@item.ReservationHeaderId" name="ReservationHeaderId" id="ReservationHeaderId" class="reservationHeader" @Ischecked /> @item.ResNo
+                        </label>
+                    </div>
+
+                </li>
+
+                }
+            </ul>
+        </div>
+</fieldset>
+
+
+       @*</div>
+
+</div>*@
+
+
+<script>
+    $('body').on('change', '.reservationHeader', function () {
+        if ($(this).prop('checked')) {
+            $('.reservationHeader').not(this).prop('checked', false);
+        }
+    });
+</script>

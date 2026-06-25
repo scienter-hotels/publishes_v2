@@ -1,0 +1,65 @@
+﻿
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                           IBE Reservation Summary
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>          
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        //ScorelToTop60px();
+        FillGrid();
+    });
+
+    // fill grid -- ReservationHeader -----------------------------------
+    function FillGrid() {
+       
+        var gridId = "#existingReservationGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+       
+        // $("id").val() = "reservation";
+
+        var actionURL = "/reservation/ReservationSummary/ReservationList";      
+
+        $.ajax({
+            url: actionURL,
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+               
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(response).fadeIn();
+                GridFunctionalities();
+            },
+            error: function (error) {
+               
+            }
+        });
+    }
+
+</script>
+
+
+

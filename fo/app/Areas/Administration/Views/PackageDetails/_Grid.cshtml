@@ -1,0 +1,114 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.PackageDetailsView>
+
+<div class="table-responsive">
+    <table class="table table-striped"
+           id="existingChargeTypeGrid">
+        <thead>
+            <tr>
+
+                <th>
+                    Package Header
+                </th>
+                <th>
+                    Charge Code
+                </th>
+                <th>
+                    Name
+                </th>
+                <th>
+                    From
+                </th>
+                <th>
+                    To
+                </th>
+                <th class="">
+                    Amount
+                </th>
+                <th>
+                    Active
+                </th>
+
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PackageHeaderName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ChargeTypeName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @item.StartingDate.ToShortDateString()
+                    </td>
+                    <td>
+                        @item.EndingDate.ToShortDateString()
+                    </td>
+                    <td class="formatNumber">
+                        @item.Amount
+                    </td>
+                    <td>
+                        <div class="form-group checkbox">
+                            <label>
+                                @Html.DisplayFor(modelItem => item.IsActive)
+                                <span class="hidden">
+                                    @if (item.IsActive)
+                                    {
+                                        @:Active
+                                    }
+                                    else
+                                    {
+                                        @:Inactive
+                                    }
+                                </span>
+                            </label>
+                        </div>
+
+                    </td>
+
+                    <td>
+                        @*<a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Bed Type - @item.Name" data-href="/administration/packagedetails/print/@item.Id">
+                            <span class="glyphicon glyphicon-print"></span>
+                        </a>*@
+
+                        <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/packagedetails/edit/@item.Id">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </a>
+
+                        <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/administration/packagedetails/delete/@item.Id">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#existingChargeTypeGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+</script>

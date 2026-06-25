@@ -1,0 +1,71 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.LaundryItemCategory>
+<style>
+    .color-blue {
+        color: white;
+        background-color: #0353a9 !important;
+        padding-left: 0.2em;
+    }
+
+    .color-pink {
+        background-color: #ff4757 !important;
+        color: white;
+        padding-left: 0.2em;
+    }
+
+    .color-kids {
+        background-color: #8c7ae6 !important;
+        color: white;
+        padding-left: 0.2em;
+    }
+
+    .color-yellow {
+        background-color: #e49c09 !important;
+        color: white;
+        padding-left: 0.2em;
+    }
+</style>
+
+
+<table class="col-md-12" id="LaundryRatePalet">
+
+    @foreach (var item in Model)
+    {
+        string txtColor = "";
+
+        if (item.Name == "GENTS")
+        {
+            txtColor = "color-blue";
+        }
+        else if (item.Name == "LADIES")
+        {
+            txtColor = "color-pink";
+        }
+        else if (item.Name == "KIDS")
+        {
+            txtColor = "color-kids";
+        }
+        else
+        {
+            txtColor = "color-yellow";
+        }
+
+        <tr class="col-md-4 laundryItemCategory" categoryId="@item.Id">
+            <td class="card card-content well">
+                <table class="col-md-12">
+                    <tr>
+                        <td>
+                            <h3 class="@txtColor">@item.Name</h3>
+                            <input type="hidden" value="@item.Id" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @{Html.RenderAction("LaundryRatePalet", "LaundryItems", new { CategoryId = item?.Id });}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+    }
+</table>

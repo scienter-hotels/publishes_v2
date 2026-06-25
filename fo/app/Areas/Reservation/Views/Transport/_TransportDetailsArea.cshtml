@@ -1,0 +1,133 @@
+﻿<link href="~/Content/RadioButtonSwitch.css" rel="stylesheet" />
+<style>
+    /*button css*/
+    .button-onBlue{
+        width: 200px;
+        height: 30px;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+        font-weight: 500;
+        color: #3498db;
+        background-color: #fff;
+        border: none;
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease 0s;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .button-onBlue:hover {
+        background-color: #4aa3df;
+        /*box-shadow: 0px 15px 20px rgba(102, 209, 226, 0.4);*/
+        color: #fff;
+        /*transform: translateY(-7px);*/
+    }
+
+     .button-onGreen{
+        width: 200px;
+        height: 30px;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+        font-weight: 500;
+        color: #29b765;
+        background-color: #fff;
+        border: none;
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease 0s;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .button-onGreen:hover {
+        background-color: #40d47e;
+        /*box-shadow: 0px 15px 20px rgba(54, 255, 79, 0.4);*/
+        color: #fff;
+        /*transform: translateY(-7px);*/
+    }
+</style>
+<div class="col-md-12 well well-margin-override main-well" style="background-color:#2980b9">
+    <div class="row row-height">
+        <div class="col-md-12 can-toggle demo-rebrand-1">
+            <input id="transport-header-type" type="checkbox">
+            <label for="transport-header-type">
+                <div class="can-toggle__switch" data-checked="Other" data-unchecked="Guest"></div>
+                <div class="can-toggle__label-text "></div>
+            </label>
+        </div>
+    </div>
+    <div id="card" class="flip-card">
+        <div class="form-control-area-front row front front-card" style="background-color:#2980b9">
+            @{ Html.RenderAction("TransportHeaderFormControlsForGuest");}
+        </div>
+        <div class="form-control-area-front row back back-card" style="background-color:#27ae60">
+            @{ Html.RenderAction("TransportHeaderFormControlsForOthers");}
+        </div>
+    </div>
+   
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            @*btn btn-primary btn-block*@
+            <button type="button" id="book-transport" class="button-onBlue">Book</button>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery.flip.min.js"></script>
+<script>
+    $(function () {
+        
+    })
+
+    $('.flip-card').flip({
+        trigger: 'manual'
+    });
+
+    $('input[name=tType]').click(function () {
+        var dataTransportType = $(this).data('transport-type');
+        changeOnRadioClick(dataTransportType);
+        clearControlsOnRadioChange(dataTransportType);
+        $('.attributes-container').html('');
+    })
+
+    $('body').on('change', '#transport-header-type', function () {
+        
+        if ($(this).is(':checked')) {
+            $('.flip-card').flip(true);
+            $('.main-well').css('background', '#27ae60', 'important');
+            $('#book-transport').removeClass('button-onBlue');
+            $('#book-transport').addClass('button-onGreen');
+        } else {
+            $('.flip-card').flip(false);
+            $('.main-well').css('background', '#2980b9', 'important');
+            $('#book-transport').removeClass('button-onGreen');
+            $('#book-transport').addClass('button-onBlue');
+        }
+    })
+
+    function clearControlsOnRadioChange(type) {
+        if (type == 'g') {
+            $('.other .transport-for-other').val('');
+            $('.other .transfer-types').val(0);
+            $('.other .transfer-modes').val(0);
+            $('.other .required-date').val('');
+            $('.other .time-range').val(0);
+            $('.other .remarks').val('');
+            $('.other .reservation-status').val(0);
+        } else if (type == 'o') {
+            $('.guest .reservation-headers').val(0);
+            $('.guest .guest-name').val('');
+            $('.guest .guest-name').data('guest-id', '');
+            $('.guest .transfer-types').val(0);
+            $('.guest .transfer-modes').val(0);
+            $('.guest .required-date').val('');
+            $('.guest .time-range').val(0);
+            $('.guest .remarks').val('');
+            $('.guest .reservation-status').val(0);
+        }
+    }
+
+</script>

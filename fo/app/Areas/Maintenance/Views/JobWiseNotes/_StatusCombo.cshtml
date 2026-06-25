@@ -1,0 +1,9 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.JobStatus>
+
+<select id="StatusId" name="StatusId" class="form-control" required>
+    <option value=""></option>
+    @foreach (var item in Model)
+    {
+        <option value="@item.Id">@item.Name</option>
+    }
+</select>

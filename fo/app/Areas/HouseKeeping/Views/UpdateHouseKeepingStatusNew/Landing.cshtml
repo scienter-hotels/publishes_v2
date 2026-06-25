@@ -1,0 +1,280 @@
+﻿
+@model Scienter.HotelERP.Common.Domain.RoomStatusCategory
+@{
+    ViewBag.Title = "Update " + Model.Name;
+}
+
+<style>
+    .override-card-padding {
+        padding-top: 20px !important;
+        padding-bottom: 0px !important;
+    }
+
+    div[class^="form-group"] {
+        margin-top: 5px;
+    }
+
+    .override-well {
+        padding: 0px;
+        /*background-color:#c5c5c5;*/
+    }
+
+    .row-padding {
+        padding-left: 30px
+    }
+
+    .form-control-area {
+        height: 50px !important;
+    }
+
+    .override-card-two-height {
+        height: 485px !important;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input type="hidden" value="@Model.Id" id="roomStatusCategory" class="hidden-room-status-category" />
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content form-control-area" id="div-status">
+
+                <div class="row">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group checkbox override-from-group-margin custom-top-padding">
+                            <label>
+                                <input type="checkbox" id="select-all" /> Select all
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group label-floating">
+                            @Html.Label(Model.Name, htmlAttributes: new { @class = "control-label" })
+                            @{Html.RenderAction("RoomStatusCombo", "RoomStatus", new { area = "HouseKeeping", categoryId = Model.Id, isApplicableforOutOfOrderEntry = 0, name = "Room Status", requiered = true });}
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button id="update-room-status" class="btn btn-primary">Update</button>
+                    </div>
+                </div>
+
+
+
+                <div class="override-card-padding override-card-two-height" id="contentLoadingArea" style="margin-top:-20px;">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="panel panel-default">
+                                <div class="col-md-2 panel-heading" id="area-filter">
+                                    @{Html.RenderAction("StatusFilteringArea");}
+                                </div>
+                                <div class="col-md-10 panel-body" id="area-roomDetails">
+                                    @{Html.RenderAction("RoomStatusDetails");}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/isotope.pkgd.min.js"></script>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+
+    $(function () {
+        calculateWellHeightOnPageLoad();
+        CheckEachRoomSpecialDetail();
+    })
+
+    //Check Each room for out of order reason or back to back status
+    function CheckEachRoomSpecialDetail() {
+        $('.well').each(function (index, eachWell) {
+            var isOutOfOrder = $(eachWell).find($('.hidden-isOutOfOrder')).val();
+            var outOfOrderReason = $(eachWell).find($('.hidden-outOfOrderReason')).val();
+            var isBackToBack = $(eachWell).find($('.hidden-isBackToBack')).val();
+
+            if (isOutOfOrder == '1') {
+                $(eachWell).css('background-color', '#c5c5c5', 'important');
+                $(eachWell).find('.front-card').css('background-color', '#c5c5c5', 'important');
+                $(eachWell).find('.back-card').css('background-color', '#c5c5c5', 'important');
+                $(eachWell).find('.flip-icon').prop('title', outOfOrderReason);
+                $(eachWell).find('.check-on-each').prop('disabled', true);
+            } else if (isBackToBack == '1') {
+                $(eachWell).find('.room-number').addClass('blink_me');
+            }
+        })
+    }
+
+    function RoomStatusCatChange(val) {
+        $.ajax({
+            method: 'get',
+            url: '/HouseKeeping/UpdateHouseKeepingStatus/FilteringCheckBox?categoryId=' + val,
+            datatype: 'html',
+            success: function (htmlContent) {
+                $('#filterng-checkbox-area').html('');
+                $('#filterng-checkbox-area').html(htmlContent);
+            },
+        })
+    }
+
+    $('#select-all').click(function () {
+        $('.check-on-each').not(':disabled').prop('checked', $(this).prop('checked'));
+        $('#RoomStatusCategoryId').val(2);
+    });
+
+    $('#update-room-status').click(function () {
+        var roomStatusList = [];
+        var roomStatusEach;
+
+        if ($('.check-on-each:checked').length > 0) {
+            if ($('.new-room-status').val().length > 0) {
+                $('.check-on-each:checked').each(function (index, eachCheckedBox) {
+                    nearestWell = $(this).closest('.well');
+                    roomStatusEach = {
+                        RoomId: parseInt($(nearestWell).find($('.hidden-roomId')).val()),
+                        RoomStatusCategoryId: $('.hidden-room-status-category').val(),
+                        RoomStatusId: parseInt($('.new-room-status').val()),
+                    }
+                    roomStatusList.push(roomStatusEach);
+                })
+                $.ajax({
+                    method: 'post',
+                    url: '/HouseKeeping/UpdateHouseKeepingStatus/UpdateRoomStatus',
+                    data: { listHouseKeepingStatusUpdateTXN: roomStatusList },
+                    datatype: 'html',
+                    success: function (htmlContent) {
+                        $('#select-all').prop('checked', false);
+                        $('#area-roomDetails').html('');
+                        $('#area-roomDetails').html(htmlContent);
+                        calculateWellHeightOnPageLoad();
+                        CheckEachRoomSpecialDetail();
+                        ShowSuccessMessage("Room Status Updated");
+                    },
+                })
+            } else {
+                ShowErrorMessage('Select room status');
+            }
+        } else {
+            ShowErrorMessage('Select at leaste one room to update status');
+        }
+    })
+
+    $('body').on('change', '#RoomStatusCategoryId', function () {
+        RoomStatusCatChange($(this).val());
+    })
+
+    $('body').on('click', '#filter-rooms', function () {
+
+        //var roomStatusCategory = 0;
+        //var floorIds = [];
+        //var roomStatusIds = [];
+        //var roomFromNumber = 0;
+        //var roomToNumber = 0;
+
+        //roomStatusCategory = $('#RoomStatusCategoryId').val();
+        //roomFromNumber = $('#room-number-from').val() == '' ? -1 : $('#room-number-from').val();
+        //roomToNumber = $('#room-number-to').val() == '' ? -1 : $('#room-number-to').val();
+
+        //$('.status-typs-checkbox:checked').each(function (index, eachChkBox) {
+        //    roomStats = {
+        //        Id: $(eachChkBox).siblings('.room-status-type-hidden').val()
+        //    }
+        //    roomStatusIds.push(roomStats)
+        //})
+
+        //$('.floor-number-checkbox:checked').each(function (index, eachChkBox) {
+        //    roomFloors = {
+        //        Id: $(eachChkBox).siblings('.floor-number-hidden').val()
+        //    }
+        //    floorIds.push(roomFloors)
+        //})
+
+        //var filtercriteriaObj = {
+        //    roomStatusCat: roomStatusCategory,
+        //    roomStatus: roomStatusIds,
+        //    roomFrom: roomFromNumber,
+        //    roomTo: roomToNumber,
+        //    floors: floorIds
+        //}
+
+        //$.ajax({
+        //    method: 'get',
+        //    url: '/HouseKeeping/UpdateHouseKeepingStatus/RoomStatusDetails',
+        //    datatype: 'html',
+        //    data: { filteringCriteria: JSON.stringify(filtercriteriaObj) },
+        //    success: function (htmlContent) {
+        //        $('#area-roomDetails').html('');
+        //        $('#area-roomDetails').html(htmlContent);
+        //        calculateWellHeightOnPageLoad();
+        //        CheckEachRoomSpecialDetail();
+        //    },
+        //})
+
+        var inclusives = [];
+
+        $('.floor-number-checkbox').each(function (i, elem) {
+
+            if (elem.checked) {
+                inclusives.push($(elem).data('filter-value'));
+            }
+        });
+
+        $('.status-typs-checkbox').each(function (i, elem) {
+            if (elem.checked) {
+                inclusives.push($(elem).data('filter-value'));
+            }
+        });
+
+        var filterValue = inclusives.length ? inclusives.join(', ') : '*';
+        $('.room-wise-status-area').isotope({ filter: filterValue })
+    })
+
+    $('body').on('click', '#clear-room-filter', function () {
+        $.ajax({
+            method: 'get',
+            url: '/HouseKeeping/UpdateHouseKeepingStatus/RoomStatusDetails',
+            datatype: 'html',
+            success: function (htmlContent) {
+                $('#area-roomDetails').html('');
+                $('#area-roomDetails').html(htmlContent);
+                $('#RoomStatusCategoryId').val(2);
+                RoomStatusCatChange($('#RoomStatusCategoryId').val());
+                $('#room-number-from').val('');
+                $('#room-number-to').val('');
+                $('.floor-number-checkbox').prop('checked', false);
+                calculateWellHeightOnPageLoad();
+                CheckEachRoomSpecialDetail();
+            },
+        })
+    });
+
+    function calculateWellHeightOnPageLoad()
+    {
+        $('.well').each(function (index, eachWell) {
+            changeWellHeight(eachWell);
+        })
+    }
+
+    function changeWellHeight(well) {
+        var numberOfRows = $(well).find('.front-card .row-height').length;
+        var wellHeight = 25 * numberOfRows + 2 + 'px';
+        var cardHeight = 25 * numberOfRows + 'px';
+        $(well).css('height', wellHeight, 'important');
+        $(well).find('.front-card').css('height', cardHeight, 'important');
+        $(well).find('.back-card').css('height', cardHeight, 'important');
+    }
+
+</script>
+

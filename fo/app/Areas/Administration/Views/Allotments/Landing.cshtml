@@ -1,0 +1,618 @@
+﻿
+@{
+    ViewBag.Title = "Allotments";
+}
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .select2-container--default .select2-results > .select2-results__options {
+        overflow-x: hidden;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        FillGrid();
+
+        setInterval(function () {
+            $('.border-container-2').height($('.border-container-1').height());
+        }, 1000);
+
+    });
+
+    $('body').on('change', '.allotementType', function (e) {
+
+        var type = $('.allotementType:checked').val();
+        if (type == "SIN") {
+            $('#MultipleDateRange').hide();
+            $('#SingleDateRange').fadeIn();
+        } else {
+            $('#SingleDateRange').hide();
+            $('#MultipleDateRange').fadeIn();
+        }
+    });
+
+    // show form --------------------------------
+    $('body').on('click', '.showForm', function (e) {
+        $.ajax({
+            url: '/administration/allotments/form',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+
+        });
+    });
+
+    // show grid --------------------------------
+
+    $('body').on('click', '.showGrid', function (e) {
+        FillGrid();
+    });
+
+
+    // save --------------------------------------
+    $('body').on('submit', '#allotment', function (e) {
+        debugger;
+        var type = $('.allotementType:checked').val();
+        e.preventDefault();
+
+        var objCategoryWiseAllotments = [];
+        var objSelectedDate = [];
+        var objSelectedDateRanges = [];
+
+        $('#tblAllotments .data-row').each(function (index, item) {
+            var RoomCategoryId = $(item).find('.data-RoomCategoryId').html();
+            var RoomCategoryName = $(item).find('.data-RoomCategoryName').html();
+            var NoOfRooms = $(item).find('.data-NoOfRooms').html();
+            var From = $(item).find('.data-FromDate').html();
+            var To = $(item).find('.data-ToDate').html();
+            objCategoryWiseAllotments.push({ RoomCategoryId: RoomCategoryId, RoomCategoryName: RoomCategoryName, NoOfRooms: NoOfRooms, FromDate: From, ToDate: To });
+        });
+
+        //$('#tblDateRanges .dateRange-data-row').each(function (index1, item1) {
+        //    var FromDate = $(item1).find('.data-FromDate').html();
+        //    var ToDate = $(item1).find('.data-ToDate').html();
+        //    objSelectedDateRanges.push({
+        //        FromDate: FromDate,
+        //        ToDate: ToDate
+        //    });
+        //});
+
+        $('.days-checkBoxes:checked').each(function (index, item) {
+            var Day = $(item).val();
+            objSelectedDate.push({ Day: Day, IsSelected: true });
+        });
+        //--commented by stehani to skip day wise insert on 2023-06-06---
+        //if (objSelectedDate.length == 0 && type == "MUL") {
+        //    ShowWarningMessage('No days selected');
+        //    return;
+        //}
+        //else
+        if (objCategoryWiseAllotments.length == 0) {
+            ShowWarningMessage('No allotments added');
+            return;
+        }
+        //else if (objSelectedDateRanges.length == 0) {
+        //    ShowWarningMessage('No date range added');
+        //    return;
+        //}
+        else {
+
+            var obj = {};
+            obj.Id = $('#Id').val();
+            obj.AgentId = $('#AgentId').val();
+            obj.MarketId = $('#MarketId').val();
+            obj.Name = $('#Name').val();
+            obj.FromDate = $('#FromDate').val();
+            obj.ToDate = $('#ToDate').val();
+            obj.ReservationStatusId = $('#ReservationStatusId').val();
+            obj.AllotmentDetails = objCategoryWiseAllotments;
+            obj.SelectedDays = objSelectedDate;
+            obj.AllotmentType = $('.allotementType:checked').val();
+            obj.ReleasePeriodDays = $('#ReleasePeriodDays').val();
+            obj.SelectedDateRanges = objSelectedDateRanges;
+            obj.RemindDays = $('#RemindDays').val();
+
+            if ($('.allotementType:checked').val() == "SIN") {
+                obj.FromDate = $('#SingleDate').val();
+                obj.ToDate = $('#SingleDate').val();
+            }
+
+            if ($('#IsActive:checked').val() == 1) {
+                obj.IsActive = true;
+            } else {
+                obj.IsActive = false;
+            }
+
+            debugger
+            $.ajax({
+                url: '/administration/Allotments/save',
+                dataType: 'json',
+                data: obj,
+                method: 'POST',
+                success: function (response) {
+                    if (response.startsWith('ERR-')) {
+                        ShowErrorMessage(response.replace("ERR-", ""));
+                    } else {
+                        ShowSuccessMessage('Record has been saved successfully.');
+                        FillGrid();
+                    }
+
+                }
+
+            });
+        }
+
+
+    });
+
+
+    // fill grid -----------------------------------
+    function FillGrid() {
+        var gridId = "#existingSeasonGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/administration/allotments/selectforgrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+
+            }
+
+        });
+    }
+
+
+
+
+
+    $('body').on('click', '#btnAddThisAllotment', function () {
+
+        var isOkayToAdd = true;
+        var RoomCategoryId = $('#RoomCategoryId').val();
+        var RoomCategoryName = $('#RoomCategoryId option:selected').text();
+        var NoOfRooms = $('#NoOfRooms').val();
+        var From = $('#FromDate').val();
+        var To = $('#ToDate').val();
+
+        if (RoomCategoryId == undefined || RoomCategoryId == null | RoomCategoryId == 0) {
+            ShowWarningMsg("No room category selected.");
+            isOkayToAdd = false;
+            return;
+        }
+
+        if (NoOfRooms == undefined || NoOfRooms == null | NoOfRooms == 0) {
+            ShowWarningMessage("No rooms added.");
+            isOkayToAdd = false;
+            return;
+        }
+
+        $('#tblAllotments .data-row').each(function (index, item) {
+            if ($(item).find('.data-RoomCategoryId').text() == RoomCategoryId && $(item).find('.data-FromDate').text() == From && $(item).find('.data-ToDate').text() == To) {
+                ShowWarningMessage("Room category already added to allotments.");
+                isOkayToAdd = false;
+                return;
+            }
+        });
+
+        if (isOkayToAdd) {
+            var obj = [];
+            obj.push({ RoomCategoryId: RoomCategoryId, NoOfRooms: NoOfRooms, RoomCategoryName: RoomCategoryName, From: From, To: To });
+            DrawAllotmentTable(obj);
+        }
+    });
+
+
+    //
+    $('body').on('click', '.btnDeleteAllotment', function () {
+        $(this).closest('.data-row').remove();
+    });
+
+    function DrawAllotmentTable(obj) {
+        //$('#tblMultipleOpeingHours .data-row').remove();
+        if (obj.length == 0) {
+            $('<tr class="data-row">' +
+                '<td colspan="4">No record found</td>' +
+                '</tr> ').appendTo($('#tblAllotments'));
+        } else {
+            $.each(obj, function (index, item) {
+                $('<tr class="data-row">' +
+                    '<td class="data-FromDate">' + item.From + '</td>' +
+                    '<td class="data-ToDate">' + item.To + '</td>' +
+                    '<td style="display:none;" class="data-RoomCategoryId">' + item.RoomCategoryId + '</td>' +
+                    '<td class="data-RoomCategoryName">' + item.RoomCategoryName + '</td>' +
+                    '<td class="data-NoOfRooms">' + item.NoOfRooms + '</td>' +
+                    '<td>' +
+                    '<button type="button" class="btn btn-danger btn-sm btnDeleteAllotment">' +
+                    '<span class="glyphicon glyphicon-trash"></span>' +
+                    '</button>' +
+                    '</td>' +
+                    '</tr>').appendTo($('#tblAllotments'));
+            });
+        }
+    }
+
+    $('body').on('click', '#btnAddThisDateRange', function () {
+        var DateRanges = [];
+        var From = $('#FromDate').val();
+        var To = $('#ToDate').val();
+
+        DateRanges.push({
+            FromDate: From,
+            ToDate: To
+        });
+        DrawDateRangeTable(DateRanges);
+    });
+
+    function DrawDateRangeTable(DateRanges) {
+        if (DateRanges.length == 0) {
+            $('<tr class="dateRange-data-row">' +
+                '<td colspan="4">No record found</td>' +
+                '</tr> ').appendTo($('#tblDateRanges'));
+        } else {
+            $.each(DateRanges, function (index, item) {
+                $('<tr class="dateRange-data-row">' +
+                    '<td class="data-FromDate">' + item.FromDate + '</td>' +
+                    '<td class="data-ToDate">' + item.ToDate + '</td>' +
+                    '<td>' +
+                    '<button type="button" class="btn btn-danger btn-sm btnDeleteDateRange">' +
+                    '<span class="glyphicon glyphicon-trash"></span>' +
+                    '</button>' +
+                    '</td>' +
+                    '</tr>').appendTo($('#tblDateRanges'));
+            });
+        }
+    }
+
+    $('body').on('click', '.btnDeleteDateRange', function () {
+        $(this).closest('.dateRange-data-row').remove();
+    });
+
+    $('body').on('click', '.MakeReservation', function (e) {
+
+        var id = $(this).data('id');
+        //var url = '/Reservation/ReservationList/RoomAllocation?reservationHeaderId=' + resheaderId + '&arrivalDate=' + arrivalDate + '&depatureDate=' + departureDate + '&resNo=' + resNo + '&guestName=' + guestName + '&Uuid=' + resUuid;
+        var url = '/Administration/Allotments/MakeReservation?id=' + id;
+
+        var title = 'Allotment Reservations';
+        openFullContent(title, url);
+    });
+
+
+    //btnAllotmentCheckAvailability
+
+    $('body').on('click', '#btnAllotmentCheckAvailability', function (e) {
+
+        /// $('#availabilityTable').removeAttr('hidden');
+        $('#availabilityTableBody').removeAttr('hidden');
+
+        var id = $('#btnAllotmentCheckAvailability').data('val');
+        var allotment = {};
+        allotment.Id = id;
+        allotment.FromDate = $('#allotmentFromDate').val();
+        allotment.ToDate = $('#allotmentToDate').val();
+
+        $.ajax({
+            url: '/Administration/Allotments/CheckAvailability',
+            // dataType: 'html',
+            data: { allotment: allotment },
+            method: 'POST',
+            success: function (response) {
+                if (response && response.AllotmentDetails) {
+                    response.AllotmentDetails.forEach(function (detail) {
+                        // Find row with matching RoomCategoryId
+                        var row = $('#availabilityTable tbody td[data-cat-id="' + detail.RoomCategoryId + '"]').closest('tr');
+
+                        // Update input value and set max
+                        var input = row.find('td:eq(2) input[type="number"]');
+                        input.val(detail.RoomBalance);
+                        input.attr('max', detail.RoomBalance);
+                    });
+                }
+
+            }
+
+        });
+    });
+
+
+    // $('body').on('click', '#btnSaveAllotmentReservation', function (e) {
+    $('body').on('submit', '#allotmentReservationForm', function (e) {
+        e.preventDefault();
+
+        let checkedCount = $('#availabilityTable input[type="checkbox"]:checked').length;
+
+        if (checkedCount === 0) {
+            e.preventDefault();
+            ShowWarningMessage("Please select at least one room category.");
+        } else {
+
+            // SelectedGuest
+            var SelectedGuest = {
+                Id: 0,
+                FirstName: $('#groupName').val(),
+                LastName: $('#groupName').val(),
+                Email: 'TBA@TBA.COM',
+                ContactNo: 'TBA',
+                NICPassport: 'TBA',
+                SalutationId: 1,
+                CountryId: $('.AllotmentCountryId').val(),
+                NationalityId: 1025,
+                VipLevelId: 0
+            }
+
+            // selectedRooms
+            var selectedRooms = [];
+
+            $('#availabilityTable tbody tr').each(function () {
+                var $row = $(this);
+
+                //console.log($row);
+
+                // find checkbox in this row
+                var $chk = $row.find('input[type="checkbox"]');
+
+                //console.log($chk);
+
+                if ($chk.is(':checked')) {
+                    var catId = $row.find('td[data-cat-id]').data('cat-id');      // RoomCategoryId
+                    var noOfRooms = $row.find('#allotmentNoOfRooms input').val(); // NoOfRooms
+
+                    // build your object
+                    var eachselectedRoom = {
+                        RoomCategoryId: catId,
+                        RoomTypeId: 1, // you can map it however you want
+                        NoOfRooms: noOfRooms,
+                        RateCodeHeaderId: $('#allotmentRateCodeHeaderId').val(),
+                        MealPlanId: $('#allotmentMealPlanId').val(),
+                        IsPromotion: false // assume Promo is a boolean you have elsewhere
+                    };
+
+                    //console.log(eachselectedRoom);
+
+                    selectedRooms.push(eachselectedRoom);
+                }
+            });
+
+            // SelectedStay
+
+            var diff = parseInt($('#allotmentToDate').val(), 10) - parseInt($('#allotmentFromDate').val(), 10);
+
+            var SelectedStay = {
+                CheckIn: $('#allotmentFromDate').val(),
+                CheckOut: $('#allotmentToDate').val(),
+                NoOfNights: diff,
+                Adults: $('#allotmentNoOfAdults').val(),
+                Kids: $('#allotmentNoOfKids').val(),
+                Infants: 0,
+                CountryId: $('#allotmentCountryId').val(),
+                IsFullCottage: false,
+                ReservationType: 'S'
+            }
+
+            // SelectedOtherDetails
+
+            var SelectedOtherDetails = {
+                CompanyId: $('#allotmentAgentId').val(),
+                MarketId: $('#allotmentMarketId').val(),
+                BookingSourceId: 1,
+                SegmentId: $('#allotmentSegmentId').val(),
+                VisitPurposeId: $('#allotmentVisitPurposeId').val(),
+                VoucherNo: '',
+                TourNo: '',
+                StatusId: 3,
+                SalesPersonId: $('#allotmentSalesPersonId').val(),
+                SalesContactNo: '',
+                ArriveForMealId: 3,
+                DepartuerAfterMealId: 1,
+                ExpectedArrivalTime: $('#allotmentFromDate').val(),
+                ExpectedDepartureTime: $('#allotmentToDate').val(),
+                Remark: '',
+                GuestPaymentMode: 1,
+                PackageHeaderId: 1,
+                IsBillPaymentFromLKR: true
+            }
+
+            // ReservationRoomCountDetails
+
+            var ReservationRoomCountDetails = [];
+            //var RoomCountJson = {};
+
+            $('#availabilityTable tbody tr').each(function () {
+                debugger;
+                var $row = $(this);
+
+                // checkbox in this row
+                var $chk = $row.find('input[type="checkbox"]');
+
+                if ($chk.is(':checked')) {
+                    var catId = $row.find('td[data-cat-id]').data('cat-id');      // RoomCategoryId
+                    var catName = $row.find('td[data-cat-id]').text().trim();     // RoomCategoryName
+                    var noOfRooms = $row.find('#allotmentNoOfRooms input').val();
+
+                    //alert(noOfRooms);
+
+                    // loop for number of rooms entered
+                    for (var i = 1; i <= noOfRooms; i++) {
+                        debugger;
+                        var RoomCountJson = {
+                            RoomCatId: catId,
+                            RoomTypeId: 1,
+                            AdultCount: $('#allotmentNoOfAdults').val(),
+                            ChildCount: $('#allotmentNoOfKids').val()
+                        };
+
+                        ReservationRoomCountDetails.push(RoomCountJson);
+
+                    }
+                }
+            });
+
+            // SelectedRoomsWithRates
+            var selectedRoomsWithRates = [];
+
+            $('#availabilityTable tbody tr').each(function () {
+                var $row = $(this);
+                var $chk = $row.find('input[type="checkbox"]');
+
+
+                if ($chk.is(':checked')) {
+                    var catId = $row.find('td[data-cat-id]').data('cat-id');      
+                    var noOfRooms = $row.find('#allotmentNoOfRooms input').val(); 
+
+                    var ReservationRooms = {
+                        RoomCategoryId: catId,
+                        RoomTypeId: 1,
+                        CurrencyCode: 'LKR',
+                        RoomRate: 0,
+                        RateCodeHeaderId: $('#allotmentRateCodeHeaderId').val(),
+                        MealPlanId: $('#allotmentMealPlanId').val(),
+                        IsPromotion: false 
+                    };
+
+                    selectedRoomsWithRates.push(ReservationRooms);
+                }
+            });
+
+            var reservation = {
+                SelectedGuest: SelectedGuest,
+                SelectedRooms: selectedRooms,
+                SelectedStay: SelectedStay,
+                SelectedOtherDetails: SelectedOtherDetails,
+                ReservationRoomCountDetails: ReservationRoomCountDetails,
+                //RemarkTypeWiseRemarks: remarkJSONArray,
+                SelectedRoomsWithRates: selectedRoomsWithRates
+            };
+
+            console.log(reservation);
+
+            var IsApproveAsTentative = $('#ApproveAsTentative').val();
+            var IsApproveVoucherNumberDuplication = $('#ApproveVoucherNumberDuplication').val();
+            var IsCustomRate = $('#isChangeRoomRateCheckBox').is(':checked') ? 1 : 0;
+            var bookingStatusId = 3;
+            var AllotmentHeaderId = $('#hiddenAllotmentHeaderId').val();
+
+            $.ajax({
+                url: '/Administration/Allotments/SaveReservation',
+                // dataType: 'html',
+                data: { reservationWrapper: reservation, IsApproveAsTentative: IsApproveAsTentative, IsApproveVoucherNumberDuplication: IsApproveVoucherNumberDuplication, IsCustomRate: IsCustomRate, bookingStatusId: bookingStatusId, AllotmentHeaderId: AllotmentHeaderId },
+                method: 'POST',
+                success: function (response) {
+                    //alert(response);
+
+                    if (response.toString().startsWith('ERR-')) {
+                        ShowErrorMessage(response.toString().replace("ERR-", ""));
+                    } else {
+                        ShowSuccessMessage('The reservation has been saved successfully.');
+                        //window.location.href = '/reservation/reservationlist/reservation/reservation/current';
+                        window.location.href = "/reservation/reservationlist/reservation/" + response;
+                        ClearForm();
+                    }
+                },
+                complete: function myfunction() {
+                    //window.location.href = '/reservation/reservationlist/reservation/reservation/current';
+                }
+
+            });
+        }
+    });
+
+    function ClearForm() {
+        $('#groupName').val('');
+        $('#allotmentNoOfAdults').val('');
+        $('#allotmentNoOfKids').val('');
+        $('.AllotmentNoOfRooms').val('');
+    }
+</script>
+

@@ -1,0 +1,347 @@
+﻿@model Scienter.HotelERP.Common.Domain.EventReservations
+
+<input type="hidden" id="id" class="id" value="@ViewBag.id" />
+<input type="hidden" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("FilesUploadTo")" name="" id="FilesUploadTo" />
+@if (ViewBag.id > 0)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group form-group-margin-override label-floating">
+                <label class="required control-label">Venue</label> <select name="venueId" id="venue" class="form-control" value="@Model.VenueCode" required>
+                    <option value="0">N/A</option>
+                </select>
+            </div>
+            <div class="form-group label-floating">
+                <label class="control-label">Date</label>
+                <div id="dobContainerInGuestProfiles" class="input-group date">
+                    <input autocomplete="off" class="form-control text-box single-line datePickerNoRestriction" maxlength="100" name="VenueDate" id="VenueDate" value="@Model.VenueDate" type="text">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group  label-floating">
+                <label class="control-label">Name</label>
+                <input class="form-control name" type="text" id="name" value="@Model.Name" />
+            </div>
+            <div class="form-group  label-floating">
+                <label class="control-label">Remark</label>
+                <input class="form-control remark" type="text" id="remark" value="@Model.Remarks" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            @*<div class="form-group  label-floating">
+                    <label class="control-label">Meal Time</label>
+                    <input class="form-control mealTime" type="text" id="mealTime"/>
+                </div>*@
+            <div class="form-group form-group-margin-override label-floating mealTime" id="mealTime">
+                <label class="required control-label">Meal Time</label>
+                <input type="hidden" class="mealTime" id="meal" value="@Model.MealTime" />
+                @{Html.RenderPartial("_TimeRange");}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group  label-floating">
+                <label class="control-label">Max Pax</label>
+                <input class="form-control maxPax" type="number" id="maxPax" value="@Model.MaxPaxs" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group form-group-margin-override label-floating timeStart" id="timeStart">
+                <label class="required control-label">Start</label>
+                <input type="hidden" class="timeStart" id="start" value="@Model.StartAt" />
+                @{Html.RenderPartial("_TimeRange");}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group form-group-margin-override label-floating timeEnd" id="timeEnd">
+                <label class="required control-label">End</label>
+                <input type="hidden" class="timeEnd" id="end" value="@Model.EndAt" />
+                @{Html.RenderPartial("_TimeRange");}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div style="margin-bottom:5px;">
+                <input type="file" name="DocumentUpload" id="DocumentUpload" accept="" value="@Model.Attachment"/>
+                <input type="hidden" name="docBytes" id="docBytes"  value="@Model.Attachment"/>
+            </div>
+        </div>
+        @*<div class="col-md-6">
+            <a class="btn btn-download" href="/Reservation/EventReservations/Download?DocumentUrl=@Model.Attachment" download target="_blank" style="padding:8px 10px;">
+                <i class="fa fa-download" style="font-size: 13px;"></i>
+            </a>
+</div>*@
+        </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-newEvent" style="padding-left: 0px;">
+                <input type="submit" id="btnSubmit" value="SAVE" class="btn btn-primary" />
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-deleteEvent" style="padding-left: 0px;">
+                <input type="submit" id="btnDelete" value="DELETE" class="btn btn-danger" />
+            </div>
+        </div>
+        @if (@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("FilesUploadTo") == "AzureBlobStorage")
+        {
+            @{
+                string imageUrl = "/Reservation/EventReservations/Download?DocumentUrl=" + Model.Attachment;
+                if (Model.Attachment.Contains("windows.net"))
+                {
+                    imageUrl = Model.Attachment;
+                }
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Attachment) && Model.Attachment.Length > 0)
+            {
+
+                <div class="col-md-4">
+                    <a class="btn btn-download" href="@imageUrl" download target="_blank" style="padding:8px 10px;">
+                        <i class="fa fa-download" style="font-size: 13px;"></i>
+                    </a>
+                </div>
+            }
+        }
+        else
+        {
+            @if (!string.IsNullOrEmpty(Model.Attachment) && Model.Attachment.Length > 0)
+            {
+                <div class="col-md-4">
+                    <a class="btn btn-download" href="/Reservation/EventReservations/Download?DocumentUrl=@Model.Attachment" download target="_blank" style="padding:8px 10px;">
+                        <i class="fa fa-download" style="font-size: 13px;"></i>
+                    </a>
+                </div>
+            }
+        }
+
+
+
+    </div>
+        }
+        else
+        {
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group form-group-margin-override label-floating">
+                    <label class="required control-label">Venue</label> <select name="venueId" id="venue" class="form-control" required>
+                        <option value="0">N/A</option>
+                    </select>
+                </div>
+                <div class="form-group label-floating">
+                    <label class="control-label">Date</label>
+                    <div id="dobContainerInGuestProfiles" class="input-group date">
+                        <input autocomplete="off" class="form-control text-box single-line datePickerNoRestriction" maxlength="100" name="VenueDate" id="VenueDate" type="text">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group  label-floating">
+                    <label class="control-label">Name</label>
+                    <input class="form-control name" type="text" id="name" />
+                </div>
+                <div class="form-group  label-floating">
+                    <label class="control-label">Remark</label>
+                    <input class="form-control remark" type="text" id="remark" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                @*<div class="form-group  label-floating">
+                    <label class="control-label">Meal Time</label>
+                    <input class="form-control mealTime" type="text" id="mealTime"/>
+                </div>*@
+                <div class="form-group form-group-margin-override label-floating mealTime" id="mealTime">
+                    <label class="required control-label">Meal Time</label>
+                    <input type="hidden" class="mealTime" id="meal" />
+                    @{Html.RenderPartial("_TimeRange");}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group  label-floating">
+                    <label class="control-label">Max Pax</label>
+                    <input class="form-control maxPax" type="number" id="maxPax" min="1" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group form-group-margin-override label-floating timeStart" id="timeStart">
+                    <label class="required control-label">Start</label>
+                    <input type="hidden" class="timeStart" id="start" />
+                    @{Html.RenderPartial("_TimeRange");}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group form-group-margin-override label-floating timeEnd" id="timeEnd">
+                    <label class="required control-label">End</label>
+                    <input type="hidden" class="timeEnd" id="end" />
+                    @{Html.RenderPartial("_TimeRange");}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div style="margin-bottom:5px;">
+                    <input type="file" name="DocumentUpload" id="DocumentUpload" accept="" />
+                    <input type="hidden" name="docBytes" id="docBytes" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-newEvent" style="padding-left: 0px;">
+                    <input type="submit" id="btnSubmit" value="SAVE" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+        }
+
+
+        <script>
+            $(document).ready(function () {
+                loadVenue();
+                $('.datePickerNoRestriction').daterangepicker({
+                    "showDropdowns": true,
+                    "singleDatePicker": true,
+                    //"maxDate": $('#hotelDate').val(),
+                    "showWeekNumbers": true,
+                    "showISOWeekNumbers": true,
+                    "opens": "right",
+                    "applyClass": "btn-primary",
+                    locale: {
+                        format: 'DD/MM/YYYY'
+                    }
+                });
+                $('#loadingPot').show();
+                $('#DateFilter').val('');
+            });
+
+            function loadVenue() {
+                $.ajax({
+                    url: '/reservation/eventreservations/venueselect',
+                    dataType: 'json',
+                    method: 'get',
+                    success: function (data) {
+                        $('#venue option').remove();
+                        $(data).each(function (index, item) {
+                            $('<option value="' + item.code + '" >' + item.description + '</optoin>').appendTo($('#venue'));
+                        });
+                    }
+                });
+            }
+
+            $('body').off('click', '#btnDelete').on('click', '#btnDelete', function (e) {
+
+                if (confirm('Are you sure want to delete this event?')) {
+                    var Id = $('#id').val();
+                    $.ajax({
+                        url: '/reservation/eventreservations/Delete?Id=' + Id,
+                        dataType: 'json',
+                        method: 'POST',
+                        success: function (data) {
+                            closeRightMenu();
+                            ShowSuccessMessage("Event removed successfully");
+                            LoadExistingEvents();
+                        }
+                    });
+
+                }
+            });
+
+            function readDocURL(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+
+                        var docBytes = e.target.result;
+                        $('#btnSubmit').attr('disabled', false);
+
+                        if (
+                            docBytes.toLowerCase().indexOf("pdf") < 0 &&
+                            docBytes.toLowerCase().indexOf("jpg") < 0 &&
+                            docBytes.toLowerCase().indexOf("jpeg") < 0 &&
+                            docBytes.toLowerCase().indexOf("png") < 0
+                        ) {
+                            ShowWarningMessage('Invalid file type. Only PDF, JPG, PNG files are allowed.');
+                            $('#btnSubmit').attr('disabled', true);
+                            docBytes = "";
+                        }
+                        $('#docBytes').val(docBytes);
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            $("#DocumentUpload").change(function (e) {
+                readDocURL(this);
+            });
+
+            $('body').off('click', '#btnSubmit').on('click', '#btnSubmit', function (e) {
+                e.preventDefault();
+                var obj = {}
+
+                if ($('#id').length > 0) { obj.Id = $('#id').val(); }
+                if ($('#name').length > 0) { obj.Name = $('#name').val(); }
+                if ($('#venueId').length > 0) { obj.VenueCode = $('#venue').val(); }
+                if ($('#timeStart #Timerange').length > 0) { obj.StartAt = $('#timeStart #Timerange').val(); }
+                if ($('#timeEnd #Timerange').length > 0) { obj.EndAt = $('#timeEnd #Timerange').val(); }
+                if ($('#mealTime #Timerange').length > 0) { obj.MealTime = $('#mealTime #Timerange').val(); }
+                if ($('#maxPax').length > 0) { obj.MaxPaxs = $('#maxPax').val(); }
+                if ($('#remark').length > 0) { obj.Remarks = $('#remark').val(); }
+                //if ($('#docBytes').length > 0) { obj.DocumentUrl = $('#docBytes').val(); }
+                if ($('#VenueDate').length > 0) { obj.VenueDate = $('#VenueDate').val(); }
+                obj.DocumentUrl = $('#docBytes').val();
+
+                if ($('#name').val() == undefined || $('#name').val() == "") {
+                    ShowWarningMessage('Please enter a name.');
+                }
+                else if ($('#maxPax').val() == undefined || $('#maxPax').val() == "") {
+                    ShowWarningMessage('Please select a max pax.');
+                }
+                //else if ($('#docBytes').val() == undefined || $('#docBytes').val() == "") {
+                //    ShowWarningMessage('Please upload a document.');
+                //}
+                else {
+                    console.log(obj);
+
+                    $.ajax({
+                        url: '/eventreservations/save',
+                        dataType: 'JSON',
+                        data: obj,
+                        beforeSend: function () {
+                            $('#btnSubmit').html('<i class="fa fa-refresh fa-spin" style="font-size:14px"></i>  Please wait ....');
+                            $('#btnSubmit').prop('disabled', true);
+                        },
+                        complete: function () {
+                            $('#btnSubmit').html('Save');
+                            $('#btnSubmit').prop('disabled', false);
+                        },
+                        method: 'POST',
+                        success: function (data) {
+                            if (data.startsWith('ERR-')) {
+                                ShowErrorMessage(data.replace("ERR-", ""));
+                            } else {
+                                ShowSuccessMessage('Record saved successfully.');
+                                closeRightMenu();
+                                LoadExistingEvents();
+                            }
+
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(error);
+                        }
+                    });
+                }
+            });
+
+        </script>

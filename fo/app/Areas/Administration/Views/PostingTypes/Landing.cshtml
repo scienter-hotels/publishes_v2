@@ -1,0 +1,254 @@
+﻿@{
+    ViewBag.Title = "Posting Types";
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                </div>
+                @Html.Partial("_Loading")
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+        FillGrid();
+    });
+    var CurrencyArr = new Array();
+    // show form --------------------------------
+    $('body').on('click', '.showForm', function (e) {
+        $.ajax({
+            url: '/administration/postingtypes/form',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+
+        });
+    });
+
+    // show grid --------------------------------
+
+    $('body').on('click', '.showGrid', function (e) {
+        FillGrid();
+    });
+
+
+    // save --------------------------------------
+    $('body').on('submit', '#postingTypes', function (e) {
+        if (CurrencyArr.length <= 0) {
+            ShowErrorMessage("Please add valid currency and amount.");
+            return false;
+        }
+
+        e.preventDefault(); 
+        var postingType = {
+            __RequestVerificationToken: $('__RequestVerificationToken').val(),
+            Id: $('#Id').val(),
+            Name: $('#Name').val(),
+            PostingCategoryId: $('#PostingCategoryId').val(),
+            ChargeCodeId: $('#ChargeCodeId').val(),
+            TaxGroupId: $('#TaxGroupId').val(),
+            DepartmentId: $('#DepartmentId').val(),
+            Price: $('#Price').val(),
+            Commission: $('#Commission').val(), 
+            AccountCode: $('#AccountCode').val(),
+            IsActive: $('#IsActive').prop("checked"),
+            IsFixedrate: $('#IsFixedrate').prop("checked"),
+            IsTaxInclusive: $('#IsTaxInclusive').prop("checked"),
+            Ispecialposting: $('#Ispecialposting').prop("checked"),
+            IsDisplayTaxSeperatlyInWalkinReport: $('#IsDisplayTaxSeperatlyInWalkinReport').prop("checked"),
+            PostingCurrencies: CurrencyArr,
+            Properties: selectedProperties
+        };
+        //if (selectedProperties.length > 0) {
+            $.ajax({
+                url: '/administration/postingtypes/save',
+                dataType: 'html',
+                data: postingType,
+                method: 'POST',
+                success: function (response) {
+                    ShowSuccessMessage('Record has been saved successfully.');
+                    FillGrid();
+                },
+                error: function () {
+                    ShowErrorMessage('Sorry, There is an error.');
+                }
+
+            });
+        //} else {
+        //    ShowErrorMessage('Please select at least one property to continue.');
+        //}
+    });
+
+
+    // fill grid -----------------------------------
+    function FillGrid() {
+        var gridId = "#existingPostingCategoryGrid"; // change this - relevent grid id
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/administration/postingtypes/selectforgrid',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                if ($('.grid-container').length > 0) {
+                    $('#contentLoadingArea #content').find($('.grid-container')).html('').fadeOut();
+                    $('#contentLoadingArea #content').find($('.grid-container')).html(response).fadeIn();
+                } else {
+                    $('#contentLoadingArea #content').html('').fadeOut();
+                    $('#contentLoadingArea #content').html(response).fadeIn();
+                }
+
+
+            }
+
+        });
+    }
+
+    // ADD button Click --------------------------------
+    $('body').off('click', '#btnAdd').on('click', '#btnAdd', function (e) {
+        e.preventDefault();
+        if ($('#Currency option:selected').val() == "") {
+            ShowErrorMessage("Select a valid value for currency .");
+            return false;
+        }
+        if ($('#DefaultAmount').val() == "") {
+            ShowErrorMessage("Enter valid amount value.");
+            return false;
+        }
+
+        var v = true;
+        $.each(CurrencyArr, function (index, item1) { 
+            if (item1['Id'] == $('#Currency option:selected').val()) { 
+                v = false;
+                return;
+            }
+        });
+        if (v != true) {
+            ShowErrorMessage("Currency already exists.");
+            return false
+        }
+
+        CurrencyArr.push({
+            Id: $('#Currency option:selected').val(),
+            //DefaultAmount: $('#DefaultAmount').val()
+            DefaultAmount: parseFloat($('#DefaultAmount').val().replace(/,/g, ''))
+        });
+
+        console.log(CurrencyArr);
+        
+        $('<tr>'
+            + '<td><button type="button" class="btn btn-danger btn-sm rowitemDelbtn"  CurrencyId=' + $('#Currency').val() + '> <span class="glyphicon glyphicon-remove"></span>  </button></td>'
+            + '<td>' + $('#Currency option:selected').attr('data-currency-code') + '</td>'
+            + '<td class="hidden hdnCurrencyId">' + $('#Currency option:selected').val() + '</td>'
+            + '<td class="hidden hdnDefaultAmount">' + $('#DefaultAmount').val() + '</td>'
+            + '<td class="formatNumber">' + $('#DefaultAmount').val() + '</td>'
+            + '</tr>').appendTo($('#tblCurrencies'));
+
+    });
+
+
+    // REMOVE button Click --------------------------------
+    $('body').on('click', '.rowitemDelbtn', function (e) {
+        debugger
+        $(this).closest('tr').remove();
+
+        // erase from array
+        for (var i = 0; i < CurrencyArr.length; i++) {
+            if (CurrencyArr[i]["Id"] == $(this).closest('tr').find('.hdnCurrencyId').html()) {
+                CurrencyArr.splice(i);
+            }
+        }
+        //console.log(CurrencyArr)
+
+    });
+
+
+    $('body').on('click', '.btnEdit', function (e) {
+        
+        $.ajax({
+            async: false,
+            url: '/administration/postingtypes/edit',
+            dataType: 'html',
+            data: { id: $(this).attr('data-id') },
+            method: 'POST',
+            success: function (response) {
+
+                $('#contentLoadingArea #content').html('').fadeOut();
+                $('#contentLoadingArea #content').html(response).fadeIn();
+            }
+
+        });
+
+        $.ajax({
+            async: false,
+            url: '/administration/postingtypes/SelectById',
+            dataType: 'json',
+            data: { Id: $(this).attr('data-id') },
+            method: 'POST',
+            success: function (data) {
+                console.log(data);
+                CurrencyArr = new Array();
+
+                $("#tblCurrencies").find("tr:gt(0)").remove();
+                $.each(data, function (index, item) { 
+                    $('<tr>'
+                        + '<td><button type="button" class="btn btn-danger btn-sm rowitemDelbtn"  CurrencyId=' + item.CurrencyId + '> <span class="glyphicon glyphicon-remove"></span>  </button></td>'
+                        + '<td>' + item.ISOCode + '</td>'
+                        + '<td class="hidden hdnCurrencyId">' + item.CurrencyId + '</td>'
+                        + '<td class="hidden hdnDefaultAmount ">' + item.Amount + '</td>'
+                        + '<td class="formatNumber">' + item.Amount + '</td>'
+                        + '</tr>').appendTo($('#tblCurrencies'));
+
+                    CurrencyArr.push({
+                        Id: item.CurrencyId,
+                        DefaultAmount: item.Amount
+                    })
+
+                });
+
+            }
+
+        });
+    });
+
+</script>
+
+

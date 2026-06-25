@@ -1,0 +1,170 @@
+﻿
+@{
+
+    ViewBag.Title = "Account Link";
+}
+
+<style>
+    .form-group-marging {
+        margin-top: 0px;
+    }
+    .card-content {
+        height: 520px !important;
+        /*min-height: 500px !important;*/
+    }
+
+    .card {
+        padding: 10px !important;
+    }
+    #loading {       
+        background: url('../../Images/spinner.gif') no-repeat center center;
+        position: absolute;
+        margin-top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 9999999;
+    }
+    .form-group {
+        /*margin-top: 2px !important;*/
+    }
+    .table thead tr th {
+        font-weight:bold!important;
+    }
+
+    .grid{
+        margin-top:10px;
+    }
+   
+  
+</style>
+
+<div class="card">
+    <div class="card-header" data-background-color="purple">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="title">
+                    @ViewBag.Title
+                    <hr class="visible-print" />
+                </h4>
+            </div>
+
+        </div>
+    </div>
+    <div class="card-content" id="contentLoadingArea">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Block Code *</label>
+                            <select class="form-control select2" id="BlockCodeCombo" required tabindex="1">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+
+                        <a href="#" data-href="" class="btn btn-sm btn-info call-popup-model" id="viewIntegrity" data-title="Check Integrity" data-width="1200" title="View UnAssigned Account Levels" style="margin-top:14px;" data-toggle="tooltip">
+                            <span> Check Integrity</span>
+                        </a>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group label-floating">
+                            <label class="control-label l1Name">Level 1</label>
+                            <select class="form-control select2" id="Level1ItemCombo" tabindex="2">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group label-floating">
+                            <label class="control-label l2Name">Level 2</label>
+                            <select class="form-control select2" id="Level2ItemCombo" tabindex="3">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group label-floating">
+                            <label class="control-label l3Name">Level 3</label>
+                            <select class="form-control select2" id="Level3ItemCombo" tabindex="4">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group label-floating">
+                            <label class="control-label l4Name">Level 4</label>
+                            <select class="form-control select2" id="Level4ItemCombo" tabindex="5">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Segment Code *</label>
+                            <select class="form-control select2" id="SegmentCombo" tabindex="6">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Account Code *</label>
+                            <select class="form-control select2" id="AccCodeCombo" tabindex="7">
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-right">
+                        <button type="button" class="btn btn-success btn-width-100px btn-shadow AddItemtoGrid-btn" style="margin-top:15px;width:200px;" tabindex="8">
+                            Save
+                        </button>
+                    </div>
+                </div>
+                <div class="row grid"> 
+                    <div class="col-md-12 table-responsive">
+                        <input type="text" id="searchby" onkeyup="SearchGrid()" placeholder="Search by any Column" title="Search by any Column">
+                        <div id="loading" class="well">                         
+                        </div>
+                        <div class="" style="max-height:250px; overflow-y:auto;">
+                            <table class="table table-striped" id="grid">
+                                <thead>
+                                    <tr>
+                                        <th class="col-md-1"></th>
+                                        <th class="heading1">Block</th>
+                                        <th class="heading2">Level 1 </th>
+                                        <th class="heading3">Level 2</th>
+                                        <th class="heading4 col-md-2">Level 3</th>
+                                        <th class="heading5">Level 4</th>
+                                        <th class="heading6">Department</th>
+                                        <th class="heading7">Account</th>
+                                    </tr>
+                                    @*<tr class="no-record">
+                                        <td colspan="4">No Records Found.</td>
+                                    </tr>*@
+                                </thead>
+                               <tbody>
+
+                               </tbody>
+                               
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" value="" id="hdnId" />
+<input type="hidden" value="" id="hdnSPName" />
+<script src="~/scripts/UI/Scienter.AccountLink.js"></script>
+
+

@@ -1,0 +1,169 @@
+﻿<div class="col-md-12">
+    <div class="row">
+        <div class="guest">
+            <input class="transport-header-id" type="hidden" id="transport-header-id" />
+        </div>
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6 guest">
+                    <div class="form-group label-floating form-control-margin">
+                        <label class="control-label">Room #</label>
+                        @{Html.RenderAction("GetInHouseRooms", "RoomDetails", new { area = "Administration", name = "InHouseRooms" });}
+                    </div>
+                </div>
+                <div class="col-md-6 guest">
+                    <div class="form-group label-floating form-control-margin">
+                        <label class="control-label">Reservation #</label>
+                        @{Html.RenderAction("ReservationCombo", "Reservations", new { area = "Reservation", name = "Reservations" });}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 guest">
+                    <div class="form-group label-floating inhouse-reservation-guest-select form-control-margin">
+                        <label class="control-label">Guest</label>
+                        @{Html.RenderAction("GuestSelectByReservation", "GuestProfiles", new { area = "Administration", name = "InHouseRooms" });}
+                    </div>
+                </div>
+                <div class="col-md-6 guest">
+                    <div class="form-group label-floating form-control-margin">
+                        <label class="control-label">Transfer Type</label>
+                        @{Html.RenderAction("TransferTypesCombo", "TransferTypes", new { area = "Administration", name = "Transfertype" });}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 guest">
+                    <div class="form-group label-floating form-control-margin">
+                        <label class="control-label">Transport Mode</label>
+                        @{Html.RenderAction("TransferModesCombo", "TransferModes", new { area = "Administration", name = "Transfermode" });}
+                    </div>
+                </div>
+                <div class="col-md-6 guest">
+                    <div class="form-group label-floating form-control-margin">
+                        <label class="control-label">Status</label>
+                        @{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { area = "Administration", name = "TransportStatus" });}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6 guest">
+                            <div class="input-group date form-group label-floating form-control-margin" id="datetimepicker1">
+                                <div id="requiredDateContainer" class='input-group date'>
+                                    <label class="control-label">Required Date</label>
+                                    <input type="text" class="form-control required-date" id="requiredDate" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group label-floating guest form-control-margin">
+                                <label class="control-label">Required Time</label>
+                                @{Html.RenderPartial("_TimeRange");}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 guest">
+                    <div class="form-group label-floating form-control-margin">
+                        <label class="control-label">Remarks</label>
+                        <input class="form-control remarks" id="remarks" type="text" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    $(function () {
+        $('.required-date').daterangepicker({
+            "showDropdowns": true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "singleDatePicker": true,
+            "opens": "right",
+            "applyClass": "btn-primary",
+            "minDate": $('#hotelDate').val(),
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        });
+
+        //$('.required-date').daterangepicker({
+        //    linkedCalendars: true,
+        //    "showWeekNumbers": true,
+        //    "alwaysShowCalendars": true,
+        //    singleDatePicker: true,
+        //    "minDate": $('#hotelDate').val(),
+        //    locale: {
+        //        format: 'DD/MM/YYYY'
+
+        //    }
+        //}
+
+    });
+
+    $('#Reservations').change(function () {
+        changeOnReservationHeaderChange($(this))
+        $('#InHouseRooms').change();
+    });
+
+    function changeOnReservationHeaderChange(option) {
+       
+        if ($(option).find(':selected').data('room-no') == -1) {
+            $('#InHouseRooms').val(0);
+        } else {
+            $('#InHouseRooms').val($(option).find(':selected').data('room-no'));
+        }
+    }
+
+    $('#InHouseRooms').change(function () {     
+        if ($('.guest #Reservations').val().length == 0 ) {
+            $('.guest #Reservations').val($('#InHouseRooms :selected').data('reservation-header-id'));
+        }
+        InHouseRoomChange(0);
+    })
+
+    function InHouseRoomChange(guestId) {
+       
+        var reservationHeaderId = $('#InHouseRooms :selected').data('reservation-header-id') === undefined ? $('.guest .reservation-headers').val() : $('#InHouseRooms :selected').data('reservation-header-id');
+        $.ajax({
+            method: 'get',
+            datatype: 'html',
+            url: '/administration/guestprofiles/GuestSelectByReservation?reservationId=' + reservationHeaderId,
+            success: function (htmlContent) {
+               
+                $('.guest .inhouse-reservation-guest-select').html('');
+                $('.guest .inhouse-reservation-guest-select').append('<label class="control-label">Guest</label>');
+                $('.guest .inhouse-reservation-guest-select').append(htmlContent);
+
+                if (guestId != 0) {
+                   
+                    $('.guest .guest-combo').val(guestId);
+                }
+            }
+        })
+    }
+
+    function ReservationChange(resId) {
+        $.ajax({
+            method: 'get',
+            datatype: 'html',
+            url: '/administration/guestprofiles/GuestSelectByReservation?reservationId=' + resId,
+            success: function (htmlContent) {
+                $('.guest .inhouse-reservation-guest-select').html('');
+                $('.guest .inhouse-reservation-guest-select').append('<label class="control-label">Guest</label>');
+                $('.guest .inhouse-reservation-guest-select').append(htmlContent);
+            }
+        })
+    }
+</script>

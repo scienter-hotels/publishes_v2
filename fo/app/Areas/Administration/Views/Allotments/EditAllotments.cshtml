@@ -1,0 +1,353 @@
+﻿@using Scienter.HotelERP.Common.Domain
+<style>
+    .form-group {
+        padding-bottom: 10px;
+        margin: 18px 0 0 0 !important;
+    }
+
+    #allotmentDetails tbody .form-group {
+        padding-bottom: 0px;
+        margin: -5px 0 0 0 !important;
+    }
+
+    #allotmentDetails tr td,th{
+        padding:3px 3px 8px 3px !important;
+    }
+
+    #allotmentDetails tr th {
+        padding: 6px !important;
+        background-color: #f2f2f2;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-bottom: 2px solid #ccc;
+    }
+
+
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            Edit Allotments 
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="hdnId" id="hdnId" />
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                    <div class="card card-bordered card-full grid-container" id="editAllotment">
+                        <div class="filteredGrid">
+                            <div class="row">
+                                <div class="form-group label-floating col-md-4">
+                                    <label class="control-label">Agent *</label>
+                                    <select name="agentId" id="agentId" class="form-control ">
+                                        <option value="" selected>-- Select --</option>
+                                        
+                                    </select>
+                                </div>
+                                <div class="form-group label-floating col-md-4">
+                                    <label class="control-label">Allotment *</label>
+                                    <select name="allotmentHeaderId" id="allotmentHeaderId" class="form-control "></select>
+                                </div>
+                                <div class="form-group label-floating col-md-2">
+                                    <button type="button" id="btnGridView" class="btn btn-primary" style="width:100%;"> <span class="glyphicon glyphicon-menu-hamburger" ></span>  View  </button>
+                                </div>
+                            </div>
+                            <div class="row allotmentDetailsContainer">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <div class="table-responsive" style="max-height:400px;overflow:auto;">
+                                            <table class="table table-striped"
+                                                   id="allotmentDetails">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th class="  text-primary">
+                                                            Allotment Date
+                                                        </th>
+                                                        <th class="  text-primary">
+                                                            Room Cat.
+                                                        </th>
+                                                        <th class="  text-primary text-center">
+                                                            # Rooms
+                                                        </th>
+                                                        <th class="  text-primary text-center">
+                                                            Room Balance
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+
+                                            </table>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-8">
+
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <input type="button" id="btnSaveAllotment" value="Save" style="width:100%;" class="btn btn-primary" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                                
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*chathuni*@
+<script>
+    $(document).ready(function () {
+        LoadCompaniesCombo();
+        $('.allotmentDetailsContainer').hide();
+    });
+
+
+    function LoadCompaniesCombo() {
+        //debugger;
+        $.ajax({
+            url: '/administration/allotments/LoadCompaniesForAllotment',
+            dataType: 'json',
+            success: function (data) {
+                if ($('#agentId').length > 0) {
+                    $('#agentId option').not(':first').remove();
+                    $('  <option class="agent" value="0">ALL</option>').appendTo($('#agentId'));
+                   
+                    $.each(data, function (index, type) {
+                        $(' <option class="agent" value="' + type.Id + '"> ' + type.Name + ' </option>').appendTo($('#agentId'));
+                    });
+                }
+            },
+            complete: function (data) {
+            }
+        });
+    }
+
+
+    function LoadAllotmentsCombo() {
+        debugger;
+        $.ajax({
+            url: '/administration/allotments/LoadAllotmentByAgent?agentId=' + $('#agentId option:selected').val(),
+            dataType: 'json',
+            success: function (data) {
+                if ($('#allotmentHeaderId').length > 0) {
+                    $('#allotmentHeaderId').html('');
+                    if (data.length > 0) {
+                        $.each(data, function (index, type) {
+                            $(' <option class="allotment" value="' + type.Id + '"> ' + type.Name + ' </option>').appendTo($('#allotmentHeaderId'));
+                        });
+                    } else {
+                        $('<option>', {
+                            value: '',
+                            text: 'Please select agent',
+                            disabled: true
+                        }).appendTo($('#allotmentHeaderId'));
+                    }
+                }
+            },
+            complete: function (data) {
+            }
+        });
+    }
+
+    $('body').on('change', '#agentId', function (e) {
+        $('.allotmentDetailsContainer').hide();
+        LoadAllotmentsCombo();
+    });
+
+    $('body').on('change', '#allotmentHeaderId', function (e) {
+        $('.allotmentDetailsContainer').hide();
+    });
+
+    function LoadAllotmentDetails() {
+        debugger;
+        var allotmentHeaderId = $('#allotmentHeaderId').val();
+        if (allotmentHeaderId==null) {
+            allotmentHeaderId = 0;
+        }
+        $('#allotmentDetails .data-row').remove();
+        $.ajax({
+            url: '/administration/allotments/LoadAllotmentDetailsToUpdate',
+            method: 'POST',
+            dataType: 'JSON',
+            data: {allotmentHeaderId: allotmentHeaderId },
+            beforeSend: function () {
+            },
+            complete: function () {
+            },
+            success: function (data) {
+                if (data.length == 0) {
+                    $('<tr class="data-row"><td colspan="4">No Record Found</td></tr>').appendTo($('#allotmentDetails tbody'));
+                    return;
+                }
+
+                $.each(data, function (index, item) {
+
+                    $('<tr class="tb-tnx-item data-row">' +
+                        '<td>' +
+                        '<input type="checkbox" name="isAllotmentChecked" class="form-control isAllotmentChecked" style="height:20px; width:20px !important;" id="isAllotmentChecked" value="' + item.AllotmentDetailId + '" />' +
+                        '</td>' +
+                        '<td>' + item.AllotmentDate + '</td>' +
+                        '<td>' + item.RoomCategory + '</td>' +
+                        '<td class="text-right">' + item.NoOfRooms + '</td>' +
+                        '<td>' +
+                        '<input type="number" name="roomBalance" class="form-control text-right roomBalance" id="roomBalance" disabled value="'+item.RoomBalance+'" />'+
+                        '</td>' +
+                        '</tr>').appendTo($('#allotmentDetails tbody'));
+                });
+            },
+            error: function () {
+                ShowErrorMessage('There is an error');
+            }
+        });
+    }
+
+    $('body').on('click', '#btnGridView', function (e) {
+        $('.allotmentDetailsContainer').show();
+        LoadAllotmentDetails();
+    });
+
+    $('body').on('change', '.isAllotmentChecked', function () {
+        var row = $(this).closest('tr');
+        var roomBalanceField = row.find('.roomBalance');
+
+        if ($(this).prop('checked')) {
+            roomBalanceField.prop('disabled', false);
+        } else {
+            roomBalanceField.prop('disabled', true); 
+        }
+    });
+
+    $('body').on('click', '#btnSaveAllotment', function (e) {
+        e.preventDefault();
+
+        var allotmentHeaderId = $('#allotmentHeaderId').val();
+        var allotments = [];
+        var hasInvalidRoomBalance = false; 
+
+        $('.isAllotmentChecked:checked').each(function () {
+            var row = $(this).closest('tr');
+            var allotmentDetailId = $(this).val();
+            var roomBalance = row.find('.roomBalance').val().trim();
+
+           
+            var roomBalanceValue = parseFloat(roomBalance);
+
+            if (!roomBalance) {
+                hasInvalidRoomBalance = true;
+                row.find('.roomBalance').addClass('error-field');
+                ShowWarningMessage('Please add room balance.');
+                return false;
+            } else if (isNaN(roomBalanceValue) || roomBalanceValue < 0) {
+                hasInvalidRoomBalance = true;
+                row.find('.roomBalance').addClass('error-field');
+                ShowWarningMessage('Room balance cannot be negative.');
+                return false;
+            }
+
+            allotments.push({
+                AllotmentHeaderId: allotmentHeaderId,
+                AllotmentDetailId: allotmentDetailId,
+                RoomBalance: roomBalanceValue
+            });
+        });
+
+        if (hasInvalidRoomBalance) {
+            return;
+        }
+
+        $.ajax({
+            url: '/administration/allotments/EditAllotmentRoomBalance',
+            dataType: 'JSON',
+            data: { headers: allotments },
+            method: 'POST',
+            success: function (data) {
+                if (data === 'OK') {
+                    ShowSuccessMessage('Allotment details updated successfully.');
+                    ClearAllotmentDetails();
+                } else {
+                    ShowErrorMessage(data.replace('ERR-', ''));
+                }
+            }
+        });
+    });
+
+
+
+    //$('body').on('click', '#btnSaveAllotment', function (e) {
+    //    e.preventDefault();
+
+    //    var allotmentHeaderId = $('#allotmentHeaderId').val(); 
+    //    var allotments = [];
+    //    var roomBalance = 0;
+    //    $('.isAllotmentChecked:checked').each(function () {
+    //        var row = $(this).closest('tr');
+    //        var allotmentDetailId = $(this).val(); 
+    //        roomBalance = row.find('.roomBalance').val(); 
+
+           
+    //        allotments.push({
+    //            AllotmentHeaderId: allotmentHeaderId,
+    //            AllotmentDetailId: allotmentDetailId,
+    //            RoomBalance: roomBalance
+    //        });
+    //    });
+
+
+    //    if (!roomBalance) {
+    //        ShowWarningMessage('Please add room balance.');
+
+    //    }
+
+
+    //    $.ajax({
+    //        url: '/administration/allotments/EditAllotmentRoomBalance',
+    //        dataType: 'JSON',
+    //        data: { headers: allotments},
+    //        method: 'POST',
+    //        success: function (data) {
+    //            if (data === 'OK') {
+    //                ShowSuccessMessage('Allotment details updated successfully.');
+    //                ClearAllotmentDetails();
+    //            } else {
+    //                ShowErrorMessage(data.replace('ERR-', ''));
+    //            }
+    //        }
+    //    });
+        
+      
+    //});
+
+
+    function ClearAllotmentDetails() {
+        $('.isAllotmentChecked').prop('checked', false);
+        $('.isAllotmentChecked').closest('tr').find('.roomBalance').prop('disabled', true); 
+    }
+
+    
+</script>
+
+
+
+
+
+
+

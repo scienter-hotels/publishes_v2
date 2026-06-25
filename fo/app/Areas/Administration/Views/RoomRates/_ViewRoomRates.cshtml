@@ -1,0 +1,63 @@
+﻿
+@model Scienter.HotelERP.Common.Domain.RoomRate
+<style>
+    .rateValue {
+        padding: 2px;
+    }
+
+        .rateValue:hover {
+            color: #ff0000;
+            font-size: 12px;
+            font-weight: bold;
+        }
+</style>
+<div style="width:930px; height:500px; overflow:scroll;">
+    <div class="row" style="margin-top: -72px;z-index: 5;   position: absolute;width: 900px;">
+        <div class="col-md-4 col-md-offset-8">
+            <div class="form-group form-group-margin-override label-floating">
+                <label class="required control-label">Company</label>
+                @{Html.RenderAction("CompaniesCombo", "Companies", new { area = "Administration", name = "data-companyid", requiered = true });}
+
+            </div>
+        </div>
+    </div>
+    @Html.Raw(Model.RoomRatesHtml)
+    @*<div class="row">
+        <div class="col-md-2" style="padding-top:23px;">
+            <input type="submit" id="btnApplyRateandCompany" value="APPLY" class="btn btn-primary do-not-disable" style="width:100%" />
+        </div>
+    </div>*@
+</div>
+
+
+<script>
+    $('body').on('change', '#data-companyid', function () {
+        var hasCompanyAssignedToARateCode = false;
+        if ($('#data-companyid').val() != undefined && $('#data-companyid').val() != null && $('#data-companyid').val() != "") {
+            $('.data-rate-code-tr').hide();
+            $('.data-rate-code-tr').each(function () {
+                var currRow = $(this);
+                var d = currRow.attr('data-companies').split(',');
+
+                for (var i = 0; i < d.length; i++) {
+                    if (d[i].length > 0 && d[i] == $('#data-companyid').val()) {
+                        currRow.fadeIn();
+                        hasCompanyAssignedToARateCode = true;
+                    }
+                }
+            });
+        } else {
+            $('.data-rate-code-tr').show();
+        }
+
+        if (hasCompanyAssignedToARateCode == false) {
+            $('.data-rate-code-tr').show();
+        }
+
+    });
+
+    $('body').on('click', '#btnApplyRateandCompany', function (e) {
+        var companyId = $('#data-companyid').val();
+        //$('#btnApplyRateandCompany').attr('data-href', "/reservation/reservations/makereservation?companyId=" + companyId + "");
+    });
+</script>

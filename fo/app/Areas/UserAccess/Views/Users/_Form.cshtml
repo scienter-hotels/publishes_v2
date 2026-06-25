@@ -1,0 +1,91 @@
+﻿ @model Scienter.HotelERP.Common.Domain.User
+
+@{
+    ViewBag.Title = "Create / Edit";
+}
+
+<div class="col-md-12">
+
+    <form id="user">
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+            <input type="hidden" value="@Model.Password" name="UserPassword" id="UserPassword" />
+            <input type="hidden" value="@Model.Salt" name="Salt" id="Salt" />
+
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="form-group label-floating">
+                        <label class="control-label">User Name *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Username" name="Username" type="text" value="@Model.Username" required>
+                    </div>
+
+                    <div class="form-group label-floating">
+                        <label class="control-label">Employee *</label>
+                        @{Html.RenderAction("StaffDetailsCombo", "StaffDetails", new { area = "Administration", name = "EmployeeId", requiered = true, value = Model?.EmployeeId });}
+                    </div>
+
+                    <div class="form-group label-floating">
+                        <label class="control-label">
+                      Password *
+                        </label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Password" name="Password" type="password"
+                               required>
+                    </div>
+
+                    @*@if (Model.Id >= 1)
+                    {
+                        <div class="form-group label-floating">
+                            <label class="control-label">New Password *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="NewPassword" name="NewPassword" type="password" value="@Model.NewPassword" required>
+                        </div>
+                    }*@
+
+                    <div class="form-group label-floating">
+                        <label class="control-label">
+                            Confirm @if (Model.Id >= 1)
+                            { @("New");
+                            }
+                            else
+                            { @("");
+                            } Password *
+                        </label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="ConfirmPassword" name="ConfirmPassword" type="password" value="@Model.ConfirmPassword" required>
+                    </div>
+
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsActive)
+                            IsActive
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.CheckBoxFor(model => model.IsLocked)
+                            IsLocked
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsLocked, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                        &nbsp;
+                        <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+
+<script>
+
+ 
+</script>

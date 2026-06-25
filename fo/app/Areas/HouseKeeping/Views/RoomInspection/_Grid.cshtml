@@ -1,0 +1,127 @@
+﻿<style>
+    .form-group {
+        padding-bottom:0px;
+        margin-top:0px;
+    }
+    .user-update-remark {
+        margin-top: 0px !important;
+        padding: 0px;
+    }
+</style>
+<div class="row" style="height:400px; overflow-y:scroll">
+    <div class="table-responsive">
+        <table id="existingBedTypeGrid" class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="col-md-1 text-primary">
+                        Room
+                    </th>
+                    <th class="col-md-1 text-primary">
+                        Room Type (HK)
+                    </th>
+                    <th class="col-md-1 text-primary">
+                        Room Type (ACT)
+                    </th>
+                    <th class="col-md-1 text-primary">
+                        Room Status (HK)
+                    </th>
+                    <th class="col-md-1 text-primary">
+                        Room Status (ACT)
+                    </th>
+                    <th class="col-md-1 text-primary">
+                        Remark (HK)
+                    </th>
+                    <th class="col-md-1 text-primary">
+                        Remark (Inspection)
+                    </th>
+                    <th class="col-md-1 text-primary">
+                        Housekeeper
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody class="inspection-grid-tbody">
+                @*<tr class="inspection-tr">
+                    <td> Room # </td>
+                    <input class="roominspectionId" type="hidden" value="" />
+                    <input class="" type="hidden" value="" />
+                    <input class="" type="hidden" value="" />
+                    <td> RT </td>
+                    <td> RT </td>
+                    <td> RS </td>
+                    <td> ARS </td>
+                    <td> Remark </td>
+                    <td> <input type="text" value="test" class="user-update-remark form-control" /> </td>
+                    <td>User</td>
+                </tr>*@
+            </tbody>
+
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-10"></div>
+    <div class="col-md-2">
+        <input type="button" class="btn btn-primary" id="save-grid-data" value="Save"/>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $($('#RoomInspectionId option')[1]).prop('selected', true);
+        LoadGridData($('#RoomInspectionId').val(), $('.inspection-date').val());
+    })
+
+    $('body').on('change', '#RoomInspectionId', function () {
+        LoadGridData($('#RoomInspectionId').val(), $('.inspection-date').val());
+    })
+
+    $('body').on('change', '.inspection-date', function () {
+        LoadGridData($('#RoomInspectionId').val(), $('.inspection-date').val());
+    })
+
+    function LoadGridData(inspectionTime, inspectDate) {   
+        var iT = parseInt(inspectionTime);
+        $.ajax({
+            url: '/HouseKeeping/RoomInspection/GetGridData',
+            dataType: 'JSON',
+            method: 'GET',
+            data: { inspectionTimeId: iT, inspectionDate: inspectDate},
+            success: function (data) {     
+                $('.inspection-grid-tbody').html(''); 
+
+                $.each(data, function (index, item) { 
+                    $('.inspection-grid-tbody').append( 
+                        '<tr class="inspection-tr">' +
+                        '<td> ' + item.RoomName+' </td>'+
+                        '<input class="roominspectionId" type="hidden" value="' + item.Id +'" />'+
+                        '<input class="sameRoomType" type="hidden" value="' + item.SameRoomType +'" />'+
+                        '<input class="sameRoomStatus" type="hidden" value="' + item.SameRoomStatus +'" />'+
+                        '<td> ' + item.RoomType +' </td>'+
+                        '<td> ' + item.ActualRoomType +' </td>'+
+                        '<td> ' + item.RoomStatus +' </td>'+
+                        '<td> ' + item.ActualRoomStatus +' </td>' +
+                        '<td> ' + item.Remark +' </td>'+
+                        '<td> <input type="text" value="' + item.UpdateRemark +'" class="user-update-remark form-control" /> </td>'+
+                        '<td>' + item.CreatedUser +'</td>'+
+                        '</tr>'
+                    );  
+                })
+
+                TrColorOnChanges();
+            }
+        });   
+    }
+
+    function TrColorOnChanges() {    
+        $.each($('.inspection-tr'), function (index, tr) {   
+            var sameRoomType = $($(tr).find('.sameRoomType')).val();
+            var sameRoomStatus = $($(tr).find('.sameRoomStatus')).val();
+
+            if (sameRoomType == 'false' || sameRoomStatus == 'false') {
+                $('.' + tr.className + ' td').css('background-color', '#ffeaa7');
+            }
+        })
+        
+    }
+</script>

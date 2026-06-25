@@ -1,0 +1,281 @@
+﻿<input type="hidden" name="RatecodeheaderId" id="PromotionRatecodeheaderId" value="@ViewBag.ratecodeheaderId" />
+<input type="hidden" name="Arrival" id="PromotionArrival" value="@ViewBag.arrival" />
+<input type="hidden" name="Departure" id="PromotionDeparture" value="@ViewBag.departure" />
+<input type="hidden" name="reservation-applicable-promotions" class="hidden-stringify-json-ApplicablePromotions" />
+<input type="hidden" name="reservationHeaderId" id="ClickedReservationHeaderId" value="@ViewBag.reservationHeaderId" />
+
+<style>
+
+    #discountTable th {
+        font-weight: bold;
+        padding: 3px 8px;
+    }
+
+    #discountTable td {
+        padding: 3px 8px;
+    }
+
+    #discountPopup {
+        margin-right: -25px;
+    }
+
+    #discountPopup label {
+        color: #000;
+    }
+
+    #discountPopup .form-group {
+        padding-bottom: 10px;
+        margin: -10px 0;
+    }
+
+    #discountPopup .form-group input, .form-group select {
+        font-size: 12px;
+    }
+
+    #discountPopup .the-fieldset {
+        padding-bottom: 15px;
+    }
+
+    #discountPopup .btn.btn-sm {
+        padding: 2px 8px;
+        font-size: 11px;
+    }
+</style>
+
+<div class="row" id="discountPopup">
+    <div class="col-md-12">
+
+        <div class="row" style="margin-bottom: 15px;">
+            <div class="col-md-12">
+                <fieldset class="the-fieldset">
+                    <legend class="the-legend">Add Discount</legend>
+
+                    <div class="row" style="margin-top:-30px;">
+                        <div class="col-md-6">
+                            <label class="control-label">
+                                Discount Type
+                            </label>
+                            <select name="DiscountTypeId" id="DiscountTypeId" class="select2 form-control" required>
+                                <option value="0" selected>--Select--</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="control-label">
+                                Approved By
+                            </label>
+                            <select name="ApproverId" id="ApproverId" class="select2 form-control" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:-30px;">
+                        <div class="col-md-4">
+                            <label class="control-label">
+                                Room Charge
+                            </label>
+                            <input type="number" class="form-control" name="ChargeAmount" id="ChargeAmount" step="any" value="@ViewBag.baseamount" disabled/>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="control-label">
+                                Discount By
+                            </label>
+                            <select name="DiscountById" id="DiscountById" class="select2 form-control" required>
+                                <option value="V" selected>Value</option>
+                                <option value="P">Percentage</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="control-label discountedMethod" id="discountedMethod">
+                                Value
+                            </label>
+                            <input type="number" class="form-control" name="DiscountPortion" value="" id="DiscountPortion" step="any" />
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:-30px;">
+                        <div class="col-md-10">
+                            <label class="control-label">
+                                Remark
+                            </label>
+                            <input type="text" class="form-control" name="DisountRemark" id="DisountRemark" value="" />
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary" id="addDiscountTosGrid" style="margin-top: 15px;">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+        <div class="row">
+                <div class="col-md-12">
+                    <fieldset class="the-fieldset">
+                        <legend class="the-legend">Added Discounts</legend>
+                        <div class="table-responsive" style="max-height:450px; overflow:auto;">
+                            <table class="table table-striped table-sm" id="discountTable">
+                                <thead>
+                                    <tr>
+                                        <th>Discount Type</th>
+                                        <th>Approver</th>
+                                        <th>By</th>
+                                        <th class="text-right">Value</th>
+                                        <th class="text-right">Discounted Amount</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <button class="btn btn-success closeModel" id="addDiscounts" disabled> Apply Selected Discount(s)</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        LoadActivatedDiscounts();
+        LoadAuthorizedUsersToApproveDiscount();
+    });
+
+    function LoadActivatedDiscounts() {
+        var ratecodeheaderId = $('#PromotionRatecodeheaderId').val();
+        var arrival = $('#PromotionArrival').val();
+        var departure = $('#PromotionDeparture').val();
+
+        $.ajax({
+            url: '/Reservation/Reservations/SelectActivatedDiscounts?ratecodeheaderId=' + ratecodeheaderId + '&arrival=' + arrival + '&departure=' + departure,
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $.each(data, function (index, type) {
+                    $(' <option value="' + type.Id + '" data-discount-amount="' + type.DiscountAmount + '" data-discount-percentage="' + type.DiscountPercentage+'"> ' + type.Name + ' </option>').appendTo($('#DiscountTypeId'));
+                });
+            }
+        });
+    }
+
+    function LoadAuthorizedUsersToApproveDiscount() {
+        $.ajax({
+            url: '/Reservation/Reservations/SelectAuthorizedUsersToApproveDiscount',
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $.each(data, function (index, user) {
+                    $(' <option value="' + user.Id + '"> ' + user.Username + ' </option>').appendTo($('#ApproverId'));
+                });
+            }
+        });
+    }
+
+    $(document).off('change', '#DiscountById').on('change', '#DiscountById', function () {
+        var discounttype = $("#DiscountTypeId option:selected").val();
+        if (discounttype > 0) {
+
+            var discountvalue = $("#DiscountTypeId option:selected").attr('data-discount-amount');
+            var discountpercentage = $("#DiscountTypeId option:selected").attr('data-discount-percentage');
+            var discountmethod = $("#DiscountById option:selected").text();
+
+            $("#discountedMethod").text(discountmethod);
+
+            if (discountmethod =="Value") {
+                $('#DiscountPortion').val(discountvalue);
+            } else {
+                $('#DiscountPortion').val(discountpercentage);
+            }
+
+        } else {
+            ShowWarningMessage('Please select a discount type to continue.');
+        }
+       
+    });
+
+    $(document).off('click', '#addDiscountTosGrid').on('click', '#addDiscountTosGrid', function () {
+        var entereddiscounttype = $("#DiscountTypeId option:selected").text();
+        var entereddiscountby = $("#DiscountById option:selected").text();
+        var enteredvalue = $('#DiscountPortion').val();
+        var baseamount = $('#ChargeAmount').val();
+        var discountedamount = 0;
+        var enteredapprover = $("#ApproverId option:selected").text();
+
+        var entereddiscounttypeId = $('#DiscountTypeId').val();
+        var entereddiscountapproverId = $('#ApproverId').val();
+        var entereddiscountremark = $('#DisountRemark').val();
+
+        if (entereddiscountby == "Percentage") {
+            discountedamount = ((baseamount / 100) * enteredvalue);
+        } else {
+            discountedamount = enteredvalue;
+        }
+
+        if ($("#DiscountTypeId option:selected").val() > 0) {
+            if ($('#DiscountPortion').val() == " " || $('#DiscountPortion').val() == null || $('#DiscountPortion').val() <= 0) {
+
+                ShowWarningMessage('Please enter a discount amount/percentage to continue.');
+
+            } else {
+
+                $(`
+                   <tr class="added-discounts">
+                       <td class="added-discount-type-id hidden">${entereddiscounttypeId}</td>
+                       <td class="added-discount-approver-id hidden">${entereddiscountapproverId}</td>
+                       <td class="added-discount-approver-remark hidden">${entereddiscountremark}</td>
+                       <td class="added-discount-type">${entereddiscounttype}</td>
+                       <td class="added-discount-approver">${enteredapprover}</td>
+                       <td class="added-discount-by">${entereddiscountby}</td>
+                       <td class="text-right added-discount-value">${enteredvalue}</td>
+                       <td class="text-right added-discount-amount">${discountedamount}</td>
+                       <td class="text-right"><button class="btn btn-danger btn-sm delete-added-discount"><span class="glyphicon glyphicon-trash"></button></td>
+                   </tr>
+                `).appendTo('#discountTable tbody');
+            }
+        } else {
+            ShowWarningMessage('Please select a discount type to continue.');
+        }
+
+    });
+
+    $(document).off('click', '.delete-added-discount').on('click', '.delete-added-discount', function () {
+        $(this).closest('tr').remove();
+    });
+
+    
+    var addedDiscountStr   = '';
+
+    $(document).off('click', '#addDiscounts').on('click', '#addDiscounts', function () {
+        addedDiscountArray = [];
+
+        $('#discountTable .added-discounts').each(function (index, item) {
+
+            var addeddiscounttypeid = $(item).find('.added-discount-type-id').text();
+            var addeddiscountapproverid = $(item).find('.added-discount-approver-id').text();
+            var addeddiscountapproverremark = $(item).find('.added-discount-approver-remark').text();
+            var addeddiscountby = $(item).find('.added-discount-by').text();
+            var addeddiscountvalue = $(item).find('.added-discount-value').text();
+            var discountedamount = $(item).find('.added-discount-amount').text();
+
+            var dis = {
+                DiscountTypeId: addeddiscounttypeid,
+                DiscountApproverId: addeddiscountapproverid,
+                DiscountRemark: addeddiscountapproverremark,
+                DiscountMethod: addeddiscountby,
+                DiscountValue: addeddiscountvalue,
+                DiscountAmount: discountedamount
+            }
+            addedDiscountArray.push(dis);
+        });
+
+        addedDiscountStr = JSON.stringify(addedDiscountArray);
+
+        ShowSuccessMessage('Discount(s) Added Successfully.');
+
+        $('#grid-record-detail-model-close').click();
+    });
+</script>

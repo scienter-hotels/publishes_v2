@@ -1,0 +1,303 @@
+﻿@{
+    ViewBag.Title = "Allotment Chart";
+}
+<style>
+    .first-th {
+        width: 200px !important;
+        background-color: #2c3e50 !important;
+        color: #ffffff;
+        font-weight: normal !important;
+        font-size: 18px !important;
+    }
+
+    .date-th {
+        background-color: #34495e;
+        color: #ffffff;
+        width: 75px !important;
+        font-weight: normal !important;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    .t-data, .t-head {
+        /*padding-left:10px !important;*/
+        border: 1px solid black;
+        text-align: center;
+    }
+
+    .t-data {
+        padding: 5px;
+        /*color: #ffffff;*/
+        color: black;
+    }
+
+    .occupancy-th {
+        font-size: 10px !important;
+    }
+
+    .red-tr td:first-child {
+        background-color: #c0392b;
+    }
+
+    .red-tr td:not(:first-child) {
+        background-color: #e74c3c;
+    }
+
+    .blue-tr td:first-child {
+        background-color: #17c0eb;
+    }
+
+    .blue-tr td:not(:first-child) {
+        background-color: #17c0eb;
+    }
+
+    .yellow-tr td:first-child {
+        background-color: #F8EFBA;
+    }
+
+    .yellow-tr td:not(:first-child) {
+        background-color: #b8e994;
+    }
+
+    .green-tr td:first-child {
+        background-color: #16a085;
+    }
+
+    .green-tr td:not(:first-child) {
+        background-color: #1abc9c;
+    }
+
+    .ash-tr td:first-child {
+        background-color: #7f8c8d;
+    }
+
+    .ash-tr td:not(:first-child) {
+        background-color: #95a5a6;
+    }
+
+    .div-scroll-x {
+        max-height: 350px;
+        overflow-y: hidden;
+        overflow-x: scroll;
+    }
+
+        .div-scroll-x::-webkit-scrollbar {
+            margin-left: 10px;
+            height: 100px;
+            width: 12px;
+        }
+
+        .div-scroll-x::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+            border-radius: 0px;
+        }
+
+        .div-scroll-x::-webkit-scrollbar-thumb {
+            border-radius: 0px;
+            /*-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);*/
+            background-color: rgba(0,0,0,0.3);
+        }
+
+    .daily-occ-batch {
+        background-color: #e74c3c;
+        color: white;
+        border-radius: 10px;
+        padding: 5px;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="col-md-12" id="dateWiseDiv">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Date Range</label>
+                        <div class='input-group date' id='dateWiseCalender'>
+                            <input type='text' class="form-control dateRangePicker datepicker" name="daterange" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="" style="margin-top:10px; overflow-x:scroll; width: 1166px; white-space: nowrap;">
+                            <table id="house-status-summary" class=""></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(function () {
+        deubgger;
+        fromDate = getDateforHeader(parseDate($('.dateRangePicker').val().split('-')[0].trim()), 'withdash');
+        toDate = getDateforHeader(parseDate($('.dateRangePicker').val().split('-')[0].trim()).addDays(15), 'withdash');
+        GetInformationOnDateChange(fromDate, toDate);
+    });
+
+    $('body').on('click', '.applyBtn', function () {
+        $('#house-status-summary').html('');
+        GetInformationOnDateChange(ChangeDateFormatToMDY($('.dateRangePicker').val().split('-')[0].trim()), ChangeDateFormatToMDY($('.dateRangePicker').val().split('-')[1].trim()));
+    })
+
+    function GetInformationOnDateChange(fromDate, toDate) {
+        
+        $.ajax({
+            method: 'get',
+            url: '/reservation/reservations/HouseStatusSummaryJson?fromDate=' + fromDate + '&todate=' + toDate,
+            datatype: 'json',
+            success: function (houseStatusjson) {
+               
+                $('#house-status-summary').append('<tr class="first-tr"><th class="summary-th col-md-2 t-head" style="padding:0px">Summary</th></tr>');
+                
+                var dateDifference = datediff(parseDate(fromDate), parseDate(toDate));
+                console.log(dateDifference);
+                for (var i = 0; i < dateDifference; i++) {
+                    $('#house-status-summary .first-tr').append('<th class="other-th t-head">' + getDateforHeader(new Date(fromDate).addDays(i), 'th')
+                        + '<input type="hidden" value="' + getDateforHeader(new Date(fromDate).addDays(i), 'hid') + '" id="hidden-th-date" class="hidden-th-date" />'
+                        + '</th>');
+                    colClass = '';
+                }
+               
+                summaryInq = JSON.parse(houseStatusjson.HouseStatusSummaryJson);
+                $(summaryInq).each(function (index, eachRow) {
+                   
+                    $('#house-status-summary').append('<tr class=' + eachRow.ItemName.toLowerCase().replace('%', '').trim().replace(/\s/g, '-') + '><td class="t-data">' + eachRow.ItemName + '</td></tr>');
+                   
+                    var valueTd = '';
+                    var hiddenThDate, cellValue;
+                    $('th .hidden-th-date').each(function (index, eachHiddenDate) {
+                       
+                        hiddenThDate = $(eachHiddenDate).val();
+                        cellValue = eachRow[hiddenThDate];
+                        if (cellValue == null || cellValue == 'undefined') {
+                            cellValue = 0;
+                        }
+                        valueTd = valueTd + '<td class="t-data"> <span class="">' + cellValue + '</span> </td>';
+                    });
+                    var className = '.' + eachRow.ItemName.toLowerCase().replace('%', '').trim().replace(/\s/g, '-');
+                    $(className).append(valueTd);
+                });
+
+                TimeOutFunctionForGridDesign();
+            },
+            error: function (error, xhr, status) {
+                console.log(error);
+            }
+        });
+    }
+
+    function TimeOutFunctionForGridDesign() {
+        setTimeout(function () {
+            $('.summary-th').addClass('first-th')
+
+            $('.other-th').each(function (index, thisTh) {
+                $(thisTh).addClass('date-th');
+            })
+
+            $('#RoomAvailabilityGrid tr').not('.blank-tr').each(function (index, thisTr) {
+                $(thisTr).addClass('tr-height');
+                if (index > 4) {
+                    $(thisTr).addClass();
+                }
+            })
+
+            $('.daily-occupancy .t-data').each(function (index, eachTd) {
+                if (index == 0) {
+                    $(eachTd).text($(eachTd).text().split(' ')[1])
+                } else {
+                    var tdVal = parseFloat($(eachTd).find('span').text());
+                    if (tdVal > 70) {
+                        $(eachTd).find('span').addClass('daily-occ-batch');
+                    }
+                }
+
+            })
+
+            $('.first-tr').css('background-color', '#6a89cc', 'important');
+            $('.summary-th').css('background-color', '#86d0e6', 'important');
+            //$('.allocated').addClass('red-tr');
+            //$('.total-available-rooms').addClass('red-tr');
+            //$('.out-of-order').addClass('ash-tr');
+            //$('.daily-occupancy').addClass('green-tr');
+        }, 1000);
+    }
+
+    function getDateforHeader(date, thOrHidden)
+    {
+        var weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        var monthsArr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var returnDate;
+        var year, dayName, dayNumStr = '';
+
+        dayName = weekday[date.getDay()];
+
+        var dateVar = new Date(date).getDate();
+        if (dateVar < 10) {
+            dateVar = '0' + dateVar;
+        }
+        if (dateVar.toString().length <= 1) {
+            dayNumStr = '0' + dateVar.toString();
+        } else {
+            dayNumStr = dateVar.toString();
+        }
+
+        var month = new Date(date).getMonth() + 1
+        if (month.toString().length <= 1) {
+            month = '0' + month.toString();
+        }
+
+        year = new Date(date).getFullYear().toString();
+
+        if (thOrHidden == 'hid') {
+            returnDate = dateVar + '/' + month + '/' + year;
+        } else if (thOrHidden == 'th') {
+            returnDate = dayName + '<br />' + '<p style="font-size:24px">' + dayNumStr + '<p>' + monthsArr[new Date(date).getMonth()] + '/ ' + year;
+        } else if (thOrHidden == 'ywm') {
+            returnDate = monthsArr[new Date(date).getMonth()] + '/ ' + year;
+        } else if (thOrHidden == 'mon') {
+            returnDate = month;
+        } else if (thOrHidden == 'withdash') {
+            returnDate =  month + '/'+ dateVar + '/'  + year;
+        }
+
+        return returnDate;
+    }
+
+    // new Date("dateString") is browser-dependent and discouraged, so we'll write
+    // a simple parse function for U.S. date format (which does no error checking)
+    function parseDate(str) {
+        var mdy = str.split('/');
+        return new Date(mdy[2], mdy[0] - 1, mdy[1]);
+    }
+
+    // Take the difference between the dates and divide by milliseconds per day.
+    // Round to nearest whole number to deal with DST.
+    function datediff(first, second) {
+        return Math.round((second - first) / (1000 * 60 * 60 * 24));
+    }
+
+    Date.prototype.addDays = function(days) {
+        var dat = new Date(this.valueOf());
+        dat.setDate(dat.getDate() + days);
+        return dat;
+    }
+</script>

@@ -1,0 +1,1531 @@
+﻿
+@{
+                /**/
+
+                ViewBag.Title = "Make a Reservation";
+}
+<style>
+    .formWizardNumbers {
+        border-radius: 300px;
+        padding: 8px;
+        margin: 0 auto !important;
+        color: white;
+        width: 35px;
+        text-align: center;
+    }
+
+    .formWizardText {
+        margin-top: 15px;
+        color: #0a1324;
+        text-align: center;
+        font-size: 13px;
+        text-decoration: none;
+        text-transform: uppercase;
+        margin-left: 5px;
+    }
+
+    .step {
+        background-color: #f2f2f2;
+    }
+
+    .selectedStep {
+        background-color: #f2f2f2;
+    }
+
+    .stepSmallText {
+        font-size: 9px;
+        display: block;
+    }
+
+    #contentLoadingArea {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+
+    .reservation-detail-table {
+        height: 130px;
+        overflow-y: scroll;
+    }
+    /*.reservation-form-height {
+        height: 500px !important;
+    }*/
+    .card-content-override {
+        max-height: 600px !important;
+    }
+
+    .top-padding-0 {
+        padding-top: 0px !important;
+    }
+
+    .disabled {
+        cursor: not-allowed;
+    }
+
+    /*2024 - 03 - 27 - Anuradha-------------------------*/
+    .isCheckboxDisableTd {
+        border: none;
+    }
+    /*--------------------------------------------------*/
+</style>
+
+
+<div class="card">
+    <div class="card-header" data-background-color="purple">
+        <div class="row hidden-print">
+            <div class="col-md-8">
+                <h4 class="title">
+                    @ViewBag.Title
+                </h4>
+            </div>
+            <div class="col-md-4 text-right hidden-print">
+                <a class="btn btn-sm  btn-theme-color-2 showGrid" href="~/reservation/reservations/makereservation">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </a>
+                <a class="btn btn-sm  btn-theme-color-2 showForm" href="~/reservation/reservations/list">
+                    <span class="glyphicon glyphicon-th-list"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-content card-content-override top-padding-0">
+        <div class="row margin-top-20px reservation-form-height">
+            <div class="col-md-12">
+                <div class="row">
+
+
+
+                    <input type="hidden" name="From" id="FromDateId" class="FromDate" />
+                    <input type="hidden" name="reservationFor" id="reservationFor" />
+                    <input type="hidden" id="ToDateId" name="To" class="ToDate" />
+                    <input type="hidden" id="selectedcompanyid" name="companyid" class="selectedcompanyid" value="" />
+                    <input type="hidden" name="noOfNights" class="noOfNights" />
+                    <input type="hidden" name="reservation-details" class="hidden-stringify-json-reservation" />
+                    <input type="hidden" name="guest-details" class="hidden-stringify-json-guest" />
+                    <input type="hidden" name="guest-details" class="hidden-stringify-json-SelectedStay" />
+                    <input type="hidden" name="guest-OtherDetails" class="hidden-stringify-json-SelectedStay" />
+                    <input type="hidden" name="guest-rateCode" id="data-ratecode-details" data-rate-code data-room-category data-room-type data-meal-plan data-room-rate value="" />
+
+                    <div class="col-md-2 hidden-print">
+                        <div class="list-group" style="margin-top:20px;">
+                            <div class="text-center list-group-item" id="step01">
+                                <a href="javacript:preventDefault();">
+                                    <div class="formWizardNumbers theme-bg-color-2"> 1 </div>
+
+                                    <div class="formWizardText">
+                                        Select Stay <span class="glyphicon"></span>
+                                        <i class="stepSmallText" id="selectedStayRange"></i>
+                                    </div>
+
+                                </a>
+                            </div>
+                            <div class="text-center list-group-item" id="step02">
+                                <a href="javacript:preventDefault();">
+                                    <div class="formWizardNumbers theme-bg-color-2"> 2 </div>
+
+                                    <div class="formWizardText">
+                                        Guest Details <span class="glyphicon"></span>
+                                        <i class="stepSmallText"></i>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="text-center list-group-item" id="step03">
+                                <a href="javacript:preventDefault();">
+                                    <div class="formWizardNumbers theme-bg-color-2"> 3 </div>
+
+                                    <div class="formWizardText">
+                                        Other Details <span class="glyphicon"></span>
+                                        <i class="stepSmallText"></i>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="text-center list-group-item" id="step04">
+                                <a href="javacript:preventDefault();">
+                                    <div class="formWizardNumbers theme-bg-color-2"> 4 </div>
+
+                                    <div class="formWizardText">
+                                        Confirmation  <span class="glyphicon"></span>
+                                        <i class="stepSmallText"></i>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+
+
+
+                        <div class="" id="contentLoadingArea">
+
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="data-default-segment" value="@Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.DefaultSegment" />
+<input type="hidden" id="data-res-status" value="" />
+<input type="hidden" id="countryComboValue" value="" /> @*2024-03-27 - Anuradha*@
+
+@*<script src="~/Scripts/ui/common/scienter.grid2.js"></script>*@
+
+<script>
+    var RoomCountJson = [];
+    var appliedExtrasArray = []; ////
+    var addedDiscountArray = [];
+    // form load --------------------------------
+    $(document).ready(function () {
+        //$('#RateCodeHeaderId').val(rateCode)
+        //ScorelToTop60px();
+        $('.showForm').click();
+        $('#step01').find($("span")).addClass("glyphicon-record");
+        setTimeout(function () {
+            SelectRoomAvailability();
+            KeepAllowedStatusesForReservation();
+            $('.room-wise-counts').find("tr:gt(0)").remove();
+            ////var GuestStay = JSON.parse($('.hidden-stringify-json-SelectedStay').val());
+            //var dateRange = $('#selectedStayRange').html().replace(" ", "");
+            //var countryId = 1;
+            //var companyId = $('#data-companyid').val();
+            //var startDate = dateRange.split('-')[0];
+            //var endDate = dateRange.split('-')[1];
+            //var s = ChangeDateFormat(startDate);
+            //var e = ChangeDateFormat(endDate);
+            //var ratecode = $('#data-ratecode-details').attr('data-rate-code');
+            //LoadRateCodeCombo(countryId, companyId, ratecode, s, e);
+        }, 2000);
+        var resFor = $('#ReseFor').val();
+        $('#reservationFor').val(resFor);
+        
+    });
+
+    // SELECT ROOM AVAILABILITY --------------------------------
+
+    $('body').on('click', '#btnCheckRoomAvailability', function (e) {
+        if ($('#ReseFor').val() == 0 || $('#ReseFor').val() == 2) { SelectRoomAvailability(); }
+        RoomCountJson = [];
+        DrawRoomCountGrid();
+        $('#btnManageHeadCount').hide();
+    });
+
+    $('body').on('click', '.applyBtn', function (e) {
+        if ($('#ReseFor').val() == 0 || $('#ReseFor').val() == 2) { SelectRoomAvailability(); }
+
+    });
+
+    $('body').on('click', '.btnViewRates', function (e) {
+        if ($('#ReseFor').val() == 0 || $('#ReseFor').val() == 2) { SelectRoomAvailability(); }
+    });
+
+    function SelectRoomAvailability() {
+
+        $('#step01').find($("span")).removeClass("glyphicon-ok");
+
+        if ($('#FromDateId').val() == "undefined" || $('#ToDateId').val() == "undefined" || $('#FromDateId').val().length == 0 || $('#ToDateId').val().length == 0) {
+            //  ShowErrorMessage("Please select the stay to continue.");
+            $('#reservationDateRange').focus();
+        }
+        else {
+
+            var CountryId = $('#CountryCombo').val();
+            var From = $('#FromDateId').val();
+            var To = $('#ToDateId').val();
+        }
+
+        var fromFormatted = ChangeDateFormat(From);
+        var toFormatted = ChangeDateFormat(To);
+        var reservationStatusId = $('#ReservatonStatusId').val();
+        var reservationForId = $('#ReseFor').val();
+        //alert(reservationStatusId);
+        $.ajax({
+            url: '/reservation/reservations/GetAvailability',
+            dataType: 'html',
+            method: 'POST',
+            data: { CountryId: CountryId, fromDate: From, toDate: To, reservatonStatusId: reservationStatusId, reservationForId: reservationForId },
+            success: function (response) {
+
+                $('#roomAvailabilityContainer').html('').fadeOut();
+                $('#roomAvailabilityContainer').html(response).fadeIn();
+                setTimeout(function () {
+                    $('.btnViewRates').attr('data-href', "/Administration/RoomRates/ViewRoomRates?from=" + fromFormatted + "&to=" + toFormatted + "&countryId=" + CountryId + "");
+                    $('.btnViewRates').attr('data-title', "Room Rates from " + fromFormatted + " to " + toFormatted);
+                    $('.btnViewRates').attr('data-width', "1000");
+
+                }, 500);
+            },
+            error: function (error) {
+            }
+        });
+    }
+
+    $('body').on('change', '#ReservatonStatusId', function () {
+        SelectRoomAvailability();
+    });
+
+    $('body').on('change', '#ReservationType', function () {
+        if ($(this).val() == "D" || $(this).val() == "O") {
+            $('.dateRangePickerTwoDays').daterangepicker({
+                "showDropdowns": true,
+                "showWeekNumbers": true,
+                "showISOWeekNumbers": true,
+                "minDate": $('#hotelCurrentDate').val(),
+                "startDate": $('#hotelCurrentDate').val(),
+                "endDate": moment().add(1, 'days'),
+                "opens": "right",
+                "applyClass": "btn-primary",
+                "dateLimit": { "days": 0 },
+                "dateLimitMin": { "days": 0 },
+
+                locale: {
+                    format: 'DD/MM/YYYY'
+                }
+            }, function (start, end, label) {
+                $('input[name="From"]').val(start.format('DD/MM/YYYY'));
+                $('input[name="To"]').val(start.format('DD/MM/YYYY'));
+            });
+        }
+        else {
+            $('.dateRangePickerTwoDays').daterangepicker({
+                "showDropdowns": true,
+                "showWeekNumbers": true,
+                "showISOWeekNumbers": true,
+                "minDate": $('#hotelCurrentDate').val(),
+                "startDate": $('#hotelCurrentDate').val(),
+                "endDate": moment().add(1, 'days'),
+                "opens": "right",
+                "applyClass": "btn-primary",
+                //"dateLimit": { "days": 15 },
+                "dateLimitMin": { "days": 1 },
+                locale: {
+                    format: 'DD/MM/YYYY'
+                }
+            }, function (start, end, label) {
+                $('input[name="From"]').val(start.format('DD/MM/YYYY'));
+                $('input[name="To"]').val(end.format('DD/MM/YYYY'));
+            });
+        }
+
+    });
+
+    // STEP 01 --------------------------------
+    $('body').on('click', '.showForm', function (e) {
+        LoadStep01();
+    });
+
+    // STEP 01 NEXT --------------------------------
+    $('body').on('click', '#btnStep01Next', function (e) {
+
+        $("#btnStep01Next").prop('disabled', true).addClass("disabled");
+        e.preventDefault();
+        var reservationForId = $('#ReseFor').val();
+        $('#reservationFor').val(reservationForId);
+        RoomCountJson = [];
+
+        var allowReservation = $('.reservation-status').find(':selected').attr('data-isallowinmakereservation');
+        if (allowReservation == "True") {
+            $('#data-res-status').val($('.reservation-status').val());
+            //var d = new Date();
+            var fromDt = new Date($('#reservationDateRange').val().split('-')[0]);
+            var toDt = new Date($('#reservationDateRange').val().split('-')[1]);
+            var selectedRooms = 0;
+            //var isEnoughRooms = true;
+            var isRoomSelected = false;
+
+            $(".roomDetail tr").each(function () {
+
+                $(this).find('.room-count').each(function () {
+                    selectedRooms = selectedRooms + parseInt($(this).val());
+
+                });
+                if (selectedRooms > 0) {
+                    isRoomSelected = true;
+                }
+                if ($(this).find('.room-count').attr('data-max-availability') < selectedRooms && $(this).find('.room-count').attr('data-max-availability') >= 0) {
+                    isEnoughRooms = false;
+                }
+                selectedRooms = 0;
+
+            });
+
+            //Update Room Count Json//
+            $('.room-wise-counts tbody tr').each(function (index, eachRoom) {
+                RoomCountJson.push({
+                    RoomNo: parseInt($(eachRoom).find('.room-number').val()),
+                    RoomCatId: $(eachRoom).find('.room-category').val(),
+                    roomCatName: $(eachRoom).find('.room-category-name').val(),
+                    RoomTypeId: $(eachRoom).find('.room-type').val(),
+                    roomTypeName: $(eachRoom).find('.room-type-name').val(),
+                    AdultCount: $(eachRoom).find('#NoOfAdults').val(),
+                    ChildCount: $(eachRoom).find('#NoOfChildren').val(),
+                    InfantCount: $(eachRoom).find('#NoOfInfants').val()
+                })
+            })
+
+            console.log(RoomCountJson);
+            //----------------------//
+
+            //if ($('.reservation-status').val() == "1016") {
+            //    isEnoughRooms = true;
+            //}
+            //else if (!isEnoughRooms) {
+            //    ShowWarningMessage('Not enough rooms')
+            //}
+            if ($('#NoOfAdults').val() > 0) {
+                //Check if to and from dates are not same before proceed
+                if ($('#ReservationType').val() != "D" && fromDt.getTime() === toDt.getTime()) {
+                    ShowWarningMessage('Stay Dates Can Not Be Same!');
+                    $("#btnStep01Next").prop("disabled", false).removeClass("disabled");
+                }
+                else if ($('#ReseFor').val() == 0 || $('#ReseFor').val() == 2) { // Not Cottage
+
+                    if (!isRoomSelected) {
+                        ShowWarningMessage('Please enter room count.');
+                        $("#btnStep01Next").prop("disabled", false).removeClass("disabled");
+                    } else {
+                        LoadStep02();
+                        $("#btnStep01Next").prop("disabled", false).removeClass("disabled");
+                    }
+                } else {
+                    LoadStep02();
+                    $("#btnStep01Next").prop("disabled", false).removeClass("disabled");
+                }
+            } else {
+                ShowWarningMessage('Please enter room count!');
+                $("#btnStep01Next").prop("disabled", false).removeClass("disabled");
+            }
+        }
+
+        //2024 - 03 - 27 - Anuradha-------------------------
+        $('#countryComboValue').val($('#CountryCombo').val());
+        //--------------------------------------------------
+    });
+
+    $('body').off('click', '#data-new-guest').on('click', '#data-new-guest', function (e) {
+        $('#data-new-guest').prop('disabled', true).addClass("disabled");
+        var guestId = GetSelectedGuest();
+        if (guestId > -1) {
+            if (confirm('This guest profile already exists.Are you sure want to create a new profile?')) {
+                $('.guest-checkBox').each(function (index, element) {
+                    if ($(element).prop('checked')) {
+                        $(element).prop('checked', false);
+                        $(element).removeClass('selectdRecord');
+                        return false;
+                    }
+                });
+                if (ValidateGuest()) {
+                    CreateNewGuest();
+                    $('#data-new-guest').prop('disabled', true).addClass("disabled");
+                    ShowSuccessMessage('Guest successfully created');
+                    LoadStep03();
+                } else {
+                    $('#data-new-guest').prop('disabled', false).removeClass("disabled");;
+                }
+            } else {
+                $('#data-new-guest').prop('disabled', false).removeClass("disabled");;
+            }
+        } else {
+            if (ValidateGuest()) {
+                CreateNewGuest();
+                $('#data-new-guest').prop('disabled', true).addClass("disabled");
+                LoadStep03();
+            } else {
+                ShowWarningMessage('Please fill required information to proceed.');
+                $('#data-new-guest').prop('disabled', false).removeClass("disabled");
+            }
+        }
+    });
+
+    function CreateNewGuest() {
+        debugger;
+        var guestId = GetSelectedGuest();
+        SelectedGuest = {
+            Id: guestId,
+            FirstName: $('#FirstName').val(),
+            LastName: $('#LastName').val(),
+            Email: $('#Email').val(),
+            ContactNo: $('#ContactNo').val(),
+            NICPassport: $('#NICPassport').val(),
+            SalutationId: $('#SalutationId').val(),
+            CountryId: $('#CountryId').val(),
+            NationalityId: $('#NationalityId').val(),
+            VipLevelId: $('#VipLevelId').val()
+
+        }
+        //var selectedGuest = JSON.stringify(SelectedGuest);
+
+        var occupancyCount = JSON.stringify(RoomCountJson);
+
+        if (ValidateGuest()) {
+            $.ajax({
+                url: '/reservation/reservations/SaveGuest',
+                dataType: 'html',
+                data: { guestProfile: SelectedGuest, occupancyCount: occupancyCount },
+                method: 'POST',
+                beforeSend: function () {
+                    $('#data-new-guest').prop('disabled', true).addClass("disabled");
+                },
+                success: function (data) {
+                    $('.hidden-stringify-json-guest').val(data);
+                },
+                complete: function () {
+                    $('#data-new-guest').prop('disabled', false).removeClass("disabled");
+                },
+                error: function (error) {
+                }
+            });
+
+        } else {
+            ShowWarningMessage('Please fill required information proceed.');
+
+        }
+    }
+
+    function GetSelectedGuest() {
+        var guestId = -1;
+        $('.guest-checkBox').each(function (index, element) {
+            if ($(element).prop('checked')) {
+                guestId = $(element).val();
+                return false;
+            }
+        });
+        return guestId;
+    }
+
+    $('body').on('click', '#data-existing-guest', function (e) {
+
+        $("#data-existing-guest").prop('disabled', true).addClass("disabled");
+        if (ValidateGuest()) {
+            var guestId = GetSelectedGuest();
+
+            if (guestId > -1) {
+                LoadStep03();
+                $("#data-existing-guest").prop('disabled', true).addClass("disabled");
+            } else {
+                ShowWarningMessage('Please select a guest to proceed.');
+                $("#data-existing-guest").prop("disabled", false).removeClass("disabled");
+            }
+
+        } else {
+            ShowWarningMessage('Please fill required information to proceed.');
+            $("#data-existing-guest").prop("disabled", false).removeClass("disabled");
+        }
+    });
+
+    // STEP 03 NEXT -------------------------------------------------------------------------------
+    $('body').on('submit', '#reservationDetail', function (e) {
+        e.preventDefault(e);
+
+        if ($('#CompanyId').val() == undefined || $('#CompanyId').val() == "") {
+            ShowWarningMessage('Please select a company.');
+        }
+        else if ($('#RateCodeHeaderId').val() == undefined || $('#RateCodeHeaderId').val() == "") {
+            ShowWarningMessage('Please select a rate code.');
+        }
+        else if ($('#PackageHeaderId').val() == undefined || $('#PackageHeaderId').val() == "") {
+            ShowWarningMessage('Please select a package.');
+        }
+        else if ($('#MarketId').val() == undefined || $('#MarketId').val() == "") {
+            ShowWarningMessage('Please select a market.');
+        }
+        else if ($('#BookingSourceId').val() == undefined || $('#BookingSourceId').val() == "") {
+            ShowWarningMessage('Please select a booking source.');
+        }
+        else if ($('#GuestPaymentModes').val() == undefined || $('#GuestPaymentModes').val() == "") {
+            ShowWarningMessage('Please select a guest payment modes.');
+        }
+        else if ($('#VisitPurposeId').val() == undefined || $('#VisitPurposeId').val() == "") {
+            ShowWarningMessage('Please select a visit purpose.');
+        }
+        else if ($('#MealPlanId').val() == undefined || $('#MealPlanId').val() == "") {
+            ShowWarningMessage('Please select a meal plan.');
+        }
+        else if ($("#MealPlanId option:selected").val() == '') {
+            ShowWarningMessage("Please select the meal plan.");
+        }
+        else if ($('#ExpectedArrivalTimeId #Timerange').val() == undefined || $('#ExpectedArrivalTimeId #Timerange').val() == "") {
+            ShowWarningMessage('Please select arrival time.');
+        }
+        else if ($('#ExpectedDepartureTimeId #Timerange').val() == undefined || $('#ExpectedDepartureTimeId #Timerange').val() == "") {
+            ShowWarningMessage('Please select departure time.');
+        }
+        else {
+
+            var selectedRooms = [];
+            var ReservationDetails = JSON.parse($('.hidden-stringify-json-reservation').val());
+
+            var selectedRoomsWithRates = [];
+            var ReservationPostings = [];
+
+            $.each(ReservationDetails, function (index, eachDetail) {
+
+                var eachselectedRoom;
+                var catId = eachDetail.roomCategoryId;
+                var Promo = ''
+
+                if (eachDetail.IsPromotion == 'True') {
+                    Promo = 1
+                } else {
+                    Promo = 0
+                }
+
+                $.each(eachDetail.roomTypeArrineachTr, function (index, eachRoomDetail) {
+
+                    eachselectedRoom = {
+                        RoomCategoryId: catId,
+                        RoomTypeId: eachRoomDetail.roomTypeId,
+                        NoOfRooms: eachRoomDetail.count,
+                        RateCodeHeaderId: $('#RateCodeHeaderId').val(),
+                        MealPlanId: $('#MealPlanId').val(),
+                        IsPromotion: Promo
+                    }
+
+                    selectedRooms.push(eachselectedRoom);
+
+                });
+            });
+            //guestdetails object fill---------------------------------------------------------------------------------------------------
+            var GuestDetails = JSON.parse($('.hidden-stringify-json-guest').val());
+
+            SelectedGuest = {
+                Id: GuestDetails.Id,
+                FirstName: GuestDetails.FirstName,
+                LastName: GuestDetails.LastName,
+                Email: GuestDetails.Email,
+                ContactNo: GuestDetails.ContactNo,
+                NICPassport: GuestDetails.NICPassport,
+                SalutationId: GuestDetails.SalutationId,
+                CountryId: GuestDetails.CountryId,
+                NationalityId: GuestDetails.NationalityId,
+
+            }
+            //SelectedStay object fill----------------------------------------------------------------------------------------------------
+            var GuestStay = JSON.parse($('.hidden-stringify-json-SelectedStay').val());
+            SelectedStay = {
+                CheckIn: $('#FromDateId').val(),
+                CheckOut: $('#ToDateId').val(),
+                NoOfNights: $('.noOfNights').val(),
+                Adults: GuestStay.Adults,
+                Kids: GuestStay.Kids,
+                Infants: GuestStay.Infants,
+                CountryId: GuestStay.CountryId,
+                IsFullCottage: GuestStay.IsFullCottage,
+                ReservationType: GuestStay.ReservationType
+            }
+
+            console.log(SelectedStay);
+            //SelectedOtherDetails object fill----------------------------------------------------------------------------------------------------
+            var CompanyName = $('#CompanyId :selected').html();
+            var ReservationStatus = $('#StatusId :selected').html();
+
+            var IsBillPaymentFromLKR = "";
+
+            if ($('input.isBillPaymentFromLKR').is(':checked')) {                  /* Bangaldesh modification*/
+                IsBillPaymentFromLKR = "true"
+            } else {
+                IsBillPaymentFromLKR = "false"
+            }
+
+            var applicablePromotions = $('.hidden-stringify-json-ApplicablePromotions').val();
+
+            var SelectedOtherDetails = {
+                CompanyId: $('#CompanyId').val(),
+                MarketId: $('#MarketId').val(),
+                BookingSourceId: $('#BookingSourceId').val(),
+                SegmentId: $('#SegmentId').val(),
+                VisitPurposeId: $('#VisitPurposeId').val(),
+                VoucherNo: $('#VoucherNo').val(),
+                TourNo: $('#TourNo').val(),
+                StatusId: $('#StatusId').val(),
+                SalesPersonId: $('#SalesPersonId').val(),
+                SalesContactNo: $('#SalesPersonContact').val(),
+                ArriveForMealId: $('#ArriveMeal').val(),
+                DepartuerAfterMealId: $('#DeparturePlan').val(),
+                ExpectedArrivalTime: $('#ExpectedArrivalTimeId #Timerange').val(),
+                ExpectedDepartureTime: $('#ExpectedDepartureTimeId #Timerange').val(),
+                Remark: $('#RemarkId').val(),
+                GuestPaymentMode: $('#GuestPaymentModes').val(),
+                PackageHeaderId: $('#PackageHeaderId').val(),
+                IsBillPaymentFromLKR: IsBillPaymentFromLKR,
+                //ExpectedArrivalTimeString: $('#ExpectedArrivalTimeId #Timerange').val().split(' ')[1],
+                //ExpectedDepartureTimeString: $('#ExpectedDepartureTimeId #Timerange').val().split(' ')[1],
+                ApplicablePromotions: applicablePromotions
+            }
+
+            //Rooms with rate------------------------
+            $('.roomCategoryWise-roomTypeWise-details tbody tr').each(function () {
+                selectedRoomsWithRates.push({
+                    RoomCategoryId: $(this).find('input').data('custome-rate-roomcategoryid'),
+                    RoomTypeId: $(this).find('input').data('custome-rate-roomtypeid'),
+                    CurrencyCode: $(this).find('input').data('custome-rate-currency'),
+                    RoomRate: $(this).find('input').val()
+                });
+            });
+
+            ////Postings
+            //ReservationPostings.push({
+            //    ExtraPostingId : 1,
+            //    Quantity: 2,
+            //    Remark: "One",
+            //    ReferenceId01: 1,
+            //    ReferenceString01:"One"
+            //});
+
+            //ReservationPostings.push({
+            //    ExtraPostingId: 2,
+            //    Quantity: 4,
+            //    Remark: "Two",
+            //    ReferenceId01: 2,
+            //    ReferenceString01: "Two"
+            //});
+
+            var quickReservationData = {
+                SelectedGuest: SelectedGuest,
+                SelectedRooms: selectedRooms,
+                SelectedStay: SelectedStay,
+                SelectedOtherDetails: SelectedOtherDetails,
+                ReservationRoomCountDetails: RoomCountJson,
+                RemarkTypeWiseRemarks: remarkJSONArray,
+                SelectedRoomsWithRates: selectedRoomsWithRates,
+                ReservationPostings: appliedExtrasArray,
+                ReservationDiscounts: addedDiscountArray
+            };
+
+            var IsApproveAsTentative = $('#ApproveAsTentative').val();
+            var IsApproveVoucherNumberDuplication = $('#ApproveVoucherNumberDuplication').val();
+            var IsCustomRate = $('#isChangeRoomRateCheckBox').is(':checked') ? 1 : 0;
+
+            console.log(addedDiscountArray);
+
+            $.ajax({
+                url: '/reservation/reservations/SaveReservationNew',
+                dataType: 'json',
+                method: 'POST',
+                data: { quickReservation: quickReservationData, IsApproveAsTentative: IsApproveAsTentative, IsApproveVoucherNumberDuplication: IsApproveVoucherNumberDuplication, IsCustomRate:IsCustomRate },
+                beforeSend: function () {
+                    $("#btnStep03Next").prop('disabled', true).addClass("disabled");
+                },
+                success: function (data) {
+                    if (typeof data == 'string') {
+                        if (data.startsWith("Err")) {
+                            ShowWarningMessage(data.replace("Error -", ""));
+                        } else if (data.startsWith("104")) {
+                            var confirmationMsg = data.replace("104-", "")
+                            if (confirm(confirmationMsg)) {
+
+                                $('#ApproveAsTentative').val(1);
+
+                                setTimeout(function () {
+                                    $("#btnStep03Next").click();
+                                }, 1000);
+
+                            }
+                        } else if (data.startsWith("105")) {
+                            var confirmationMsg = data.replace("105-", "")
+                            if (confirm(confirmationMsg)) {
+
+                                $('#ApproveVoucherNumberDuplication').val(1);
+
+                                setTimeout(function () {
+                                    $("#btnStep03Next").click();
+                                }, 1000);
+
+                            }
+                        }
+                    }
+                    else {
+
+                        $('#step03').find($('.stepSmallText')).text('Comapny - ' + CompanyName + ' / Status - ' + ReservationStatus);
+                        $('#step03').find($("span")).removeClass("glyphicon-record");
+                        $('#step03').find($("span")).addClass("glyphicon-ok");
+                        $('#step03').find($(".formWizardNumbers")).removeClass("theme-bg-color-2");
+                        $('#step03').find($(".formWizardNumbers")).addClass("theme-bg-color-3");
+
+                        $('#step04').find($("span")).addClass("glyphicon-record");
+                        $('#contentLoadingArea').html('').fadeOut();
+                        $('#contentLoadingArea').html('Please wait ...</br>To open the confirmation you need to allow browser popup for this website.').fadeIn();
+                        //window.open('/Reporting/Report/ViewReport?ReportName=ReservationConfirmation&Uuid=' + data.Uuid+'&masterfile=0', "_blank", "toolbar=no");
+
+                        window.location.href = "/reservation/reservationlist/reservation/" + data.Uuid;
+                        console.log("Uuid");
+                        console.log(data.Uuid);
+
+                    }
+                },
+                complete: function () {
+                    $("#btnStep03Next").prop("disabled", false).removeClass("disabled");
+                },
+                error: function (error) {
+                }
+            });
+        }
+    });
+
+    // Step 01 Click --------------------------------
+    $('body').on('click', '#step01', function (e) {
+        LoadStep01();
+        $('.room-wise-counts').find("tr:gt(0)").remove();
+
+    });
+
+    // Step 02 Click --------------------------------
+    $('body').on('click', '#step02', function (e) {
+        LoadStep02();
+    });
+
+    // Step 03 Click --------------------------------
+    $('body').on('click', '#step03', function (e) {
+        LoadStep03();
+    });
+
+    // Step 04 Click --------------------------------
+    $('body').on('click', '#step04', function (e) {
+        LoadStep04();
+    });
+
+
+    function getRooms(filters) {
+
+        var rooms = { RoomsJson: RoomCountJson };
+
+        return rooms.RoomsJson.filter(function (o) {
+            return Object.keys(filters).every(function (k) {
+                return o[k].split(',').some(function (v) {
+                    return v === filters[k];
+                });
+            });
+        });
+    }
+
+
+
+    //Room Count-------------------------------------
+    $('body').on('input', '.room-count', function (e) {
+        var thisController = $(this);
+        var roomCategoryId = $(this).closest('tr').find('.hidden-room-cat-name').val();
+        var roomTypeId = $(this).siblings('.data-room-type').val();
+        var roomCatMaximumAvailability = $(this).data('max-availability');
+        var roomCountToCatAndType = $(this).val();
+        var roomsCountForFilteration = getRooms({ RoomTypeId: roomTypeId, RoomCatId: roomCategoryId }).length;
+
+        // by sachth--------------------------------------------------
+        var maxAvailability = $(this).attr('data-max-availability');
+        var currentRow = $(this).closest('tr');
+        var currrentRoomSelectedCount = 0;
+        $.each(currentRow.find('.room-count'), function (index, item) {
+            currrentRoomSelectedCount = currrentRoomSelectedCount + Number($(item).val());
+        });
+
+        if (maxAvailability < currrentRoomSelectedCount) {
+            $(thisController).val(Number($(thisController).val()) - 1);
+            ShowWarningMessage('You have selected maximum available rooms.');
+            return false;
+        } else {
+
+
+            // by sachth--------------------------------------------------
+            if ($(this).val() > roomCatMaximumAvailability) {
+                $(this).val(roomCatMaximumAvailability);
+            } else {
+                if (roomCountToCatAndType > roomsCountForFilteration) {
+
+                    ShowRoomCountGrid()
+                    var previousRoomNumberValue = typeof $('.room-wise-counts tbody tr:last').find('.room-number').val() === 'undefined' ? 0 : parseInt($('.room-wise-counts tbody tr:last').find('.room-number').val());
+                    var newRoomNumber = previousRoomNumberValue + 1;
+
+                    RoomCountJson.push({
+                        RoomNo: parseInt(newRoomNumber),
+                        RoomCatId: roomCategoryId,
+                        roomCatName: $(this).closest('tr').find('.hidden-room-cat-name').data('itrm-name'),
+                        RoomTypeId: roomTypeId,
+                        roomTypeName: $(this).siblings('.data-room-type').data('room-type-name'),
+                        AdultCount: $(this).data('max-adult-count'),
+                        ChildCount: $(this).data('max-child-count')
+                    });
+                } else {
+                    var deleteRoomNo = [];
+
+                    var rooms = getRooms({ RoomTypeId: roomTypeId, RoomCatId: roomCategoryId });
+                    deleteRoomNo.push(parseInt(rooms[0].RoomNo));
+
+                    DeleteRooms(deleteRoomNo);
+                    RoomCountGridSetRoomNumber();
+                }
+
+                DrawRoomCountGrid();
+                HideGrid();
+            }
+        }
+
+
+    });
+
+    function DrawRoomCountGrid() {
+        ShowRoomCountGrid();
+        $('.room-wise-counts tbody tr').remove();
+
+        $.each(RoomCountJson, function (index, roomDetails) {
+            $(
+                '<tr>' +
+                '<td class="padding-6px room-number-name"><input type="hidden" class="room-number" value="' + roomDetails.RoomNo + '" /> #' + roomDetails.RoomNo + '</td>' +
+                '<td class="padding-6px"><input type="hidden" class="room-category-name" value="' + roomDetails.roomCatName + '"/><input type="hidden" class="room-category" value="' + roomDetails.RoomCatId + '"/>' + roomDetails.roomCatName + '</td >' +
+                '<td class="padding-6px"><input type="hidden" class="room-type-name" value="' + roomDetails.roomTypeName + '"/><input type="hidden" class="room-type" value="' + roomDetails.RoomTypeId + '"/>' + roomDetails.roomTypeName + '</td>' +
+                '<td class="padding-6px"><input type="number" name="NoOfAdults" id="NoOfAdults" class="form-control form-control-padding-override" style="text-align: right; max="' + roomDetails.AdultCount + '" min="1" value="' + roomDetails.AdultCount + '" required /></td>' +
+                '<td class="padding-6px"><input type="number" name="NoOfChildren" id="NoOfChildren" class="form-control form-control-padding-override" style="text-align: right; max="' + roomDetails.ChildCount + '" min="1" value="0" required /> </td>' +
+                '<td class="padding-6px"><input type="number" name="NoOfInfants" id="NoOfInfants" class="form-control form-control-padding-override" style="text-align: right; max="' + roomDetails.InfantCount + '" min="1" value="0" required /> </td>' +
+                '<td class="padding-6px"><a class= "btn btn-danger btn-sm delete-room"><span class="glyphicon glyphicon-trash"></span></a></td>' +
+                '</tr >'
+            ).appendTo('.room-wise-counts tbody');
+        });
+
+        var rowCount = $('.room-wise-counts tbody tr').length;
+        if (rowCount > 0) {
+            $('#btnManageHeadCount').show();
+        } else {
+            $('#btnManageHeadCount').hide();
+        }
+
+        ScrollDown();
+    }
+
+    function ScrollDown() {
+        $(".room-count-fieldset").animate({ scrollTop: $('.room-wise-counts').height() }, '1000');
+    }
+
+    function RoomCountGridSetRoomNumber() {
+        var newRoomNumber = 0;
+        $.each(RoomCountJson, function (index, roomDetails) {
+            newRoomNumber++;
+            roomDetails.RoomNo = parseInt(newRoomNumber);
+        })
+    }
+
+    $('body').on('click', '.delete-room', function (e) {
+        e.preventDefault();
+        var rowNumber = [];
+        rowNumber.push(parseInt($(this).closest('tr').find('.room-number').val()));
+
+        var roomcat = $(this).closest('tr').find('.room-category').val();
+        var roomType = $(this).closest('tr').find('.room-type').val();
+
+        var td = $('.roomDetail').find('td[data-cat-id="' + roomcat + '"][data-type-id="' + roomType + '"]');
+        var roomCountVal = $(td).find('.room-count').val();
+        $(td).find('.room-count').val(roomCountVal - 1);
+
+        DeleteRooms(rowNumber);
+        RoomCountGridSetRoomNumber();
+        DrawRoomCountGrid();
+        HideGrid();
+    });
+
+    function HideGrid() {
+        if ($('.room-wise-counts tbody tr').length == 0) {
+            $('.room-count-fieldset').fadeIn();
+            $('.room-count-fieldset').addClass('hidden').fadeOut();
+        }
+    }
+
+    function ShowRoomCountGrid() {
+        if ($('.room-count-fieldset').hasClass('hidden')) {
+            $('.room-count-fieldset').removeClass('hidden').fadeOut();
+            $('.room-count-fieldset').fadeIn();
+        }
+    }
+
+    function DeleteRooms(rowNumber) {
+        var i = RoomCountJson.length;
+
+        while (i--) {
+            if (rowNumber.indexOf(RoomCountJson[i].RoomNo) != -1) {
+                RoomCountJson.splice(i, 1);
+            }
+        }
+    }
+
+
+    
+
+    //Date range date load and date diffrence-------------------------------------------------------------
+    $('body').on('change', '.dateRangePickerTwoDays', function (e) {
+        $('.FromDate').val($(this).val().split('-')[0].trim());
+        $('.ToDate').val($(this).val().split('-')[1].trim());
+        SetStayDates();
+    });
+
+    function SetStayDates() {
+        //alert($('.ToDate').val());
+        var FromDate = $('.FromDate').val();
+        var ToDate = $('.ToDate').val();
+        var companyId = $('#data-companyid').val();
+        var rateCode = $('#data-ratecode-details').attr('data-rate-code');
+
+        var resFor = $('#ReseFor').val();
+        $('#reservationFor').val(resFor);
+
+        $('#ArrivalDate').val(FromDate);
+        $('#DepartureDate').val(ToDate);
+        $('#selectedcompanyid').val(companyId);
+        $('#CompanyId').val(companyId);
+        $('#RateCodeHeaderId').val(rateCode);
+        $('#reservationFor').val(resFor);
+
+
+        FromDate_obj = new Date(ChangeDateFormat(FromDate));
+        ToDate_obj = new Date(ChangeDateFormat(ToDate));
+
+        var utc1 = Date.UTC(FromDate_obj.getFullYear(), FromDate_obj.getMonth(), FromDate_obj.getDate());
+        var utc2 = Date.UTC(ToDate_obj.getFullYear(), ToDate_obj.getMonth(), ToDate_obj.getDate());
+        var noOfNights = Math.floor((utc2 - utc1) / (1000 * 60 * 60 * 24))
+
+        $('.noOfNights').val(noOfNights);
+        $('#NoOfNights').val(noOfNights);
+    }
+
+
+    //Guest Search and Create ------------------------------------------------------
+    $('body').on('click', '#btnCreateGuest', function () {
+        $('.guest-checkBox').each(function (index, element) {
+            $(element).prop('checked', false);
+        });
+        FillGuestDetail();
+    });
+
+    function FillGuestDetail() {
+        if (ValidateGuest()) {
+            ShowSuccessMessage('Guest added successfully, click NEXT to continue.');
+        } else {
+            ShowWarningMessage('All fields are mandatory!');
+        }
+    }
+
+    function ValidateGuest() {
+        var isValid = true;
+        if ($('#SalutationId').val() == '') {
+            $('#SalutationId').focus();
+            isValid = false;
+        }
+        if ($('#FirstName').val() == '') {
+            $('#FirstName').focus();
+            isValid = false;
+        }
+        if ($('#LastName').val() == '') {
+            $('#LastName').focus();
+            isValid = false;
+        }
+
+        if ($('#CountryId').val() == '') {
+            $('#CountryId').focus();
+            isValid = false;
+        }
+        if ($('#NationalityId').val() == '') {
+            $('#NationalityId').focus();
+            isValid = false;
+        }
+
+        //if ($('#Email').val() == '') {
+        //    $('#Email').focus();
+        //    isValid = false;
+        //}
+
+        //if (!validateEmail($('#Email').val())) {
+        //    $('#Email').focus();
+        //    isValid = false;
+        //    ShowWarningMessage('Invalid email address.');
+        //}
+
+        if (!validateEmail($('#Email').val())) {
+            $('#Email').focus();
+            isValid = false;
+            ShowWarningMessage('Invalid email address.');
+        }
+
+        //if ($('#ContactNo').val() == '') {
+        //    $('#ContactNo').focus();
+        //    isValid = false;
+        //}
+
+        if (isValid) {
+            var guestId = -1;
+            $('.guest-checkBox').each(function (index, element) {
+                if ($(element).prop('checked')) {
+                    guestId = $(element).val();
+                    return false;
+                }
+            });
+
+            var SelectedGuest = {
+                Id: guestId,
+                SalutationId: $('#SalutationId').val(),
+                FirstName: $('#FirstName').val(),
+                LastName: $('#LastName').val(),
+                NICPassport: $('#NICPassport').val(),
+                CountryId: $('#CountryId').val(),
+                NationalityId: $('#NationalityId').val(),
+                Email: $('#Email').val(),
+                ContactNo: $('#ContactNo').val()
+            }
+
+            $('.hidden-stringify-json-guest').val(JSON.stringify(SelectedGuest));
+
+        }
+        else {
+            ShowWarningMessage('You have missed some mandatory fields.');
+        }
+        return isValid;
+    }
+
+
+    $('body').on('change', '#CompanyId', function () {
+        if ($(this).val() != undefined && $(this).val() != "") {
+            var GuestStay = JSON.parse($('.hidden-stringify-json-SelectedStay').val());
+            let countryId = GuestStay.CountryId;
+
+            var dateRange = $('#selectedStayRange').html().replace(" ", "");
+            var startDate = dateRange.split('-')[0];
+            var endDate = dateRange.split('-')[1];
+            var companyId = $(this).val();
+            var ratecodeId = $('#RateCodeHeaderId').val();
+            var s = ChangeDateFormat(startDate);
+            var e = ChangeDateFormat(endDate);
+            var ratecode = $('#data-ratecode-details').attr('data-rate-code');
+            debugger;
+           // $("#CompanyId option:selected").attr('data-IsBillPaymentFromLKR')
+            var IsBillPaymentFromLKR = $("#CompanyId option:selected").attr('data-IsBillPaymentFromLKR');  /* Bangaldesh modification*/
+           // alert(IsBillPaymentFromLKR);
+
+            if (IsBillPaymentFromLKR == 'true') {
+                $('.isBillPaymentFromLKR').prop('checked', true);
+            } else {
+                $('.isBillPaymentFromLKR').prop('checked', false);
+            }
+
+            var IsCreditEnabled = $("#CompanyId option:selected").attr('data-IsCreditEnable');
+            // alert(IsBillPaymentFromLKR);
+
+            if (IsCreditEnabled == "true") {
+                $('.isCreditEnabled').prop('checked', true);
+            } else {
+                $('.isCreditEnabled').prop('checked', false);
+            }
+
+            LoadMarket(ratecodeId, companyId)
+            
+            LoadRateCodeCombo(countryId, companyId, ratecode, s, e);
+
+            //$.ajax({
+            //    url: '/administration/ratecodeheaders/ratecodeheaderscombobycountryid?name=RateCodeHeaderId&countryId=' + countryId + '&companyId=' + $(this).val() + '&requiered=true&pickedRateCode=' + $('#data-ratecode-details').attr('data-rate-code') + '&fromDate=' + s + '&toDate=' + e,
+            //    dataType: 'html',
+            //    method: 'get',
+            //    success: function (response) {
+            //        $('.rate-code-container').html('');
+            //        $('<label class="required control-label">RateCode</label>').appendTo($('.rate-code-container'));
+            //        $(response).appendTo($('.rate-code-container'));
+            //        LoadMarket(response.RateCodeHeaderId);
+            //    }
+            //});
+
+            $.ajax({
+                url: '/administration/segments/segmentcombo?name=SegmentId&companyId=' + $(this).val() + '&requiered=true',
+                dataType: 'html',
+                method: 'get',
+                success: function (response) {
+                    $('.segments-container').html('');
+                    $('<label class="required control-label">Segment</label>').appendTo($('.segments-container'));
+                    $(response).appendTo($('.segments-container'));
+                }
+            });
+
+            $.ajax({
+                url: '/administration/BookingSources/BookingSourceCombo?name=BookingSourceId&companyId=' + $(this).val() + '&requiered=true',
+                dataType: 'html',
+                method: 'get',
+                success: function (response) {
+                    $('.BookingSource-container').html('');
+                    $('<label class="required control-label">Booking Sources</label>').appendTo($('.BookingSource-container'));
+                    $(response).appendTo($('.BookingSource-container'));
+                }
+            });
+
+            //$.ajax({
+            //    url: '/administration/markets/MarketComboJson?companyId=' + $(this).val(),
+            //    dataType: 'json',
+            //    method: 'get',
+            //    success: function (data) {
+
+
+            //        $('#MarketId option').remove();
+            //        $(data).each(function (index, item) {
+
+            //            $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#MarketId'));
+            //        });
+            //    }
+            //});
+
+            $.ajax({
+                url: '/administration/ContactPerson/ContactPersonCombo?companyId=' + $(this).val(),
+                dataType: 'json',
+                method: 'get',
+                success: function (data) {
+
+
+                    $('#ContactPersonId option').remove();
+                    $('<option>TBA</optoin>').appendTo($('#ContactPersonId'));
+                    $(data).each(function (index, item) {
+                        $('<option value="' + item.Id + '" >' + item.Name + '</optoin>').appendTo($('#ContactPersonId'));
+                    });
+
+                }
+            });
+        }
+    });
+
+    //function LoadMarket(ratecodeId) {
+    //    //$('body').on('change', '#RateCodeHeaderId', function () {
+    //        $.ajax({
+    //            url: '/administration/Markets/DefaultMarketsCombo?name=MarketId&rateCodeHeaderId=' + ratecodeId + '&requiered=true',
+    //            dataType: 'html',
+    //            method: 'get',
+    //            success: function (response) {
+    //                $('.markets-container').html('');
+    //                $('<label class="required control-label">Market</label>').appendTo($('.markets-container'));
+    //                $(response).appendTo($('.markets-container'));
+    //            }
+    //        });
+    //    //});
+    //}
+
+    function LoadMarket(ratecodeId, companyId) {
+        //$('body').on('change', '#RateCodeHeaderId', function () {
+        $.ajax({
+            url: '/administration/Markets/DefaultMarketsCombo?name=MarketId&rateCodeHeaderId=' + ratecodeId + '&companyId=' + companyId + '&requiered=true',
+            dataType: 'html',
+            method: 'get',
+            success: function (response) {
+                $('.markets-container').html('');
+                $('<label class="required control-label">Market</label>').appendTo($('.markets-container'));
+                $(response).appendTo($('.markets-container'));
+            }
+        });
+        //});
+    }
+
+    //function LoadRateCodeCombo(countryId, companyId, ratecode,s,e) {
+    //    $.ajax({
+    //        url: '/administration/ratecodeheaders/ratecodeheaderscombobycountryid?name=RateCodeHeaderId&countryId=' + countryId + '&companyId=' + companyId + '&requiered=true&pickedRateCode=' + ratecode + '&fromDate=' + s + '&toDate=' + e,
+    //        dataType: 'html',
+    //        method: 'get',
+    //        success: function (response) {
+    //            $('.rate-code-container').html('');
+    //            $('<label class="required control-label">RateCode</label>').appendTo($('.rate-code-container'));
+    //            $(response).appendTo($('.rate-code-container'));
+    //            //LoadMarket(response.RateCodeHeaderId);
+    //        }
+    //    });
+    //}
+    function LoadRateCodeCombo(countryId, companyId, ratecode, s, e) {
+        $.ajax({
+            url: '/administration/ratecodeheaders/ratecodeheaderscombobycountryid?name=RateCodeHeaderId&countryId=' + countryId + '&companyId=' + companyId + '&requiered=true&pickedRateCode=' + ratecode + '&fromDate=' + s + '&toDate=' + e,
+            dataType: 'html',
+            method: 'get',
+            success: function (response) {
+                $('.rate-code-container').html('');
+                $('<label class="required control-label">RateCode</label>').appendTo($('.rate-code-container'));
+                $(response).appendTo($('.rate-code-container'));
+                // LoadMarket(response.RateCodeHeaderId, companyId);
+
+
+            }
+        });
+    }
+
+    //$('body').on('change', '#RateCodeHeaderId', function () {
+    //$.ajax({
+    //    url: '/administration/Markets/DefaultMarketsCombo?name=MarketId&rateCodeHeaderId=' + $(this).val() + '&requiered=true',
+    //    dataType: 'html',
+    //    method: 'get',
+    //    success: function (response) {
+    //        $('.markets-container').html('');
+    //        $('<label class="required control-label">Market</label>').appendTo($('.markets-container'));
+    //        $(response).appendTo($('.markets-container'));
+    //    }
+    //});
+    //    });
+
+
+    //Room info load------------------------------------------------------------------
+
+    //function FillTable() {
+    //    if ($('.hidden-stringify-json-reservation').length > 0 && $('.hidden-stringify-json-reservation').val().length > 0) {
+    //        var reservationTrDetails = JSON.parse($('.hidden-stringify-json-reservation').val());
+    //        console.log(reservationTrDetails);
+           
+    //        $.each(reservationTrDetails, function (index, eachTrDetail) {
+    //            $.each(eachTrDetail.roomTypeArrineachTr, function (index, eachRoomDetail) {
+    //                //2024 - 03 - 27 - Anuradha-------------------------
+    //                $('<tr><td>' + eachTrDetail.RoomCategoryName + '</td><td>' + eachRoomDetail.roomType + '</td><td>' + eachRoomDetail.count + '</td><td  style="text-align:right;">' + eachRoomDetail.count + '</td><td><input  style="text-align:right; width:100%;" class="isCheckboxDisableTd" type="text" readonly value="' + eachRoomDetail.count + '" /></td></tr>').appendTo($('.roomCategoryWise-roomTypeWise-details'));
+    //                //--------------------------------------------------
+    //            });
+    //        });
+    //    } else {
+    //        ShowWarningMessage('No room(s) selected for this reservation.');
+    //    }
+    //}
+
+    function LoadStep01() { //This function is added to landing
+        $.ajax({
+            url: '/reservation/reservations/managestay',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(response).fadeIn();
+                SelectRoomAvailability();
+
+                // fill back
+                setTimeout(function () {
+                    if ($('#FromDateId').val() != undefined && $('#FromDateId').val().length > 0) {
+
+                        if ($('.hidden-stringify-json-SelectedStay').val() != undefined && $('.hidden-stringify-json-SelectedStay').val().length > 0) {
+                            var stayObj = JSON.parse($('.hidden-stringify-json-SelectedStay').val());
+                            $('#CountryCombo').val(stayObj.CountryId);
+                            $('#NoOfAdults').val(stayObj.Adults);
+                            $('#NoOfChildrens').val(stayObj.Kids);
+                        }
+
+                        var dateRange = $('#selectedStayRange').html().replace(" ", "");
+                        var startDate = (dateRange.split('-')[0]);
+                        var endDate = (dateRange.split('-')[1]);
+
+
+                        $('#reservationDateRange').data('dateRangePickerTwoDays').setStartDate(startDate);
+                        $('#reservationDateRange').data('dateRangePickerTwoDays').setEndDate(endDate);
+
+                        // fill availability grid if rooms already selected
+                        if ($('.hidden-stringify-json-reservation').val() != undefined && $('.hidden-stringify-json-reservation').val().length > 0) {
+                            var reservationTrDetails = JSON.parse($('.hidden-stringify-json-reservation').val());
+
+                            $('.roomDetail tr td').each(function () {
+                                var currentTd = $(this);
+
+                                $.each(reservationTrDetails, function (index, eachTrDetail) {
+
+                                    $.each(eachTrDetail.roomTypeArrineachTr, function (index, eachRoomDetail) {
+
+                                        if (currentTd.attr('data-cat-id') == eachTrDetail.roomCategoryId) {
+
+                                            if (currentTd.attr('data-type-id') == eachRoomDetail.roomTypeId) {
+
+                                                currentTd.find('.room-count').val(eachRoomDetail.count);
+
+                                            }
+                                        }
+                                    })
+                                });
+                            });
+                        }
+                    }
+
+
+                }, 1000);
+
+                if (RoomCountJson.length > 0) {
+                    DrawRoomCountGrid();
+                }
+            },
+            error: function (error) {
+            }
+        });
+    }
+
+    //hidden-stringify-json-guest
+    function LoadStep02() { //This functions is added to landing
+
+
+        var form = $(".FromDate").val();
+        var to = $(".ToDate").val();
+        if (form == undefined) {
+            var dateRange = $('#selectedStayRange').html().replace(" ", "");
+            form = dateRange.split('-')[0];
+            to = dateRange.split('-')[1];
+        }
+
+        $.ajax({
+            url: '/reservation/reservations/guestprofile',
+            dataType: 'html',
+            method: 'POST',
+            success: function (response) {
+
+                $('#step01').find($('.stepSmallText')).text(form.substring(0, 10) + " - " + to.substring(0, 10));
+                $('#step01').find($("span")).removeClass("glyphicon-record");
+                $('#step01').find($("span")).addClass("glyphicon-ok");
+                $('#step01').find($(".formWizardNumbers")).removeClass("theme-bg-color-2");
+                $('#step01').find($(".formWizardNumbers")).addClass("theme-bg-color-3");
+
+                $('#step02').find($("span")).addClass("glyphicon-record");
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(response).fadeIn();
+
+                setTimeout(function () {
+                    if ($('.hidden-stringify-json-guest').val() != undefined && $('.hidden-stringify-json-guest').val().length > 0) {
+                        var guestobj = JSON.parse($('.hidden-stringify-json-guest').val());
+                        $('#FirstName').val(guestobj.FirstName);
+                        $('#LastName').val(guestobj.LastName);
+                        $('#SalutationId').val(guestobj.SalutationId);
+                        $('#NICPassport').val(guestobj.NICPassport);
+                        $('#CountryId').val(guestobj.CountryId);
+                        $('#NationalityId').val(guestobj.NationalityId);
+                        $('#Email').val(guestobj.Email);
+                        $('#ContactNo').val(guestobj.ContactNo);
+
+                        $('.guest-checkBox').each(function (index, element) {
+                            if (guestobj.Id == $(element).val()) {
+                                $(element).prop('checked', true);
+                                $(element).closest('tr').addClass('selectdRecord');
+                            }
+                        });
+                    }
+                }, 1000);
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+    function LoadStep03() {
+
+        if ($('.hidden-stringify-json-guest').length > 1) {
+            var guestobj = JSON.parse($('.hidden-stringify-json-guest').val());
+            var guestName = guestobj.FirstName + " " + guestobj.LastName;
+        }
+        var resFor = $('#reservationFor').val();
+        $('#reservationFor').val(resFor);
+        $.ajax({
+            url: '/reservation/reservations/reservationdetails?reservationFor=' + resFor,
+            dataType: 'html',
+            method: 'POST',
+            beforeSend: function () {
+                $("#data-existing-guest").prop('disabled', true).addClass("disabled");
+            },
+            success: function (response) {
+                $('#step02').find($('.stepSmallText')).text(guestName);
+                $('#step02').find($("span")).removeClass("glyphicon-record");
+                $('#step02').find($("span")).addClass("glyphicon-ok");
+                $('#step02').find($(".formWizardNumbers")).removeClass("theme-bg-color-2");
+                $('#step02').find($(".formWizardNumbers")).addClass("theme-bg-color-3");
+
+                $('#step03').find($("span")).addClass("glyphicon-record");
+                $('#contentLoadingArea').html('').fadeOut();
+                $('#contentLoadingArea').html(response).fadeIn();
+
+                setTimeout(function () {
+                    SetStayDates();
+                    //FillTable();
+
+                    $('#ExpectedArrivalTimeId #Timerange').val('2000-01-01 14:00:00');
+                    $('#ExpectedDepartureTimeId #Timerange').val('2000-01-01 12:00:00');
+
+                }, 1000);
+
+            },
+            complete: function () {
+                $("#data-existing-guest").prop("disabled", false).removeClass("disabled");
+
+            },
+            error: function (error) {
+            }
+        });
+    }
+
+    $('body').on('click', '.rateValue', function () {
+        var a = $(this);
+        $('#data-ratecode-details').attr('data-rate-code', a.attr('data-rate-code'));
+        $('#data-ratecode-details').attr('data-room-category', a.attr('data-room-category'));
+        $('#data-ratecode-details').attr('data-room-type', a.attr('data-room-type'));
+        $('#data-ratecode-details').attr('data-meal-plan', a.attr('data-meal-plan'));
+
+
+        $('#data-ratecode-details').attr('data-room-rate', a.attr('data-room-rate'));
+        var res = a.attr('data-rate-code') + ' | ' + a.attr('data-room-category') + ' | ' + a.attr('data-room-type') + ' | ' + a.attr('data-meal-plan') + ' | ' + a.attr('data-room-rate');
+        $('#grid-record-detail-model').modal("hide");
+        $('.roomDetail tr td').each(function () {
+            currentTd = $(this);
+            if (currentTd.attr('data-cat-id') == a.attr('data-room-category')) {
+
+                if (currentTd.attr('data-type-id') == a.attr('data-room-type')) {
+
+                    currentTd.find('.room-count').val('1');
+                    $('.room-count').keyup();
+                    return false;
+                }
+            }
+        });
+    });
+
+
+    function KeepAllowedStatusesForReservation() {
+
+        $('.reservation-status option').each(function () {
+            currentOption = $(this);
+            if (currentOption.attr('data-isAllowInMakeReservation') == "False") {
+
+                currentOption.prop('hidden', true)
+            }
+        });
+    }
+
+
+    $('body').on('change', '#ReseFor', function () {
+        if ($(this).val() == 1) {
+            $('.roomDetail').hide();
+
+            if ($('.room-count-fieldset').hasClass('hidden')) {
+                $('.room-count-fieldset').removeClass('hidden').fadeOut();
+                $('.room-count-fieldset').fadeIn();
+            }
+
+            $.ajax({
+                url: '/reservation/reservations/FullCottageDetailSelect',
+                dataType: 'json',
+                method: 'GET',
+                success: function (response) {
+                    "use strict";
+                    let RoomSet = JSON.parse(response.AvailableRoomTypesJson);
+
+                    $('.room-wise-counts').find("tr:gt(0)").remove();
+
+                    $.each(RoomSet, function (index, roomDetails) {
+                        $(
+                            '<tr>' +
+                            '<td class="padding-6px room-number-name"><input type="hidden" class="room-number" value="' + roomDetails.RoomCode + '" /> #' + roomDetails.RoomCode + '</td>' +
+                            '<td class="padding-6px"><input type="hidden" class="room-category-name" value="' + roomDetails.RoomCategoryName + '"/><input type="hidden" class="room-category" value="' + roomDetails.RoomCategoryId + '"/>' + roomDetails.RoomCategoryName + '</td >' +
+                            '<td class="padding-6px"><input type="hidden" class="room-type-name" value="' + roomDetails.RoomTypeName + '"/> <input type="hidden" class="room-type-Count" value="' + roomDetails.Count + '"/> <input type="hidden" class="room-type" value="' + roomDetails.RoomTypeId + '"/>' + roomDetails.RoomTypeName + '</td>' +
+                            '<td class="padding-6px"><input type="number" name="NoOfAdults" id="NoOfAdults" class="form-control form-control-padding-override" max="5" min="1" value="2" required /></td>' +
+                            '<td class="padding-6px"><input type="number" name="NoOfChildren" id="NoOfChildren" class="form-control form-control-padding-override" max="5" min="1" value="0" required /> </td>' +
+                            '<td class="padding-6px"><input type="number" name="NoOfInfants" id="NoOfInfants" class="form-control form-control-padding-override" max="5" min="1" value="0" required /> </td>' +
+                            //'<td class="padding-6px"><a class= "btn btn-danger btn-sm delete-room"><span class="glyphicon glyphicon-trash"></span></a></td>' +
+                            '</tr >'
+                        ).appendTo('.room-wise-counts tbody');
+                    })
+
+                }
+            });
+
+
+
+        }
+        else {
+            $('.room-wise-counts').find("tr:gt(0)").remove();
+            $('.roomDetail').show();
+            HideGrid();
+
+
+        }
+        $('#reservationFor').val($(this).val());
+        SelectRoomAvailability();
+    });
+
+</script>

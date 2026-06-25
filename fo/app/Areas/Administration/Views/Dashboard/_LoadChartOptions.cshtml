@@ -1,0 +1,157 @@
+﻿<style>
+    .form-group {
+        margin: 0;
+    }
+
+    .chartTypes {
+        list-style: decimal;
+        padding: 0 15px;
+    }
+
+    #rightMenu {
+        display: block;
+        right: 0px;
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .collaps-menu {
+        font-size:15px;
+        margin-left:10px;
+    }
+</style>
+
+<br />
+<br />
+<input type="hidden"  id="hdnLoggedUserId" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" />
+<ul class="custom-control-group  align-center chartTypes"></ul>
+
+<script>
+
+    $(document).ready(function () {
+        LoadMiniDashboardChartTypes();
+       
+    });
+
+    var userId = $('#hdnLoggedUserId').val();
+    //alert(userId)
+    function LoadMiniDashboardChartTypes() {
+        //debugger;
+        $.ajax({
+            url: '/Administration/Dashboard/SelectMiniDashboardChartTypes',
+            dataType: 'json',
+            type: 'get',
+            success: function (data) {
+                // var chartTypeUL = $('.chartTypes');
+                $('.chartTypes').empty();
+                $.each(data, function (index, category) {
+                    var categoryHtml = '<li>' +
+                        '<div class="category">' +
+                        '<label class="custom-control-label form-label" style="color:black;" for="category-' + category.Id + '">' +
+                        category.Name +
+                        '<i class="collaps-menu fa fa-minus-square-o" aria-hidden="true"></i></label>' +
+                        '</div>' +
+                        '<ul class="custom-control-group  align-center" style="margin-left:30px">'
+
+                    $.each(category.ChartTypes, function (index, type) {
+                        var checked = '';
+                        if (type.IsChartTypeSelected === true) {
+                            checked = 'checked';
+                        }
+                        categoryHtml += '<li>' +
+                            //'<div class="custom-control custom-control-sm custom-checkbox">' +
+                            //'<input type="checkbox" class="custom-control-input data-chart-type" data-logged-user-id="' + userId + '"' + checked + ' data-selected-type-id="' + type.Id + '" id="' + type.Id + '">' +
+                            //'<label class="custom-control-label form-label" style="margin-left:5px;" for="type-' + type.Id + '">' +
+                            //type.Name +
+                            //'</label>' +
+                            //'</div>' +
+
+                            '<div class="form-group checkbox custom-control custom-control-sm custom-checkbox">' +
+                            '<label>' +
+                            '<input type="checkbox" class="custom-control-input data-chart-type" data-logged-user-id="' + userId + '"' + checked + ' data-selected-type-id="' + type.Id + '" id="' + type.Id + '">' +
+                            type.Name +
+                            '</label>' +
+                            '</div>' +
+
+                            '</li>'
+
+                    });
+
+                    categoryHtml += '</ul></li>';
+                    $('.chartTypes').append(categoryHtml);
+                });
+            },
+            complete: function () {
+                $('.collaps-menu').off('click').on('click', function () {
+                    var $icon = $(this);
+                    var $content = $icon.closest('label').closest('div').next('ul');
+
+                    $content.slideToggle(300, function () {
+
+                        if ($content.is(':visible')) {
+                            $icon.removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
+                        } else {
+                            $icon.removeClass('fa-minus-square-o').addClass('fa-plus-square-o');
+                        }
+                    });
+                });
+            }
+        });
+
+       
+    }
+
+   
+ 
+
+
+    $('body').on('click', '.data-chart-type', function () {
+        //alert("asd");
+        //debugger;
+        chartTypeId = 0;
+        isChartTypeSelected = false;
+        loggedUserId = 0;
+
+        chartTypeId = $(this).attr('data-selected-type-id');
+        loggedUserId = $(this).attr('data-logged-user-id');
+        if ($(this).prop('checked')) {
+            isChartTypeSelected = true;
+            //return false;
+        }
+        else {
+            isChartTypeSelected = false;
+        }
+
+        var chartType = {}
+        chartType.ChartTypeId = chartTypeId;
+        chartType.IsChartTypeSelected = isChartTypeSelected;
+        chartType.UserId = loggedUserId;
+
+        $.ajax({
+            url: '/Administration/Dashboard/SaveMiniDashboardChartTypes',
+            dataType: 'json',
+            data: { chartType: chartType },
+            method: 'POST',
+            beforeSend: function () {
+            },
+            success: function (response) {
+                //console.log(response);
+                //if (response.IsChartTypeSelected === true) {
+                //    ShowSuccessMessage("Chart checked succsessfully.");
+                //} else {
+                //    ShowSuccessMessage("Chart unchecked succsessfully.");
+                //}
+
+                LoadMiniDashboardChartTypesByUserId()
+            },
+            error: function () {
+                ShowErrorMessage('Sorry there is an error.');
+            },
+            complete: function () {
+
+            },
+        });
+
+    });
+
+</script>

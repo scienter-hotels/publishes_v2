@@ -1,0 +1,13 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.RoomCategory>
+<tr class="first-tr skip-tr">
+    <th class="col-md-1"></th>
+    <th class="col-md-1"></th>
+    @foreach (var item in Model)
+    {
+        <th class="col-md-1">
+            @item.Name
+            <input type="hidden" value="@item.Id" id="hiddenRoomType" class="hidden-room-type" />
+        </th>
+    }
+
+</tr>

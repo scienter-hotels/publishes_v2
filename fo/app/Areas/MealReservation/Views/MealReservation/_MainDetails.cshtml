@@ -1,0 +1,220 @@
+﻿
+<form class="MainDetails">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group label-floating">
+                <label class="control-label">Name *</label>
+                <input class="form-control text-box single-line" id="Name" name="MealReservationName" type="text" required>
+            </div>
+        </div>
+
+        <div class="col-md-1">
+
+        </div>
+
+        <div class="col-md-2">
+            <div class="form-group label-floating">
+                <label class="control-label">Date *</label>
+                <input autocomplete="off" class="form-control text-box single-line datePicker" id="Date" name="Date" required>
+            </div>
+        </div>
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-2">
+            <div class="form-group form-group-margin-override label-floating" required>
+                <label class="required control-label">Company</label>
+                @{Html.RenderAction("CompaniesCombo", "Companies", new { area = "Administration", name = "CompanyId", required = true });}
+
+            </div>
+        </div>
+        <div class="col-md-1">
+
+        </div>
+
+        <div class="col-md-2">
+            <div class="form-group form-group-margin-override markets-container label-floating" required>
+                <label class="required control-label">Market</label>
+                @{Html.RenderAction("MarketCombo", "Markets", new { area = "Administration", name = "MarketId", required = true });}
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group label-floating">
+                <label class="control-label">Arr.Date and Exp.Arr.Time  *</label>
+                <input autocomplete="off" class="form-control text-box single-line dateAndTimePicker" id="ArrivalDateTime" name="ArrivalDate" required>
+            </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-2">
+            <div class="form-group label-floating">
+                <label class="control-label">Voucher No </label>
+                <input class="form-control text-box single-line" id="VoucherNo" name="Meal Reservation VoucherNo" type="text">
+            </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-2">
+            <div class="form-group form-group-margin-override label-floating" required>
+                <label class="control-label">Meal Type</label>
+                @{Html.RenderAction("MealCombo", "MealPlans", new { area = "Administration", name = "ArriveMeal", requiered = true, value = Model?.ArrivalFor });}
+            </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-2">
+            <div class="form-group form-group-margin-override label-floating" required>
+                <label class="control-label">Status</label>
+                @{Html.RenderAction("ReservationStatusCombo", "ReservationStatus", new { area = "Administration", name = "ReservatonStatusId", requiered = true, });}
+            </div>
+        </div>
+        
+    </div>
+    <div class="col-md-1">
+    </div>
+
+ 
+
+    <div class="row">
+        <div class="col-md-4">
+            <fieldset class="the-fieldset test">
+                <legend class="the-legend">No of Pax</legend>
+
+                <div class="col-md-3">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Guest </label>
+                        <input class="form-control text-box single-line" id="GuestPax" name="GuestPax" type="number" min="0" required>
+                    </div>
+                </div>
+
+                <div class="col-md-1"></div>
+
+                <div class="col-md-3">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Kids </label>
+                        <input class="form-control text-box single-line" id="KidsPax" name="Meal Reservation VoucherNo" type="number" min="0">
+                    </div>
+                </div>
+
+                <div class="col-md-1"></div>
+
+                <div class="col-md-3">
+                    <div class="form-group label-floating">
+                        <label class="control-label">Guide </label>
+                        <input class="form-control text-box single-line" id="GuidePax" name="Meal Reservation VoucherNo" type="number" min="0">
+                    </div>
+                </div>
+
+            </fieldset>
+        </div>
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-4">
+            <div class="checkbox">
+                <label><input type="checkbox" class="date-checkbox1" id="IsBillToAgent">Company Settlement</label>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group label-floating">
+                <label class="control-label">Remark </label>
+                <input class="form-control text-box single-line" id="Remark" name="Meal Reservation Remark" type="text" value="">
+            </div>
+        </div>
+
+        <div class="col-md-6 text-right btnSave" style="">
+            <button type="button" class="btn theme-bg-color-2" style="border-radius:2px; margin-top: 25px;" id="btnSave">
+                Save  <span class="glyphicon glyphicon-arrow-right"></span>
+            </button>
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        //2023-08-16--------------------------------------------------------------------------
+
+        $('#CompanyId').addClass('select2');
+        $('#MarketId').addClass('select2');
+        $('#ArriveMeal').addClass('select2');
+        $('#ReservatonStatusId').addClass('select2');
+
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+
+        $('.MainDetails').validate({  // initialize the plugin on your form.
+            rules: {
+                MealReservationName: {
+                    required: true,
+                    maxlength: 100
+                },
+                Date: {
+                    required: true
+                }
+            }
+        });
+
+
+    });
+
+
+    $('.datePicker').daterangepicker({
+        "showDropdowns": true,
+        singleDatePicker: true,
+        "showWeekNumbers": true,
+        "showISOWeekNumbers": true,
+        //"minDate": $('#hotelCurrentDate').val(),
+        "opens": "right",
+        "applyClass": "btn-primary",
+        locale: {
+            format: 'DD/MM/YYYY'
+        }
+    }, function (start, end, label) {
+        $('input[name="From"]').val(start.format('DD/MM/YYYY'));
+        $('input[name="To"]').val(end.format('DD/MM/YYYY'));
+    });
+
+    $('.dateAndTimePicker').daterangepicker({
+        //"showDropdowns": true,
+        "timePicker": true,
+        singleDatePicker: true,
+        "showWeekNumbers": true,
+        "timePicker24Hour": true,
+        //"showISOWeekNumbers": true,
+        //"minDate": $('#hotelCurrentDate').val(),
+        "opens": "right",
+        "applyClass": "btn-primary",
+        locale: {
+            format: 'DD/MM/YYYY HH:mm'
+        }
+    }, function (start, end, label) {
+        $('input[name="From"]').val(start.format('DD/MM/YYYY'));
+        $('input[name="To"]').val(end.format('DD/MM/YYYY'));
+    });
+
+</script>

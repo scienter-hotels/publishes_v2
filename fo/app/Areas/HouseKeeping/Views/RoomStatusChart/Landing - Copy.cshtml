@@ -1,0 +1,320 @@
+﻿@model Scienter.HotelERP.Common.Domain.RoomStatusChart
+@{
+    ViewBag.Title = " Room Status Chart";
+}
+
+<style>
+    .override-card-padding {
+        padding-top: 20px !important;
+        padding-bottom: 0px !important;
+    }
+
+    div[class^="form-group"] {
+        margin-top: 5px;
+    }
+
+    .override-well {
+        padding: 0px;
+        /*background-color:#c5c5c5;*/
+    }
+
+    .row-padding {
+        padding-left: 30px
+    }
+    .font {
+        font-size: 12px
+    }
+    .form-control-area {
+        height: 50px !important;
+    }
+
+    .override-card-two-height {
+        height: 485px !important;
+    }
+    .room-well {
+        height: 30px;
+        padding: 2px 15px 2px 10px !important;
+        text-align: center;
+        margin-bottom: 0px !important;
+        margin-top: -20px !important;
+    }
+    .well {
+        height: 6em;
+        margin-top: -5px !important;
+        padding: 1em;
+        max-height: 6em;
+        font-weight: 600;
+        margin-bottom: 0.4em !important;
+    }
+  
+    .co-ch {
+        opacity: 0.5;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="override-card-padding override-card-two-height" id="contentLoadingArea" style="margin-top:0px;">
+                <div>
+                    @*<div class="panel panel-default">*@
+                    <div class="row">
+                        <div class="col-md-2">
+
+                            <fieldset class="the-fieldset">
+                                <legend class="the-legend">Date</legend>
+                                <div class="form-group label-floating">
+                                    @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label" })
+                                    <div id="toDateContainer" class='input-group date'>
+                                        @Html.TextBoxFor(model => model.Date, new { @class = "form-control", value = Model?.Date })
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                    @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="the-fieldset" >
+                                <legend class="the-legend">Floors</legend>
+                                <div id="membersContainer" class="row floors">
+                                    <div class="checkbox form-group" style="margin: -0.5em 0 0 0;">
+                                        <label style="margin-left: 0.5em;">
+                                            <input type="checkbox" class="selectallfloors" name="Id" id="Id" value=' + data.Id + ' checked /> All
+                                        </label>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-10" style="padding: 0.68em 3em 1em 0px;">
+                            <fieldset class="the-fieldset" style="padding: 3px 20px 1px 20px;border: 0;">
+                                <div class="row out-of-order-rooms">
+                                    <div class="col-md-2 col-md-2-5" style="padding:1px">
+                                        <div class="well data-well-">
+                                            <div class="row" style="margin-right: 0px;margin-left: 0px;">
+                                                <div class="col-md-4 left-well" style="background-color:blueviolet;">
+                                                    <span class="room-code1">102</span>
+                                                    <input type="hidden" value="2" id="room-id"> <hr style="padding: 0px 0px 0px 9px;margin: 0px 0 0px -4px !important;" />
+                                                    <span class="room-status1">SDXS</span>
+                                                    <input type="hidden" value="2" id="room-id">
+                                                </div>
+                                                <div class="col-md-8 right-well" style="background-color:blueviolet; opacity:0.4;">
+                                                    <h4>
+                                                        <span class="room-status-code1">Vacant Dirty</span>
+                                                        <input type="hidden" class="font" value="2034" id="room-id">
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+      FillRooms();
+      LoadFloors();
+      FillRoomsByDate();
+
+      $(function () {
+          $('#Date').daterangepicker({
+              locale: {
+                  format: 'DD/MM/YYYY'
+              },
+              "showISOWeekNumbers": true,
+              "singleDatePicker": true,
+              "minDate": new Date(),
+              "changeYear": true,
+              "changeMonth": true,
+              "opens": "right",
+              "applyClass": "btn-primary",
+              "dateLimit": {
+                  "days": false
+              }
+          });
+      });
+    });
+
+    var FloorsArray = [];
+
+    function FillRooms() {
+        $.ajax({
+            url: '/HouseKeeping/RoomStatusChart/SelectRoomandStatus',
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+               
+                $.each(data, function (index, data) {
+                    var ooc = '';
+                    if (data.RoomStausId > 1) {
+                        ooc = 'outoforder-room-well';
+                    }
+                    if (data.RoomName.length>3) {
+                        data.RoomName = data.RoomName.substring(0, 3);
+                    }
+                                     
+                    //.css('opacity', '0.5');
+
+                    $('.out-of-order-rooms').append('<div class="col-md-2" style="padding:1px"><div class="well room-well data-well-' + index +' '+ ooc + '" style="background-color:' + data.Color + ';color:' + data.FontColor + '; text-align:center;font-size:12px;"> ' +
+                        '<div class="row"><div class="col-md-4" style="padding:1.15em 0.2em 1.15em 0.5em;border-right: 2px solid #eeeeee6e;font-size: 1.6em;">' + data.RoomName + '<input type="hidden" value="' + data.RoomId + '" id="room-id" /></h4></div>' + '<div class="col-md-8" style="display: flex;align-items: center;justify-content: center;height: 5.5em;background-color: #8880;text-align: left;padding-left: 0.8em;"><h4 style="font-size:1.4em;">' + 
+                        data.RoomStatusName + '<input type="hidden" class="font"value="' + data.RoomStatusId + '" id="room-id"/></h4></div>' +
+                      ' </div></div></div>'
+                    );
+
+                    //$('.data-well-' + index ).css('opacity',0.5);
+                })
+            }
+        });
+    }
+    function FillSelectedRooms() {
+
+        $('.floors-checkbox').each(function (index, item) {
+           
+            if ($(item).prop('checked')) {
+                FloorsArray.push({
+                    RoomFloorId: $(item).val()
+
+                }); 
+            }
+        });
+        var FloorList = JSON.stringify(FloorsArray);
+
+        $.ajax({
+            url: '/HouseKeeping/RoomStatusChart/SelectRoomandStatusbyfloors',
+            dataType: 'json',
+            method: 'GET',
+            data: { floors: FloorList },
+            success: function (data) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+               
+                $.each(data, function (index, data) {
+                    var ooc = '';
+                    if (data.RoomStausId > 1) {
+                        ooc = 'outoforder-room-well';
+                    }
+                    if (data.RoomName.length > 3) {
+                        data.RoomName = data.RoomName.substring(0, 3);
+                    }
+                    $('.out-of-order-rooms').append('<div class="col-md-2" style="padding:1px"><div class="well room-well' + ooc + '" style="background-color:' + data.Color + ';color:' + data.FontColor + '; text-align:center;font-size:12px;"> ' +
+                        '<div class="row"><div class="col-md-4" style="padding:1.15em 0.2em 1.15em 0.5em;border-right: 2px solid #eeeeee6e;font-size: 1.6em;">' + data.RoomName + '<input type="hidden" value="' + data.RoomId + '" id="room-id" /></h4></div>' + '<div class="col-md-8" style="display: flex;align-items: center;justify-content: center;height: 5.5em;background-color: #8880;text-align: left;padding-left: 0.8em;"><h4 style="font-size:1.4em;">' +
+                        data.RoomStatusName + '<input type="hidden" class="font"value="' + data.RoomStatusId + '" id="room-id"/></h4></div>' +
+                        ' </div></div></div>'
+                    );
+                })
+            }
+        });
+    }
+
+    function FillRoomsByDate() {
+        var date = $('#Date').val();
+
+        $.ajax({
+            url: '/HouseKeeping/RoomStatusChart/SelectRoomandStatusbyfloors',
+            dataType: 'json',
+            method: 'GET',
+            data: { date: date },
+            success: function (data) {
+                $('#contentLoadingArea #content').html('').fadeOut();
+               
+                $.each(data, function (index, data) {
+                    var ooc = '';
+                    if (data.RoomStausId > 1) {
+                        ooc = 'outoforder-room-well';
+                    }
+                    if (data.RoomName.length > 3) {
+                        data.RoomName = data.RoomName.substring(0, 3);
+                    }
+                    //if (data.Color == 'opacity:0.5') {
+                    //    $(".col-md-4").css({ opacity: 1 });
+                    //}
+                    $('.color-change').css(opacity, 0.5);
+
+                    $('.out-of-order-rooms').append('<div class="col-md-2" style="padding:1px"><div class="well room-well' + ooc + '" style="background-color:' + data.Color + ';color:' + data.FontColor + '; text-align:center;font-size:12px;"> ' +
+                        '<div class="row"><div class="col-md-4" style="padding:1.15em 0.2em 1.15em 0.5em;border-right: 2px solid #eeeeee6e;font-size: 1.6em;">' + data.RoomName + '<input type="hidden" value="' + data.RoomId + '" id="room-id" /></h4></div>' + '<div class="col-md-8 color-change" style="display: flex;align-items: center;justify-content: center;height: 5.5em;background-color: #8880;text-align: left;padding-left: 0.8em;"><h4 style="font-size:1.4em;">' +
+                        data.RoomStatusName + '<input type="hidden" class="font"value="' + data.RoomStatusId + '" id="room-id"/></h4></div>' +
+                        ' </div></div></div>'
+                    );
+                })
+            }
+        });
+    }
+    $('body').on('change', '.selectallfloors', function () {
+        if ($(this).prop('checked')) {
+            $(this).prop('checked', true);
+            $('.floors-checkbox').prop('checked', true);
+            FillRooms();
+            for (var i = 0; i < FloorsArray.length; i++) {
+                FloorsArray.splice(i);
+            }
+            $('.out-of-order-rooms').html('');
+            
+        } else {
+            $('.floors-checkbox').prop('checked', false);
+            $('.out-of-order-rooms').html('');
+        }
+
+    });
+   
+    $('body').on('change', '.floors-checkbox', function () {
+        var checkBoxcount = $('.floors-checkbox').length;
+        var checkedBoxcount = $('.floors-checkbox:checked').length;
+
+        if (checkBoxcount == checkedBoxcount) {
+            $('.selectallfloors').prop('checked', true);
+
+        } else {
+            $('.selectallfloors').prop('checked', false);
+
+        }
+        $('.out-of-order-rooms').html('');
+        for (var i = 0; i < FloorsArray.length; i++) {
+                FloorsArray.splice(i); 
+                 }
+               FillSelectedRooms();
+          });
+   
+
+  
+    function LoadFloors() {
+        $.ajax({
+            url: '/Floors/SelectFloor',
+            dataType: 'json',
+            method: 'get',
+            success: function (data) {
+                $.each(data, function (index, data) {
+
+                    $('.floors').append('<div class="col-md-12"> ' +
+            '<div class="checkbox form-group" style="margin: 0.2em 0 0 0;">' +
+
+               ' <label>'+
+                   ' <input type="checkbox" class="form-check-input floors-checkbox" name="RoomFloorId" id="RoomFloorId" value=' + data.Id + ' checked />' + data.Name + '' +
+               ' </label>'+
+            '</div>'+
+       ' </div>'
+                       );
+                })
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+</script>

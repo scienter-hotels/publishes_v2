@@ -1,0 +1,207 @@
+﻿@using Scienter.HotelERP.Common.Domain
+
+@{
+    ViewBag.Title = "User Wise Report Access";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-content">
+                <div id="content">
+                    <div class="row">
+                        <div class="col-md-12" id="contentLoadingArea">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div>
+                                        <div class="form-group label-floating">
+                                            <label class="control-label">User *</label>
+                                            @{Html.RenderAction("UsersCombo", "Users", new { name = "UserId", requiered = true });}
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-8">
+                                    <div class="table-responsive">
+                                        <fieldset class="the-fieldset">
+                                            <legend class="the-legend">Manage Report Access</legend>
+
+                                            <table class="table" id="existingPagesGrid">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="col-md-2">
+                                                            <div class="form-group checkbox">
+                                                                <label>
+                                                                    All
+                                                                    <input class="company-checkBox" id="selectAll" type="checkbox" value="" />
+                                                                </label>
+                                                            </div>
+                                                        </th>
+                                                        <th class="text-primary">
+                                                            <b>Report Name</b>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                            <div style="overflow-y:auto; height:300px;">
+                                                <table class="table" id="existingPagesGrid">
+                                                    <tbody class="dataTables_scrollBody" id="reportList"></tbody>
+                                                </table>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <input type="button" id="btnSavePages" value="Save" class="btn btn-primary" />
+                                    &nbsp;
+                                    <input type="reset" id="btnClear" value="CLEAR" class="btn btn-default" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script>
+    $(document).ready(function () {
+        LoadReportPages();
+    });
+
+    pagesList = [];
+    function LoadReportPages() {
+        $.ajax({
+            url: '/UserWiseReportAccess/SelectReportPages',
+            dataType: 'json',
+            method: 'POST',
+            success: function (data) {
+                ;
+                $.each(data, function (index, item) {
+                    ;
+                    $('<tr>' +
+                        '<td class="col-md-2">' +
+                        '<div class="form-group checkbox">' +
+                        '<label>' +
+                        '<input class="report-checkBox" type="checkbox" value="' + item.ReportId + '"/>' +
+                        '</label>' +
+                        '</div>' +
+                        '</td>' +
+                        '<td>' + item.DisplayName + '</td>' +
+                        '</tr>'
+                    ).appendTo($('#reportList'));
+                });
+
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+
+    }
+
+    $('body').on('click', '#selectAll', function () {
+        ;
+        if ($(this).prop('checked')) {
+            $('.report-checkBox').prop('checked', true)
+        } else {
+            $('.report-checkBox').prop('checked', false)
+        }
+     
+    });
+
+    function SelectAllCheck() {
+        ;
+        if ($('.report-checkBox:checked').length == $('.report-checkBox').length) {
+            $('#selectAll').prop('checked', true);
+        } else {
+            $('#selectAll').prop('checked', false);
+        }
+    }
+
+    $('body').on('change', '.report-checkBox', function () {
+        ;
+        SelectAllCheck();
+    });
+
+    $('body').on('click', '#btnSavePages', function () {
+      
+        pagesList = [];
+        $('.report-checkBox').each(function (index, item) {
+            pagesList.push({
+                PageId: $(item).val(),
+            });
+        });
+
+        obj = {
+            UserId: $('#UserId').val(),
+            ReportPages: JSON.stringify(pagesList)
+        }
+
+        $.ajax({
+            url: '/UserWiseReportAccess/Save',
+            dataType: 'json',
+            data: obj,
+            method: 'POST',
+            success: function () {
+                ;
+                ShowSuccessMessage('Saved successfully.');
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    });
+
+    $('body').on('change', '#UserId', function () {
+        var selectedUser = $(this).val();
+        FillSelectedPages(selectedUser);
+    });
+
+    function FillSelectedPages(selectedUser) {
+        selectedPagesList = $('.report-checkBox')
+        var userId = selectedUser
+        $.ajax({
+            url: '/UserWiseReportAccess/SelectPagesByUser',
+            dataType: 'json',
+            data: { selectedUser: userId },
+            method: 'POST',
+            success: function (data) {
+                ;
+                $('.report-checkBox').prop('checked', false)
+                $.each(data, function (index, item) {
+                    $.each(selectedPagesList, function (index, page) {
+                        if (item.ReportId == $(page).val()) {
+                            $(page).prop('checked', true);
+                        }
+                    });
+                });
+                SelectAllCheck();
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
+
+</script>
+
+
+

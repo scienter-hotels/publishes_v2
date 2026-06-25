@@ -1,0 +1,97 @@
+﻿@model List<Scienter.HotelERP.Common.Domain.SelectedGuest>
+
+@{
+    var count = 0;
+}
+
+@foreach (var item in Model)
+{
+
+    if (item.IsMainGuest)
+    {
+        count++;
+    }
+}
+
+@if (count == 1)
+{
+    <table class="table table-striped reservationGuest-detail-table">
+        <tr>
+            <th class="col-md-6">Name</th>
+            <th class="col-md-2">NIC / Passport</th>
+            <th class="col-md-2">Profile Type</th>
+            <th class="col-md-2"></th>
+        </tr>
+
+
+        @foreach (var item in Model)
+        {
+            <tr class="guestDetails">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NICPassport)
+                </td>
+                <td>
+                    <input type="hidden" value="@item.GuestProfileTypeId" class="gPTypeId" />
+                    @Html.DisplayFor(modelItem => item.ProfileType)
+                </td>
+                <td class="text-right">
+                    <a class="btn btn-theme-color-2 btn-sm" id="btnEditGuest" data-profiletype="@item.GuestProfileTypeId" data-id="@item.Id" data-toggle="collapse" data-target="#editGuestDiv">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+                    @if (!item.IsMainGuest && Model.Count > 1)
+                    {
+                        <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/reservation/ReservationList/removeguest/@item.ReservationProfileId">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </a>
+                    }
+                </td>
+
+            </tr>
+        }
+
+    </table>
+}
+else
+{
+    <table class="table table-striped reservationGuest-detail-table">
+        <tr>
+            <th class="col-md-6">Name</th>
+            <th class="col-md-2">NIC / Passport</th>
+            <th class="col-md-2">Profile Type</th>
+            <th class="col-md-2"></th>
+        </tr>
+
+
+        @foreach (var item in Model)
+        {
+            <tr class="guestDetails">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NICPassport)
+                </td>
+                <td>
+                    <input type="hidden" value="@item.GuestProfileTypeId" class="gPTypeId" />
+                    @Html.DisplayFor(modelItem => item.ProfileType)
+                </td>
+                <td class="text-right">
+                    <a class="btn btn-theme-color-2 btn-sm" id="btnEditGuest" data-profiletype="@item.GuestProfileTypeId" data-id="@item.Id" data-toggle="collapse" data-target="#editGuestDiv">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+                    <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/reservation/ReservationList/removeguest/@item.ReservationProfileId">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                </td>
+
+            </tr>
+        }
+
+    </table>
+}
+
+
+

@@ -1,0 +1,237 @@
+﻿
+@{
+    ViewBag.Title = "Guest Portal Wakeupcall";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .form-group {
+        margin: 0;
+    }
+</style>
+
+@model  IEnumerable<Scienter.HotelERP.Common.Domain.GuestPortal_WakeupCall>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                    <div class="row">
+                        <div class="col-md-4" style="position:absolute;z-index:10000;">
+                            <select id="customSelect" class="custom-select form-control">
+                                <option value="A">All</option>
+                                @*<option value="R">Reservation</option>*@
+                                <option value="I">In House</option>
+                                <option value="C">Checked Out</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="guestPortalWakeupCall">
+                            @*2022-10-20*@
+                            <thead>
+                                <tr>
+                                    <th class="col-md-1 text-primary">
+                                        Res / No
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Room / No
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Arrival
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Departure
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        WakeupDate
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        WakeupTime
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Status
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+                                        Notes
+                                    </th>
+                                    <th class="col-md-1 text-primary">
+
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                <tr style="height: 36px !important;" data-reservation_level="@Html.DisplayFor(modelItem => item.ReservationLevel)">
+                                    <td>
+                                        @item.ReservationNo
+                                        <input type="hidden" name="text" id="guestPoratlWakeupCallReservationHeaderId" value="@item.ReservationHeaderId" />
+                                        <input type="hidden" name="text" id="wakeupcallid" value="@item.Id" />
+                                    </td>
+                                    <td>
+                                        @item.RoomName
+                                    </td>
+                                    <td>
+                                        @item.ArrivalFormatted
+                                    </td>
+                                    <td>
+                                        @item.DepartureFormatted
+                                    </td>
+                                    <td>
+                                        @item.WakeupDateFormatted
+                                    </td>
+                                    <td>
+                                        @item.WakeupTimeFormatted
+                                    </td>
+                                    <td>
+                                        @item.Status
+                                    </td>
+                                    <td>
+                                        @item.AdditionalNotes
+                                    </td>
+                                    <td style="text-align:right !important;">
+                                        <a class="btn btn-theme-color-2 btn-sm call-popup-model activityLog" data-guestPoratlWakeupCallReservationHeaderId="@item.ReservationHeaderId" data-ActionTypeId="@item.ActionTypeId" data-ResId="@item.ReservationHeaderId" data-id="@item.Id" id="activityLog" data-title="Reservation Activity Log" data-href="" title="Activity Log" data-toggle="modal" data-target="" data-width="500">
+                                            <span class="glyphicon glyphicon-plus"></span>
+                                        </a>
+                                        <a class="btn btn-theme-color-2 btn-sm call-popup-model viewactivityLog" id="viewactivityLog" data-guestPoratlWakeupCallReservationHeaderId="@item.ReservationHeaderId" data-id="@item.Id" data-title="Reservation Activity Log" data-href="" title="View Activity" data-toggle="modal" data-target="" data-width="500">
+                                            <span class="glyphicon glyphicon-tags"></span>
+                                        </a>
+                                    </td>
+
+
+                                    @*<td class="hidden-print text-right" style="text-align:right !important;">
+            <a class="btn btn-theme-color-2 btn-sm call-popup-model activityLog" data-ActionTypeId="@item.ActionTypeId" data-ResId="@item.ReservationHeaderId" data-id="@item.Id" id="activityLog" data-title="Reservation Activity Log" data-href="" title="Activity Log" data-toggle="modal" data-target="" data-width="500">
+                <span class="glyphicon glyphicon-plus"></span>
+            </a>
+        </td>
+        <td class="hidden-print text-right" style="text-align:right !important;">
+            <a class="btn btn-theme-color-2 btn-sm call-popup-model viewactivityLog" id="viewactivityLog" data-id="@item.Id" data-title="Reservation Activity Log" data-href="" title="View Activity" data-toggle="modal" data-target="" data-width="500">
+                <span class="glyphicon glyphicon-tags"></span>
+            </a>
+        </td>*@
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                @*@Html.Partial("_Loading")*@
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+><script>   
+
+    //$(document).ready(function () {
+    //    $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+    //    $('#guestPortalWakeupCall').DataTable(
+    //        {
+    //            //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+    //            searching: true,
+    //            ordering: true,
+    //            //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    //            dom: 'Bfrtipl',
+    //            select: true,
+    //            buttons: [
+    //                'copy',
+    //                'excel',
+    //                'csv',
+    //                'pdf',
+    //                'print'
+    //            ],
+    //            scrollY: '58vh',
+    //        });
+    //});
+
+    var reservationLevel = $('#customSelect').val();
+    $(document).ready(function () {
+        loadGridData()
+        $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+        $('#guestPortalWakeupCall').DataTable(
+            {
+                searching: true,
+                ordering: true,
+                dom: 'frtipl',
+                select: true,
+                scrollY: '58vh',
+            });
+    });
+
+    $(document).off('change').on('change', '#customSelect', function () {
+        reservationLevel = $('#customSelect').val();
+        loadGridData();
+    });
+
+    function loadGridData() {
+        var rows = $('#guestPortalWakeupCall tr');
+        var noRecords = true;
+
+        if (reservationLevel !== "A") {
+            rows.each(function () {
+                var reservationLevelTr = $(this).data('reservation_level');
+                if (reservationLevel !== reservationLevelTr) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                    noRecords = false;
+                }
+            });
+
+            if (noRecords) {
+                $('#guestPortalWakeupCall tbody').append('<tr class="no-records"><td colspan="100%" style="text-align:center;">No Records Found</td></tr>');
+            } else {
+                $('#guestPortalWakeupCall .no-records').remove();
+            }
+        } else {
+            rows.show();
+            $('#guestPortalWakeupCall .no-records').remove();
+        }
+    }
+
+    $('body').on('click', '.activityLog', function () {
+        debugger;
+        var code = "W";
+        var requestId = $(this).attr('data-id');
+        $(".guestportal-action-model").modal('show');
+        $('#code').val(code);
+        //$('#hdnreservationHeaderId').val($('#reservationHeaderId').val());
+        $('#hdnreservationHeaderId').val($(this).attr('data-guestPoratlWakeupCallReservationHeaderId'));
+        $('#requestId').val(requestId);
+        $('#hdnlabel').val("Wake-up Call Status");
+        $('#hdnactionType').val($(this).attr('data-ActionTypeId'));
+        LoadActionType(code);
+    });
+
+    $('body').on('click', '.viewactivityLog', function (e) {
+        debugger;
+        var code = "W";
+        var requestId = $(this).attr('data-id');
+        //var reservationHeaderId = $('#reservationHeaderId').val();
+        var reservationHeaderId = $(this).attr('data-guestPoratlWakeupCallReservationHeaderId');
+        var GuestPortalActivityLogURL = '/GuestPortal/Action/ActivityLog?code=' + code + '&requestId=' + requestId + '&reservationHeaderId=' + reservationHeaderId;
+        var title = 'Wake-up Call Status Activity Log ';
+
+        //'&guestName=' + guestName + '&guestProfileId=' + GuestProfileId + '&Uuid=' + ResUuid + '';
+
+        CallDetailModelSimple(title, GuestPortalActivityLogURL, 1000);
+    });
+
+</script>

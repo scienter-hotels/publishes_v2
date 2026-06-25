@@ -1,0 +1,143 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.Spa_Reservation>
+
+<style>
+        .border-margin {
+            border: 1px solid white;
+        }
+
+    table.dataTable tbody th, table.dataTable tbody td {
+        padding: 5px !important; 
+        text-align: left;
+        line-height: 18px;
+    }
+    </style>
+
+<div class="row">
+    <div class="col-md-12" id="main-grid-content">
+        <div class="table-responsive">
+            <table class="table table-striped" id="spaActiveReservationGrid">
+                <thead>
+                    <tr>
+                        <th class="text-primary">
+                            Spa Reservation No
+                        </th>
+                        <th class="text-primary">
+                            Reservation No
+                        </th>
+                        <th class="text-primary">
+                            Date
+                        </th>
+                        <th class="text-primary">
+                            Name
+                        </th>
+                        <th class="text-primary">
+                            Room
+                        </th>
+                        <th class="text-primary">
+                            Status
+                        </th>
+                        <th class="text-primary">
+                            Venue
+                        </th>
+                        <th class="text-primary">
+                            Therapist
+                        </th>
+                        <th class="text-primary" hidden>
+
+                        </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr value="@item.Id">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ReservationNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ResNo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Date)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.GuestName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.RoomName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Venue)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Therapist)
+                        </td>
+                        <td hidden>
+                            <div class="form-group checkbox">
+                                <label>
+                                    <input class="spaRes-checkBox" type="checkbox" value="@item.Id" data-sparesno="@item.ReservationNo" data-spavenue="@item.Venue" data-spatherapist="@item.Therapist"/>
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+    <div id="side-buttons" class="hidden">
+
+        <div class="row row-padding0px">
+            <div class="border-margin col-md-6 btn-right-padding5px">
+                <button style="background-color:#c21b1b !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override" id="btncheckIn">
+                    <span class="glyphicon glyphicon-cutlery"></span>
+                    <br />
+                    CheckIn
+                    <br />
+                </button>
+            </div>
+
+            <div class="border-margin col-md-6 btn-right-padding5px">
+                <button style="background-color:#940191 !important;" class="btn btn-default btn-theme-color-2 full-width-100perc btn-padding-override call-popup-model" id="btnedit">
+                    <span class="glyphicon glyphicon-credit-card"></span>
+                    <br />
+                    Edit Res
+                    <br />
+                    Details
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@*<script src="~/Scripts/ui/common/scienter.grid2.js"></script>*@
+<script>
+    $(document).ready(function () {
+        $('#spaActiveReservationGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ],
+                scrollY: '58vh',
+            });
+    });
+    
+
+</script>

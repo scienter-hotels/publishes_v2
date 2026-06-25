@@ -1,0 +1,394 @@
+﻿@model Scienter.HotelERP.Common.Domain.Complain
+
+@{
+    ViewBag.Title = "Form";
+}
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+    .container-padding {
+        padding: 50px 250px;
+    }
+</style>
+
+<input type="hidden" id="hidden-Uuid" value="@ViewBag.Uuid" />
+
+<div class="container container-padding">
+    <form id="complains">
+
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @Html.HiddenFor(model => model.Id)
+        <input type="hidden" value="@Model.Id" id="CompainId" />
+        <input type="hidden" value="@ViewBag.ResheaderId" id="ResheaderId" />
+        <input type="hidden" value="@Model.DepartmentId" class="hidden-Department" />
+
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    @*<div class="col-md-4">
+                            <div class="form-group label-floating">
+                                @Html.LabelFor(model => model.ComplainCode, htmlAttributes: new { @class = "control-label" })
+                                @Html.EditorFor(model => model.ComplainCode, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                                @Html.ValidationMessageFor(model => model.ComplainCode, "", new { @class = "text-danger" })
+                            </div>
+                        </div>*@
+                    <div class="col-md-4">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Status *</label>
+                            <input type="hidden" value="@Model.StatusId" id="hdnStatusId" name="StatusId" />
+                            <select id="StatusId" name="StatusId" class="select2 form-control">
+                                <option value="1">
+                                    Created
+                                </option>
+                            </select>
+                            @Html.ValidationMessageFor(model => model.StatusId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Room</label>
+                            <select class="select2 form-control" id="roomcombo" value="@ViewBag.RoomNo" disabled>
+                                @*<option value=""></option>*@
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Guest</label>
+                            <select class="select2 form-control" id="guestcombo" required>
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Service Category</label>
+                            @{Html.RenderAction("GuestComplainCategoryCombo", "GuestComplain", new { name = "ComplainCategoryId", required = true, value = Model?.ComplainCategoryId });}
+                            @Html.ValidationMessageFor(model => model.ComplainCategoryId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Guest Service Type</label>
+                            <select class="select2 form-control" id="typecombo" required>
+                                <option value=""></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group label-floating">
+                            @Html.LabelFor(model => model.SensitivityLevelId, htmlAttributes: new { @class = "control-label" })
+                            @{Html.RenderAction("SensitivityLevelCombo", "SensitivityLevel", new { name = "SensitivityLevelId", required = true, value = Model?.SensitivityLevelId });}
+                            @Html.ValidationMessageFor(model => model.SensitivityLevelId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group label-floating">
+                            <label class="control-label">Department  </label>
+                            <select id="DepartmentId" name="DepartmentId" class="form-control">
+                                <option value="ALL">ALL</option>
+                            </select>
+                            @*@Html.LabelFor(model => model.DepartmentId, htmlAttributes: new { @class = "control-label" })*@
+                            @*@{Html.RenderAction("DepartmentCombo", "Departments", new { name = "DepartmentId", required = true, value = Model?.DepartmentId });}*@
+                            @Html.ValidationMessageFor(model => model.DepartmentId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group label-floating">
+                            @Html.LabelFor(model => model.Subject, htmlAttributes: new { @class = "control-label" })
+                            @Html.EditorFor(model => model.Subject, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group label-floating">
+                            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label" })
+                            <textarea class="form-control" name="Description" id="Description"></textarea>
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-right">
+                        <div class="form-group">
+                            @*<div class="col-md-offset-1 col-md-10">*@
+                            <input type="submit" value="Save" class="btn btn-primary" id="btnsubmit" />
+                            <input type="reset" value="Clear" class="btn btn-default" />
+                            @*</div>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    </div>
+    <input type="hidden" id="selectedReservationRoomNo" value="@ViewBag.RoomNo" />
+    <script src="~/Scripts/ui/reservation-list/side-buttons/guest-service.js"></script>
+    @*<script>
+            $(document).ready(function () {
+
+                //2023-08-16--------------------------------------------------------------------------
+                $('#DepartmentId').addClass('select2');
+                $('#SensitivityLevelId').addClass('select2');
+                $('#ComplainCategoryId').addClass('select2');
+
+                $('.select2').select2();
+
+                setTimeout(function () {
+                    $('.select2.select2-container').addClass('form-control');
+                    $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+                    $('.select2-selection__arrow').css('display', 'none');
+                    $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+                }, 900);
+
+                $('body').off('click', '.select2').on('click', '.select2', function () {
+                    setTimeout(function () {
+                        $('.select2-results ul li').removeClass('select2-results__option--selected');
+                    }, 200);
+                });
+
+                //-------------------------------------------------------------------------------------------
+                LoadRoomCombo();
+                LoadGuest();
+                LoadMember();
+
+                setTimeout(function () {
+                    var roomId = $('#selectedReservationRoomNo').val();
+                    $('#roomcombo').val(roomId);
+                }, 500);
+
+                $('#roomcombo').addClass("Disabled");
+                $('#guestcombo').addClass("Disabled");
+
+            });
+
+            $('body').on('submit', '#complains', function (e) {
+
+                e.preventDefault();
+                var inspectiondetails = {
+                    __RequestVerificationToken: $('__RequestVerificationToken').val(),
+                    Id: $('#Id').val(),
+                    ComplainCode: $('#ComplainCode').val(),
+                    StatusId: $('#StatusId').val(),
+                    RoomId: $('#RoomId').val(),
+                    GuestProfileId: $('#guestcombo').val(),
+                    ComplainTypeId: $('#typecombo').val(),
+                    SensitivityLevelId: $('#SensitivityLevelId').val(),
+                    DepartmentId: $('#DepartmentId').val(),
+                    Subject: $('#Subject').val(),
+                    Description: $('#Description').val(),
+                    ReservationHeaderId: $('#ResheaderId').val(),
+                    RoomId: $('#roomcombo').val(),
+                    ComplainCategoryId: $('#ComplainCategoryId').val()
+
+                };
+
+                $.ajax({
+                    url: '/administration/GuestComplain/Save',
+                    dataType: 'html',
+                    data: inspectiondetails,
+                    method: 'POST',
+                    success: function (response) {
+                        var Type = $('#resType').val();
+                        ShowSuccessMessage('Record has been saved successfully.');
+                        setTimeout(function () {
+                            if (Type == "reservation") {
+                                //Update Uuid
+                                window.location.href = "/reservation/reservations/list/" + $('#hidden-Uuid').val();
+                                console.log("Uuid");
+                            } else {
+                                location.reload()
+                            }
+
+                        }, 2500);
+                    }
+                });
+            });
+
+            function LoadRoomCombo() {
+                $.ajax({
+                    url: '/administration/GuestComplain/SelectRoom',
+                    dataType: 'json',
+                    method: 'POST',
+                    success: function (data) {
+                        $('#roomcombo').find('option:gt(0)').remove();
+                        $.each(data, function (index, item) {
+                            $('<option value="' + item.Id + '">' + item.Name + '</option>').appendTo($('#roomcombo'));
+
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+            function LoadGuestCombo() {
+                $.ajax({
+                    url: '/administration/GuestComplain/SelectGuest',
+                    dataType: 'json',
+                    method: 'POST',
+
+                    success: function (data) {
+
+                        $('#guestcombo').find('option:gt(0)').remove();
+                        $.each(data, function (index, item) {
+                            $('<option value="' + item.Id + '">' + item.FirstName + '</option>').appendTo($('#guestcombo'));
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+            function LoadComplainTypeCombo() {
+                var categoryId = $('#ComplainCategoryId').val();
+                $.ajax({
+                    url: '/administration/ComplainTypes/SelectComplainTypesByComplainCategoryId',
+                    dataType: 'json',
+                    method: 'POST',
+                    data: { categoryId: categoryId },
+                    success: function (data) {
+                        $('#typecombo').find('option:gt(0)').remove();
+                        $.each(data, function (index, item) {
+                            $('<option value="' + item.Id + '">' + item.Name + '</option>').appendTo($('#typecombo'));
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            }
+            $('body').on('change', '.reservationHeader', function () {
+                LoadRoom();
+                LoadGuest()
+            });
+
+            function LoadRoom() {
+                var reservationheaderid = $('.reservationHeader:checked').val();
+                $.ajax({
+                    url: '/administration/GuestComplain/SelectRoomByReservation',
+                    dataType: 'json',
+                    data: { reservationId: reservationheaderid },
+                    method: 'POST',
+
+                    success: function (data) {
+
+                        $('#roomcombo').find('option:gt(0)').remove();
+                        $.each(data, function (index, item) {
+                            $('<option value="' + item.Id + '">' + item.Name + '</option>').appendTo($('#roomcombo'));
+
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+
+            function LoadGuest() {
+
+                var reservationheaderid = $('#ResheaderId').val();
+                $.ajax({
+                    url: '/administration/GuestComplain/SelectGuestByReservation',
+                    dataType: 'json',
+                    data: { reservationId: reservationheaderid },
+                    method: 'POST',
+
+                    success: function (data) {
+
+                        $('#guestcombo').find('option:gt(0)').remove();
+                        $.each(data, function (index, item) {
+                            $('<option value="' + item.Id + '">' + item.FirstName + '</option>').appendTo($('#guestcombo'));
+
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+            $(document).ready(function () {
+                //  LoadMember();
+            });
+
+
+            function LoadMember() {
+                $.ajax({
+                    url: '/administration/StaffDetails/VerticalList',
+                    dataType: 'html',
+                    method: 'POST',
+                    data: { Code: $('#ComplainCode').val() },
+                    success: function (response) {
+                        $('#membersContainer').html('').fadeOut();
+                        $('#membersContainer').html(response).fadeIn();
+                    },
+                    error: function (error) {
+
+                    }
+                });
+            }
+
+            $('body').on('change', '#ComplainCategoryId', function () {
+                LoadComplainTypeCombo();
+            });
+        </script>*@
+
+

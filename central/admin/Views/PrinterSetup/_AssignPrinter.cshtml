@@ -1,0 +1,73 @@
+﻿
+@using Scienter.DestinityHorizon.Common.Service
+@using Scienter.DestinityHorizon.Common.Domain
+
+@{
+    List<PrinterSetup> printerlst = new List<PrinterSetup>();
+    printerlst = new PrinterSetupService().Select();
+}
+
+<style>
+    .form-group-marging {
+        margin-top: 0px;
+    }
+
+    .card {
+        padding: 10px !important;
+    }
+
+    #searchby {
+        border-top: none;
+        border-left: none;
+        border-right: none;
+    }
+</style>
+<div class="row">
+    <div class="card">
+        <div class="card-header" data-background-color="purple">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4 class="title">
+                        @ViewBag.MenuName
+                        <hr class="visible-print" />
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <div class="card-content" id="contentLoadingArea">
+
+            <div class="row">
+                <div class="master-file-form">
+                    <form id="form" class="form" enctype="multipart/form-data">
+                        <input type="hidden" id="hdnMenuCode" name="hdnMenuCode" value="@ViewBag.MenuCode" />
+
+                        <div class="row">
+
+                            @foreach (var item in printerlst)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="form-group form-group-marging checkbox">
+                                            <label><input type="checkbox" name="PrinterCode" class="data-PrinterCode" data-printer-Id="@item.Id" data-printercode="@item.Code" value="@item.Id"> @item.Printer</label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+
+                        </div>
+
+                        <div class="row">
+                            <button type="button" class="btn btn-success btn-width-100px" id="btnSaveItemWisePrinters">
+                                Assign
+                            </button>
+                            <button type="reset" class="btn btn-default btn-width-100px btn-shadow" onclick="ClearForm()">
+                                Clear
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/scripts/UI/Scienter.ItemWisePrinters.js"></script>

@@ -1,0 +1,129 @@
+﻿ @model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.GuestProfileView>
+<div class="table-responsive">
+    <table class="table  has-padding" data-grid-sortable="true" id="GuestResult">
+
+        <tr>
+            <th></th>
+            @*<th class="text-primary">
+            Title
+            </th>
+            <th class="text-primary">
+            First Name
+            </th>
+            <th class="text-primary">
+            Last Name
+            </th>*@
+            <th class="text-primary">
+                Name
+            </th>
+            <th class="text-primary">
+            NIC 
+            </th>
+            <th class="text-primary">
+           Contact No
+            </th>
+            <th class="text-primary col-md-1">
+               Email
+            </th>
+        </tr>
+   
+
+        @foreach (var item in Model)
+        {
+            
+                <tr>
+                    <td>
+                        <div class="form-group checkbox">
+                            <label>
+                                <input class="guest-checkBox" id="guestId" type="checkbox" value="@item.Id" />
+                            </label>
+                        </div>
+                    </td>
+                    @*<td>
+                        @Html.DisplayFor(modelItem => item.SalutationName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastName)
+                    </td>*@
+                    <td title="@item.FulllNameWithSalutationForTitle" style="padding-left:10px">
+                        @Html.DisplayFor(modelItem => item.FulllNameWithSalutationForTitle)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IdNum)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ContactNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                </tr>            
+
+        }
+
+    </table>
+</div>
+
+
+<script>
+    //-----------------------------------------------------------------------------------  
+
+    // $('#GuestResult tr').on('click', function (event) {
+    $('#GuestResult tr').off('click').on('click', function (event) {
+        //event.stopPropagation();
+        event.preventDefault();
+        $(this).find('input.guest-checkBox').prop('checked', true);
+        $('#GuestResult tr').not(this).find('input.guest-checkBox').prop('checked', false);
+        $('#GuestResult tr').not(this).closest('tr').removeClass('selectdRecord');
+        $(this).addClass('selectdRecord');
+        FillCustomerProfile($(this).find($('.guest-checkBox')).val())
+
+        
+    });
+
+    //$('input.guest-checkBox').on('change', function () {
+    //    
+    //    $('input.guest-checkBox').not(this).prop('checked', false);
+    //    $('input.guest-checkBox').not(this).closest('tr').removeClass('selectdRecord');
+    //    $('input.guest-checkBox:checked').closest('tr').addClass('selectdRecord');
+    //    
+    //});
+
+
+    //-----------------------------------------------------------------------------------  
+    //$('body').on('click', '.guest-checkBox', function () {
+    //    
+    //    //event.stopPropagation();
+    //    FillCustomerProfile(this.value)
+    //    
+    //});
+
+    //$('body').on('click', 'tr', function () {
+    //    
+    //    FillCustomerProfile($(this).find($('.guest-checkBox')).val())
+    //    
+    //});
+    //------------------------------------------------------------------------------------------------
+    function FillCustomerProfile(guestProfileId) {
+
+        $.ajax({
+            url: '/reservation/reservations/getguestdetails',
+            dataType: 'html',
+            method: 'POST',
+            data: { id: guestProfileId },
+            success: function (response) {
+
+                $('#dataGuestProfileForm').html('').fadeOut();
+                $('#dataGuestProfileForm').html(response).fadeIn();
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+    //--------------------------------------------------------------------------------------------------
+</script>
+

@@ -1,0 +1,84 @@
+﻿@model Scienter.HotelERP.Common.Domain.HKSettings
+
+@{
+    ViewBag.Title = "HKSettings";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+                    <form id="hksettings">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group label-floating">
+                                    <label class="control-label">Walkin Posting Category *</label>
+                                    @{Html.RenderAction("PostingCategoryCombo", "PostingCategories", new { name = "WalkinPostingCategoryId", requiered = true, value = Model?.WalkInPostingCategoryId });}
+                                </div>
+                                <div class="form-group label-floating">
+                                    <label class="control-label">In-Housed Posting Category *</label>
+                                    @{Html.RenderAction("PostingCategoryCombo", "PostingCategories", new { name = "InHousePostingCategoryId", requiered = true, value = Model?.InHousePostingCategoryId });}
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                                    &nbsp;
+                                    <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+               
+                </div>
+                @*@Html.Partial("_Loading")*@
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+
+<script>
+    $('#btnSave').click(function (e) {
+       
+        e.preventDefault();
+        var hkset = {
+            __RequestVerificationToken: $('__RequestVerificationToken').val(),
+            WalkInPostingCategoryId: $('#WalkinPostingCategoryId').val(),
+            InHousePostingCategoryId: $('#InHousePostingCategoryId').val(),
+        };
+
+            $.ajax({
+                url: '/administration/HKSettings/save',
+                dataType: 'html',
+                data: hkset,
+                method: 'POST',
+                success: function (response) {
+                    ShowSuccessMessage('Record has been saved successfully.');
+                }
+            });
+
+    });
+</script>

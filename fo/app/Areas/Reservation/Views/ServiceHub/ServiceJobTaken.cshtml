@@ -1,0 +1,155 @@
+﻿@using Scienter.HotelERP.Common.Domain
+<style>
+    .form-group {
+        padding-bottom: 10px;
+        margin: 18px 0 0 0 !important;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            Service Jobs To Take
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="hdnId" id="hdnId" />
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+
+                    <div class="card card-bordered card-full grid-container" id="serviceJobTakenGrid">
+                        <div class="filteredGrid">
+                            <div class="row">
+                                <div class="form-group label-floating col-md-8">
+                                    <label class="control-label">Job Status</label>
+                                    <select name="takenJobStatus" id="takenJobStatus" class="form-control do-not-clear">
+                                        <option value="A" selected>ALL</option>
+                                        <option value="P">Pending</option>
+                                        <option value="C">Completed</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group label-floating col-md-8">
+                                    <input class="form-control" type="text" id="searchby" placeholder="Search by any colomn" title="Search by any colomn">
+                                </div>
+                                <div class="form-group label-floating col-md-4">
+                                    <button type="button" id="btnGridSearch" class="btn btn-primary"> <span class="glyphicon glyphicon-search"></span>  Search  </button>
+                                </div>
+                            </div>
+
+
+                            <table class="table table-striped"
+                                   id="existingServiceHubJobTakenGrid">
+                                <thead>
+                                    <tr>
+                                        <th class="  text-primary">
+                                            Ref. No
+                                        </th>
+                                        <th class="  text-primary">
+                                            Res. No
+                                        </th>
+                                        <th class="  text-primary">
+                                            Service Cat.
+                                        </th>
+                                        <th class="  text-primary">
+                                            Service Type
+                                        </th>
+                                        <th class="  text-primary">
+                                            Service Location
+                                        </th>
+                                        @*<th class="  text-primary">
+            Pre.Service Action
+        </th>
+        <th class="  text-primary">
+            Cur.Service Action
+        </th>*@
+                                        <th class="  text-primary">
+                                           Service Action
+                                        </th>
+                                        <th class="  text-primary">
+                                            Assign Dep.
+                                        </th>
+                                        <th class="  text-primary">
+                                            Assign Emp.
+                                        </th>
+                                        <th class="  text-primary">
+                                            Room #
+                                        </th>
+                                        <th class="  text-primary">
+                                            Guest
+                                        </th>
+                                        <th class="hidden-print"></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+
+                            </table>
+                        </div>
+                            
+                        </div>
+                    </div>
+                @Html.Partial("_Loading")
+            </div>
+
+            <div class="modal fade servicehub-servicejob-taken-model" id="servicehub-servicejob-taken-model" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document" style="width:60%;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <h5 class="modal-title" id="exampleModalLabel">Service Job Taken</h5>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="font-size:30px;">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-body">
+                            <div class="white_card_body">
+                                <div class="row">
+                                    <div class="form-group label-floating col-md-12">
+                                        <label class="control-label">Service Action *</label>
+                                        <select name="takenServiceAction" id="takenServiceAction" class="form-control "></select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group label-floating col-md-12">
+                                        <label class="control-label">Remark </label>
+                                        <textarea autocomplete="off" class="form-control text-box" id="takenRemark" name="takenRemark"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <input type="button" id="btnSaveTaken" value="Save" class="btn btn-primary" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="~/Scripts/ui/servicehub/servicehubjobtaken.js"></script>
+
+
+
+
+
+
+
+

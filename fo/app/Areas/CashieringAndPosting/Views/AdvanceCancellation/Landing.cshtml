@@ -1,0 +1,400 @@
+﻿
+@{
+    ViewBag.Title = "Advanced Payment refund";
+}
+
+<input type="hidden" name="name" id="hdn-PaymentType" value="" />
+<input type="hidden" name="name" id="hdn-PaymentTypeName" value="" />
+
+<div class="row" style="min-height:475px;">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header hidden-print" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title hidden-print">
+                            @ViewBag.Title
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="row">
+                    <div class="col-md-7 hidden-print" style="min-height:475px;">
+                        <fieldset class="the-fieldset">
+                            <legend class="the-legend">Select Reservation</legend>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <ul class="nav nav-tabs">
+                                        <li class="active" id="reservationlst"><a data-toggle="tab" href="#ReservationList">Reservation</a></li>
+                                        <li id="inhouselst"><a data-toggle="tab" href="#inhouseList">In House</a></li>
+                                    </ul>
+
+                                    <div class="tab-content">
+                                        <div id="ReservationList" class="tab-pane fade in active">
+                                            <div class="col-md-12" id="ReservationLoadingArea" style="padding-left:0px;padding-right:0px;"></div>
+                                        </div>
+                                        <div id="inhouseList" class="tab-pane fade">
+                                            <div class="col-md-12" id="InhouseLoadingArea" style="padding-left:0px;padding-right:0px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row margin-top-10px">
+                                <div class="col-md-12">
+                                    <input type="submit" id="btnAdd" value="Add" class="btn btn-primary disabled" />  &nbsp;
+                                    <input type="button" id="btnClear" value="Clear" class="btn btn-primary" />
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-md-5">
+                        @Html.Partial("_AdvancePaymentCancellationInvoice")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script src="~/Scripts/ui/common/Scienter.Common.TimeFormat.js"></script>
+<script>
+
+    $('#ReservationList').click(function () {
+        $('#ReservationList').show();
+    });
+
+    $('#inhouseList').click(function () {
+        $('#inhouseList').show();
+    });
+
+    var guestInfo = [];
+    // form load ------------------------------
+    $(document).ready(function () {
+        //ScorelToTop60px();
+        LoadAdvancepayment();
+        FillReservation();
+        FillInhouse();
+        billpaymentArray = [];
+        LoadPaymentypes();
+
+        setTimeout(function () {
+            hidebuttons();
+        }, 2500);
+    });
+
+    function LoadAdvancepayment() {
+        $.ajax({
+            url: '/CashieringAndPosting/AdvancedPayment/GetAdvancedPaymentDetails',
+            dataType: 'json',
+            method: 'GET',
+            success: function (response) {
+
+                $('#Ad_pTaxId').val(response.AdpTaxId);
+                $('#Ad_pPostingCatgId').val(response.AdpPostingCatgId);
+                $('#Ad_pChargeCodeId').val(response.AdpChargeCodeId);
+                $('#Ad_pPostingTypeId').val(response.AdpPostingTypeId);
+                $('#paymode').text(response.Name);
+                $('#Ad_Name').val(response.Name);
+                $('#hdnRefdocNo')
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+    //re-draw the bill header Get actual inv nomber and save date time from db
+    function getInvoiceNo(response) {
+        $('#Advancedpayment-billheader').html('');
+
+        var elements = '<tr>' +
+                           '<td class="report-width70perc" style="width:60%" >' +
+                           '<div class="row" style="padding-left:20px"><b>Res#:&nbsp</b>' + response.ReservationNo + '</div>' +
+                                '<div class="row" style="padding-left:20px">  <b>Room:&nbsp</b>' + response.RoomCode + '</div>' +
+                           '</td>' +
+                           '<td class="report-width30perc" style="width:40%">' +
+                               '<div class="row RptinvoiceNo" style="padding-left:10px"><b>Receipt#:&nbsp </b>' + response.InvoiceNo + ' </div>' +
+                               '<div class="row" style="padding-left:10px"><b>Date:&nbsp</b>' + fomatTime(response.RecordInsertTime, 'd') + '</div>' +
+                           '</td>' +
+                           '<tr> <td><div class="row" style="padding-left:20px"><b>Name:&nbsp</b>' + response.GuestName + '</div></td></tr>' +
+                           '</tr>';
+
+
+        $(elements).appendTo($('#Advancedpayment-billheader'));
+
+    }
+
+    $('#btnClear').click(function () { window.location.reload(); });
+
+    function hidebuttons() {
+        $('.showForm').hide();
+        $('.dropdown-toggle').hide();
+    }
+    //fill grid -----------------------------------
+    function FillReservation() {
+        var gridId = "#ReservationDetailGrid"; // change this - relevent grid id
+
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+        $.ajax({
+            url: '/CashieringAndPosting/AdvanceCancellation/ReservationListForCancelAdvance',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                $('#ReservationLoadingArea').html('').fadeOut();
+                $('#ReservationLoadingArea').html(response).fadeIn();
+                GridFunctionalities();
+            },
+            error: function (error) {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+        });
+    }
+    function FillInhouse() {
+        var gridId = "#ReservationDetailGrid2"; // change this - relevent grid id
+
+        var paginations = {
+            PageIndex: $(gridId).attr('data-page-index'),
+            PageSize: $(gridId).attr('data-page-size'),
+            FilterType: $(gridId).attr('data-filter-type'),
+            SearchKeyword: $(gridId).attr('data-search-keyword')
+        }
+
+        $.ajax({
+
+            url: '/CashieringAndPosting/AdvanceCancellation/InHouseReservationListForCancelAdvance',
+            dataType: 'html',
+            data: paginations,
+            method: 'POST',
+            success: function (response) {
+                $('#InhouseLoadingArea').html('').fadeOut();
+                $('#InhouseLoadingArea').html(response).fadeIn();
+                GridFunctionalities();
+            },
+            error: function (error) {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+        });
+    }
+    //select only one check box and enble add button
+
+    $('body').on('click', '.data-reservation-no_chkbox', function () {
+
+        guestInfo = [];
+        $('.data-reservation-no_chkbox').not(this).prop('checked', false)
+        //$('.nav-tabs .active').text().replace(" ", "").toUpperCase() == "RESERVATION" ? $('#ReservationList #ReservationDetailGrid tr:has(td)').find('.data-reservation-no_chkbox').not(this).prop('checked', false) : $('#inhouseList #ReservationDetailGridInhouse tr:has(td)').find('.data-reservation-no_chkbox').not(this).prop('checked', false);
+        var ResheaderId = $(this, '.data-reservation-no_chkbox').attr('data-reservation-headerId');
+        ReservationAlert(ResheaderId, 'ADPRFND');
+
+        guestInfo.push({
+            ReservationNo: $(this, '.data-reservation-no_chkbox').attr('res_no'),
+            groupresNo: $(this, '.data-reservation-no_chkbox').attr('gres_no'),
+            GuestName: $(this, '.data-reservation-no_chkbox').attr('name'),
+            RoomCode: $(this, '.data-reservation-no_chkbox').attr('roomCode'),
+            RoomId: $(this, '.data-reservation-no_chkbox').attr('roomId'),
+            GuestProfileId: $(this, '.data-reservation-no_chkbox').attr('guestprofId'),
+            AdvanceAmount: $(this, '.data-reservation-no_chkbox').attr('advanceAmount'),
+            RefDocNo: $(this, '.data-reservation-no_chkbox').attr('refdocNo'),
+            PaymentType: $(this, '.data-reservation-no_chkbox').attr('paymentType'),
+            PaymentTypeName: $(this, '.data-reservation-no_chkbox').attr('PaymentTypeName')
+        });
+        console.log(guestInfo);
+
+        $('#btnAdd').removeClass('disabled');
+    });
+
+    $('#btnAdd').click(function () {
+        $('#PaymentTypes').val(0);
+        $('#btnSaveCancelAdvance').removeClass('disabled');
+        $('#Advancedpayment-billheader').html('');
+        $('#AdvancedPayAmount').val((parseFloat(guestInfo[0].AdvanceAmount) * -1).toFixed(2));
+        $('.hidden-originalAmount').val((parseFloat(guestInfo[0].AdvanceAmount) * -1).toFixed(2));
+        $('#PaymentTypes').val(guestInfo[0].PaymentType);
+
+        $('#hdn-PaymentType').val(guestInfo[0].PaymentType);
+        $('#hdn-PaymentTypeName').val(guestInfo[0].PaymentTypeName);
+        
+        if ($("#PaymentTypes option:selected").val() == undefined || $("#PaymentTypes option:selected").val() == "") {
+            var PaymentType = $('#hdn-PaymentType').val();
+            var PaymentTypeName = $('#hdn-PaymentTypeName').val();
+
+            $('#PaymentTypes').append('<option value="' + PaymentType + '">' + PaymentTypeName + '</option>');
+            $('#PaymentTypes').val(PaymentType);
+        }
+
+        //$('#AdvancedPayAmount').prop('disabled',true);
+        var elements = '<tr>' +
+                           '<td class="report-width75perc" style="width:60%" >' +
+                                 '<div class="row" style="padding-left:20px">  <b>Res#:&nbsp</b>' + guestInfo[0].ReservationNo + '</div>' +
+                                '<div class="row" style="padding-left:20px">  <b>Room:&nbsp</b>' + guestInfo[0].RoomCode + '</div>' +
+                           '</td>' +
+                           '<td class="report-width25perc" style="width:40%">' +
+                               '<div class="row RptinvoiceNo" style="padding-left:10px"><b>Receipt#:&nbsp </b> </div>' +
+                               //'<div class="row RptinvoiceNo" style="padding-left:10px"><b>AdvanceReceiptNo#:"' + guestInfo[0].RefDocNo+' </b> </div>' +
+                               '<div class="row" style="padding-left:10px"><b>Date:&nbsp</b>@DateTime.Now.AddMinutes(55).ToString("dd'/'MM'/'yyyy HH:mm:ss")</div>' +
+                           '</td>' +
+                           '</tr>' +
+                         '<tr class="report-width100perc" style="width:100%"> <td><div class="row" style="padding-left:20px;"><b>Name:&nbsp</b>' + guestInfo[0].GuestName + '</div></td></tr>';
+        $(elements).appendTo($('#Advancedpayment-billheader'));
+    });
+
+    $('#BillTypeId').change(function () {
+
+        $.ajax({
+            url: '/CashieringAndPosting/Posting/GetPostingTypePrice',
+            dataType: 'Json',
+            data: { postingTypeId: parseInt($("#BillTypeId option:selected").val()) },
+            method: 'POST',
+            success: function (data) {
+                $("#Amount").val(Number(parseFloat(data.Price).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 }));
+
+            },
+            error: function (error) {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+
+        });
+
+    })
+
+    $('#btnprint').on('click', function (e) {
+
+        //$('#ReportHeader .table-posting td .RptinvoiceNo').text().replace('Receipt No:','').trim()
+        var type = "";
+        var invoiceNo = "";
+         var postingtype = $('#PosringTypehdn').val();
+         if (postingtype == "inhouse") {
+         type = 'I';
+         invoiceNo = $('#ReportHeader .table-posting td .RptinvoiceNo').text().replace('Receipt#:', '').trim();
+         }
+         else {
+        type = 'W'
+        invoiceNo = $('#ReportHeader #Advancedpayment-billheader td .RptinvoiceNo').text().replace('Receipt#:', '').trim();
+         }
+        var reportName = 'AdvancePaymentReciept';
+        $('#btnprint').attr("href", '/Reporting/Report/ViewReport?ReportName=' + reportName + '&DocNo=' + invoiceNo + '');
+
+    //    //$('#btnBillPreview').attr('width', '1000px')
+    //    // $('#btnprint').attr('href', '/reporting/Posting/AdvancePayment?DocNo=' + invoiceNo + '&Type=' + type);
+    //     $('#btnprint').attr('href', '/reporting/Posting/AdvancePayment?DocNo='+invoiceNo);
+
+    //    //} else {
+    //    //     ShowWarningMessage("Select a Folio to Preview")
+    //    //}
+    //    //Then claculate tax in Invoice view.
+    });
+
+
+
+    //$('#AdvancedPayAmount').focusout(function () {
+    //
+    //    var Amount = parseFloat($('#AdvancedPayAmount').val().trim().replace(/,/g, '')).toFixed(2);
+
+    //    if (Amount > parseFloat(guestInfo[0].AdvanceAmount) || Amount ==0) {
+    //
+    //        Amount = guestInfo[0].AdvanceAmount;
+    //        $('#AdvancedPayAmount').val(guestInfo[0].AdvanceAmount);
+    //    }
+
+    //    if (Amount.toString() == "NaN") {
+    //        $('#AdvancedPayAmount').val('0.00');
+    //    }
+    //    else {
+    //        var amountCommasepVal = Number(parseFloat(Amount).toFixed(2)).toLocaleString('en', { minimumFractionDigits: 2 });
+    //        $('#AdvancedPayAmount').val(amountCommasepVal);
+    //    }
+    //});
+
+
+    $('body').on('click', '#btnSaveCancelAdvance', function (e) {
+        if ($('#AdvancedPayAmount').val() == undefined || $('#AdvancedPayAmount').val() == 0) {
+            ShowWarningMessage("Advance amount required.");
+        }
+        else if ($("#PaymentTypes option:selected").val() == undefined || $("#PaymentTypes option:selected").val() == "") {
+            ShowWarningMessage("Payment type  fill all required feilds");
+        }
+        else if (Math.abs(parseFloat($('#AdvancedPayAmount').val())) > Math.abs(parseFloat($('.hidden-originalAmount').val()))) {
+            ShowErrorMessage("Refund amount cannot be greater than the original advanced amount");
+        }
+        else {
+            CallPasswordModel(function (e) {
+                var advancepayment = {
+                    BillTypeId: $('#Ad_pPostingTypeId').val(),
+                    TaxGroupId: $('#Ad_pTaxId').val(),
+                    //Amount: $('#AdvancedPayAmount').val(),
+                    Amount: parseFloat($('#AdvancedPayAmount').val().trim().replace(/,/g, '')).toFixed(2) * -1,
+                    Remarks: $('#AdvancedPayRemark').val() == "" ? "Advance Payment Cancel For" + guestInfo[0].RefDocNo : $("#AdvancedPayRemark").val(),
+                    PostingCategoryId: $('#Ad_pPostingCatgId').val(),
+                    DRCR: 'D',
+                    ChargeCodeId: $('#Ad_pChargeCodeId').val(),
+                    RoomDetails: guestInfo,
+                    RefDocNo: guestInfo[0].RefDocNo,
+                    RefundPaymentTypeId: $('#PaymentTypes option:selected').val()
+                };
+                $.ajax({
+                    url: '/CashieringAndPosting/AdvanceCancellation/SaveCancelAdvancePayment',
+                    dataType: 'Json',
+                    data: advancepayment,
+                    method: 'POST',
+                    success: function (response) {
+                        if (response.toString().startsWith('ERR-')) {
+                            ShowWarningMessage(response.toString().replace('ERR-',''));
+                        } else {
+                            ShowSuccessMessage('Record has been saved successfully.');
+                            $('#btnprint').removeClass('disabled');
+                            $('#btnSaveCancelAdvance').prop('disabled', true);
+                            $('#preview').text('');
+                            $('.ribbon').addClass('hidden');
+                            $('#btnAdd').addClass('disabled');
+                            getInvoiceNo(response);
+                            FillReservation();
+                        }
+                    },
+                    complete: function () {
+                        $('#btnprint').removeClass('disabled');
+                        $('#btnSaveCancelAdvance').prop('disabled', true);
+                        $('#preview').text('');
+                        $('.ribbon').addClass('hidden');
+                        $('#btnAdd').addClass('disabled');
+                    },
+                    error: function (xhr, status, error) {
+                        ShowErrorMessage('Sorry, There is an error in saving this record.');
+                    }
+
+                });
+
+                $('.currencyTc').removeClass('hidden');
+                $('#AddPayment').addClass('hidden');
+                $('#btnClear').val('New');
+
+            });
+        }
+    });
+
+    function LoadPaymentypes() {
+
+        $.ajax({
+            url: '/CashieringAndPosting/AdvanceCancellation/PaymentMethods',
+            dataType: 'json',
+            method: 'GET',
+            success: function (data) {
+
+                //$('#PaymentTypes option').not(':first-child').remove();
+                $.each(data, function (index, item) {
+                    $('#PaymentTypes').append('<option value="' + item.Id + '">' + item.Name + '</option>');
+                })
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+
+</script>

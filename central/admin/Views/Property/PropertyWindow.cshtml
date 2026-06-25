@@ -1,0 +1,113 @@
+﻿<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    .zoom {
+        padding: 30px;
+        transition: transform .4s;
+        width: 170px;
+        height: 170px;
+        margin: 0 auto;
+    }
+
+        .zoom:hover {
+            -ms-transform: scale(1.5); /* IE 9 */
+            -webkit-transform: scale(1.5); /* Safari 3-8 */
+            transform: scale(1.5);
+        }
+</style>
+<div class="col-md-12">
+    <div class="col-md-3"> </div>
+    <div class="col-md-6">
+        <div class="card" style="margin-top:90px; height:auto;">
+            <input type="hidden" id="selected-Property" value="" />
+            <div class="card-header card-header-icon" style="padding-bottom:5px;" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-12" style="padding-top:11px; text-align:center;">
+                        <span href="http://www.scienter.lk" target="_blank">
+                            <img src="~/Images/destinity-horizon-logo.png" width="300px" />
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top:10px; margin-bottom:10px; height:auto;">
+                <div class="col-md-1"> </div>
+                <div class="col-md-10">
+                    <div class="row" id="PropertyDiv">
+                    </div>
+
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3"> </div>
+</div>
+
+
+<script>
+    //--------------------------------------------------------------------------------------------------------
+
+    //--------------------------------------------------------------------------------------------------------
+    $(document).ready(function () {
+        FillPropertyDiv();
+    });
+
+    //--------------------------------------------------------------------------------------------------------
+    function FillPropertyDiv() {
+        $.ajax({
+            url: '/Property/SelectUserWisePropertys',
+            dataType: 'json',
+            success: function (data) {
+                var listobj = data;
+                var colVal = 12 / listobj.length;
+                $.each(data, function (index, Property) {
+
+                    $(' <div  Property-val="' + Property.CompanyID + '"  class="col-md-' + colVal + ' side-button zoom">'
+                        + '<img src="' + Property.LogoURL + '">'
+                        + '</div>').appendTo($('#PropertyDiv'));
+                });
+            },
+        });
+    }
+
+    //--------------------------------------------------------------------------------------------------------
+    $('body').on('click', 'div .side-button', function (e) {
+        var PropertyId = $(this).closest('div').attr('Property-val');
+        $('#selected-Property').val(PropertyId);
+
+        // $('.properetyLogo').html($(this).closest('div').find('img').attr('src'));
+        //$('.properetyLogo').find('img').attr('src', $(this).closest('div').find('img').attr('src'));
+        debugger;
+
+        if ($('#selected-Property').val() != 0) {
+
+            $.ajax({
+                url: '/Property/PropertyAssign?PropertyId=' + $('#selected-Property').val(),
+                dataType: 'json',
+                success: function (data) {
+                    if (data.startsWith('ERR-')) {
+                        ShowErrorMessage(data.replace("ERR-", ""));
+                    } else if (data.startsWith('OutletsWindow')) {
+                        window.location.href = '/outlet/outletswindow/'
+                    } else {
+                        window.location.href = '/dashboard/Landing/'
+                    }
+                },
+            });
+
+        } else {
+            ShowWarningMessage('Please Select Property to Prceed!');
+        }
+    });
+  
+
+    //---------------------------------------------------------------------------------------------------------
+    $('body').on('click', '#btnSelect', function (e) {
+
+
+    });
+
+
+</script>

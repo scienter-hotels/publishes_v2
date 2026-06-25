@@ -1,0 +1,119 @@
+﻿
+@model  IEnumerable<Scienter.HotelERP.Common.Domain.AllotmentHeaders>
+
+@{
+    ViewBag.Title = "Exising Allotments";
+}
+
+<div class="table-responsive grid-container">
+    <table class="table table-striped"
+           id="existingSeasonGrid">
+        <thead>
+            <tr>
+                <th class="text-primary">
+                    Agent
+                </th>
+                <th class="text-primary">
+                    Name
+                </th>
+                <th class="text-primary">
+                    Availability
+                </th>
+                <th class="text-primary">
+                    Room Category
+                </th>
+                <th class="text-primary">
+                    From
+                </th>
+                <th class="col-md-1 text-primary">
+                    To
+                </th>
+                <th class="text-primary">
+                    Active
+                </th>
+                <th class="col-md-1 hidden-print"></th>
+                <th class="col-md-1 hidden-print"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    @item.AgentName
+                </td>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.RoomBalance/@item.NoOfRooms
+                </td>
+                <td>
+                    @item.RoomCategory
+                </td>
+                <td>
+                    @item.FromDate.ToString("dd/MM/yyyy")
+                </td>
+                <td>
+                    @item.ToDate.ToString("dd/MM/yyyy")
+                </td>
+                <td class="col-md-1">
+                    <div class="form-group checkbox">
+                        <label>
+                            @Html.DisplayFor(modelItem => item.IsActive)
+                            <span class="hidden">
+                                @if (item.IsActive)
+                                {
+                                    @:Active
+                                }
+                                else
+                                {
+                                    @:Inactive
+                                }
+                            </span>
+                        </label>
+                    </div>
+
+                </td>
+                <td class="hidden-print text-right">
+                    <a class="btn btn-theme-color-2 btn-sm" id="btnEdit" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#content" href="/administration/allotments/edit/@item.Id">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+
+                    <a class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/administration/allotments/delete/@item.Id">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                </td>
+                <td class="hidden-print text-right">
+                    @*<button type="button" class="btn btn-theme-color-2 btn-sm" id="makeReservation" onclick="location.href='/administration/allotments/edit/@item.Id'">*@
+                    <button type="button" class="btn btn-theme-color-2 btn-sm MakeReservation" id="makeReservation" data-id="@item.Id">
+                        <span class="glyphicon glyphicon-plus"></span> Make Reservation
+                    </button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#existingSeasonGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+</script>

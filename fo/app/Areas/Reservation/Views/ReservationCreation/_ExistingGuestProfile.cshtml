@@ -1,0 +1,85 @@
+﻿ @model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.GuestProfileView>
+<div class="table-responsive">
+    <table class="table  has-padding" data-grid-sortable="true" id="GuestResult">
+
+        <tr>
+            <th></th>
+            <th class="text-primary">
+                Name
+            </th>
+            <th class="text-primary">
+            NIC 
+            </th>
+            <th class="text-primary">
+           Contact No
+            </th>
+            <th class="text-primary col-md-1">
+               Email
+            </th>
+        </tr>
+   
+
+        @foreach (var item in Model)
+        {
+            
+                <tr>
+                    <td>
+                        <div class="form-group checkbox">
+                            <label>
+                                <input class="guest-checkBox-for-reservation-creation" id="guestId" type="checkbox" value="@item.Id" />
+                            </label>
+                        </div>
+                    </td>
+                    <td title="@item.FulllNameWithSalutationForTitle" style="padding-left:10px">
+                        @Html.DisplayFor(modelItem => item.FulllNameWithSalutation)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IdNum)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ContactNo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                </tr>            
+
+        }
+
+    </table>
+</div>
+
+
+<script>
+    //-----------------------------------------------------------------------------------  
+
+    $('#GuestResult tr').off('click').on('click', function (event) {
+        event.preventDefault();
+        
+        $(this).find('input.guest-checkBox-for-reservation-creation').prop('checked', true);
+        $('#GuestResult tr').not(this).find('input.guest-checkBox-for-reservation-creation').prop('checked', false);
+        $('#GuestResult tr').not(this).closest('tr').removeClass('selectdRecord');
+        $(this).addClass('selectdRecord');
+
+        FillCustomerProfile($(this).find($('.guest-checkBox-for-reservation-creation')).val())
+    });
+
+    function FillCustomerProfile(guestProfileId) {
+
+        $.ajax({
+            url: '/reservation/ReservationCreation/getguestdetails',
+            dataType: 'html',
+            method: 'POST',
+            data: { id: guestProfileId },
+            success: function (response) {
+                $('#dataGuestProfileFormNew').html('').fadeOut();
+                $('#dataGuestProfileFormNew').html(response).fadeIn();
+            },
+            error: function (error) {
+
+            }
+        });
+    }
+    //--------------------------------------------------------------------------------------------------
+</script>
+

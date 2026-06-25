@@ -1,0 +1,52 @@
+﻿
+
+<input type="hidden" value="@ViewBag.ReservationId" name="" id="resHeaderId" />
+<input type="hidden" value="@ViewBag.IsStopPosting"  id="isStopPosting"/>
+
+<div class="row" style="margin-top:-20px;">
+    <div class="col-md-8"></div>
+    <div class="form-group col-md-2">
+        <input type="submit" id="btnStopPostingYea" value="YES" class="btn btn-primary" width="100%" />
+    </div>
+    <div class="form-group col-md-2">
+        <input type="button" id="btnStopPostingNo" value="NO" class="btn btn-default"  width="100%"/>
+    </div>
+</div>
+
+<script>
+    $('body').off('click', '#btnStopPostingYea').on('click', '#btnStopPostingYea', function (e) {
+        e.preventDefault();
+        var headerId = $('#resHeaderId').val()
+       
+        $.ajax({
+            url: '/Reservation/Reservations/StopPosting?resHeaderId=' + headerId,
+            dataType: 'json',
+            method: 'POST',
+            success: function (data) {
+                if (data.startsWith("OK")) {
+                    $('#grid-record-detail-model').modal('hide');
+                    if ($('#isStopPosting').val() == "0") { // if prevoius status is allowed, after update it will mark as stop
+                        ShowSuccessMessage('All extra postings stopped for this reservation.');
+                        LoadInhouseReservationGrid();
+                    } else {
+                        ShowSuccessMessage('Extra postings allowed for this reservation.');
+                        LoadInhouseReservationGrid();
+                    }
+
+                    //LoadInhouseReservationGrid();
+                    //setTimeout(function () { window.location.reload();},2000)
+                  
+                    
+                } else {
+                    ShowWarningMessage(data);
+                }
+            },
+            error: function (aa, bb, cc) {
+              
+            }
+        });
+    });
+</script>
+
+
+

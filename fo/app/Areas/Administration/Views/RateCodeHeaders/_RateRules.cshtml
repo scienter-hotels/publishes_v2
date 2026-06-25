@@ -1,0 +1,103 @@
+﻿<input type="hidden" value="@ViewBag.rateCodeId" name="rateCodeId" id="rateCodeId" />
+<form id="RateRules">
+    <div class="row">
+        <div class="col-md-12">
+            @*<fieldset class="the-fieldset">
+                <legend class="the-legend">Rate Rules</legend>*@
+                <div class="row">
+                    <div class="col-md-3 form-group label-floating">
+                        <label class="control-label">Min Stay Through *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MinStayThrough" name="MinStayThrough" type="text" value="" required>
+                    </div>
+                    <div class="col-md-3 form-group label-floating">
+                        <label class="control-label">Max Stay Through *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MaxStayThrough" name="MaxStayThrough" type="text" value="" required>
+                    </div>
+                    <div class="col-md-3 form-group label-floating">
+                        <label class="control-label">Min Occupancy *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MinOccupancy" name="MinOccupancy" type="text" value="" required>
+                    </div>
+
+                    <div class="col-md-3 form-group label-floating">
+                        <label class="control-label">Max Occupancy *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MaxOccupancy" name="MaxOccupancy" type="text" value="" required>
+                    </div>
+                </div>
+                <div class="row mar-bot-1">
+                    <div class="col-md-3 form-group label-floating">
+                        <label class="control-label">Min Rooms *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MinRooms" name="MinRooms" type="text" value="" required>
+                    </div>
+                    <div class="col-md-3 form-group label-floating">
+                        <label class="control-label">Max Rooms *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MaxRooms" name="MaxRooms" type="text" value="" required>
+                    </div>
+                    @*<div class="col-md-3 form-group label-floating">
+                        <label class="control-label">Max Rooms *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MaxRooms" name="MaxRooms" type="text" value="" required>
+                    </div>*@
+                    <div class="col-md-3 form-group label-floating">
+                        <label class="control-label">Book Before Days *</label>
+                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="BookBeforeDays" name="BookBeforeDays" type="text" value="" required>
+                    </div>
+                </div>
+            @*</fieldset>*@
+        </div>
+    </div>
+    <div>
+        <div class="form-group" style="margin: -0.5em 0 1em 0;">
+            <input type="submit" id="btnSaveRateRules" value="Save" class="btn btn-primary" />
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        var RateCodeHeaderId = $('#rateCodeId').val();
+        SelectRateRulesById(RateCodeHeaderId);
+    });
+
+    $('body').on('submit', '#RateRules', function (e) {
+        e.preventDefault();
+        var RateCodeHeaderId = $('#rateCodeId').val();
+        var rateCodeHeader = {
+            MinStayThrough: $('#MinStayThrough').val(),
+            MaxStayThrough: $('#MaxStayThrough').val(),
+            MinOccupancy: $('#MinOccupancy').val(),
+            MaxOccupancy: $('#MaxOccupancy').val(),
+            MinRooms: $('#MinRooms').val(),
+            MaxRooms: $('#MaxRooms').val(),
+            BookBeforeDays: $('#BookBeforeDays').val()
+        };
+        $.ajax({
+            url: '/administration/ratecodeheaders/RateRulesSave',
+            dataType: 'JSON',
+            data: { rateCodeHeader: rateCodeHeader, rateCodeHeaderId: RateCodeHeaderId },
+            method: 'POST',
+            success: function (response) {
+                ShowSuccessMessage('Record has been saved successfully.');
+                FillGrid();
+            }
+
+        });
+    });
+
+    function SelectRateRulesById(id) {
+        $.ajax({
+            async: false,
+            url: '/administration/RateCodeHeaders/RateRulesSelectbyId',
+            dataType: 'json',
+            data: { id: id },
+            method: 'POST',
+            success: function (data) {
+                $('#MinStayThrough').val(data.MinStayThrough);
+                $('#MaxStayThrough').val(data.MaxStayThrough);
+                $('#MinOccupancy').val(data.MinOccupancy);
+                $('#MaxOccupancy').val(data.MaxOccupancy);
+                $('#MinRooms').val(data.MinRooms);
+                $('#MaxRooms').val(data.MaxRooms);
+                $('#BookBeforeDays').val(data.BookBeforeDays);
+            }
+        });
+    }
+</script>

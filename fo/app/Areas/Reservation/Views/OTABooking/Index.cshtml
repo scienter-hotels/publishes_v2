@@ -1,0 +1,266 @@
+﻿
+@{
+    ViewBag.Title = "Pending OTA Bookings";
+}
+
+<style>
+    .ota-management {
+        color: #000;
+        font-size: 12px;
+    }
+
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            OTA Bookings
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <ul class="nav nav-tabs" style="width: 25%;float: right;position: absolute;margin-left: 941px;margin-top: -56px;display: flex;justify-content: center;height: 0px;">
+                    <li class="received active"><a data-toggle="tab" href="#received-ota-bookings-block">Received</a></li>
+                    <li class="pending pending-update-tab"><a data-toggle="tab" href="#pending-ota-bookings-block">Pending</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="row received-ota-bookings-block tab-pane fade in active" id="received-ota-bookings-block">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label style="font-size: 11px;color: #000;font-style: italic;">* By default, this screen displays reservations picked on @Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate.ToString("dd/MM/yyyy"). Use the search options for more specific results. Note that searches will match all selected criteria.</label>
+                                </div>
+                            </div>
+                            <div class="row" style="border:1px solid #ccc;min-height:30px; margin-bottom:10px; border-radius:5px; padding:5px;">
+                                <div class="col-md-2">
+                                    <label class="ota-management">Picked Date</label>
+                                    <input type="text" class="effective-to form-control text-box single-line" id="Picked-Date" name="PickedDate" value="@Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate" autocomplete="off" style="margin-top: -35px;" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="ota-management">PMS Reference</label>
+                                    <input type="text" placeholder="Group / Res. No" id="PMS-Reference" name="PMSReference" class="form-control" style="margin-top: -35px;" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="ota-management">Voucher No</label>
+                                    <input type="text" placeholder="OTA Reference No" id="OTA-VoucherNo" name="OTAVoucherNo" class="form-control" style="margin-top: -35px;" />
+                                </div>
+                                <div class="col-md-2">
+                                    <button title="Search" class="btn btn-theme-color-2 btn-primary" style="width:100%;" id="btnOTASearch">SEARCH</button>
+                                </div>
+                                <div class="col-md-1">
+                                    <button class="btn btn-theme-color-1" id="OTA-Clear" title="Clear Search Criteria"
+                                            style="
+                                                        width: 100%;
+                                                        margin-top: 6px;
+                                                        padding-left: 10px;
+                                                        padding-right: 10px;
+                                                        /* font-size: 12px; */
+                                                        height: 32px;
+                                                        background-color: #878787;
+                                                        ">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" style="border:1px solid #ccc;min-height:415px; margin-bottom:20px; border-radius:5px; padding:20px;">
+                                    <div id="ReceivedOTABookingList" style="max-height:370px; overflow-y:scroll;">
+                                        <table class="table table-striped" id="ReceivedOTABookingGrid">
+                                            <tr>
+                                                <th>Picked D/T</th>
+                                                <th>PMS Reference</th>
+                                                <th>VoucherNo</th>
+                                                <th>Booking Status</th>
+                                                <th>Channel</th>
+                                                <th>Arrival</th>
+                                                <th>Departure</th>
+                                                <th></th>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row pending-ota-bookings-block tab-pane fade" id="pending-ota-bookings-block">
+                        <div class="col-md-12">
+                            <div style="border:1px solid #ccc;min-height:515px; margin-bottom:20px; border-radius:5px; padding:20px;">
+                                <div id="PendingOTABookingList" style="max-height:470px; overflow-y:scroll;">
+                                    <table class="table table-striped" id="PendingOTABookingGrid">
+                                        <tr>
+                                            <th>Voucher No</th>
+                                            <th>Booking Status</th>
+                                            <th>Channel</th>
+                                            <th>Arrival</th>
+                                            <th>Departure</th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+        $('#Picked-Date').daterangepicker({
+            "showDropdowns": true,
+            "singleDatePicker": true,
+            "showWeekNumbers": true,
+            "showISOWeekNumbers": true,
+            "opens": "right",
+            "applyClass": "btn-primary",
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        });
+
+        LoadPendingOTABookings();
+        LoadReceivedOTABookings();
+    });
+
+    function LoadPendingOTABookings() {
+        $.ajax({
+            url: '/reservation/OTABooking/PendingOTABookings',
+            dataType: 'json',
+            method: 'POST',
+            success: function (data) {
+                if (data.length > 0) {
+                    $("#PendingOTABookingGrid tr:nth-child(2)").remove();
+                }
+                $.each(data, function (index, item) {
+
+                    $(
+                        '<tr>' +
+                        '<td class="">' + item.VoucherNo + '</td>' +
+                        '<td class="">' + item.BookingStatus + '</td>' +
+                        '<td class="">' + item.ChannelName + '</td>' +
+                        '<td class="">' + item.Arrival + '</td>' +
+                        '<td class="">' + item.Departure + '</td>' +
+                        '<td class="col-md-1 text-center">' +
+                        '<button style="height: 30px;font-size:13px;" title="View" data-Uuid="' + item.Uuid + '" class="btn btn-primary booking-detail-view">' +
+                        '<span class="glyphicon glyphicon-eye-open"></span>' +
+                        '</button>' +
+                        '</td >' +
+                        '<td class="col-md-1 text-center">' +
+                        '<button style="height: 30px;font-size:13px;" title="Re-Push" data-Uuid="' + item.Uuid + '"  class="btn btn-primary booking-re-push">' +
+                        '<span class="glyphicon glyphicon-retweet"></span>' +
+                        '</button>' +
+                        '</td >' +
+                        '</tr>'
+                    ).appendTo($('#PendingOTABookingGrid'));
+
+                });
+
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+    }
+
+    $('body').off('click', '.booking-detail-view').on('click', '.booking-detail-view', function () {
+        uuid = $(this).attr('data-Uuid');
+        title = "";
+        url = "/reservation/OTABooking/BookingDetailByUuid?uUid=" + uuid;
+        CallDetailModelSimple(title, url, 800);
+    });
+
+    $('body').off('click', '.booking-re-push').on('click', '.booking-re-push', function () {
+        uuid = $(this).attr('data-Uuid');
+        $.ajax({
+            url: "/reservation/OTABooking/RePushOTABooking?uUid=" + uuid,
+            dataType: 'json',
+            method: 'POST',
+            success: function (data) {
+                if (data.startsWith("Err-")) {
+                    ShowWarningMessage(data.replace("Err-", ""));
+                } else {
+                    ShowSuccessMessage("Saved Successfully.");
+                    LoadPendingOTABookings();
+                }
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+    });
+
+    function LoadReceivedOTABookings() {
+        var pickedDate = $('#Picked-Date').val();
+        var pmsReference = "";
+        var voucherNo = "";
+
+        if ($('#PMS-Reference').val() != "" || $('#PMS-Reference').val() != undefined) {
+            pmsReference = $('#PMS-Reference').val();
+        }
+
+        if ($('#OTA-VoucherNo').val() != "" || $('#OTA-VoucherNo').val() != undefined) {
+            voucherNo = $('#OTA-VoucherNo').val();
+        }
+
+        $.ajax({
+            url: '/reservation/OTABooking/ReceivedOTABookings',
+            dataType: 'json',
+            method: 'POST',
+            data: { pickedDate: pickedDate, pmsReference: pmsReference, voucherNo: voucherNo },
+            success: function (data) {
+                $('#ReceivedOTABookingGrid tbody tr:not(:first)').remove();
+                $.each(data, function (index, item) {
+
+                    $(
+                        '<tr>' +
+                        '<td class="">' + item.PickupDate + '</td>' +
+                        '<td class="">' + item.Reference + '</td>' +
+                        '<td class="">' + item.VoucherNo + '</td>' +
+                        '<td class="">' + item.BookingStatus + '</td>' +
+                        '<td class="">' + item.ChannelName + '</td>' +
+                        '<td class="">' + item.Arrival + '</td>' +
+                        '<td class="">' + item.Departure + '</td>' +
+                        '<td class="col-md-1 text-center">' +
+                        '<button style="height: 30px;font-size:13px;" title="View" data-Uuid="' + item.Uuid + '" class="btn btn-primary booking-detail-view">' +
+                        '<span class="glyphicon glyphicon-eye-open"></span>' +
+                        '</button>' +
+                        '</td >' +
+                        '</tr>'
+                    ).appendTo($('#ReceivedOTABookingGrid'));
+
+                });
+
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+    }
+
+    $('body').off('click', '#btnOTASearch').on('click', '#btnOTASearch', function (e) {
+        e.preventDefault();
+        LoadReceivedOTABookings();
+    });
+
+    $('body').off('click', '#OTA-Clear').on('click', '#OTA-Clear', function (e) {
+        e.preventDefault();
+
+        $('#PMS-Reference').val('');
+        $('#OTA-VoucherNo').val('');
+
+        LoadReceivedOTABookings();
+    });
+
+</script>

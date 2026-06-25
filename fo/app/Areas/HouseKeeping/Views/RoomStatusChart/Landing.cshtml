@@ -1,0 +1,47 @@
+﻿@model Scienter.HotelERP.Common.Domain.RoomStatusChart
+@{
+    ViewBag.Title = " Room Status Chart";
+}
+<link href="~/Content/css/room-status-chart/room-status-chart.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-md-12" style="padding:0;">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="override-card-padding override-card-two-height" id="contentLoadingArea" style="margin-top:0px;">
+                <div class="row" style="margin-right: 13px; margin-left: -17px;margin-top: 1em;">
+                    <div class="col-md-2 col-lg-1 col-floors">
+                        <ul id="membersContainer" class="floors list-group">
+                            <li class="list-group-item" style="padding-left:5px;">
+                                <div class="checkbox form-group" style="margin: 1em 0 0 0;">
+                                    <label style="font-size: 0.8em; width: 7.2em; overflow: hidden; display: inline-block; text-overflow: ellipsis; white-space: nowrap;">
+                                        <input type="checkbox" class="select-all-floors" name="Id" id="Id" checked /> All
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-10 col-lg-11 col-rooms" style="padding-right: 7px !important;">
+
+                        <div class="row out-of-order-rooms" id="RoomLoadingGrid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link href="~/Content/remix-icons/remix-icons.css" rel="stylesheet" />
+<script src="~/Scripts/ui/room-status-chart/isotope.pkgd.min.js"></script>
+<script src="~/Scripts/ui/room-status-chart/room-status-chart.js"></script>

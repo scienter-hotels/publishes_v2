@@ -1,0 +1,71 @@
+﻿
+.sidenavLeft {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 10;
+    top: 0px;
+    right: 0;
+    background-color: #ffffff;
+    overflow-x: hidden;
+    transition: 0.2s;
+    padding-top: 60px;
+}
+
+    /*.sidenavLeft a {
+        padding: 8px 8px 8px 32px;
+        text-decoration: none;
+        font-size: 25px;
+        color: #818181;
+        display: block;
+        transition: 0.3s;
+    }
+
+        .sidenavLeft a:hover {
+            color: #f1f1f1;
+        }*/
+
+    .sidenavLeft .closebtn {
+        margin-top:12px;
+        margin-bottom:15px;
+        transition: 0.3s;
+        color: #094F70;
+        position: absolute;
+        top: 0;
+        right: 12px; /* Change this to right */
+        font-size: 36px;
+        margin-left: 50px;
+        cursor:pointer !important;
+    }
+
+#main {
+    transition: margin-right .5s; /* Change this to margin-right */
+    padding: 16px;
+}
+
+#leftSideContent {  
+    /* padding-bottom: 8px; */
+    border-radius: 5px;
+    box-shadow: 2px 2px 3px #00000030;
+}
+
+#fullContent {
+    padding: 0px;
+}
+
+    #fullContent .closebtn {
+        right: 44px !important;
+        z-index:100;
+    }
+
+#fullContentContainer {
+    padding:30px 30px 0 30px;
+}
+
+.btn-width-100 {
+    width:100%;
+}
+
+.card {
+    box-shadow: none;
+}

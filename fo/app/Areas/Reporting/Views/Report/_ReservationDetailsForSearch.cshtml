@@ -1,0 +1,149 @@
+﻿
+<div class="row grid">
+    <div class="col-md-12 table-responsive">
+        <div class="row">
+            <div class="col-md-8" style="margin-top: -28px;">
+                <input class="txtSearch form-control" type="text" id="searchby" placeholder="Search by any Column" title="Search by any Column">
+            </div>
+            <div class="col-md-3">
+                <button type="button" class="applyBtn btn-primary btn btn-default btn-sm">Search</button>
+            </div>
+        </div>
+
+        <div class="" style="max-height:430px; margin:15px 0px; overflow-y:auto;">
+            <table class="table table-striped" id="existingReservationDetailGrid">
+                <tr>
+                    <th class="col-md-1 text-primary">Reservation.#</th>
+                    <th class="col-md-1 text-primary">Arrival</th>
+                    <th class="col-md-1 text-primary">Departure</th>
+                @*    <th class="col-md-3 text-primary">Full Name</th>*@
+                    <th class="col-md-1 text-primary">Room.#</th>
+                    <th class="col-md-2 text-primary">Company</th>
+                    <th class="col-md-1 text-primary">Folio</th>
+                    <th class="col-md-1 text-primary">Invoice.#</th>
+                    <th style="width: 6em;"></th>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function (e) {
+        var searchKeyWord = "";
+        FillGrid(searchKeyWord);
+    });
+
+    //$('body').on('click', '.applyBtn', function (e) {
+    //    var searchKeyWord = $('.txtSearch').val();
+    //    FillGrid(searchKeyWord);
+    //});
+
+//    $('body').off('.applyBtn').on('click', '.applyBtn', function () {
+//    var searchKeyWord = $('.txtSearch').val();
+//    FillGrid(searchKeyWord);
+//});
+
+    let isToggleOn = true;
+
+    $('body').on('click', '.applyBtn', function (e) {
+        if (isToggleOn) {
+
+            var searchKeyWord = $('.txtSearch').val();
+            FillGrid(searchKeyWord);
+        } else {
+
+        }
+        isToggleOn = isToggleOn;
+    });
+
+    $('body').on('keypress','.txtSearch', function (e) {
+        if (e.which === 13) { 
+            e.preventDefault();
+            var searchKeyWord = $(this).val();
+            FillGrid(searchKeyWord);
+        }
+    });
+
+    function FillGrid(searchKeyWord) {
+        $('#existingReservationDetailGrid tr').not(':first').remove();
+        $.ajax({
+            url: '/Reporting/Report/LoadReservationList',
+            dataType: 'json',
+            data: { searchKeyWord: searchKeyWord },
+            method: 'POST',
+            success: function (data) {
+                $.each(data, function (index, item) {
+
+                    var value = item.ReservationNo;
+                    var parts = value.split('-');
+                    var result = parts[1];
+
+                    var reservationNo = parts[0];
+
+                    var btnSelect = '<a class="btn btn-primary btn-theme-color-2 btn-sm btnSelect" id="btnSelect" data-FolioNo="' + item.FolioNo + '" data-ReservationHeaderId="'+result+'" data-InvoiceNo="' + item.InvoiceNo +'"><span class="glyphicon glyphicon-share-alt"></span></a>';
+
+                    $(  '<tr>'+
+                        '<td>' +
+                        reservationNo +
+                        '</td>' +
+                        '<td class="depature-date">' +
+                        item.Arrival +
+                        '</td>' +
+                        '<td class="res-no">' +
+                        item.Departure +
+                        '</td>' +
+                        //'<td class="guest-name" data-guestProfileId="' + item.GuestProfileId + '">' +
+                        //item.GuestName +
+                        //'</td>' +
+                        '<td>' +
+                        item.Room +
+                        '</td>' +
+                        '<td>' +
+                        item.FolioCompanyName +
+                        '</td>' +
+                        '<td>' +
+                        item.FolioNo +
+                        '</td>' +
+                        '<td>' +
+                        item.InvoiceNo +
+                        '</td>' +
+                        '<td>' +
+                        btnSelect +
+                        '</td>' +
+                        '</tr>'
+                    ).appendTo("#existingReservationDetailGrid");
+                });
+            }
+
+        });
+    }
+
+    //$('body').on('click', '.btnSelect', function (e) {
+    //    var invoiceNumber = $(this).attr('data-InvoiceNo');
+    //    setTimeout(function () { $('#grid-record-detail-model-close').click(); }, 2000);
+    //    $('#InvoiceNo').val(invoiceNumber);
+    //});
+
+    $('body').on('click', '.btnSelect', function (e) {
+        var invoiceNumber = $(this).attr('data-InvoiceNo');
+        var reservationHeaderId = $(this).attr('data-ReservationHeaderId');
+        var folioNo = $(this).attr('data-FolioNo');
+
+        setTimeout(function () {
+            $('#grid-record-detail-model-close').click();
+        }, 2000);
+
+        $('<option value="' + invoiceNumber + '" data-reservation-header-id="' + reservationHeaderId + '" data-folio-no="' + folioNo+'">' + invoiceNumber+'</option>').appendTo($('.InvoiceNo-combo'));
+
+        setTimeout(function () {
+
+            $('#InvoiceNo').val(invoiceNumber);
+
+            $('#InvoiceNo').trigger('change');
+
+        }, 3000);
+       
+    });
+
+</script>

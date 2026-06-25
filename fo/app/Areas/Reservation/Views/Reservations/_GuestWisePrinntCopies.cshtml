@@ -1,0 +1,174 @@
+﻿<style>
+
+    .print-copy-table-data {
+        padding-top: 10px !important;
+    }
+   
+</style>
+
+
+<div class="GuestReservationGridDiv">
+   
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped" id="FutureReservationsGrid">
+                <tr>
+                    @*<th>Invoice No</th>
+        <th style="text-align:right;">Total FC</th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th style="text-align:right;">Total BC</th>
+        <th></th>
+        <th></th>
+        <th></th>*@
+
+                    <th style="padding-left:5px;">Invoice No</th>
+                    <th style="text-align:right;">FC Amount</th>
+                    <th style="text-align:right;">BC Amount</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr class="no-record">
+                    <td colspan="10">No Records Found.</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<input type="hidden" value="@ViewBag.resNo" id="hdnResNo" />
+
+<input type="hidden" value="@ViewBag.resHeaderId" id="hdnResHeaderId" />
+<input type="hidden" id="hdnguestprofileId" value="@ViewBag.guestprofileId" />
+
+<script>
+    var resId = 0;
+    $(document).ready(function () {
+        FillFutureGrid();
+    });
+
+
+    function FillFutureGrid() {
+         resId = $('#hdnResHeaderId').val();
+        $.ajax({
+            url: '/reservation/reservations/SelectBillSettlementDetails?reservationHeaderId=' + resId,
+            dataType: 'json',
+            method: 'POST',
+            success: function (data) {
+                if (data.length > 0) {
+                    $("#FutureReservationsGrid tr:nth-child(2)").remove();
+                }
+
+                $.each(data, function (index, item) {
+                    //$('<tr>' +
+                    //    '<td class="col-md-2">' + item.InvoiceNo + '</td>' +
+                    //    '<td class="col-md-2" style="text-align:right;">' + item.InvoiceTotalInFCFormatted + ' (' + item.Currency + ')</td>' +
+                    //    '<td class="col-md-1"></td>' +
+                    //    '<td class="col-md-1">' +
+                    //    ' <a id="btnBillPreviewFC" style="background-color:#e49c09 !important;" data-invNo="' + item.InvoiceNo + '" data-resHeaderId="' + item.ReservationHeaderId + '" data-folioNo="' + item.FolioNo + '" class="btn btn-primary tileBtn" target="_blank" title="Detail Bill Preview">' +
+                    //    '<span class= "glyphicon glyphicon-list-alt" ></span >'+
+                    //    //'Detail'+
+                    //    '</a >' +
+                    //    '</td>' +
+                    //    '<td class="col-md-1">' +
+                    //    '<a id="btnBreifBillPreviewFC" style="background-color:#bd0000 !important;" data-invNo="' + item.InvoiceNo + '" data-resHeaderId="' + item.ReservationHeaderId + '" data-folioNo="' + item.FolioNo + '" class="btn btn-primary tileBtn" target="_blank" title="Summarized Bill Preview">'+
+                    //    '<span class="glyphicon glyphicon-list"></span>'+
+                    //    //'Summarize'+
+                    //    '</a>'+
+                    //    '</td >' +
+                    //    '<td class="col-md-1"></td>' +
+                    //    '<td class="col-md-2" style="text-align:right;">' + item.InvoiceTotalInBCFormatted + '</td>' +
+                    //    '<td class="col-md-1"></td>' +
+                    //    '<td class="col-md-1">' +
+                    //    ' <a id="btnBillPreviewBC" style="background-color:#e49c09 !important;" data-invNo="' + item.InvoiceNo + '" data-resHeaderId="' + item.ReservationHeaderId + '" data-folioNo="' + item.FolioNo + '" class="btn btn-primary tileBtn" target="_blank" title="Detail Bill Preview">' +
+                    //    '<span class= "glyphicon glyphicon-list-alt" ></span >' +
+                    //    //'Detail' +
+                    //    '</a >' +
+                    //    '</td>' +
+                    //    '<td class="col-md-1">' +
+                    //    '<a id="btnBreifBillPreviewBC" style="background-color:#bd0000 !important;" data-invNo="' + item.InvoiceNo + '" data-resHeaderId="' + item.ReservationHeaderId + '" data-folioNo="' + item.FolioNo + '" class="btn btn-primary tileBtn" target="_blank" title="Summarized Bill Preview">' +
+                    //    '<span class="glyphicon glyphicon-list"></span>' +
+                    //    //'Summarize' +
+                    //    '</a>' +
+                    //    '</td>' +
+                    //    '</tr>'
+                    //).appendTo($('#FutureReservationsGrid'));
+
+                    $('<tr>' +
+                        '<td class="col-md-1 print-copy-table-data" style="padding-left:5px;">' + item.InvoiceNo + '</td>' +
+                        '<td class="col-md-1 text-right print-copy-table-data">' + item.InvoiceTotalInFCFormatted + ' (' + item.Currency + ')</td>' +
+                      
+                        '<td class="col-md-1 text-right print-copy-table-data">' + item.InvoiceTotalInBCFormatted + '</td>' +
+                     
+                        '<td class="col-md-1 text-center">' +
+                        '<a id="btnBreifBillPreviewFC" class="btn btn-primary btnBreifBillPreviewFC" style="height: 30px;font-size:13px;" data-invNo="' + item.InvoiceNo + '" data-resHeaderId="' + item.ReservationHeaderId + '" data-folioNo="' + item.FolioNo + '" class="btn btn-primary tileBtn" target="_blank">'+
+                        '<span class="glyphicon glyphicon-list"></span>'+
+                        '</a>'+
+                        '</td >' +
+                        '<td class="col-md-1 text-center">' +
+                        '<a id="btnBreifBillSend" class="btn btn-success btnBreifBillSend" style="height: 30px;font-size:13px;" data-invNo-send="' + item.InvoiceNo + '" data-resHeaderId-send="' + item.ReservationHeaderId + '" data-folioNo-send="' + item.FolioNo + '" class="btn btn-success tileBtn">' +
+                        '<span class="glyphicon glyphicon-share"></span>' +
+                        '</a>' +
+                        '</td >' +
+                        '</tr>'
+                    ).appendTo($('#FutureReservationsGrid'));
+
+                });
+
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
+    $('body').on('click', '#btnBillPreviewFC', function () {
+        var reportName = 'FolioInvoicePrint';
+        var folioNo = $(this).attr('data-folioNo');
+        $('#btnBillPreviewFC').attr("href", '/Reporting/Report/ViewReport?ReportName=' + reportName + '&FolioNo=' + folioNo+'&IsPreview=1' + '&IsLKROnlyInvoice=0');
+    });
+
+    $('body').on('click', '.btnBreifBillPreviewFC', function () {
+        resId = $('#hdnResHeaderId').val();
+        var folioNo = $(this).attr('data-folioNo');
+        $('.btnBreifBillPreviewFC').attr("href", '/Reporting/Report/ViewReport?ReportName=FolioInvoiceDetail&ReservationHeaderId=' + resId + '&FolioNo=' + folioNo + '&IsPreview=0' + '&IsLKROnlyInvoice=0');
+    });
+
+    $('body').on('click', '#btnBillPreviewBC', function () {
+        var reportName = 'FolioInvoicePrint';
+        var folioNo = $(this).attr('data-folioNo');
+        $('#btnBillPreviewBC').attr("href", '/Reporting/Report/ViewReport?ReportName=' + reportName + '&FolioNo=' + folioNo + '&IsPreview=1' + '&IsLKROnlyInvoice=1');
+    });
+
+    $('body').on('click', '#btnBreifBillPreviewBC', function () {
+        var reportName = 'FolioInvoice';
+        var folioNo = $(this).attr('data-folioNo');
+        $('#btnBreifBillPreviewBC').attr("href", '/Reporting/Report/ViewReport?ReportName=' + reportName + '&FolioNo=' + folioNo + '&IsPreview=1' + '&IsLKROnlyInvoice=1');
+    });
+
+    $('body').off('click', '.btnBreifBillSend').on('click', '.btnBreifBillSend', function (e) {
+        e.preventDefault();
+
+        // read values from the clicked button's data-* attributes
+        var invoiceNo = $(this).data('invno-send') || '';
+        var folioNo = parseInt($(this).data('foliono-send') || 0, 10);
+        var resHdrId = parseInt($(this).data('resheaderid-send') || 0, 10);
+
+        var documentParams = {
+            reservationHeaderId: resHdrId, // prefer button's value; fallback to global
+            guestProfileId: $('#hdnguestprofileId').val(),
+            Uuid: resUuid,
+            reservationLevel: "CheckedOut",
+            reservationNo: resNo,
+            InvoiceNo: invoiceNo,
+            FolioNo: folioNo
+        };
+
+        var url = '/DocumentDelivery/DocumentDelivery?documentParams=' + encodeURIComponent(JSON.stringify(documentParams));
+        var title = 'Send Document ' + (typeof invoiceNo !== 'undefined' ? invoiceNo : '' || folioNo);
+
+        CallDetailModelSimple(title, url, 800);
+    });
+
+</script>

@@ -1,0 +1,207 @@
+﻿
+@{
+    ViewBag.Title = "Current User Sessions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .card .card-header {
+        border-radius: 0px;
+    }
+
+    .card {
+        border-radius: 0px;
+    }
+
+    .btn, .navbar .navbar-nav > li > a.btn {
+        border-radius: 0px
+    }
+
+    .checkbox .checkbox-material .check {
+        position: relative;
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        /* border: 1px solid rgba(0, 0, 0, .54); */
+        border: 1px solid rgb(251, 96, 3);
+        overflow: hidden;
+        z-index: 1;
+        border-radius: 0px;
+    }
+
+    .checkbox input[type=checkbox]:checked + .checkbox-material .check {
+        background: #fb6003;
+    }
+
+    .checkbox .checkbox-material .check {
+        position: relative;
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        /* border: 1px solid rgba(0, 0, 0, .54); */
+        border: 1px solid rgb(251, 96, 3);
+        overflow: hidden;
+        z-index: 1;
+        border-radius: 0px;
+    }
+</style>
+<div class="card">
+    <div class="card-header" data-background-color="purple">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="title">
+                    @ViewBag.Title
+                    <hr class="visible-print" />
+                </h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-content" id="contentLoadingArea">
+        <div class="row">
+            <div class="col-md-12" style="
+    padding-left: 9px;
+">
+                <form id="userList">
+                    <div class="row grid">
+                        <div class="col-md-12 table-responsive">
+                            <div class="" style="max-height:430px;margin: 0 -15px 0 10px;">
+                                <table id="grid" class="table table-striped display" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>User Name</th>
+                                            <th>Property Name</th>
+                                            <th>Module Name</th>
+                                            <th>Status</th>
+                                            @*<th>Select</th>*@
+                                            <th style="text-align:right;"><div><div class="form-group checkbox"><label><input type="checkbox" id="isAll" class="isAll" /></label></div></div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin: 22px 0 0 6px;">
+                        <input type="submit" id="btnLogout" value="Logout" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        //$('#grid').DataTable();
+        FillGrid();
+    })
+
+    function FillGrid() {
+        if ($('#grid').length == 1) {
+            $('.data-single-user tr').not(':first').remove();
+            $.ajax({
+                url: '/Central_Users/ClearUserLoginSelect',
+                dataType: 'JSON',
+                method: 'GET',
+                success: function (data) {
+                    if (data.length == 0) {
+                        $('.data-single-user tr').not(':first').remove();
+                        $('<tr><td colspan="4">No Record Found</td></tr>').appendTo($('#grid'));
+                    }
+                    if ($('#grid').length > 0) {
+                        $('#grid tr').not(':first').remove();
+                        $.each(data, function (index, item) {
+                            var checked = "";
+                            if (item.IsActive) {
+                                checked = "checked";
+                            }
+
+                            $('<tr class="data-single-user">' +
+                                '<td>' + item.TxnDate +
+                                '</td>' +
+                                '<td>' + item.Username +
+                                '</td>' +
+                                '<td>' + item.PropertyName +
+                                '</td>' +
+                                '<td>' + item.ModuleName +
+                                '</td>' +
+                                '<td>' +
+                                '<input type="checkbox"  disabled="true" ' + checked + '/>' +
+                                '</td>' +
+                                '<td style="text-align:right;">' +
+                                '    <div class="form-list checkbox">' +
+                                '        <label>' +
+                                '            <input class="list-checkBox"  type="checkbox" value="' + item.Id + '" />' +
+                                '        </label>' +
+                                '    </div>' +
+                                '</td>' +
+                                '</tr>').appendTo($('#grid'));
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+    }
+
+    $('body').off('click', '#isAll').on('click', '#isAll', function () {
+        if ($('#isAll').is(':checked')) {
+            $('.list-checkBox').not(':disabled').prop('checked', true);
+
+        } else {
+            $('.list-checkBox').prop('checked', false);
+        }
+    });
+
+    $('body').off('submit', '#userList').on('submit', '#userList', function (e) {
+        e.preventDefault();
+        var selectedUserList = [];
+        var isUserRecordSelected = false;
+
+        $('.data-single-user').each(function (index, item) {
+            if ($($(item).find('.list-checkBox')).prop('checked')) {
+                isUserRecordSelected = true;
+                return false;
+            }
+        });
+
+        if (isUserRecordSelected == false) {
+            ShowWarningMessage('Please select at least one user to logout.');
+        }
+        else {
+            $('.data-single-user').each(function (index, item) {
+                var user = {};
+                if ($($(item).find('.list-checkBox')).prop('checked')) {
+                    user = {
+                        Id: $($(item).find('.list-checkBox')).val()
+                    }
+                    selectedUserList.push(user);
+                }
+            });
+
+            console.log(selectedUserList);
+
+            $.ajax({
+                url: '/Central_Users/UserLoginUpdate',
+                dataType: 'JSON',
+                data: { selectedUserList: selectedUserList },
+                method: 'POST',
+                success: function (response) {
+                    ShowSuccessMessage('Successfully logged out.');
+                    FillGrid();
+                    window.location.reload();
+                    //setTimeout(function () {
+                    //    window.location.reload();
+                    //}, 2500);
+                }
+            });
+        }
+    });
+</script>

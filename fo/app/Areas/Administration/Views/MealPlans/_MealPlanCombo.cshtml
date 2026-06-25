@@ -1,0 +1,50 @@
+﻿@using Scienter.HotelERP.FrontOffice.WebUIMvc.Models
+@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.Common.Utility
+
+@model ComboBoxViewModel<MealPlan>
+@{
+    string required = "";
+    if (Model.Required) { required = "required"; }
+}
+@if (Model.SelectedValue == null || Model.SelectedValue == "")
+{
+    Model.SelectedValue = SessionObjects.FOSettings.DefaultMealPlan.ToString();
+}
+<select id="@Model.Id" name="@Model.Name" @required class="form-control">
+    <option value="@ComboBoxes.DefaultOptionValue">@ComboBoxes.DefaultOptionMessage</option>
+    @foreach (var option in Model.Options)
+    {
+
+        if (option.Id.ToString() == Model.SelectedValue)
+        {
+            <option value="@option.Id" selected>@option.Name</option>
+        }
+        else
+        {
+            <option value="@option.Id"> @option.Name </option>
+        }
+    }
+</select>
+
+<script>
+    $(document).ready(function () {
+      
+        setTimeout(function () {
+            if ($('#data-ratecode-details').length > 0 && $('#data-ratecode-details').attr('data-meal-plan').length > 0) {
+                
+                $('#MealPlanId option').each(function () {
+                
+                    currentTd = $(this);
+                    if (currentTd.val() == $('#data-ratecode-details').attr('data-meal-plan')) {
+                        currentTd.attr('selected', true);
+                        
+                    }
+                });                          
+            }
+            $('#MealPlanId').change();
+        }, 1000);
+    });
+</script>
+
+

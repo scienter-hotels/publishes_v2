@@ -1,0 +1,237 @@
+﻿@using Scienter.DestinityHorizon.Common.Domain
+@model IEnumerable<Scienter.DestinityHorizon.Common.Domain.Outlet>
+@{
+    ViewBag.Title = "Menu Item Price";
+}
+<style>
+    .grid-content {
+        height: 450px !important;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+
+    #message-model-msg {
+        overflow-y: auto;
+        height: 400px;
+    }
+    .form-control{
+        padding:2px,0px;
+    }
+    .checkbox .checkbox-material .check {
+        width: 18px;
+        height: 18px;
+    }
+
+    .DineInPrice, .TakeOutPrice, .DeliveryPrice {
+        width: 80px;
+        text-align: left;
+        height: 16px;
+        font-size: 12px;
+        padding-bottom: 12px;
+    }
+
+    .outletListDiv {
+        height: 200px !important;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    td{
+        padding-top:0px;
+        padding-bottom:0px;
+    }
+    .radio, .checkbox {
+        display: block;
+        min-height: 20px;
+        /* padding-left: 20px; */
+        margin-top: 10px;
+        margin-bottom: -10px;
+        vertical-align: middle;
+    }
+
+    .table tbody > tr > td, .table tfoot > tr > td{
+        font-size:12px;
+        line-height:2;
+    }
+    .History {
+        margin: 0px;
+        padding: 4px 8px;
+    }
+    .btn.btn-xs {
+        padding: 4px 8px;
+        width:30px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="ResultDiv" class="hidden modal" role="dialog">
+                            <div class="modal-dialog modal-md">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <div data-dismiss="modal" class="model-popup-close-btn" id="ResultClose">
+                                            <img src="~/Images/close-btn.png" />
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="model-popup-title" style="color:#122f39">
+                                                    <h4><i class="fa fa-calendar-check-o fa-2x"></i>&nbsp;&nbsp;Main Menu Price Sync Results</h4>
+                                                </div>
+                                                <div id="message-model-msg" style="font-size:14px;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="LoadPopUp" class="hidden modal-backdrop" role="dialog">
+                            <div class="modal-dialog modal-small">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div>
+                                                    <center>
+                                                        <img src="~/Content/Images/Sync-data.gif" />
+
+                                                    </center>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="row">
+                    <div class="col-md-9 master-file-grid ">
+                        @*Grid comes here*@
+                        <div class="row gridMenus">
+                            <div class="col-md-12 table-responsive">
+                                <div class="row gridMenus">
+                                    <div class="col-md-12 table-responsive">
+                                        <input type="text" id="searchby" onkeyup="SearchGridCallByID(grid)" placeholder="Search by any Column" title="Search by any Column">
+                                    </div>
+                                </div>
+                                <div id="loadingProjects" class="well">
+                                    <center>
+                                        <img src="~/Images/loading.gif" style="width:50px; margin-top:20px; margin-bottom:0px;" />
+                                    </center>
+                                </div>
+                                <div class="grid-content">
+                                    <table class="table table-striped table-responsive gridMenus" id="grid" style="display:none;">
+                                        <tr>
+                                            <th class="col-md-1">Menu Code</th>
+                                            <th class="col-md-2">Description</th>
+                                            <th class="col-md-1">Active</th>
+                                            <th class="col-md-2">Dine In Price</th>
+                                            <th class="col-md-2">Take Out Price</th>
+                                            <th class="col-md-2">Delevery Price</th>
+                                            <th class="col-md-1"><div class="checkbox"><label><input type="checkbox" id="AllMenuItem" /></label></div></th>
+                                            <th class="col-md-1"></th>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="row">
+                            <div class="col-md-12" style="height:30px;"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group  label-floating">
+                                    <label class="control-label">Effective Date *</label>
+                                    <input type="text" class="form-control datePicker" id="EffectiveDate" value="" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="control-label">Outlets *</label>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" id="AllOutlets" />Select All Outlets
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="outletListDiv">
+                                    <ul id="OutletList">
+                                        @foreach (var item in Model)
+                                        {
+                                            <li>
+                                                <div class="listOutlets checkbox  form-inline">
+                                                    <label>
+                                                        <input type="checkbox" class="checkBoxGroup ">@{
+                                                            var trimmedDes = item.Description;
+                                                            if (trimmedDes.Length > 15)
+                                                            {
+                                                                trimmedDes = trimmedDes.Substring(0, 15) + "..";
+                                                            }
+                                                        } @trimmedDes
+                                                    </label>
+                                                </div>
+                                                <input type="hidden" class="hdnLocCode" value="@item.Code" />
+                                                <input type="hidden" class="hdnIpAddress" value="@item.IPAddress" />
+                                                <input type="hidden" class="hdnDescription" value="@item.Description" />
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" style="height:20px;"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 table-responsive">
+                                <div>
+                                    <button class="btn btn-primary btn-Update" id="btnUpdate">Update</button>
+                                    <button class="btn btn-default  btn-Clear" id="btnClear">Clear</button>
+                                    <button class="btn btn-success  btn-UpdateAndSync" id="btnUpdateAndSync">Update & Sync To Outlet</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    string loggedOutletCode = SessionObjects.LoggedUser.LoggedOutlet.Code.ToString();
+}
+<input type="hidden" id="hdnLoggedOutlet" value="@loggedOutletCode"/>
+
+@*All master file related scripts should be in here*@
+<script src="~/scripts/UI/Scienter.OutletwiseMenuPrice.js"></script>
+
+
+
+

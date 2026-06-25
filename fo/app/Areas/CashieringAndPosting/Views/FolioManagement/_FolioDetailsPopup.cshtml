@@ -1,0 +1,151 @@
+﻿<style>
+    #tblFolioPopup td{
+        padding: 2px 5px;
+    }
+
+    #tblFolioPopup th {
+        padding: 2px 5px;
+        font-weight:bold;
+    }
+
+    #tblFolioPopup thead th {
+        position: sticky;
+        top: 0;
+        background-color: #fff;
+        z-index: 1;
+    }
+
+    .btn-custom { 
+        background-color: #4caf50;
+        font-size: 10px;
+        width: 100%;
+        padding: 5px;
+    }
+</style>
+
+
+<div class="row">
+    @*IShara 2024-09-27*@
+    <div class="col-md-12">
+        <div class="table-responsive" style="max-height:450px; overflow:auto;">
+        <table class="table table-striped" id="tblFolioPopup">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th class="text-right">Amount</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div>
+
+    </div>
+    <div class="col-md-2 col-md-offset-10">
+        <button class="btn-danger call-popup-model  btn-remove-transfer-records" style="margin-left: 10px !Important;" id="btn-remove-transfer-records" title="Remove Folio">
+            Remove
+        </button>
+    </div>
+    <div class="col-md-10 col-md-offset-2" id="cannot-remove-message" style="display:none;  text-align: right;">
+        <span margin-left: 10px !important;">Cannot remove this transaction</span>
+    </div>
+
+</div>
+
+<script>
+    var transferRefFolioDetailID2;
+    var total=0;
+
+    $(document).ready(function () {
+        var hdntransferRefFolioChargeCode = $('#hdnTransferRefFolioChargeCode').val().trim().toUpperCase();
+        var hdndatecheckbit = parseInt($('#hdndatecheckbit').val(), 10);
+        //var hdndatecheckbit = parseInt($('#hdndatecheckbit').val(), 10);
+        var checkedIsTransferdtoAnotherRoomBit = parseInt($('#checkedIsTransferdtoAnotherRoomBit').val(), 10);
+        //console.log('hdntransferRefFolioChargeCode:', hdntransferRefFolioChargeCode);
+        //console.log('hdndatecheckbit:', hdndatecheckbit);
+        //console.log('checkedIsTransferdtoAnotherRoomBit:', checkedIsTransferdtoAnotherRoomBit);
+
+        if (hdntransferRefFolioChargeCode !== 'PI' || hdndatecheckbit === 1 || checkedIsTransferdtoAnotherRoomBit ===1) {
+            //console.log('Condition met');
+            $('#btn-remove-transfer-records').hide();
+            $('#cannot-remove-message').show();
+        } else {
+            //console.log('Condition not met');
+            $('#btn-remove-transfer-records').show();
+            $('#cannot-remove-message').hide();
+        }
+
+        transferRefFolioDetailID2 = $('#hdnTransferRefFolioDetailID').val();
+
+        $.ajax({
+            url: '/CashieringAndPosting/FolioManagement/FolioChargerByTransferedFolioId',
+            dataType: 'json',
+            data: { TransferRefFolioDetailID: transferRefFolioDetailID2 },
+            beforeSend: function () {
+            },
+            success: function (data) {
+                debugger;
+                $(data).each(function (index, item) {
+                    var ele = $('<tr class="data-rows">' +
+                        '<td class="td-folio-nos">' + item.FolioNo + '</td>' +
+                        '<td class="data-date">' + item.ChargeDate + '</td>' +
+                        '<td class="data-date">' + item.Name + '</td>' +
+                        '<td class="data-desc">' + item.FolioText + '</td>' +
+                        '<td class="formatNumber text-right">' + item.ChargeAmount.toFixed(2) + '</td>' +
+                        '</tr>');
+
+                    $('#tblFolioPopup tbody').append(ele);
+                    total = total + item.ChargeAmount;
+                });
+
+            },
+            complete: function () {
+                var totalTr = $('<tr style="border-bottom:2px solid #ccc;"><td colspan="3"><td style="font-size:15px;">Total : </td><td class="formatNumber" style="font-weight:bold;font-size:15px;">' + total.toFixed(2) + '</td></tr>'
+                );
+                $('#tblFolioPopup tbody').append(totalTr);
+                HideLoader();
+            }
+        });
+    });
+
+    $('.btn-remove-transfer-records').on('click', function () {
+        var hiddenFolioDetailID = $('#hdnTransferRefFolioDetailID').val();
+
+        //var hdntransferRefFolioChargeCode = $('#hdnTransferRefFolioChargeCode').val();
+
+        if (confirm("Are you sure you want to remove this transfer record?")) {
+            $.ajax({
+                url: '/CashieringAndPosting/FolioManagement/RemoveTransferedFolios',
+                dataType: 'json',
+                method: 'GET',
+                data: { FolioDetailID: hiddenFolioDetailID },
+                success: function (response) {
+                    if (response.startsWith('success')) {
+                        ShowSuccessMessage('Transferred Record reversed successfully! The folio has been reverted to its previous state.');
+                        $('#btn-remove-transfer-records').hide();
+
+                    } else {
+                        ShowErrorMessage(response);
+                    }
+                },
+                complete: function () {
+                    //setTimeout(function () {
+                    //    window.location.reload();
+                    //}, 3000);
+                },
+                error: function (error) {
+                    //console.error('Error calling Remove Transfer Records endpoint:', error);
+                    ShowErrorMessage('An error occurred while attempting to remove the Transferred records. >> ', error);
+                }
+            });
+        };
+    });
+
+</script>
+

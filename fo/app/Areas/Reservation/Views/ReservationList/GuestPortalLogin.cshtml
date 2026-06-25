@@ -1,0 +1,110 @@
+﻿
+@{
+    ViewBag.Title = "GuestPortalLogin";
+    Layout = null;
+}
+
+<style>
+    .container-padding {
+        padding: 50px 250px;
+    }
+</style>
+
+
+<div class="container container-padding">
+    <form id="guestPortalLogin" style="margin-top: -20px;">
+        <div class="card-content">
+            <div class="row">
+                <input type="hidden" name="GuestProfileId" id="GuestProfileId" value="@ViewBag.guestProfileId" />
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label class="required control-label">Guest Name:</label>
+                        <input type="text" id="GuestName" name="GuestName" value="@ViewBag.guestName" class="form-control" required />
+                        <input type="hidden" id="ReservationHeaderId" name="ReservationHeaderId" value="@ViewBag.reservationHeaderId" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label class="required control-label">Username:</label>
+                        <input type="text" id="Username" name="Username" value="@ViewBag.resNo" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label class="required control-label">Password:</label>
+                        <input type="text" id="Password" name="Password" value="123.123" class="form-control" required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group label-floating">
+                        <label class="required control-label">Email:</label>
+                        <input type="email" id="Email" name="Email" value="@ViewBag.GuestEmail" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group" style="margin-top:0;">
+                        <label class="required control-label">Run As:</label><br>
+                        <input type="radio" id="M" name="Option" value="M" required checked="checked" />
+                        <label for="M">M</label><br>
+                        <input type="radio" id="R" name="Option" value="R" required />
+                        <label for="R">R</label>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-right">
+                    <button type="submit" id="btnSave" value="Send" class="btn btn-primary" style="width:200px;">
+                        Save
+                    </button>
+                @*</div>
+                <div class="col-md-2">*@
+                    <button type="reset" id="btnClear" value="Clear" class="btn btn-default" style="width:200px;">
+                        Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+        </div>
+
+    <script>
+
+    $('body').on('submit', '#guestPortalLogin', function (e) {
+        e.preventDefault();
+        var obj = {};
+        obj.GuestName = $('#GuestName').val();
+        obj.ReservationHeaderId = $('#ReservationHeaderId').val();
+        obj.Username = $('#Username').val();
+        obj.Password = $('#Password').val();
+        obj.Email = $('#Email').val();
+        obj.GuestProfileId = $('#GuestProfileId').val();
+
+        $.ajax({
+            url: '/Reservation/ReservationList/SaveGuestPortalLogin',
+            method: 'POST',
+            data: { login: obj },
+            beforeSend: function () {
+                $('#btnSave').text('Please wait...');
+            },
+            success: function (response) {
+                if (response.startsWith("ERR-")) {
+                    ShowErrorMessage(response.replace("ERR-", ""));
+                } else {
+                    ShowSuccessMessage('Record has been saved successfully.');
+                }
+                closeFullContent();
+                LoadReservationGrid();
+            },
+            error: function () {
+                ShowWarningMessage('Sorry! There is an Error');
+            },
+            complete: function () {
+                ClearForm();
+                $('#btnSave').text('Save');
+            }
+        });
+    });
+
+    </script>

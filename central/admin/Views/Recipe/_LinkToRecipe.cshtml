@@ -1,0 +1,131 @@
+﻿<style>
+    .form-group-marging {
+        margin-top: 0px;
+    }
+
+    label:disabled {
+        color: #7c9194 !important;
+    }
+
+    .menuItemTable, td, th {
+        border-top: 1px solid #dddddd;
+    }
+
+        .menuItemTable > th {
+            text-align: center;
+        }
+
+    .form-group .checkbox label {
+        color: black;
+    }
+
+    body {
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-size: 12px;
+    }
+
+    #searchbymenu {
+        background-image: url('/Images/searchicon.png');
+        background-position: 10px 10px;
+        background-repeat: no-repeat;
+        width: 100%;
+        font-size: 14px;
+        padding: 5px 10px 5px 40px;
+        /*border: 1px solid #ddd;*/
+        margin-bottom: 12px;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+    }
+
+    .ActionBtns {
+        margin-right: 50px;
+    }
+
+    .ActRes {
+        color: green;
+    }
+
+    .OtherActRes {
+        color: green;
+    }
+
+    .txtAddRate {
+        /*width: 100px;
+        height: 18px;*/
+        bottom: 0;
+        width: 65px;
+        height: 30px;
+        text-align: right;
+        padding-right: 10px;
+    }
+</style>
+<div class="row">
+    <input type="hidden" id="MenuName" value="@ViewBag.MenuName" />
+    <input type="hidden" id="hdnMenuCode" value="@ViewBag.MenuCode" />
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4 class="title">
+                            @ViewBag.MenuName
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                </div>
+            </div>
+            <div id="LoadPopUp" class="hidden modal-backdrop" role="dialog">
+                <div class="modal-dialog modal">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div>
+                                        <center><img src="~/Images/load-dribbble.gif" /></center>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="row">
+                    <div class="col-md-12 master-file-form ">
+                        @*Form Comes here*@
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="well" style="overflow-y:auto; height:300px; overflow-x:auto">
+                                                <table class="table table-striped" id="Recipegrid" style="display:none;">
+                                                    <tr>                                                       
+                                                        <th class="col-md-1">Code</th>
+                                                        <th class="col-md-5">Description</th>
+                                                        <th class="col-md-3">Qty</th>
+                                                        <th class="col-md-2"></th>
+                                                    </tr>
+                                                    <tr class="no-record">
+                                                        <td colspan="4">No Records Found.</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <button type="button" class="btn btn-success btn-width-100px pull-right " id="LinkToRecipeSave">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/scripts/UI/Scienter.LinkToRecipe.js"></script>

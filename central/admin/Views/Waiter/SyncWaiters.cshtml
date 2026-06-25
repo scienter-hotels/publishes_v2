@@ -1,0 +1,211 @@
+﻿
+@{
+    ViewBag.Title = "Sync Waiters";
+}
+<style>
+    .form-group-marging {
+        margin-top: 0px;
+    }
+
+    .side-button-div {
+        height: 90px;
+        text-align: center;
+        padding: 0px;
+    }
+
+    .side-button {
+        height: 90px;
+        width: 101.5px;
+        padding: 0px;
+        margin: 0px;
+    }
+
+    .side-button-div:hover {
+        background-color: #6f195b !important;
+    }
+
+    .side-button:hover {
+        background-color: #6f195b !important;
+    }
+
+    .grid-content {
+        height: 200px !important;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+
+    .image-load {
+        height: 106px;
+        margin-top: 50px;
+    }
+
+    .listOutlets {
+        margin-left: -15px;
+    }
+
+    #message-model-msg {
+        overflow-y: auto;
+        height: 400px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="ResultDiv" class="hidden modal" role="dialog">
+                            <div class="modal-dialog modal-md">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <div data-dismiss="modal" class="model-popup-close-btn" id="ResultClose">
+                                            <img src="~/Images/close-btn.png" />
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="model-popup-title" style="color:#122f39">
+                                                    <h4><i class="fa fa-calendar-check-o fa-2x"></i>&nbsp;&nbsp;Waiters Sync Results</h4>
+                                                </div>
+                                                <div id="message-model-msg" style="font-size:14px;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="LoadPopUp" class="hidden modal-backdrop" role="dialog">
+                            <div class="modal-dialog modal-small">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div>
+                                                    <center>
+                                                        <img src="~/Content/Images/Sync-data.gif" />
+
+                                                    </center>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 ">
+                        <div class="row gridMenus">
+
+
+                            <div class="col-md-12 table-responsive">
+                                <div class="row gridPayments">
+                                    <div class="col-md-12 table-responsive">
+                                        <input type="text" id="searchby" onkeyup="SearchGrid()" placeholder="Search by any Column" title="Search by any Column">
+                                    </div>
+                                </div>
+                                <div id="loadingProjects" class="well">
+                                    <center>
+                                        <img src="~/Images/loading.gif" style="width:50px; margin-top:20px; margin-bottom:0px;" />
+                                    </center>
+                                </div>
+                                <div class="grid-content">
+                                    <table class="table table-striped" id="grid" style="display:none;">
+                                        <tr>
+                                            <th class="col-md-3">Code</th>
+                                            <th class="col-md-5">Name</th>
+                                            <th class="col-md-3">Active</th>
+                                            <th class="col-md-1">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" id="AllWaiters" />
+                                                    </label>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                        <tr class="no-record">
+                                            <td colspan="4">No Records Found.</td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="listOutlets checkbox col-md-2">
+                            <label>
+                                <input type="checkbox" id="AllOutlets" /><b> Select All Outlets</b>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="outletLoading hidden">
+                            <img src="~/Content/Images/Sync-data.gif" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="outletListDiv">
+                            <ul id="myUL">
+                                @foreach (var item in Model)
+                                {
+                                    <li>
+                                        <div class=" listOutlets checkbox col-md-2">
+                                            <label>
+                                                <input type="checkbox" class="checkBoxGroup " />@{
+                                                    var trimmedDes = item.Description;
+                                                    if (trimmedDes.Length > 15)
+                                                    {
+                                                        trimmedDes = trimmedDes.Substring(0, 15) + "..";
+                                                    }
+
+                                                } @trimmedDes
+                                            </label>
+                                        </div>
+                                        <input type="hidden" class="hdnLocCode" value="@item.Code" />
+                                        <input type="hidden" class="hdnIpAddress" value="@item.IPAddress" />
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 table-responsive">
+                        <div>
+                            <button class="btn btn-primary sync-waiter" id="SyncBtn">Sync</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*All master file related scripts should be in here*@
+<script src="~/scripts/UI/Scienter.WaiterSync.js"></script>
+
+
+

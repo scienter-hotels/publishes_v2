@@ -1,0 +1,52 @@
+﻿<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        <button type="button" class="btn btn-sm btn-theme-color-2" id="btnForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2" id="btnGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="row grid">
+                    <div class="table-responsive">
+                        <input type="text" id="searchby" onkeyup="SearchGrid()" placeholder="Search by any Column" title="Search by any Column">
+                        <div id="loadingProjects" class="well">
+                            <center>
+                                <img src="" style="width:50px; margin-top:20px; margin-bottom:0px;" />
+                            </center>
+                        </div>
+                        <table class="table table-striped" id="grid" style="display:none;">
+                            <tr>
+                                <th>ServiceCharge</th>
+                                <th>GstRecNo</th>
+                                <th class="col-md-2">Address</th>
+                                <th>RoomServiceCharge</th>
+                                <th>default_loc</th>
+                                <th class="col-md-2">GrnRate</th>
+                                <th>ApplyNBT</th>
+                            </tr>
+                            <tr class="no-record">
+                                <td colspan="4">No Records Found.</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/scripts/UI/Scienter.Settings.js"></script>

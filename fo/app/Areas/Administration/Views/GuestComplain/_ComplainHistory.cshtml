@@ -1,0 +1,50 @@
+﻿@model  IEnumerable<Scienter.HotelERP.Common.Domain.ComplainLog>
+
+<style>
+    .well {
+        padding: 15px;
+        margin-bottom: 10px;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+</style>
+
+
+<div class="row" id="history" style="margin-top:20px;">
+    <div class="col-md-12">
+        <h4 class="title-bg">
+            Complain History
+        </h4>
+    </div>
+    <div class="div-scroll" style="height:150px !important">
+        <div class="col-md-12">
+
+
+            <div>
+                @*style="max-height:450px; height:450px; overflow-y:scroll; overflow-x:hidden;"*@
+                @foreach (var item in Model)
+            {
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="well">
+                                <div class="row">
+                                    <div class="col-md-1">
+
+                                        <img src="~/Images/user.png" width="40px" style="opacity:0.5" />
+                                    </div>
+                                    <div class="col-md-11">
+                                        <b>[@item.Status]</b> <i><text>by</text> @item.User</i> <span style="font-size:12px; float:right;">@item.TxnDateTime </span>
+                                        <hr />
+                                        <text><b>Sensitivity Level : </b></text>@item.SensitivityLevel<b> , </b><text><b>Complain Type :</b> </text>@item.ComplainType
+                                        <p>@Html.Raw(item.Remark)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

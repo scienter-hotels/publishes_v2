@@ -1,0 +1,319 @@
+﻿<div class="panel panel-default">
+   
+    <div class="panel-body">
+        <input type="hidden" id="documentParamsHidden" value="@Model" />
+
+        <div class="form-horizontal">
+            <!-- Document Type -->
+            <div class="form-group">
+                <label class="col-md-3 control-label" for="DocumentTypeId">Document Type</label>
+                <div class="col-md-4">
+                    <select id="DocumentTypeId" class="form-control" required>
+                        <option value="">-- Select --</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Sending Method -->
+            <div class="form-group">
+                <label class="col-md-3 control-label" for="SendingMethodId">Sending Method</label>
+                <div class="col-md-4">
+                    <select id="SendingMethodId" class="form-control" required>
+                        <option value="">-- Select --</option>
+                    </select>
+                    <span class="help-block">Default is Email.</span>
+                </div>
+            </div>
+
+            <!-- Message (small body to send with attachment) -->
+            <div class="form-group">
+                <label class="col-md-3 control-label" for="MessageBody">Message</label>
+                <div class="col-md-4">
+                    <textarea id="MessageBody" class="form-control" rows="3" maxlength="500"
+                              placeholder="Optional message to include with the attachment..."></textarea>
+                    <span class="help-block">Up to 500 characters.</span>
+                </div>
+            </div>
+
+            <!-- Target (Email or WhatsApp) -->
+            <div class="form-group">
+                <label id="TargetLabel" class="col-md-3 control-label" for="TargetAddress">Email</label>
+                <div class="col-md-4">
+                    <input id="TargetAddress" class="form-control" type="email" placeholder="guest@example.com" required />
+                    <span id="TargetHint" class="help-block">Enter a valid email address.</span>
+                </div>
+            </div>
+
+            <!-- Send Button (right aligned) -->
+            <div class="form-group">
+                <div class="col-md-4 col-md-offset-3 text-right">
+                    <button id="btnSendDoc" class="btn btn-primary">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var reservationHeaderId=0;
+    var guestProfileId=0;
+    var uuid="";
+    var reservationLevel = "";
+    var reservationNo = "";
+	var folioNo = 1;
+
+    var mail = "";
+    var whatsappno = "";
+
+    $(document).ready(function () {
+        loadDocumentParams();
+        loadDocumentTypes(reservationLevel); 
+        loadSendingMethods();
+
+        if (guestProfileId>0) {
+            TargetAddress();
+        } else {
+            mail = "";
+            whatsappno = "";
+        }
+        
+    });
+
+    function TargetAddress() {
+        
+        $.ajax({
+            url: '/reservation/ReservationList/GuestProfileSelect?guestProfileId=' + guestProfileId,
+            dataType: 'JSON',
+            method: 'POST',
+            success: function (data) {
+                mail = data.Email;
+                whatsappno = data.ContactNo;
+            },
+            error: function (error) {
+                ShowErrorMessage('There is an error in loading this record.')
+            },
+            complete: function () {
+                $('#TargetAddress').val(mail);
+            }
+        });
+    }
+
+    // Step 01: Load Document Types into the combo
+    function loadDocumentTypes(reservationLevel) {
+        reservationLevel = reservationLevel || "Reservation";
+
+        $.ajax({
+            url: '/DocumentDelivery/GetDocumentTypes',
+            type: 'GET',
+            dataType: 'json',
+            data: { reservationLevel: reservationLevel },
+            success: function (list) {
+                var $ddl = $('#DocumentTypeId');
+                $ddl.empty();
+
+                // add placeholder
+                $ddl.append($('<option/>', { value: '', text: '-- Select --', 'data-placeholder': '1' }));
+
+                // add items
+                $.each(list || [], function (_, item) {
+                    $ddl.append(
+                        $('<option/>', { value: item.Id, text: item.Name })
+                            .attr('data-reportid', item.ReportId)   // <-- added
+                    );
+                });
+            }
+            //,
+            //error: function (xhr) {
+            //    ShowWarningMessage('Failed to load document types: ' + (xhr.statusText || 'Unknown error'));
+            //}
+        });
+    }
+
+    // When user picks a real value, remove the placeholder option
+    $(document).on('change', '#DocumentTypeId', function () {
+        var $ddl = $(this);
+        var val = $ddl.val();
+
+        // if a real option is selected, remove the placeholder
+        if (val && val !== '') {
+            $ddl.find('option[data-placeholder="1"]').remove();
+        }
+    });
+
+    function loadDocumentParams() {
+        try {
+            var raw = $('#documentParamsHidden').val();
+            var obj = raw ? JSON.parse(raw) : {};
+
+            reservationHeaderId = parseInt(obj.reservationHeaderId, 10) || 0;
+            guestProfileId = parseInt(obj.guestProfileId, 10) || 0;
+            uuid = (obj.Uuid || obj.uuid || "");
+            reservationLevel = (obj.reservationLevel || "Reservation");
+            reservationNo = obj.reservationNo;
+			folioNo = parseInt(obj.FolioNo, 10) || 0;
+
+        } catch (e) {
+            // fallbacks on parse error
+            reservationHeaderId = 0;
+            guestProfileId = 0;
+            uuid = "";
+            reservationLevel = "Reservation";
+            reservationNo = "";
+			folioNo = 1;
+        }
+
+        toggleDocumentTypeByLevel();
+    }
+
+    function loadSendingMethods() {
+        $.ajax({
+            url: '/DocumentDelivery/GetDocumentSendingMethods',
+            type: 'GET',
+            dataType: 'json',
+            success: function (list) {
+                var $ddl = $('#SendingMethodId');
+                $ddl.empty();
+                $ddl.append($('<option/>', { value: '', text: '-- Select --' }));
+
+                $.each(list || [], function (_, item) {
+                    var name = item.SendingMethodName || item.Name || '';
+                    $ddl.append($('<option/>', { value: item.Id, text: name }));
+                });
+
+                // Default to "Email" if available
+                var emailOpt = $ddl.find('option').filter(function () {
+                    return ($(this).text() || '').toLowerCase() === 'email';
+                }).first();
+
+                if (emailOpt.length) {
+                    $ddl.val(emailOpt.val());
+                    $ddl.trigger('change'); // optional: notify any listeners
+                }
+            }
+            //,
+            //error: function (xhr) {
+            //    ShowWarningMessage('Failed to load sending methods: ' + (xhr.statusText || 'Unknown error'));
+            //}
+        });
+    }
+
+    function updateTargetFieldByMethod() {
+        var methodText = ($('#SendingMethodId option:selected').text() || '').toLowerCase().trim();
+
+        if (methodText === 'whatsapp') {
+            $('#TargetLabel').text('WhatsApp Number');
+            $('#TargetAddress')
+                .attr('type', 'text')
+                .attr('placeholder', '+9477XXXXXXX');   // E.164 format
+            $('#TargetHint').text('Use E.164 format (e.g., +9477XXXXXXX).');
+
+            $('#TargetAddress').val(whatsappno);
+        } else {
+            // default to Email
+            $('#TargetLabel').text('Email');
+            $('#TargetAddress')
+                .attr('type', 'email')
+                .attr('placeholder', 'guest@example.com');
+            $('#TargetHint').text('Enter a valid email address.');
+
+            $('#TargetAddress').val(mail);
+        }
+
+    }
+
+    $(document).on('change', '#SendingMethodId', updateTargetFieldByMethod);
+
+    // Send button click -> POST to SaveDocumentToDeliver with documentParams JSON
+    $(document).off('click', '#btnSendDoc').on('click', '#btnSendDoc', function (e) {
+        e.preventDefault();
+
+        
+        var documentTypeId = parseInt($('#DocumentTypeId').val() || 0, 10);
+        var reportId = parseInt($('#DocumentTypeId option:selected').data('reportid') || 0, 10);
+        var sendingMethodId = parseInt($('#SendingMethodId').val() || 0, 10);
+        var targetAddress = ($('#TargetAddress').val() || '').trim();
+        var subject = "";
+        var body = "";
+        // minimal validation (optional)
+        if ((reservationLevel || '').toLowerCase() != 'vbutler') {
+            if (!documentTypeId) { ShowWarningMessage('Please select a document type.'); return; }
+            // If you have a Subject input, use it; otherwise create a sensible default
+            body = (($('#MessageBody').val() || '').trim()) ||
+                ('Reservation ' + (reservationNo || '') + ' - ' +
+                    ($('#DocumentTypeId option:selected').text() || 'Document'));
+            subject = (($('#Subject').val() || '').trim()) ||
+                ('Reservation ' + (reservationNo || '') + ' - ' +
+                    ($('#DocumentTypeId option:selected').text() || 'Document'));
+        } else {
+            body = (($('#MessageBody').val() || '').trim()) ||
+                ('Reservation ' + (reservationNo || ''));
+            subject = (($('#Subject').val() || '').trim()) ||
+                ('Reservation ' + (reservationNo || ''));
+        }
+        
+        if (!sendingMethodId) { ShowWarningMessage('Please select a sending method.'); return; }
+        if (!targetAddress) { ShowWarningMessage('Please enter the target Email/WhatsApp number.'); return; }
+
+        var methodText2 = ($('#SendingMethodId option:selected').text() || '').toLowerCase().trim();
+        console.log(methodText2);
+        debugger;
+
+        if (methodText2 === 'whatsapp') {
+            console.log('done');
+            var mobile = targetAddress;
+
+            var internationalMobileRegex = /^\+[1-9][0-9]{7,14}$/;
+
+            if (!internationalMobileRegex.test(mobile)) {
+                $('#error').text('Enter valid mobile number with country code (e.g. +9477XXXXXXX)');
+                ShowWarningMessage('Enter valid mobile number with country code (e.g. +9477XXXXXXX)');
+                return; // STOP saving
+            } else {
+                $('#error').text('');
+            }
+        }
+
+        var obj = {
+            DocumentTypeId: documentTypeId,
+            ReportId: reportId,
+            SendingMethodId: sendingMethodId,
+            Subject: subject,
+            TargetAddress: targetAddress,
+            ReservationHeaderId: reservationHeaderId || 0,
+            Uuid: uuid || "",
+            FolioNo: folioNo,
+            ReservationType: reservationLevel,
+            MsgBody: body
+        };
+
+        $.ajax({
+            url: '/DocumentDelivery/SaveDocumentToDeliver',
+            type: 'POST',
+            dataType: 'json',
+            data: { documentParams: JSON.stringify(obj) },
+            success: function (resp) {
+                if (resp === "Ok") {
+                    ShowSuccessMessage('Queued to deliver.');
+                } else {
+                    ShowWarningMessage('Response: ' + resp);
+                }
+            },
+            error: function (xhr) {
+                ShowErrorMessage('Error: ' + (xhr.statusText || 'Unknown error'));
+            }
+        });
+    });
+
+    function toggleDocumentTypeByLevel() {
+        var level = (reservationLevel || '').toLowerCase();
+        var $row = $('#DocumentTypeId').closest('.form-group');
+
+        if (level === 'vbutler') {
+            $row.hide();
+            $('#DocumentTypeId').prop('required', false);
+        } else {
+            $row.show();
+            $('#DocumentTypeId').prop('required', true);
+        }
+    }
+</script>

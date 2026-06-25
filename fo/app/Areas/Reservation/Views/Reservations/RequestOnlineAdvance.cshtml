@@ -1,0 +1,503 @@
+﻿@model Scienter.HotelERP.Common.Domain.AdvanceRequestOnline
+@{
+    ViewBag.Title = "RequestOnlineAdvance";
+    Layout = null;
+}
+
+<link href="~/Select2/css/select2.min.css" rel="stylesheet" />
+<script src="~/Select2/js/select2.full.min.js"></script>
+
+<style>
+    /*2023-08-16---------------------------------------------------------------------*/
+    .select2-results {
+        line-height: 12px !important;
+        font-size: 12px !important;
+    }
+
+        .select2-results ul li {
+            color: black !important;
+            font-family: 'Roboto', sans-serif !important;
+            font-weight: 200 !important;
+            cursor: auto;
+        }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #0078D4 !important;
+        color: white !important;
+    }
+
+    .select2-selection__rendered {
+        color: #0a1324;
+    }
+
+    .select2-search--dropdown .select2-search__field {
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .control-label {
+        z-index: 1 !important;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+    /*-------------------------------------------------------------------------------*/
+</style>
+
+<input type="hidden" id="resId" class="resId" value="@ViewBag.reservationHeaderId" />
+<input type="hidden" id="guestId" class="guestId" value="" />
+<input type="hidden" id="reservationUuid" class="reservationUuid" value="" />
+<input type="hidden" id="CurrencyCode" value="@Model.CurrencyCode" />
+
+@*<ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Request Advance Payment</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Existing Advance Payment</a>
+        </li>
+    </ul>*@
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#" onclick="showRequestForm()">Request Advance Payment</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#" onclick="showExistingTable()">Existing Advance Payment</a>
+    </li>
+</ul>
+
+
+<form id="RequetrAdvanceForm">
+    <div class="card-content">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group label-floating">
+                    <label class="required control-label">Guest Name:</label>
+                    <input type="text" id="GuestName" name="GuestName" value="@Model.GuestName" class="form-control" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Total Amount(@Model.CurrencyCode):</label>
+                    <input type="number" id="TotalAmount" name="TotalAmount" value="@Convert.ToDecimal(Model.TotalAmount)" class="form-control" required disabled />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Payable Amount(@Model.CurrencyCode):</label>
+                    <input type="number" id="PayableAmount" name="PayableAmount" value="@Convert.ToDecimal(Model.PayableAmount)" class="form-control" required disabled />
+                </div>
+            </div>
+            @*<div class="col-md-2">
+                    <div class="form-group  label-floating">
+                        <input type="text" id="Currancy" name="Currancy" value="@Model.CurrencyCode" class="form-control" required disabled />
+                    </div>
+                </div>*@
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Type:</label>
+                    <select class="select2 form-control" id="typeId" required>
+                        <option value="P">Percentage</option>
+                        <option value="V">Value</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Payment Mode:</label>
+                    <select class="select2 form-control" id="PaymentMode" required>
+                        <option value="Online">Online</option>
+                        <option value="Bank Details">Offline</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <input type="text" id="Currancy" name="Currancy" value="@Model.CurrencyCode" class="form-control" required disabled />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <label class="required control-label" id="lbpaidAmount">
+                        Advance Value:
+                    </label>
+                    <input type="number" id="PaidAmount" name="PaidAmount" class="form-control" step="any" required>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Advance Amount(@Model.CurrencyCode):</label>
+                    <input type="number" id="AmountId" name="AmountId" class="form-control AmountId" disabled>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Due Amount(@Model.CurrencyCode):</label>
+                    <input type="number" id="DueAmount" name="DueAmount" class="form-control DueAmount" disabled>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Email:</label>
+                    <input type="text" id="Email" name="Email" class="form-control" value="@Model.EmailTo" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group  label-floating">
+                    <label class="required control-label">Email CC:</label>
+                    <input type="text" id="EmailCCTo" name="EmailCCTo" placeholder="" class="form-control" value="@Model.EmailCCTo">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group label-floating">
+                    <label class="required control-label">Subject:</label>
+                    @if (Model.GroupReservationNo.Length > 0)
+                    {
+                        <input type="text" id="Subject" name="Subject" placeholder="" class="form-control" value="Advanced Payment for @Model.GroupReservationNo">
+                        @*<textarea id="Subject" name="Subject" placeholder="" required class="form-control Remark">Advanced Payment for @Model.GroupReservationNo </textarea>*@
+                    }
+                    else
+                    {
+                        <input type="text" id="Subject" name="Subject" placeholder="" class="form-control" value="Advanced Payment for @Model.ReservationNo">
+                        @*<textarea id="Subject" name="Subject" placeholder="" required class="form-control Remark">Advanced Payment for @Model.ReservationNo </textarea>*@
+                    }
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group label-floating">
+                    <label class="required control-label">Body:</label>
+                    @if (Model.GroupReservationNo.Length > 0)
+                    {
+                        <input type="text" id="Body" name="Body" placeholder="" class="form-control" value="Advanced Payment for @Model.GroupReservationNo">     
+                        @*<textarea id="Body" name="Body" class="form-control Remark">Advanced Payment for @Model.GroupReservationNo </textarea>*@
+                    }
+                    else
+                    {
+                        <input type="text" id="Body" name="Body" placeholder="" class="form-control" value="Advanced Payment for @Model.ReservationNo">
+                        @*<textarea id="Body" name="Body" class="form-control Remark">Advanced Payment for @Model.ReservationNo </textarea>*@
+                    }
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-4">
+                <button type="submit" id="btnAdd" value="Send" class="btn btn-primary">
+                    Save
+                </button>
+            </div>
+            <div class="col-md-4">
+                <button type="reset" id="btnClear" value="Clear" class="btn btn-default">
+                    Clear
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="" id="content" style="padding-top:15px;">
+        <div class="">
+            <div class="row">
+                <div class="col-md-12 " id="main-grid-content">
+                    <div class="table-responsive">
+                        <table class="table font-size-12px" id="ExistingAdvancePayment">
+                            <thead >
+                                <tr>
+                                    <th style="font-weight:bold;" class="col-md-1" >Doc No</th>
+                                    <th style="font-weight:bold;" class="col-md-1" >PMS Doc No</th>
+                                    <th style="font-weight:bold; text-align:center" class="col-md-1">Amount</th>
+                                    <th style="font-weight:bold;" class="col-md-1">Mode</th>
+                                    <th style="font-weight:bold;" class="col-md-1">Request D/T</th>
+                                    <th style="font-weight:bold;" class="col-md-1">Status</th>
+                                    <th style="font-weight:bold;" class="col-md-1">User</th>
+                                    <th style="font-weight:bold;" class="col-md-1">IPG Cre D/T</th>
+                                    <th style="font-weight:bold;" class="col-md-1">IPG Txn D/T</th>
+                                    <th style="font-weight:bold;" class="col-md-1"></th>
+                                    @*<th class="col-md-1"></th>*@
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+
+
+<script>
+    function showRequestForm() {
+        document.getElementById("RequetrAdvanceForm").style.display = "block";
+        document.getElementById("ExistingAdvancePayment").style.display = "none";
+    }
+
+    function showExistingTable() {
+        document.getElementById("RequetrAdvanceForm").style.display = "none";
+        document.getElementById("ExistingAdvancePayment").style.display = "block";     
+        LoadExistingAdvancePayment();
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        document.getElementById("RequetrAdvanceForm").style.display = "block";
+        document.getElementById("ExistingAdvancePayment").style.display = "none";
+
+        //2023-08-16--------------------------------------------------------------------------
+        $('.select2').select2();
+
+        setTimeout(function () {
+            $('.select2.select2-container').addClass('form-control');
+            $('.select2-container--default .select2-selection--single').css({ 'border': 'none', 'border-radius': '0px', 'border-bottom': '1px solid #d2d2d2' });
+            $('.select2-selection__arrow').css('display', 'none');
+            $('#select2-DocNo-container').css({ 'margin-top': '-1px', 'cursor': 'auto' });
+        }, 900);
+
+        $('body').off('click', '.select2').on('click', '.select2', function () {
+            setTimeout(function () {
+                $('.select2-results ul li').removeClass('select2-results__option--selected');
+            }, 200);
+        });
+
+        //-------------------------------------------------------------------------------------------
+        // Currency();
+        $('.AmountId').val(0);
+        $('.DueAmount').val(0);
+        TypeIdChange();
+    });
+
+    //function Currency() {
+    //    // debugger;
+    //    $.ajax({
+    //        url: '/Reservations/CurrenciesCombo',
+    //        dataType: 'json',
+    //        success: function (modules) {
+    //            $.each(modules, function (index, type) {
+    //                $(' <option value="' + type.Id + '" data-Currency="' + type.ISOCode + '"> ' + type.ISOCode + ' </option>').appendTo($('#Currancy'));
+    //                console.log(index);
+    //            });
+    //        },
+    //    });
+    //}
+
+    //Type change
+    $('body').off('change', '#typeId').on('change', '#typeId', function () {
+        debugger;
+        TypeIdChange();
+
+    });
+
+    function TypeIdChange() {
+        var typeid = $('#typeId option:selected').val();
+        $('#PaidAmount').val('');
+        $('.AmountId').val('');
+        $('.DueAmount').val('');
+
+        setTimeout(function () {
+            if (typeid == 'P') {
+                $("#lbpaidAmount").text("Advance Percentage(%):");
+
+            } else {
+                $("#lbpaidAmount").text("Advance Value:");
+            }
+        }, 500);
+    }
+    //Paid amount change event
+    $('body').off('keyup', '#PaidAmount').on('keyup', '#PaidAmount', function () {
+        debugger;
+        var PayableAmount = Number(parseFloat($('#PayableAmount').val().trim().replace(/,/g, '')).toFixed(2));
+        var typeid = $('#typeId option:selected').val();
+
+        if (typeid == 'V') {
+            var valueAmount = Number(parseFloat($('#PaidAmount').val().trim().replace(/,/g, '')).toFixed(2));
+
+            if (Number(parseFloat($('#PaidAmount').val().trim().replace(/,/g, '')).toFixed(2)) > Number(parseFloat($('#PayableAmount').val().trim().replace(/,/g, '')).toFixed(2))) {
+                //MaxMIn();
+                $("#PaidAmount").attr("min", 0).attr("max", ($('#PayableAmount').val())).val();
+
+                $('.AmountId').val(valueAmount);
+                DueAmount = (Number(PayableAmount - valueAmount)).toFixed(2);
+                $('.DueAmount').val(DueAmount);
+            } else {
+                $('.AmountId').val(valueAmount);
+                DueAmount = (Number(PayableAmount - valueAmount)).toFixed(2);
+                $('.DueAmount').val(DueAmount);
+            }
+        } else {
+            var paidAmount = $('#PaidAmount').val();
+            var amount = (Number(PayableAmount) * (Number(paidAmount) / 100)).toFixed(2);
+
+            if (amount > (Number(parseFloat($('#PayableAmount').val().trim().replace(/,/g, '')).toFixed(2)))) {
+                //MaxMIn();
+                //$("#PaidAmount").attr("min", 0).attr("max", 100).val();
+                ShowWarningMessage('The percentage must be between 0 and 100');
+                $('#PaidAmount').val('');
+            } else {
+
+                $('#AmountId').val(amount);
+                DueAmount = (Number(PayableAmount - amount)).toFixed(2);
+                $('#DueAmount').val(DueAmount);
+            }
+        }
+    });
+
+
+
+    function MaxMIn() {
+        debugger;
+        var typeid = $('#typeId').val();
+        if (typeid == 'V') {
+            $("#PaidAmount").attr("min", 0).attr("max", ($('#PayableAmount').val())).val();
+        } else if (typeid == 'P') {
+            $("#PaidAmount").attr("min", 0).attr("max", 100).val();
+        }
+    }
+
+    $('body').off('submit', '#RequetrAdvanceForm').on('submit', '#RequetrAdvanceForm', function (e) {
+        e.preventDefault();
+        debugger;
+        var details = {
+            Id: $('#Id').val(),
+            ReservationHeaderId: $('#resId').val(),
+
+            GuestName: $('#GuestName').val(),
+            EmailTo: $('#Email').val(),
+            EmailCCTo: $('#EmailCCTo').val(),
+            PaymentMode: $('#PaymentMode').val(),
+            Type: $('#typeId option:selected').val(),
+            PayableAmount: $('#PayableAmount').val(),
+            PaidAmount: $('#PaidAmount').val(),
+            ReduceAmount: $('#AmountId').val(),
+            DueAmount: $('#DueAmount').val(),
+            CurrencyCode: $("#Currancy").val(),
+            Subject: $('#Subject').val(),
+            Body: $('#Body').val()
+        };
+        console.log(details);
+
+        $.ajax({
+            url: '/reservation/reservations/SaveRequestOnlineAdvance',
+            dataType: 'JSON',
+            data: details,
+            method: 'POST',
+            success: function (response) {
+                if (response.startsWith("ERR-")) {
+                    ShowErrorMessage('error');
+                } else {
+                    ShowSuccessMessage('Saved successfully.');
+
+                    setTimeout(function () {
+                        //window.location.reload();
+                        showExistingTable();
+                    }, 4000);
+                    
+                    //$('#PaidAmount').val('');
+                    //$('#Email').val('');
+                    //$('#EmailCCTo').val('');
+                    //$('#Subject').val('');
+                    //$('#Body').val('');
+                }
+            },
+            complete: function () {
+                LoadExistingAdvancePayment();
+            },
+            error: function (xhr, status, error) {
+                ShowErrorMessage('Sorry, There is an error.');
+            }
+        });
+
+    });
+
+    function LoadExistingAdvancePayment() {
+        var resId = $('#resId').val();
+        $.ajax({
+            url: '/reservation/reservations/SelectExistingOnlineAdvance',
+            data: { resId: resId},
+            method: 'POST',
+            beforeSend: function () {
+            },
+            success: function (response) {
+                $('#ExistingAdvancePayment td').remove();
+                $(response).each(function (index, item) {
+
+                    var status = item.Status;
+                    if (status === 'Pending') {
+                        var display = '';
+                    } else {
+                        var display = 'none';
+                    }       
+
+                    $('<tbody>' +
+                        '<td>' + item.DocumentNo + '</td>' +
+                        '<td>' + item.AdvanceDocNo + '</td>' +
+                        '<td style="text-align:right;padding-right:20px;">' + item.ReduceAmount + '</td>' +
+                        '<td>' + item.PaymentMode + '</td>' +
+                        '<td>' + item.RequestTxnDateTime + '</td>' +
+                        '<td>' + item.Status + '</td>' +
+                        '<td>' + item.UserName + '</td>' +
+                        '<td>' + item.IPGCreatedDatetime + '</td>' +
+                        '<td>' + item.IPGTxnDateTime + '</td>' +
+                        '<td class="text-right" style="display: ' + display + '; text-align:right;">' +
+                            '<a title="Resend Email" class="btn btn-primary btn-sm btnResendEmail" id="' + item.Id + '" data-id="' + item.Id + '" data-resId="' + $('#resId').val() + '" data-uuid="' + item.Uuid + '" data-paymentMode="' + item.PaymentMode+'">' +
+                                '<span class="glyphicon glyphicon-refresh"></span>' +
+                            '</a>' +
+                            '<a title="Delete Advance Payment" class="btn btn-danger btn-sm call-popup-model-delete" id="btnDelete" data-href="/reservation/reservations/DeleteRequestOnlineAdvance?id=' + item.Id + '&resId=' + $('#resId').val() + '">' +
+                                '<span class="glyphicon glyphicon-trash"></span>' +
+                            '</a>' +
+                        '</td>' +
+                        '</tbody>').appendTo('#ExistingAdvancePayment');
+                    console.log(item);
+                });
+            },
+            error: function () {
+               
+            },
+            complete: function (item) {
+
+            }
+        });
+    }
+    
+    $('body').on('click', '.btnResendEmail', function (e) {
+        var id = $(this).attr('data-id');
+        var resId = $('#resId').val();
+        var uuid = $(this).attr('data-uuid');
+        var paymentMode = $(this).attr('data-paymentMode');
+        $.ajax({
+            url: '/reservation/reservations/ReSendAdvanceRequestEmail',
+            data: { id: id, resId: resId, uuid: uuid, paymentMode: paymentMode},
+            method: 'POST',
+            beforeSend: function () {
+            },
+            success: function (response) {
+                if (response == "OK") {
+                    ShowSuccessMessage('Email Re Send successfully.');
+                } else {
+                    ShowErrorMessage('error');
+                }
+               
+            },
+            complete: function () {
+
+            }
+        });
+    });
+
+</script>
+

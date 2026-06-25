@@ -1,0 +1,304 @@
+﻿@model Scienter.HotelERP.Common.Domain.RateCodeHeader
+
+@{
+    ViewBag.Title = "Create / Edit";
+}
+
+<div class="col-md-12">
+    <form id="rateCodeHeaders">
+
+        @Html.AntiForgeryToken()
+        <div>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <input type="hidden" value="@Model.Id" name="Id" id="Id" />
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-3 form-group label-floating">
+                            <label class="control-label">Rate Code *</label>
+                            <input autocomplete="off" required class="form-control text-box single-line" maxlength="10" id="HotelRateCode" name="HotelRateCode" type="text" value="@Model.HotelRateCode">
+                        </div>
+                        <div class="col-md-1">
+                        </div>
+                        <div class="col-md-3 form-group label-floating">
+                            <label class="control-label">Promo Code</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="10" id="PromoCode" name="PromoCode" type="text" value="@Model.PromoCode">
+                        </div>
+                        <div class="col-md-1">
+                        </div>
+                        <div class="col-md-3 form-group label-floating">
+                            <label class="control-label">Currency *</label>
+                            @{Html.RenderAction("CurrenciesCombo", "Currencies", new { name = "CurrencyId", required = true, IBEEnable = true, value = Model?.CurrencyId });}
+                        </div>
+
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-5 form-group label-floating">
+                            <label class="control-label">Name *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="Name" name="Name" type="text" value="@Model.Name" required>
+                        </div>
+                        <div class="col-md-1">
+                        </div>
+                        <div class="col-md-5 form-group label-floating">
+                            <label class="control-label">Folio Name *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="FolioName" name="FolioName" type="text" value="@Model.FolioName" required>
+                        </div>
+
+                        <div class="col-md-1">
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-10 form-group label-floating">
+                            <label class="control-label">Confirmation Rate Remarks *</label>
+                            @*<@*input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="confirmationrateremarks" name="ConfirmationRateRemarks" type="text" value="@Model.ConfirmationRateRemark" required>*@
+                            <input type="text" class="form-control text-box single-line" id="confirmationrateremarks" rows="3" name="ConfirmationRateRemarks" type="text" required> @Model.ConfirmationRateRemark </input>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-10">
+                            <div class="well">
+                                <div class="row">
+                                    <div class="col-md-3 form-group label-floating">
+                                        <label class="control-label">Min Stay Through *</label>
+                                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MinStayThrough" name="MinStayThrough" type="text" value="@Model.MinStayThrough" required>
+                                    </div>
+
+                                    <div class="col-md-3 form-group label-floating">
+                                        <label class="control-label">Max Stay Through *</label>
+                                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MaxStayThrough" name="MaxStayThrough" type="text" value="@Model.MaxStayThrough" required>
+                                    </div>
+
+                                    <div class="col-md-3 form-group label-floating">
+                                        <label class="control-label">Min Occupancy *</label>
+                                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MinOccupancy" name="MinOccupancy" type="text" value="@Model.MinOccupancy" required>
+                                    </div>
+
+                                    <div class="col-md-3 form-group label-floating">
+                                        <label class="control-label">Max Occupancy *</label>
+                                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MaxOccupancy" name="MaxOccupancy" type="text" value="@Model.MaxOccupancy" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3 form-group label-floating">
+                                        <label class="control-label">Min Rooms *</label>
+                                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MinRooms" name="MinRooms" type="text" value="@Model.MinRooms" required>
+                                    </div>
+
+
+
+
+                                    <div class="col-md-3 form-group label-floating">
+                                        <label class="control-label">Max Rooms *</label>
+                                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MaxRooms" name="MaxRooms" type="text" value="@Model.MaxRooms" required>
+                                    </div>
+
+                                    <div class="col-md-3 form-group label-floating">
+                                        <label class="control-label">Max Rooms *</label>
+                                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="MaxRooms" name="MaxRooms" type="text" value="@Model.MaxRooms" required>
+                                    </div>
+                                    <div class="col-md-3 form-group label-floating">
+                                        <label class="control-label">Book Before Days *</label>
+                                        <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="BookBeforeDays" name="BookBeforeDays" type="text" value="@Model.BookBeforeDays" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-10">
+                            @*<div class="row">*@
+                                <div class="well">
+                                    <div class="row">
+                                        @*<fieldset class="the-fieldset">*@
+                                        <div class="col-md-4">
+                                            <div class="form-group checkbox">
+                                                <label>
+                                                    @Html.CheckBoxFor(model => model.IsLocalRate)
+                                                    Local Rate
+                                                </label>
+                                                @Html.ValidationMessageFor(model => model.IsLocalRate, "", new { @class = "text-danger" })
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group checkbox">
+                                                <label>
+                                                    @Html.CheckBoxFor(model => model.IsPromotion)
+                                                    Promotion
+                                                </label>
+                                                @Html.ValidationMessageFor(model => model.IsPromotion, "", new { @class = "text-danger" })
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group checkbox">
+                                                <label>
+                                                    @Html.CheckBoxFor(model => model.IsApplicableForIBE)
+                                                    Apply For IBE
+                                                </label>
+                                                @Html.ValidationMessageFor(model => model.IsApplicableForIBE, "", new { @class = "text-danger" })
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-group checkbox">
+                                                <label>
+                                                    @Html.CheckBoxFor(model => model.IsActive)
+                                                    Active
+                                                </label>
+                                                @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group checkbox">
+                                                <label>
+                                                    @Html.CheckBoxFor(model => model.IsFixedRate)
+                                                    Fixed Rate
+                                                </label>
+                                                @Html.ValidationMessageFor(model => model.IsFixedRate, "", new { @class = "text-danger" })
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-group checkbox">
+                                                <label>
+                                                    @Html.CheckBoxFor(model => model.IsDayUse)
+                                                    Day Use
+                                                </label>
+                                                @Html.ValidationMessageFor(model => model.IsDayUse, "", new { @class = "text-danger" })
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group checkbox">
+                                                <label>
+                                                    @Html.CheckBoxFor(model => model.IsComplementary)
+                                                    Complementary
+                                                </label>
+                                                @Html.ValidationMessageFor(model => model.IsComplementary, "", new { @class = "text-danger" })
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-group checkbox">
+                                                <label>
+                                                    @Html.CheckBoxFor(model => model.IsHouseUse)
+                                                    House Use
+                                                </label>
+                                                @Html.ValidationMessageFor(model => model.IsHouseUse, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-group checkbox">
+                                                <label>
+                                                    @Html.CheckBoxFor(model => model.IsInclusiveRate)
+                                                    Inclusive Rate
+                                                </label>
+                                                @Html.ValidationMessageFor(model => model.IsInclusiveRate, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                        
+                                        @*</fieldset>*@
+                                    </div>
+                                </div>
+                            </div>
+                            @*</div>*@
+                        </div>
+
+                    @*<div class="row">
+                        <div class="col-md-3 form-group label-floating">
+                            <label class="control-label">EBB Book Before Days *</label>
+                            <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="EBBBookBeforeDays" name="EBBBookBeforeDays" type="text" value="@Model.EBBBookBeforeDays" required>
+                        </div>
+
+                        <div class="col-md-6 form-group label-floating">
+                            <label class="control-label">EBB Remarks *</label>
+                            @*<@*input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="confirmationrateremarks" name="ConfirmationRateRemarks" type="text" value="@Model.ConfirmationRateRemark" required>*@
+                            @*<input type="text" class="form-control text-box single-line" id="EBBremarks" rows="3" name="EBBRemarks" type="text" required> @Model.EBBRemarks </input>
+                        </div>*@
+                    @*</div>**@
+                </div>
+         
+
+                <div class="row">
+                    <div class=col-md-4>
+                        <div class="row">
+                            <div class="col-md-12">
+                                @{Html.RenderAction("ListVertical", "Properties", new { selectedPoperties = Model.Properties }); }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class=col-md-4>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <fieldset class="the-fieldset">
+                                    <legend class="the-legend">Free Night Offer</legend>
+                                    <div class="row">
+                                        <div class="col-md-4 form-group label-floating">
+                                            <label class="control-label">Res Night *</label>
+                                            <input autocomplete="off" class="form-control text-box single-line" maxlength="100" id="ResNight" minlength="0" name="ResNight" type="number" value="@Model.ResNight" required>
+                                        </div>
+                                        <div class="col-md-4 form-group label-floating">
+                                            <label class="control-label">Free Night *</label>
+                                            <input autocomplete="off" class="form-control text-box single-line" maxlength="100" minlength="0" id="FreeNight" name="FreeNight" type="number" value="@Model.FreeNight" required>
+                                        </div>
+                                        <div class="col-md-4 form-group">
+                                            <input type="button" id="btnAdd" value="Add" class="btn btn-primary" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <table id="CurrencyEncashmentTable" class="table" style="">
+                                            <tr>
+                                               
+                                                <th>
+                                                    Room Night
+                                                </th>
+                                                <th>
+                                                    Free Night
+                                                </th>
+                                                <th class="col-md-1 hidden-print"></th>
+
+                                            </tr>
+                                            </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+             
+
+              
+                  
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <input type="submit" id="btnSave" value="Save" class="btn btn-primary" />
+                            &nbsp;
+                            <input type="reset" id="btnClear" value="Clear" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>          
+                </div>
+    </form>
+
+</div>
+
+
+

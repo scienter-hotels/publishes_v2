@@ -1,0 +1,23 @@
+@using Scienter.HotelERP.FrontOffice.WebUIMvc.Areas.Reporting.Models
+
+@Html.DevExpress().GetStyleSheets(
+        new StyleSheet { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.Editors },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.Report }
+    )
+@Html.DevExpress().GetScripts(
+        new Script { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+        new Script { ExtensionSuite = ExtensionSuite.Editors },
+        new Script { ExtensionSuite = ExtensionSuite.Report }
+    )
+@*<link href="@Url.Content("~/Content/ReporViewer.css")" rel="stylesheet" type="text/css" />*@
+
+
+@Html.DevExpress().DocumentViewer(settings => {
+    settings.Name = "DocumentViewer";
+    settings.CallbackRouteValues = new {Controller = ((BaseReportModel)Model).Controller, Action = ((BaseReportModel)Model).DocumentViewerPartialAction };
+    settings.ExportRouteValues = new {Controller = ((BaseReportModel)Model).Controller, Action = ((BaseReportModel)Model).DocumentViewerPartialExportAction };
+    settings.Report = (BaseReportModel)Model;
+    settings.ToolbarMode = DocumentViewerToolbarMode.StandardToolbar;
+}).GetHtml()
+

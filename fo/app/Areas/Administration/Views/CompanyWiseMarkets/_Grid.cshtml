@@ -1,0 +1,61 @@
+﻿@model IEnumerable<Scienter.HotelERP.Common.Domain.ViewModels.CompanyWiseMarketView>
+
+@{
+    ViewBag.Title = "Company Wise Markets";
+}
+
+<div class="table-responsive">
+    <table class="table table-striped" id="existingCompanyWiseMarketGrid">
+        <thead>
+            <tr>
+                <th class="text-primary">
+                    Company
+                </th>
+                <th class="col-md-3 text-primary">
+                    Market
+                </th>
+                <th class="col-md-1 hidden-print"></th>
+            </tr>
+        </thead> 
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CompanyName)
+                    </td>
+                    <td class="col-md-3">
+                        @Html.DisplayFor(modelItem => item.MarketName)
+                    </td>
+                    <td class="hidden-print text-right">
+                        <a class="btn btn-theme-color-2 btn-sm call-popup-model" id="btnPrint" data-title="Company Wise Market @*-@item.Name*@" data-href="/administration/companywisemarkets/print/@item.Id">
+                            <span class="glyphicon glyphicon-print"></span>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#existingCompanyWiseMarketGrid').DataTable(
+            {
+                //"dom": '<"top"ifb>rt<"bottom"lp><"clear">',
+                searching: true,
+                ordering: true,
+                //"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                            'copy',
+                            'excel',
+                            'csv',
+                            'pdf',
+                            'print'
+                ],
+                scrollY: '58vh',
+            } );
+    });
+</script>

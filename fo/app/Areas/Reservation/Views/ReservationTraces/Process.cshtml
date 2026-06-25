@@ -1,0 +1,178 @@
+﻿@{
+    ViewBag.Title = "Process Traces";
+}
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group form-group-margin-override label-floating">
+                            <label class="required control-label">Department</label>
+                            @{Html.RenderAction("DepartmentCombo", "Departments", new
+                                {
+                                    area = "Administration",
+                                    name = "DepartmentId",
+                                    requiered = true
+                                });}
+                        </div>
+                    </div>
+                    <div class="col-md-3 form-group label-floating">
+                        <label class="control-label">Date</label>
+                        <div id="" class='input-group date'>
+                            <input autocomplete="off" class="form-control datePicker text-box single-line" maxlength="100" id="TraceDate" name="TraceDate" type="text" value="" required>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 form-group label-floating">
+                        <label class="control-label"></label>
+                        <button class="btn btn-primary" id="btnViewTraces">View</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div style="border:1px solid #ccc;min-height:200px; margin-bottom:20px;border-radius:5px; padding:20px; margin-top:5px;">
+                            <h6 style="margin-bottom:10px;">Pending Traces</h6>
+                            <div id="pendingTraces" style="max-height:250px; overflow-y:scroll;">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div style="border:1px solid #ccc;min-height:200px; margin-bottom:20px; border-radius:5px; padding:20px;">
+                            <h6 style="margin-bottom:10px;">Completed Traces</h6>
+                            <div id="completedTraces" style="max-height:250px; overflow-y:scroll;">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/ui/common/scienter.number.formatting.js"></script>
+<script>
+    // form load --------------------------------
+    $(document).ready(function () {
+
+        $('#TraceDate').val('');
+        FillTracesGrids();
+
+        $('body').on('change', '#DepartmentId', function () {
+            FillTracesGrids();
+        });
+
+        $('body').on('change', '#TraceDate', function () {
+            FillTracesGrids();
+        });
+
+
+        $('body').on('click', '#btnMarkTraceAsComplete', function () {
+            var TraceStatus = $(this).attr('data-trace-status');
+            var ReservationTracesId = $(this).attr('data-res-trace-id');
+            var Date = $(this).attr('data-trace-date');
+            var ReservationTracesDepartmentId = $(this).attr('data-department-id');
+            UpdateProcessTraces(TraceStatus, ReservationTracesId, Date, ReservationTracesDepartmentId);
+        });
+
+        $('body').on('click', '#btnReInstateTrace', function () {
+            var TraceStatus = $(this).attr('data-trace-status');
+            var ReservationTracesId = $(this).attr('data-res-trace-id');
+            var ReservationTracesDepartmentId = $(this).attr('data-department-id');
+            var Date = $(this).attr('data-trace-date');
+            UpdateProcessTraces(TraceStatus, ReservationTracesId, Date, ReservationTracesDepartmentId);
+        });
+
+    });
+
+
+    $('body').on('click', '#btnViewTraces', function () {
+        FillTraces();
+    });
+
+    function FillTracesGrids() {
+
+        var date = ChangeDateFormat($('#TraceDate').val());
+        var department = $('#DepartmentId').val();
+        if (department == "") {
+            department = "-1";
+        }
+
+        if (date == "") {
+            department = "1900-01-01";
+        }
+
+        FillTraces(0, '#pendingTraces', date, department);
+        FillTraces(1, '#completedTraces', date, department);
+    }
+
+
+    function FillTraces(traceStatus, containerId, date, department) {
+        $.ajax({
+            url: '/Reservation/ReservationTraces/TracesByStatus?date=' + date + '&traceStatus=' + traceStatus + '&departmentId=' + department,
+            dataType: 'html',
+            method: 'POST',
+            beforeSend: function () {
+                $(containerId).html('');
+                $(containerId).html('<p>Please wait ...<p>');
+            },
+            success: function (response) {
+                $(containerId).html(response);
+            }
+        });
+    }
+
+
+    function UpdateProcessTraces(TraceStatus, ReservationTracesId, Date, ReservationTracesDepartmentId) {
+
+        if (confirm('Are you sure you want to change the status ?')) {
+
+            $.ajax({
+                url: '/Reservation/ReservationTraces/UpdateProcessTraces?TraceStatus=' + TraceStatus + '&ReservationTracesId=' + ReservationTracesId + '&Date=' + Date + '&departmentId=' + ReservationTracesDepartmentId,
+                dataType: 'json',
+                method: 'POST',
+                beforeSend: function () {
+                    $('.btn').fadeOut();
+                    $('.btn').fadeOut();
+                },
+                complete: function () {
+                    $('.btn').fadeIn();
+                    $('.btn').fadeIn();
+                    FillTracesGrids();
+                },
+                success: function (response) {
+                    if (response.startsWith("OK")) {
+
+                        ShowSuccessMessage('Trace status changed.');
+                    } else {
+                        ShowErrorMessage(response.replace("ERR-", ""));
+                    }
+                }
+            });
+        }
+    }
+
+</script>

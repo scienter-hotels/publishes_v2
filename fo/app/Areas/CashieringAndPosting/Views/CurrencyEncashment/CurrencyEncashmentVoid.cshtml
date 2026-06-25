@@ -1,0 +1,152 @@
+﻿
+@model  List<Scienter.HotelERP.Common.Domain.ViewModels.CurrencyEncashmentViewModel>
+
+@{
+    ViewBag.Title = "Void Currency Encashment";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="purple">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4 class="title">
+                            @ViewBag.Title
+                            <hr class="visible-print" />
+                        </h4>
+                    </div>
+                    <div class="col-md-4 text-right hidden-print">
+                        @*<button type="button" class="btn btn-sm btn-theme-color-2 showForm">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+
+                        <button type="button" class="btn btn-sm  btn-theme-color-2 showGrid">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                        </button>*@
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-content" id="contentLoadingArea">
+                <div id="content">
+                    <div class="table-responsive">
+                        <table id="current-currency-encashments" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="text-primary">
+                                        Invoice No
+                                    </th>
+                                    <th class="text-primary">
+                                        Invoice Date
+                                    </th>
+                                    <th class="text-primary">
+                                        Customer Name
+                                    </th>
+                                    <th class="text-primary" style="text-align:right;">
+                                        Room No
+                                    </th>
+                                    <th class="text-primary" style="text-align:right;">
+                                        Amount
+                                    </th>
+                                    <th class="text-primary">
+                                        Remarks
+                                    </th>
+                                    <th class="text-primary">
+                                        User
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @item.InvoiceNo
+                                        </td>
+                                        <td>
+                                            @item.InvoiceDate
+                                        </td>
+                                        <td>
+                                            @item.CustomerName
+                                        </td>
+                                        <td style="text-align:right">
+                                            @item.RoomNo
+                                        </td>
+                                        <td style="text-align:right">
+                                            @Convert.ToDecimal(item.ConvertedAmount).ToString("#,##0.00")
+                                        </td>
+                                        <td>
+                                            @item.Remarks
+                                        </td>
+                                        <td>
+                                            @item.Username
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary btn-void" date-Id="@item.Id">Void</button>
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(function () {
+        $('#current-currency-encashments').DataTable(
+            {
+                searching: true,
+                ordering: true,
+                dom: 'Bfrtipl',
+                select: true,
+                buttons: [
+                    'copy',
+                    'excel',
+                    'csv',
+                    'pdf',
+                    'print'
+                ],
+                scrollY: '58vh',
+            });
+    })
+
+    $('body').off('click', '.btn-void').on('click', '.btn-void', function (e) {
+        var Id = $(this).attr("date-Id");
+        if (confirm('Are you sure you want to void?')) {
+            $.ajax({
+                url: '/CashieringAndPosting/CurrencyEncashment/CurrencyEncashmentVoidById?id=' + Id,
+                dataType: 'json',
+                method: 'POST',
+                success: function (data) {
+                    if (data == "OK") {
+                        ShowSuccessMessage('Void Successfully.');
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 2000);
+
+                    }
+                },
+                error: function () {
+
+                }
+            });
+        } else {
+
+        }
+        
+        
+    });
+
+</script>

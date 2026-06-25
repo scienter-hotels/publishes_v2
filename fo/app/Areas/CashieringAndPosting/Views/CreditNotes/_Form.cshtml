@@ -1,0 +1,65 @@
+﻿
+
+@model Scienter.HotelERP.Common.Domain.DebitAndCreditNotes
+
+<div class="col-md-12 disabled">
+    <form id="Posting-inhouse">
+        @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group label-floating">
+                <label class="control-label">Currency Type</label>
+                @{Html.RenderAction("CurrenciesConvertionCombo", "Currencies", new { area = "Administration", name = "CurrencyId", ChargeTypeCode = "PT", required = true }); }
+                @Html.ValidationMessageFor(model => model.CurrencyId, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group label-floating">
+                <label class="control-label">Charge Type</label>
+                <div id="PostingBillTypeComboContainer">
+            @{Html.RenderAction("PostingBillTypeCombo", "PostingBillType", new { name = "BillTypeId", required = true, value = Model.BillTypeId }); }
+        </div>
+                @*<select id="CreditChargeTypeMenue"  required="" class="form-control">
+                    <option value=""></option>
+                    <option value="CreditOP">Credit</option>
+                </select>*@
+
+                @Html.ValidationMessageFor(model => model.BillTypeId, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group label-floating">
+                <label class="control-label">Folio Text</label>
+                <input autocomplete="off" class="form-control text-box single-line" maxlength="150" id="FolioText" name="FolioText" type="text" value="">
+            </div>
+            <div class="form-group label-floating" id="amountField">
+                <label class="control-label">Amount</label>
+                <input autocomplete="off" class="form-control text-box single-line number number-only" id="Amount" name="Amount" required type="text" value="" maxlength="10" style="text-align:left !important;">
+            </div>
+
+            <div class="form-group label-floating">
+                <label class="control-label">Remarks</label>
+                <input autocomplete="off" class="form-control text-box single-line" maxlength="150" id="Remarks" name="Remarks" type="text" value="">
+            </div>
+            @*<div class="row">
+                <div class="col-md-12">
+                    <div class="form-group checkbox IsComplementarychkbox">
+                        <label style="color:#000000">
+                            @Html.CheckBoxFor(model => model.IsComplementary)
+                            Is complementary
+                        </label>
+                        @Html.ValidationMessageFor(model => model.IsComplementary, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>*@
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <input type="submit" id="btnAdd" value="Add" class="btn btn-primary disabled" />  &nbsp;
+                    <input type="button" id="btnClear" value="Clear" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<style>
+    #Posting-inhouse .form-group {
+        margin: 15px 0 0 0;
+    }
+</style>

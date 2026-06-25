@@ -1,0 +1,181 @@
+﻿@model Scienter.HotelERP.Common.Domain.AdvanceRequestOnline
+@using Scienter.HotelERP.Common.Utility
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+
+<body style="width: 630px;height: auto;padding: 0;margin: auto;background: #fafafa;box-shadow: 0px 2px 9px rgba(157, 157, 157, 0.25);font-family: 'Roboto Flex'">
+    <section style="width: 630px; margin-top: 5%; height: auto;font-family: 'Roboto Flex', sans-serif;font-size:14px;">
+        <div class="col-12">
+            <center>               
+                @*<img src="@Configs.GetAppSettingValue("WebsiteURL")@Model.PropertyImage" alt="Alternate Text" class="img-fluid" alt="envelop-image" style="width: 150px;margin-top: 18px;" />*@
+                <img src="@Model.PaymentWebSiteUrl/@Model.PropertyImage" alt="Alternate Text" class="img-fluid" alt="envelop-image" width="150px" style="width: 150px;margin-top: 18px;" />
+            </center>
+        </div>
+
+        <div style="width: 568px;height: 56px;margin-left: 31px;background: @Model.PrimarybgColor;margin-top: 7px;">
+            <div style="margin-left: 159px;padding:20px;">
+                @if (Model.GroupReservationNo.Length > 0)
+                {
+                    <b style="color:white;">Advance Payment for @Model.GroupReservationNo</b>
+                }
+                else
+                {
+                    <b style="color:white;">Advance Payment for @Model.ReservationNo</b>
+                }
+
+            </div>
+        </div>
+
+        <div class="row" style="padding: 34px;">
+            <div class="col-12">
+                <div style="text-align: justify;font-family: 'Roboto Flex', sans-serif;font-weight: 400;font-size: 12px;color: #2f2f2f; line-height: 15px;">
+                    Dear @Model.GuestName,
+                </div><br />
+                      <div style="text-align: justify;font-family: 'Roboto Flex', sans-serif;font-weight: 400;font-size: 12px;color: #2f2f2f; line-height: 15px;">
+                          @*Thank you for choosing Jetwing Kandy Gallery for your upcoming holiday in our paradise
+        island. A tentative reservation has been made under your name.*@
+
+                          Thank you for choosing @Model.PropertyName for your upcoming holiday in our paradise
+                          island. A tentative reservation has been made under your name.
+                      </div><br />
+                <div class="col-12">
+                    <table style="text-align: justify;font-family: 'Roboto Flex', sans-serif;font-weight: 400;font-size: 12px;color: #2f2f2f; line-height: 15px;">
+                        @if (Model.GroupReservationNo.Length>0)
+                        {
+                            <tr>
+                                <td>
+                                    Group Reservation No
+                                </td>
+                                <td>:</td>
+                                <td>
+                                    @Model.GroupReservationNo
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>
+                                    Reservation No
+                                </td>
+                                <td>:</td>
+                                <td>
+                                    @Model.ReservationNo
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td>
+                                Check-in-date
+                            </td>
+                            <td>:</td>
+                            <td>
+                                @Model.ArrivalFm
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Check-out-date
+                            </td>
+                            <td>:</td>
+                            <td>
+                                @Model.DepartureFm
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Total amount
+                            </td>
+                            <td>:</td>
+                            <td>
+                                @Model.CurrencyCode @Model.TotalAmountFm
+                            </td>
+                        </tr>
+                    </table>
+                </div><br />
+                <div>
+                    <table style="width:100%;text-align: justify;font-family: 'Roboto Flex', sans-serif;font-weight: 400;font-size: 12px;color: #2f2f2f; line-height: 15px;">
+                        <tr>
+                            <th style=" border: 1px solid #dddddd;text-align: left;padding: 8px;">
+                                Room Type
+                            </th>
+                            <th style=" border: 1px solid #dddddd;text-align: left;padding: 8px;">
+                                Meal Basis
+                            </th>
+                            <th style=" border: 1px solid #dddddd;text-align: left;padding: 8px;">
+                                Occupancy
+                            </th>
+                            <th style=" border: 1px solid #dddddd;text-align: left;padding: 8px;">
+                                Qty
+                            </th>
+                        </tr>
+                        @foreach (var roomDetails in ViewBag.RoomDetails)
+                        {
+                            <tr>
+                                <td style=" border: 1px solid #dddddd;text-align: left;padding: 8px;">@roomDetails.RoomCategory</td>
+                                <td style=" border: 1px solid #dddddd;text-align: left;padding: 8px;">@roomDetails.MealBasis</td>
+                                <td style=" border: 1px solid #dddddd;text-align: left;padding: 8px;">@roomDetails.RoomType</td>
+                                <td style=" border: 1px solid #dddddd;text-align: left;padding: 8px;">@roomDetails.RoomCount</td>
+                            </tr>
+                        }
+                        @*<tr>
+            <td style=" border: 1px solid #dddddd;text-align: left;padding: 8px;">@Model.RoomCategory</td>
+            <td style=" border: 1px solid #dddddd;text-align: left;padding: 8px;">@Model.MealBasis</td>
+            <td style=" border: 1px solid #dddddd;text-align: left;padding: 8px;">@Model.RoomType</td>
+            <td style=" border: 1px solid #dddddd;text-align: left;padding: 8px;">@Model.RoomCount</td>
+        </tr>*@
+                    </table>
+                </div><br />
+                <div style="font-family: 'Roboto Flex', sans-serif;font-weight: 400;font-size: 12px;color: #2f2f2f; line-height: 15px;">
+                    In order to confirm the above reservation, please be kind enough to make @Model.CurrencyCode @Model.ReduceAmount.ToString("#,##.00") advance payment by clicking the below button:
+                </div><br />
+                <div class="col-12">
+                    <div style="display: flex;float: left;font-family: 'Roboto Flex', sans-serif;font-weight: 600;font-size: 14px;color: black;">
+                        Amount to be paid:
+                    </div>
+                    <div style="text-align: justify;font-family: 'Roboto Flex', sans-serif;font-weight: 400;font-size: 14px;color: #2f2f2f; line-height: 15px;margin-left;5px;">
+                        <b style="margin-left:50px">@Model.CurrencyCode @Model.ReduceAmount.ToString("#,##.00")</b>
+                    </div>
+                </div><br />
+                <div class="col-12">
+                    <a href="@Model.PaymentWebSiteUrl/payment/request/@Model.Uuid" target="_blank" id="urlId">
+                        <button class="btn MakePayment" target="_blank" data-uuid="" style="background: @Model.SecondarybgColor;border-radius: 12px;color: #ffffff;width: 155px;height: 44px;">
+                            PAY NOW
+                        </button>
+                    </a>
+                </div><br />
+                <div style="font-family: 'Roboto Flex', sans-serif;font-weight: 400;font-size: 12px;color: #2f2f2f; line-height: 15px;">
+                    If the above button does not work,copy below URL and paste is on your preferred browser:
+                    @Model.PaymentWebSiteUrl/payment/request/@Model.Uuid
+                </div><br />
+                <div style="font-family: 'Roboto Flex', sans-serif;font-weight: 400;font-size: 12px;color: #2f2f2f; line-height: 15px;">
+                    The balance payment of <b>@Model.CurrencyCode @Model.DueAmountFm</b> has to be paid at the hotel at the time of check-in.
+                </div><br /><br />
+                <div style="font-family: 'Roboto Flex', sans-serif;font-weight: 400;font-size: 12px;color: #2f2f2f; line-height: 15px;">
+                    Should you request any further clarification,call us on +94 11 470 9400 or email us at reservation@jetwinghotels.com
+                </div>
+            </div>
+        </div>
+        @*</div>*@
+    </section>
+    <div class="footer" style="background-size: 100%; background-repeat: no-repeat;display: inline-block; height: 180px;width: 100%;">
+        <div class="d-flex">
+            <div class="col-03" style="font-family: 'Roboto Flex', sans-serif;/* font-weight: 600; */font-size: 12px;color: #2b2d30;margin-left: 25px;margin-left: 38px;">
+                @Model.PropertyName<br />
+                @Model.PropertyAddress<br />
+                @*Kandy,Sri Lanka.<br />*@
+                Hotel: @Model.PropertyContactNos<br />
+                Reservation: @Model.PropertyContactNos<br />
+                @*<img src="@Configs.GetAppSettingValue("WebsiteURL")@Model.PropertyImage" style="width: 120px; margin-top: 15px;" />*@
+                @*<img src="@Model.PaymentWebSiteUrl/@Model.PropertyImage" style="width: 120px; margin-top: 15px;" />*@
+            </div>
+        </div>
+    </div>
+</body>
+</html>

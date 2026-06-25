@@ -1,0 +1,130 @@
+﻿<style>
+    .formWizardNumbers {
+        border-radius: 300px;
+        padding: 8px;
+        margin: 0 auto !important;
+        color: white;
+        width: 35px;
+        text-align: center;
+    }
+
+    .formWizardText {
+        margin-top: 15px;
+        color: #0a1324;
+        text-align: center;
+        font-size: 13px;
+        text-decoration: none;
+        text-transform: uppercase;
+        margin-left: 5px;
+    }
+
+    .step {
+        background-color: #f2f2f2;
+    }
+
+    .selectedStep {
+        background-color: #f2f2f2;
+    }
+
+    .stepSmallText {
+        font-size: 9px;
+        display: block;
+    }
+
+    #contentLoadingArea {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+
+    .reservation-detail-table {
+        height: 130px;
+        overflow-y: scroll;
+    }
+    /*.reservation-form-height {
+        height: 500px !important;
+    }*/
+    .card-content-override {
+        max-height: 600px !important;
+    }
+
+    .top-padding-0 {
+        padding-top: 0px !important;
+    }
+
+    .the-fieldset .wizard {
+        border: 1px solid #bebebe;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 0px;
+    }
+</style>
+
+
+
+<div class="card-content card-content-override top-padding-0">
+    <div class="row margin-top-20px">
+        <div class="col-md-12">
+            <div class="row">
+                <input type="hidden" name="" class="hidden-MRes-Id" value="@ViewBag.MResId" />
+                <input type="hidden" name="" class="hidden-MRes-No" value="@ViewBag.MResNo" />
+                <input type="hidden" name="" class="hidden-stringify-json-AllDetails" value="@ViewBag.MainAllDetailsViewbag" />
+
+                <input type="hidden" name="" class="hidden-stringify-json-AdvancePayments" value="@ViewBag.AdvancePaymentsViewbag" />
+
+                <div class="col-md-2 hidden-print">
+                    <div class="list-group" style="margin-top:20px;">
+                        <div class="text-center list-group-item" id="step00">
+                            <a href="javacript:preventDefault();" onclick="GridLoad();">
+                                <div class="formWizardNumbers theme-bg-color-2">    <span class="glyphicon glyphicon-home"></span> </div>
+
+                                <div class="formWizardText">
+                                    Meal Reservation <br /> List <span class="glyphicon"></span>
+                                    <i class="stepSmallText" id="selectedStayRange"></i>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="text-center list-group-item" id="step01">
+                            <a href="javacript:preventDefault();">
+                                <div class="formWizardNumbers theme-bg-color-2"> 1 </div>
+
+                                <div class="formWizardText">
+                                    Main Details <span class="glyphicon"></span>
+                                    <i class="stepSmallText" id="selectedStayRange"></i>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="text-center list-group-item" id="step02">
+                            <a href="javacript:preventDefault();">
+                                <div class="formWizardNumbers theme-bg-color-2"> 2 </div>
+
+                                <div class="formWizardText">
+                                    Confirmation <span class="glyphicon"></span>
+                                    <i class="stepSmallText"></i>
+                                </div>
+                            </a>
+                        </div>
+                        @*<div class="text-center list-group-item" id="step03">
+                                <a href="javacript:preventDefault();">
+                                    <div class="formWizardNumbers theme-bg-color-2"> 3 </div>
+
+                                    <div class="formWizardText">
+                                        Advance Payments <br /> Details <span class="glyphicon"></span>
+                                        <i class="stepSmallText"></i>
+                                    </div>
+                                </a>
+                            </div>*@
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <fieldset class="the-fieldset wizard">
+                        <legend class="the-legend">For Meal Reservation : @ViewBag.MResNo</legend>
+                        <div class="" id="DataLoadingArea2">
+
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

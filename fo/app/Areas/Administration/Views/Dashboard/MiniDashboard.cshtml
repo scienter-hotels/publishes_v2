@@ -1,0 +1,173 @@
+﻿@model Scienter.HotelERP.Common.Domain.Dashboard
+@{
+    ViewBag.Title = "Welcome Page";
+}
+
+<script src="~/Sortable/Sortable.min.js"></script>
+<link href="~/Content/mini-dashboard.css" rel="stylesheet" />
+
+
+<div class="toggle-dashboard-chart-setting pop-right-side-area-chart-options" id="dashboardChartSettingToggle" title="Chart Options">
+    <i class="chart-select-menu-icon fa fa-cog" aria-hidden="true"></i>
+</div>
+
+<input type="hidden" name="hdnLoggedUserId" id="hdnLoggedUserId" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" />
+<input type="hidden" name="hdnPropertyId" id="hdnPropertyId" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.LoggedProperty.Id" />
+<input type="hidden" name="hdnBaseUrl" id="hdnBaseUrl" value="@Scienter.HotelERP.Common.Utility.Configs.GetAppSettingValue("BaseUrl")" />
+<input type="hidden" name="hdnHotelDate" id="hdnHotelDate" value="@Scienter.HotelERP.Common.Domain.SessionObjects.FOSettings.CurrentDate.ToString("yyyy-MM-dd")" />
+<input type="hidden" name="hdnHotelDatetoDailyProjections" id="hdnHotelDatetoDailyProjections" value="@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.HotelDate" />
+
+<div class="container" style="padding-bottom:30px;">
+
+    <div class="row" style="margin-top:40px;">
+
+        <div class="col-md-8" style="padding:0;">
+            <div class="grid-wrapper" id="chart-row"></div>
+        </div>
+
+        <div class="col-md-4 custom-padding">
+            <table id="dashboardBlockTable">
+                @*1st tr*@
+                <tr>
+                    <td>
+                        <div class="tile-height"></div>
+                    </td>
+
+                    <td></td>
+                    <td></td>
+                    <td id="hotelDate">
+                        <div class="tile-height" style="background-color:#bdc3c7">
+                            <input type="hidden" name="hotelDateNotFormatted" id="hotelDateNotFormatted" value="@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.HotelDate" />
+                            <span class="tile-lable tile-dark">Hotel Date<br /><br /><span style="font-size:12px; font-weight:bold;" id="hotelDateFormatted"></span></span>
+                        </div>
+                    </td>
+                </tr>
+
+                @*2nd tr*@
+                <tr>
+                    <td>
+                        <div class="tile-height"></div>
+                    </td>
+
+
+                    <td></td>
+                    <td id="manageResLink">
+                        <div class="tile-height" style="background-color:#e67e22">
+                            <a href="~/reservation/reservations/list"><span class="tile-lable tile-light">Manage<br />Reservations</span></a>
+                        </div>
+                    </td>
+                    <td id="housekeepingStatusLink">
+                        <div class="tile-height" style="background-color:#34495e">
+                            <a href="~/housekeeping/hkchange/index"><span class="tile-lable tile-light">Housekeeping<br />Status</span></a>
+                        </div>
+                    </td>
+                </tr>
+
+                @*3rd tr*@
+                <tr>
+                    <td>
+                        <div class="tile-height"></div>
+                    </td>
+
+
+                    <td id="currencyEncachmentLink">
+                        <div class="tile-height" style="background-color:#808080">
+                            <a href="~/cashieringandposting/currencyencashment">
+                                <span class="tile-lable tile-light">Currency<br />Encachment</span>
+                            </a>
+                        </div>
+                    </td>
+                    <td colspan="1" id="hotelLogo">
+                        <div class="logo-td tile-height">
+                            @if (Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.ShowSaasProperty == true)
+                            {
+                                <img class="comp-img" src="@Scienter.HotelERP.Common.Domain.SessionObjects.Dashboard.HotelLogo" style="width:100%;border-radius:8px;" />
+
+                            }
+                        </div>
+                    </td>
+
+                    <td id="roomAvailabilityLink">
+                        <div class="tile-height" style="background-color:#95a5a6">
+                            <a href="~/reservation/roomavailability/RoomAvailabilityGrid"><span class="tile-lable tile-light">Room<br />Availability</span></a>
+                        </div>
+                    </td>
+                </tr>
+
+                @*4th tr*@
+                <tr>
+                    <td><div class="tile-height"></div></td>
+                    <td></td>
+                    <td id="advancePaymentLink">
+                        <div class="tile-height" style="background-color:#e67e22">
+                            <a href="~/cashieringandposting/advancedpayment/landing/inhouse"><span class="tile-lable tile-light">Advance<br />Payment</span></a>
+                        </div>
+                    </td>
+                    <td id="folioManagementLink">
+                        <div class="tile-height" style="background-color:#34495e">
+                            <a href="~/cashieringandposting/foliomanagement/managefolio"><span class="tile-lable tile-light">Folio<br />Management</span></a>
+                        </div>
+                    </td>
+                </tr>
+
+                @*5th tr*@
+                <tr>
+                    <td><div class="tile-height"></div></td>
+                    <td></td>
+                    <td></td>
+                    <td id="traceReminderLink">
+                        <div class="tile-height" style="background-color:#bdc3c7; cursor:pointer;" id="btn-Trace-Reminders">
+                            <span class="tile-lable tile-dark">
+                                Trace  <br />Reminders
+                                <span id="Trace_Reminders" class="tile-value" style="padding-top: 0.5em;"></span>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-right" style="padding-right: 0;">
+            <footer class="footer">
+                <p class="text-muted">v2.5.1</p>
+            </footer>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasRightLabel">Customize Dashboard</h5>
+    </div>
+    <div class="offcanvas-body">
+        <input type="hidden" id="hdnLoggedUserId" value="@Scienter.HotelERP.Common.Domain.SessionObjects.LoggedUser.Id" />
+        <ul class="custom-control-group  align-center chartTypes"></ul>
+    </div>
+</div>
+
+
+<script src="~/Scripts/ui/common/scienter.grid2.js"></script>
+<script src="~/Scripts/ui/mini-dashboard/mini-dashboard.js"></script>
+@if (Model.Message != null)
+{
+    <script>
+        $(document).ready(function () {
+            ShowWarningMessage($('#warningMessage').val());
+            setTimeout(function () { $('#message-warning-model').modal('hide'); }, 4000);
+            $('#warningMessage').val("");
+        });
+        Model.Message = "";
+
+    </script>
+}
+
+    <script>
+        $(document).ready(function () {
+        addProductTour();
+        });
+    </script>

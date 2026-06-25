@@ -1,0 +1,525 @@
+﻿@using Scienter.HotelERP.Common.Domain
+@using Scienter.HotelERP.Common.Utility
+
+<style>
+    .cd-primary-nav a:hover {
+        text-decoration: none !important;
+    }
+
+    .cd-primary-nav a:hover, a:focus {
+        color: #fff;
+        text-decoration: none;
+    }
+    /*2023-08-23-Anuradha---------------------------------------------------------------------------------------- checking*/
+    .cd-secondary-nav::-webkit-scrollbar {
+        width: 5px !important;
+    }
+
+    .cd-secondary-nav::-webkit-scrollbar-track {
+        background: #f1f1f1 !important;
+    }
+
+    .cd-secondary-nav::-webkit-scrollbar-thumb {
+        background: #c1c1c1 !important;
+    }
+
+        .cd-secondary-nav::-webkit-scrollbar-thumb:hover {
+            background: #8E8E8E !important;
+        }
+
+    .navigation-area-image {
+        width: 46px;
+    }
+
+    .cd-primary-nav .cd-secondary-nav > li {
+        overflow-y: hidden;
+    }
+
+        .cd-primary-nav .cd-secondary-nav > li > a {
+            font-size: 1.4rem;
+        }
+
+    .cd-primary-nav .cd-secondary-nav a {
+        font-size: 1.2rem;
+    }
+
+    #secondUl {
+        line-height: 1;
+    }
+
+        #secondUl li {
+            margin-bottom: -6px;
+        }
+
+    /*-----------------------------------------------------------------------------------------------------------*/
+</style>
+
+@{ string accessStyle = "";
+    string pageURL = "#";
+}
+
+<div class="cd-overlay hidden-print"></div>
+
+@*<nav class="cd-nav hidden-print">
+
+    <ul id="cd-primary-nav" class="cd-primary-nav is-fixed container" style="margin-right:20px;">
+
+        @foreach (NavigationMain item in ((List<NavigationMain>)SessionObjects.UserWiseNavigations).OrderBy(X => X.DisplayOrder))
+        {
+            if (item.Areas.Count > 0)
+            {
+                if (item.TemplateId == 1)
+                {
+                    <li class="has-children top-menu-item" id="search-@item.Id">
+                        <a href="@item.Url" title="@item.Description" style="cursor:pointer;" class="data-main-navigation">@item.Name</a>
+
+                        <ul class="cd-secondary-nav is-hidden data-main-navigation-areas">
+                            <li class="go-back"><a href="">Menu</a></li>*@
+@*2023-08-31-Anuradha----------------------------------------------------------------------------------------*@
+@*<li class="" style="display:block; width:97.3%;margin-top: -20px; margin-bottom: 35px;">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div style="padding:5px; border-radius:50px; border:2px solid rgba(220, 223, 228, 0.75)">
+                    <table border="0" cellspacing="1" style="border:0px; width:100%;">
+                        <tbody>
+                            <tr style="background-color:transparent;">
+                                <td style="padding-right:10px; padding-left:10px; width:10%;">
+                                    <img src="~/Images/assets/mag.png" alt="search" />
+                                </td>
+                                <td width="100%">
+                                    <input type="text" id="searchBox" placeholder="Search..." style="border:none; width:100%;" />
+                                </td>
+                                <td width="20%">
+                                    <button type="submit" class="btn btn-primary btn-sm" style="border-radius:30px !important;font-weight: 300;letter-spacing: 2px;font-size: 11px;padding: 7px 25px;margin: 7px 10px; line-height:15px;">Search</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+    </li>*@
+@*--------------------------------------------------------------------------------------------------------------------*@
+@*@foreach (var area in item.Areas)
+                            {
+                                if (area.Pages.Count > 0)
+                                {
+                                    if (area.Access == false)
+                                    {
+
+                                        accessStyle = "#7f8c8d";
+                                    }
+                                    else
+                                    {
+
+                                        accessStyle = "#094F70";
+                                    }
+
+                                    if (!Configs.GetAppSettingBoolValue("IsCentralLoginEnabled"))
+                                    {
+                                        accessStyle = "#094F70";
+                                    }
+
+                                    <li class="has-children search" style="margin-bottom:30px;">
+                                        <img src="@area.ImageUrl" alt="@area.Name" title="@area.Name" class="navigation-area-image" />
+                                        <a href="@area.Url" title="@area.Description" style="color:@accessStyle !important;">@area.Name</a>
+                                        <ul class="is-hidden" id="secondUl">
+                                            <li class="go-back"><a href="javascript:preventDefault();" style="color:@accessStyle !important;">@area.Name</a></li>
+                                            @{
+                                                var rootPages = area.Pages.Where(x => x.RootPageId == 0).OrderBy(a => a.DispayOrder).ToList();
+                                                if (area.Id == 2007)
+                                                {
+
+                                                }
+                                                foreach (var page in rootPages)
+                                                {
+                                                    if (area.Pages.Exists(x => x.RootPageId == page.Id))
+                                                    {
+                                                        accessStyle = "#f00";
+                                                        if (page.Access == false)
+                                                        {
+                                                            pageURL = "#";
+                                                            accessStyle = "#7f8c8d";
+                                                        }
+                                                        else
+                                                        {
+                                                            pageURL = "#";
+                                                            accessStyle = "#094F70";
+                                                        }
+
+                                                        if (!Configs.GetAppSettingBoolValue("IsCentralLoginEnabled"))
+                                                        {
+                                                            accessStyle = "#094F70";
+                                                        }
+
+                                                        <li class="has-children search">
+                                                            <a href="javascript:preventDefault();">@page.Name</a>
+                                                            <ul class="is-hidden">
+                                                                <li class="go-back"><a href="javascript:preventDefault();" style="color:@accessStyle !important;">@page.Name</a></li>
+                                                                @foreach (var innerPage in area.Pages.Where(x => x.RootPageId == page.Id).OrderBy(x => x.DispayOrder).ToList())
+                                                                {
+                                                                    <li>
+                                                                        <a class="linkNavigation"
+                                                                           href="@innerPage.Url"
+                                                                           title="@innerPage.Name"
+                                                                           hidefocus="hidefocus"
+                                                                           style="color:@accessStyle  !important;"
+                                                                           data-toggle="tooltip">@innerPage.Name</a>
+                                                                    </li>
+                                                                }
+
+                                                            </ul>
+                                                        </li>
+                                                    }
+                                                    else
+                                                    {
+                                                        accessStyle = "#f00";
+                                                        if (page.Access == false)
+                                                        {
+                                                            pageURL = "#";
+                                                            accessStyle = "#7f8c8d";
+                                                        }
+                                                        else
+                                                        {
+                                                            pageURL = page.Url;
+                                                            accessStyle = "#094F70";
+                                                        }
+
+
+                                                        if (!Configs.GetAppSettingBoolValue("IsCentralLoginEnabled"))
+                                                        {
+                                                            accessStyle = "#094F70";
+                                                        }
+
+                                                        <li class="search">
+
+                                                            <a class="linkNavigation"
+                                                               href="@pageURL"
+                                                               title="@page.Name"
+                                                               hidefocus="hidefocus"
+                                                               style="color:@accessStyle  !important;"
+                                                               data-toggle="tooltip">@page.Name</a>
+                                                        </li>
+                                                    }
+                                                }
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                                else
+                                {
+                                    accessStyle = "#f00";
+                                    if (area.Access == false)
+                                    {
+                                        accessStyle = "#ccc";
+                                    }
+                                    else
+                                    {
+                                        accessStyle = "#094F70";
+                                    }
+
+                                    if (!Configs.GetAppSettingBoolValue("IsCentralLoginEnabled"))
+                                    {
+                                        accessStyle = "#094F70";
+                                    }
+                                    <li class="search">
+
+                                        <img src="@area.ImageUrl" alt="@area.Name" title="@area.Name" class="navigation-area-image" />
+                                        <a class="linkNavigation"
+                                           href="@area.Url"
+                                           title="@area.Name"
+                                           hidefocus="hidefocus"
+                                           style="color:@accessStyle;"
+                                           data-toggle="tooltip">@area.Name</a>
+                                    </li>
+                                }
+
+                            }
+                        </ul>
+                    </li>
+                }
+            }
+            else
+            {
+                <li class="top-menu-item">
+                    <a href="@item.Url" title="@item.Name">@item.Name</a>
+                </li>
+            }
+        }
+
+    </ul>*@
+
+
+
+@*<ul id="cd-primary-nav" class="cd-primary-nav is-fixed container" style="margin-right:20px;">
+                @foreach (NavigationMain item in ((List<NavigationMain>)SessionObjects.UserWiseNavigations).OrderBy(X => X.DisplayOrder))
+                {
+                    if (item.Areas.Count > 0)
+                    {
+                        if (item.TemplateId == 1)
+                        {
+                            <li class="has-children top-menu-item">
+                                <a href="@item.Url" title="@item.Description" style="cursor:pointer;" class="data-main-navigation">@item.Name</a>
+                                <ul class="cd-secondary-nav is-hidden data-main-navigation-areas">
+                                    <li class="go-back"><a href="">Menu</a></li>
+                                    @foreach (var area in item.Areas)
+                                    {
+                                        if (area.Pages.Count > 0)
+                                        {
+                                            accessStyle = "#f00";
+                                            if (area.Access == false)
+                                            {
+                                                accessStyle = "#7f8c8d";
+                                            }
+                                            else
+                                            {
+                                                accessStyle = "#094F70";
+                                            }
+                                            <li class="has-children" style="margin-bottom:30px;">
+                                                <img src="@area.ImageUrl" alt="@area.Name" title="@area.Name" class="navigation-area-image" />
+                                                <a href="@area.Url" title="@area.Description" style="color:@accessStyle !important;">@area.Name</a>
+                                                <ul class="is-hidden">
+                                                    <li class="go-back"><a href="javascript:preventDefault();" style="color:@accessStyle !important;">@area.Name</a></li>
+                                                    @{
+                                                        var rootPages = area.Pages.Where(x => x.RootPageId == 0).OrderBy(a => a.DispayOrder).ToList();
+                                                        foreach (var page in rootPages)
+                                                        {
+                                                            if (area.Pages.Exists(x => x.RootPageId == page.Id))
+                                                            {
+                                                                accessStyle = "#f00";
+                                                                if (page.Access == false)
+                                                                {
+                                                                    accessStyle = "#7f8c8d";
+                                                                }
+                                                                else
+                                                                {
+                                                                    accessStyle = "#094F70";
+                                                                }
+                                                                <li class="has-children">
+                                                                    <a href="javascript:preventDefault();">@page.Name</a>
+                                                                    <ul class="is-hidden">
+                                                                        <li class="go-back"><a href="javascript:preventDefault();" style="color:@accessStyle !important;">@page.Name</a></li>
+                                                                        @foreach (var innerPage in area.Pages.Where(x => x.RootPageId == page.Id).OrderBy(x => x.DispayOrder).ToList())
+                                                                        {
+                                                                            <li>
+                                                                                <a class="linkNavigation"
+                                                                                   href="@innerPage.Url"
+                                                                                   title="@innerPage.Name"
+                                                                                   hidefocus="hidefocus"
+                                                                                   style="color:@accessStyle  !important;"
+                                                                                   data-toggle="tooltip">@innerPage.Name</a>
+                                                                            </li>
+                                                                        }
+
+                                                                    </ul>
+                                                                </li>
+                                                            }
+                                                            else
+                                                            {
+                                                                accessStyle = "#f00";
+                                                                if (page.Access == false)
+                                                                {
+                                                                    accessStyle = "#7f8c8d";
+                                                                }
+                                                                else
+                                                                {
+                                                                    accessStyle = "#094F70";
+                                                                }
+
+                                                                <li>
+
+                                                                    <a class="linkNavigation"
+                                                                       href="@page.Url"
+                                                                       title="@page.Name"
+                                                                       hidefocus="hidefocus"
+                                                                       style="color:@accessStyle  !important;"
+                                                                       data-toggle="tooltip">@page.Name</a>
+                                                                </li>
+                                                            }
+                                                        }
+                                                    }
+                                                </ul>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            accessStyle = "#f00";
+                                            if (area.Access == false)
+                                            {
+                                                accessStyle = "#ccc";
+                                            }
+                                            else
+                                            {
+                                                accessStyle = "#094F70";
+                                            }
+
+                                            <li>
+
+                                                <img src="@area.ImageUrl" alt="@area.Name" title="@area.Name" class="navigation-area-image" />
+                                                <a class="linkNavigation"
+                                                   href="@area.Url"
+                                                   title="@area.Name"
+                                                   hidefocus="hidefocus"
+                                                   style="color:@accessStyle;"
+                                                   data-toggle="tooltip">@area.Name</a>
+                                            </li>
+                                        }
+
+                                    }
+                                </ul>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="top-menu-item">
+                            <a href="@item.Url" title="@item.Name">@item.Name</a>
+                        </li>
+                    }
+                }
+
+            </ul>
+    </nav>*@
+
+<nav class="cd-nav hidden-print">
+    <ul id="cd-primary-nav" class="cd-primary-nav is-fixed container" style="margin-right:50px;"></ul>
+</nav>
+
+<script>
+    // 2023-08-23-Anuradha
+    $(document).ready(function () {
+        loadMenus();
+
+        var menuHeight = $(window).height() - 65;
+        var menuWidth = $(window).width() - 24;
+        $('.cd-secondary-nav').css({
+            'overflow-y': 'auto',
+            'max-height': menuHeight,
+            'width': menuWidth
+        });
+
+        // 2023-08-31-Anuradha
+        $('[id^="search-"] #searchBox').on("input", function () {
+            var searchTerm = $(this).val().toLowerCase();
+            var ulliId = $(this).closest('[id^="search-"]').attr('id');
+
+            $('#' + ulliId + ' .search').each(function () {
+                var itemName = $(this).text().toLowerCase();
+                $(this).toggle(itemName.includes(searchTerm));
+            });
+        });
+    });
+
+    // 2024-07-04-Anuradha
+    function getLocalStorage(localStorageKey) {
+        var localStorageValueStr = localStorage.getItem(localStorageKey);
+        return JSON.parse(localStorageValueStr);
+    }
+
+    function loadMenus() {
+        
+        var mainNavigations = getLocalStorage('Z_FO_MainNavigations');
+
+        $(mainNavigations).each(function (index, mainItem) {
+            var subMainNavigations = getLocalStorage(mainItem.LocalStorageKey);
+            var mainItemUrl = mainItem.Access ? mainItem.Url : "#";
+            var mainItemAccessStyle = mainItem.Access ? "#094F70" : "#fff";
+            var menuLvl2 = '';
+
+            $(subMainNavigations).each(function (index1, subItemLvl1) {
+                var subItemLvl1Navigations = subItemLvl1.Pages;
+                var menuLvl3 = '';
+                if (subItemLvl1.IsActive) {
+
+                    $(subItemLvl1Navigations).each(function (index2, subItemLvl2) {
+                        var subItemLvl2Url = subItemLvl2.Access ? subItemLvl2.Url : "#";
+                        var subItemLvl2AccessStyle = subItemLvl2.Access ? "#094F70" : "#7f8c8d";
+
+                        if (subItemLvl2.IsActive) {
+                            menuLvl3 += `
+                                <li class="search">
+                                    <a class="linkNavigation" href="${subItemLvl2Url}" title="${subItemLvl2.Name}" hidefocus="hidefocus" style="color:${subItemLvl2AccessStyle} !important;" data-toggle="tooltip">${subItemLvl2.Name}</a>
+                                </li>
+                            `;
+                        }
+                    });
+                    var subItemLvl1AccessStyle = subItemLvl1.Access ? "#094F70" : "#7f8c8d";
+
+                    menuLvl2 += `
+                        <li class="has-children search" style="margin-bottom:30px;">
+                            <img src="${subItemLvl1.ImageUrl}" alt="${subItemLvl1.Name}" title="${subItemLvl1.Name}" class="navigation-area-image" />
+                            <a style="color:${subItemLvl1AccessStyle} !important;">${subItemLvl1.Name}</a>
+                            <ul class="is-hidden" id="secondUl">
+                                <li class="go-back"><a href="javascript:preventDefault();">${subItemLvl1.Name}</a></li>
+                                ${menuLvl3}
+                            </ul>
+                        </li>
+                    `;
+                }
+            });
+
+            var menuLvl1 = `
+                    <li class="has-children top-menu-item" id="search-${mainItem.Id}">
+                        <a href="${mainItemUrl}" style="cursor:pointer;color:${mainItemAccessStyle} !important;" class="data-main-navigation">${mainItem.Name}</a>
+                        <ul class="cd-secondary-nav is-hidden data-main-navigation-areas">
+                            <li class="go-back"><a href="">Menu</a></li>
+                            <li class="" style="display:block; width:97.3%;margin-top: -20px; margin-bottom: 35px;">
+                                <div class="row">
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-6">
+                                        <div style="padding:5px; border-radius:50px; border:2px solid rgba(220, 223, 228, 0.75)">
+                                            <table border="0" cellspacing="1" style="border:0px; width:100%;">
+                                                <tbody>
+                                                    <tr style="background-color:transparent;">
+                                                        <td style="padding-right:10px; padding-left:10px; width:10%;">
+                                                            <img src="/Images/assets/mag.png" alt="search" />
+                                                        </td>
+                                                        <td width="100%">
+                                                            <input type="text" id="searchBox" placeholder="Search..." style="border:none; width:100%;" />
+                                                        </td>
+                                                        <td width="20%">
+                                                            <button type="submit" class="btn btn-primary btn-sm" style="border-radius:30px !important;font-weight: 300;letter-spacing: 2px;font-size: 11px;padding: 7px 25px;margin: 7px 10px; line-height:15px;">Search</button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3"></div>
+                                </div>
+                            </li>
+                            ${menuLvl2}
+                        </ul>
+                    </li>
+                `;
+
+            $('#cd-primary-nav').append(menuLvl1);
+        });
+        
+    }
+	
+	
+	    $(document).on('click', '#cd-primary-nav a[href*="http://166.108.225.172:8044/Dashboard"]', function (e) {
+		       // alert('Folio History');
+			           e.preventDefault();
+					   debugger;
+					           var userId = $('#hdnLoggedUserId').val();
+							           var propertyId = $('#hdnLoggedPropertyId').val();
+									           var token = document.cookie.split('; ')
+											               .find(r => r.startsWith('TokenName='))
+														               ?.split('=')[1] || '';
+																	   
+																	   
+																	           // https://localhost:7133/FolioHistory?userId=1&propertyId=1&token=38613183-d8aa-4afd-a054-ebc47490f379
+																			           var url = 'http://166.108.225.172:8044/FolioHistory'
+																					               + '?userId=' + encodeURIComponent(userId)
+																								               + '&propertyId=' + encodeURIComponent(propertyId)
+																											               + '&token=' + encodeURIComponent(token);
+																														           //alert(url);
+																																           window.location.href = url;
+																																		       });
+																			   
+</script>
+
